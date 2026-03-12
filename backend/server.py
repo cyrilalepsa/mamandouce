@@ -716,6 +716,138 @@ async def get_weekly_tips_database():
     from data.weekly_tips import WEEKLY_TIPS
     return WEEKLY_TIPS
 
+async def get_medical_appointments():
+    from data.medical_appointments import MEDICAL_APPOINTMENTS, PREPARATION_COURSES
+    return MEDICAL_APPOINTMENTS + PREPARATION_COURSES
+
+# Medical Appointments endpoints
+@api_router.get("/medical/appointments")
+async def get_user_medical_appointments(current_user: User = Depends(get_current_user)):
+    """Get all medical appointments based on user's pregnancy profile"""
+    profile = await db.pregnancy_profiles.find_one({"user_id": current_user.id}, {"_id": 0})
+    
+    if not profile or not profile.get("last_period_date"):
+        return {"appointments": [], "message": "Veuillez d'abord configurer votre profil de grossesse"}
+    
+    current_week = profile.get("current_week", 1)
+    last_period = datetime.fromisoformat(profile["last_period_date"])
+    
+    all_appointments = await get_medical_appointments()
+    
+    # Get user's completed appointments
+    completed = await db.completed_appointments.find(
+        {"user_id": current_user.id},
+        {"_id": 0}
+    ).to_list(100)
+    completed_ids = {c["appointment_id"] for c in completed}
+    
+    appointments = []
+    for apt in all_appointments:
+        # Calculate the date range for this appointment
+        start_date = last_period + timedelta(weeks=apt["week_start"])
+        end_date = last_period + timedelta(weeks=apt["week_end"])
+        
+        status = "completed" if apt["id"] in completed_ids else (
+            "current" if apt["week_start"] <= current_week <= apt["week_end"] else (
+                "upcoming" if current_week < apt["week_start"] else "past"
+            )
+        )
+        
+        appointments.append({
+            **apt,
+            "start_date": start_date.isoformat(),
+            "end_date": end_date.isoformat(),
+            "status": status,
+            "is_completed": apt["id"] in completed_ids
+        })
+    
+    # Sort by week_start
+    appointments.sort(key=lambda x: x["week_start"])
+    
+    return {
+        "current_week": current_week,
+        "appointments": appointments
+    }
+
+@api_router.get("/medical/upcoming")
+async def get_upcoming_appointments(current_user: User = Depends(get_current_user)):
+    """Get upcoming and current medical appointments for homepage display"""
+    profile = await db.pregnancy_profiles.find_one({"user_id": current_user.id}, {"_id": 0})
+    
+    if not profile or not profile.get("last_period_date"):
+        return {"appointments": []}
+    
+    current_week = profile.get("current_week", 1)
+    last_period = datetime.fromisoformat(profile["last_period_date"])
+    
+    all_appointments = await get_medical_appointments()
+    
+    # Get user's completed appointments
+    completed = await db.completed_appointments.find(
+        {"user_id": current_user.id},
+        {"_id": 0}
+    ).to_list(100)
+    completed_ids = {c["appointment_id"] for c in completed}
+    
+    upcoming = []
+    for apt in all_appointments:
+        if apt["id"] in completed_ids:
+            continue
+            
+        # Show appointments within current week or up to 4 weeks ahead
+        if apt["week_start"] <= current_week + 4 and apt["week_end"] >= current_week:
+            start_date = last_period + timedelta(weeks=apt["week_start"])
+            end_date = last_period + timedelta(weeks=apt["week_end"])
+            
+            is_urgent = apt["week_start"] <= current_week <= apt["week_end"]
+            
+            upcoming.append({
+                **apt,
+                "start_date": start_date.isoformat(),
+                "end_date": end_date.isoformat(),
+                "is_urgent": is_urgent,
+                "weeks_until": max(0, apt["week_start"] - current_week)
+            })
+    
+    # Sort by urgency and week
+    upcoming.sort(key=lambda x: (not x["is_urgent"], x["week_start"]))
+    
+    return {"appointments": upcoming[:5]}  # Return max 5 appointments
+
+@api_router.post("/medical/complete/{appointment_id}")
+async def mark_appointment_completed(appointment_id: str, current_user: User = Depends(get_current_user)):
+    """Mark a medical appointment as completed"""
+    # Check if already completed
+    existing = await db.completed_appointments.find_one({
+        "user_id": current_user.id,
+        "appointment_id": appointment_id
+    })
+    
+    if existing:
+        return {"success": True, "message": "Rendez-vous déjà marqué comme complété"}
+    
+    await db.completed_appointments.insert_one({
+        "id": str(uuid.uuid4()),
+        "user_id": current_user.id,
+        "appointment_id": appointment_id,
+        "completed_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {"success": True, "message": "Rendez-vous marqué comme complété"}
+
+@api_router.delete("/medical/complete/{appointment_id}")
+async def unmark_appointment_completed(appointment_id: str, current_user: User = Depends(get_current_user)):
+    """Unmark a medical appointment as completed"""
+    result = await db.completed_appointments.delete_one({
+        "user_id": current_user.id,
+        "appointment_id": appointment_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Rendez-vous non trouvé")
+    
+    return {"success": True, "message": "Rendez-vous marqué comme non complété"}
+
 app.include_router(api_router)
 
 # Intégrer le router de paiements

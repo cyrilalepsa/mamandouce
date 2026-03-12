@@ -36,6 +36,7 @@ Application recensant tous les aliments consommables pour les femmes enceintes a
 - [x] Démarches administratives par semaine
 - [x] **Aliments favoris** - Sauvegarde et gestion des aliments favoris
 - [x] **Alertes personnalisées** - Alertes basées sur les favoris et la semaine de grossesse
+- [x] **Rendez-vous médicaux** - Calendrier complet des 20 rendez-vous de grossesse avec rappels automatiques
 
 ### Monetization & Premium
 - [x] Système de paiement Stripe (25€ paiement unique, sans renouvellement auto)
@@ -62,6 +63,10 @@ Application recensant tous les aliments consommables pour les femmes enceintes a
 - `GET /api/favorites` - Liste des favoris
 - `DELETE /api/favorites/{food_name}` - Supprimer un favori
 - `GET /api/alerts/personalized` - Alertes personnalisées
+- `GET /api/medical/appointments` - Tous les rendez-vous médicaux
+- `GET /api/medical/upcoming` - Rendez-vous à venir (pour accueil)
+- `POST /api/medical/complete/{id}` - Marquer rendez-vous complété
+- `DELETE /api/medical/complete/{id}` - Annuler complétion
 
 ## Database Schema
 ### MongoDB Collections
@@ -71,6 +76,7 @@ Application recensant tous les aliments consommables pour les femmes enceintes a
 - `notifications`: {id, user_id, title, description, date, completed}
 - `notification_preferences`: {id, user_id, email_notifications, weekly_tips}
 - `favorites`: {id, user_id, name, status, reason, category, created_at}
+- `completed_appointments`: {id, user_id, appointment_id, completed_at}
 
 ## Key Files
 - `/app/backend/server.py` - API principale

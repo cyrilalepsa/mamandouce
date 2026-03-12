@@ -9,6 +9,7 @@ import FoodScanner from './pages/FoodScanner';
 import EmbryoTracker from './pages/EmbryoTracker';
 import HistoryPage from './pages/HistoryPage';
 import FavoritesPage from './pages/FavoritesPage';
+import MedicalAppointmentsPage from './pages/MedicalAppointmentsPage';
 import NotificationsPage from './pages/NotificationsPage';
 import WeeklyTipsPage from './pages/WeeklyTipsPage';
 import ProfilePage from './pages/ProfilePage';
@@ -50,6 +51,7 @@ function App() {
           <Route path="/embryo" element={<ProtectedRoute><EmbryoTracker /></ProtectedRoute>} />
           <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
           <Route path="/favorites" element={<ProtectedRoute><FavoritesPage /></ProtectedRoute>} />
+          <Route path="/medical" element={<ProtectedRoute><MedicalAppointmentsPage /></ProtectedRoute>} />
           <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
           <Route path="/tips" element={<ProtectedRoute><WeeklyTipsPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />

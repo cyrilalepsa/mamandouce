@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Users, HeartHandshake, Landmark, CalendarHeart, ScanBarcode, History, Bell, BookOpen, User, LogOut, Cloud, Feather, RotateCw, Settings, Heart, AlertTriangle, ShieldCheck, Lightbulb } from 'lucide-react';
+import { Users, HeartHandshake, Landmark, CalendarHeart, ScanBarcode, History, Bell, BookOpen, User, LogOut, Cloud, Feather, RotateCw, Settings, Heart, AlertTriangle, ShieldCheck, Lightbulb, Stethoscope, Calendar, Scan, TestTube } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 
@@ -11,10 +11,12 @@ function HomePage() {
   const [userName, setUserName] = useState('');
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [alerts, setAlerts] = useState([]);
+  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
 
   useEffect(() => {
     loadUserData();
     loadAlerts();
+    loadUpcomingAppointments();
   }, []);
 
   const loadUserData = async () => {
@@ -35,6 +37,40 @@ function HomePage() {
       setAlerts(response.data.alerts || []);
     } catch (error) {
       console.error('Erreur chargement alertes:', error);
+    }
+  };
+
+  const loadUpcomingAppointments = async () => {
+    try {
+      const response = await api.medical.getUpcoming();
+      setUpcomingAppointments(response.data.appointments || []);
+    } catch (error) {
+      console.error('Erreur chargement rendez-vous:', error);
+    }
+  };
+
+  const getAppointmentIcon = (type) => {
+    switch (type) {
+      case 'consultation':
+        return <Stethoscope className="w-4 h-4" />;
+      case 'echographie':
+        return <Scan className="w-4 h-4" />;
+      case 'prise_sang':
+        return <TestTube className="w-4 h-4" />;
+      default:
+        return <Calendar className="w-4 h-4" />;
+    }
+  };
+
+  const getAppointmentColor = (type, isUrgent) => {
+    if (isUrgent) return 'bg-amber-100 border-amber-300 text-amber-800';
+    switch (type) {
+      case 'echographie':
+        return 'bg-purple-50 border-purple-200 text-purple-700';
+      case 'prise_sang':
+        return 'bg-red-50 border-red-200 text-red-700';
+      default:
+        return 'bg-sky-50 border-sky-200 text-sky-700';
     }
   };
 
@@ -143,6 +179,49 @@ function HomePage() {
             </div>
           )}
 
+          {/* Upcoming Medical Appointments */}
+          {upcomingAppointments.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-semibold text-slate-600" style={{ fontFamily: 'Nunito, sans-serif' }}>Rendez-vous à venir</h2>
+                <Button
+                  onClick={() => navigate('/medical')}
+                  className="text-sky-500 bg-transparent hover:bg-sky-50 text-sm"
+                >
+                  Voir tout
+                </Button>
+              </div>
+              <div className="space-y-2">
+                {upcomingAppointments.slice(0, 3).map((apt, index) => (
+                  <Card 
+                    key={apt.id} 
+                    className={`rounded-2xl p-4 border-2 cursor-pointer hover:shadow-md transition-all ${getAppointmentColor(apt.type, apt.is_urgent)}`}
+                    onClick={() => navigate('/medical')}
+                    data-testid={`upcoming-apt-${index}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${apt.is_urgent ? 'bg-amber-200' : 'bg-white/60'}`}>
+                        {getAppointmentIcon(apt.type)}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-bold text-sm">{apt.title}</h4>
+                          {apt.is_urgent && (
+                            <span className="text-xs bg-amber-200 px-2 py-0.5 rounded-full font-medium">Maintenant</span>
+                          )}
+                        </div>
+                        <p className="text-xs opacity-80 mt-0.5">
+                          Semaines {apt.week_start}-{apt.week_end}
+                          {apt.weeks_until > 0 && ` • Dans ${apt.weeks_until} semaine${apt.weeks_until > 1 ? 's' : ''}`}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div>
             <h2 className="text-2xl font-semibold text-slate-600 mb-4" style={{ fontFamily: 'Nunito, sans-serif' }}>Services administratifs</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -221,6 +300,15 @@ function HomePage() {
               >
                 <HeartHandshake className="w-12 h-12 text-rose-400 mx-auto mb-3" />
                 <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Évolution</h3>
+              </Card>
+
+              <Card
+                onClick={() => navigate('/medical')}
+                data-testid="medical-nav"
+                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+              >
+                <Stethoscope className="w-12 h-12 text-sky-500 mx-auto mb-3" />
+                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Rendez-vous</h3>
               </Card>
 
               <Card

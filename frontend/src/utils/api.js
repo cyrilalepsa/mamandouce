@@ -40,6 +40,12 @@ export const api = {
   alerts: {
     getPersonalized: () => axios.get(`${API}/alerts/personalized`, getAuthHeaders()),
   },
+  medical: {
+    getAppointments: () => axios.get(`${API}/medical/appointments`, getAuthHeaders()),
+    getUpcoming: () => axios.get(`${API}/medical/upcoming`, getAuthHeaders()),
+    markComplete: (appointmentId) => axios.post(`${API}/medical/complete/${appointmentId}`, {}, getAuthHeaders()),
+    unmarkComplete: (appointmentId) => axios.delete(`${API}/medical/complete/${appointmentId}`, getAuthHeaders()),
+  },
   notifications: {
     create: (data) => axios.post(`${API}/notifications`, data, getAuthHeaders()),
     getAll: () => axios.get(`${API}/notifications`, getAuthHeaders()),
