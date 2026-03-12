@@ -37,6 +37,7 @@ Application recensant tous les aliments consommables pour les femmes enceintes a
 - [x] **Aliments favoris** - Sauvegarde et gestion des aliments favoris
 - [x] **Alertes personnalisées** - Alertes basées sur les favoris et la semaine de grossesse
 - [x] **Rendez-vous médicaux** - Calendrier complet des 20 rendez-vous de grossesse avec rappels automatiques
+- [x] **Notes de rendez-vous** - Suivi santé maman (poids, tension) et bébé (cœur, poids, taille) avec notes personnelles
 
 ### Monetization & Premium
 - [x] Système de paiement Stripe (25€ paiement unique, sans renouvellement auto)
@@ -67,6 +68,10 @@ Application recensant tous les aliments consommables pour les femmes enceintes a
 - `GET /api/medical/upcoming` - Rendez-vous à venir (pour accueil)
 - `POST /api/medical/complete/{id}` - Marquer rendez-vous complété
 - `DELETE /api/medical/complete/{id}` - Annuler complétion
+- `POST /api/medical/notes/{id}` - Sauvegarder notes de rendez-vous
+- `GET /api/medical/notes/{id}` - Récupérer notes d'un RDV
+- `GET /api/medical/notes` - Toutes les notes utilisateur
+- `GET /api/medical/health-summary` - Résumé santé (évolution poids, tension)
 
 ## Database Schema
 ### MongoDB Collections
@@ -77,6 +82,7 @@ Application recensant tous les aliments consommables pour les femmes enceintes a
 - `notification_preferences`: {id, user_id, email_notifications, weekly_tips}
 - `favorites`: {id, user_id, name, status, reason, category, created_at}
 - `completed_appointments`: {id, user_id, appointment_id, completed_at}
+- `appointment_notes`: {id, user_id, appointment_id, weight, blood_pressure_systolic, blood_pressure_diastolic, baby_heartbeat, baby_weight, baby_size, notes, doctor_name, created_at}
 
 ## Key Files
 - `/app/backend/server.py` - API principale

@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { ArrowLeft, Stethoscope, Scan, TestTube, Baby, Activity, UserCog, Check, Calendar, Clock, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Input } from '../components/ui/input';
+import { ArrowLeft, Stethoscope, Scan, TestTube, Baby, Activity, UserCog, Check, Calendar, Clock, AlertTriangle, ChevronDown, ChevronUp, Edit3, Save, X, Heart, Scale, Ruler } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 
@@ -12,9 +13,22 @@ function MedicalAppointmentsPage() {
   const [currentWeek, setCurrentWeek] = useState(1);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
+  const [editingNotes, setEditingNotes] = useState(null);
+  const [allNotes, setAllNotes] = useState({});
+  const [noteForm, setNoteForm] = useState({
+    weight: '',
+    blood_pressure_systolic: '',
+    blood_pressure_diastolic: '',
+    baby_heartbeat: '',
+    baby_weight: '',
+    baby_size: '',
+    notes: '',
+    doctor_name: ''
+  });
 
   useEffect(() => {
     loadAppointments();
+    loadAllNotes();
   }, []);
 
   const loadAppointments = async () => {
@@ -26,6 +40,15 @@ function MedicalAppointmentsPage() {
       console.error('Erreur chargement rendez-vous:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadAllNotes = async () => {
+    try {
+      const response = await api.medical.getAllNotes();
+      setAllNotes(response.data || {});
+    } catch (error) {
+      console.error('Erreur chargement notes:', error);
     }
   };
 
@@ -41,6 +64,58 @@ function MedicalAppointmentsPage() {
       loadAppointments();
     } catch (error) {
       toast.error('Erreur lors de la mise à jour');
+    }
+  };
+
+  const startEditingNotes = (apt) => {
+    const existingNotes = allNotes[apt.id] || {};
+    setNoteForm({
+      weight: existingNotes.weight || '',
+      blood_pressure_systolic: existingNotes.blood_pressure_systolic || '',
+      blood_pressure_diastolic: existingNotes.blood_pressure_diastolic || '',
+      baby_heartbeat: existingNotes.baby_heartbeat || '',
+      baby_weight: existingNotes.baby_weight || '',
+      baby_size: existingNotes.baby_size || '',
+      notes: existingNotes.notes || '',
+      doctor_name: existingNotes.doctor_name || ''
+    });
+    setEditingNotes(apt.id);
+    setExpandedId(apt.id);
+  };
+
+  const cancelEditingNotes = () => {
+    setEditingNotes(null);
+    setNoteForm({
+      weight: '',
+      blood_pressure_systolic: '',
+      blood_pressure_diastolic: '',
+      baby_heartbeat: '',
+      baby_weight: '',
+      baby_size: '',
+      notes: '',
+      doctor_name: ''
+    });
+  };
+
+  const saveNotes = async (appointmentId) => {
+    try {
+      const dataToSend = {
+        weight: noteForm.weight ? parseFloat(noteForm.weight) : null,
+        blood_pressure_systolic: noteForm.blood_pressure_systolic ? parseInt(noteForm.blood_pressure_systolic) : null,
+        blood_pressure_diastolic: noteForm.blood_pressure_diastolic ? parseInt(noteForm.blood_pressure_diastolic) : null,
+        baby_heartbeat: noteForm.baby_heartbeat ? parseInt(noteForm.baby_heartbeat) : null,
+        baby_weight: noteForm.baby_weight ? parseFloat(noteForm.baby_weight) : null,
+        baby_size: noteForm.baby_size ? parseFloat(noteForm.baby_size) : null,
+        notes: noteForm.notes || null,
+        doctor_name: noteForm.doctor_name || null
+      };
+
+      await api.medical.saveNotes(appointmentId, dataToSend);
+      toast.success('Notes enregistrées !');
+      setEditingNotes(null);
+      loadAllNotes();
+    } catch (error) {
+      toast.error('Erreur lors de l\'enregistrement');
     }
   };
 
@@ -109,9 +184,13 @@ function MedicalAppointmentsPage() {
   };
 
   const trimesters = groupByTrimester();
-
   const completedCount = appointments.filter(a => a.is_completed).length;
   const currentCount = appointments.filter(a => a.status === 'current' && !a.is_completed).length;
+
+  const hasNotes = (aptId) => {
+    const note = allNotes[aptId];
+    return note && (note.weight || note.notes || note.baby_weight || note.blood_pressure_systolic);
+  };
 
   return (
     <div className="min-h-screen gradient-bg p-6">
@@ -194,9 +273,14 @@ function MedicalAppointmentsPage() {
                           <div className="flex-1">
                             <div className="flex items-start justify-between">
                               <div>
-                                <h4 className={`font-bold ${apt.is_completed ? 'text-slate-400 line-through' : 'text-slate-700'}`}>
-                                  {apt.title}
-                                </h4>
+                                <div className="flex items-center gap-2">
+                                  <h4 className={`font-bold ${apt.is_completed ? 'text-slate-400 line-through' : 'text-slate-700'}`}>
+                                    {apt.title}
+                                  </h4>
+                                  {hasNotes(apt.id) && (
+                                    <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Notes</span>
+                                  )}
+                                </div>
                                 <div className="flex items-center gap-2 mt-1 text-sm text-slate-500">
                                   <Calendar className="w-3 h-3" />
                                   <span>Semaines {apt.week_start}-{apt.week_end}</span>
@@ -205,17 +289,27 @@ function MedicalAppointmentsPage() {
                                 </div>
                               </div>
                               
-                              <button
-                                onClick={() => toggleComplete(apt.id, apt.is_completed)}
-                                data-testid={`complete-${apt.id}`}
-                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                                  apt.is_completed 
-                                    ? 'bg-green-500 text-white' 
-                                    : 'bg-slate-100 text-slate-400 hover:bg-green-100 hover:text-green-600'
-                                }`}
-                              >
-                                <Check className="w-4 h-4" />
-                              </button>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => startEditingNotes(apt)}
+                                  data-testid={`notes-${apt.id}`}
+                                  className="w-8 h-8 rounded-full flex items-center justify-center bg-blue-50 text-blue-500 hover:bg-blue-100 transition-all"
+                                  title="Ajouter des notes"
+                                >
+                                  <Edit3 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => toggleComplete(apt.id, apt.is_completed)}
+                                  data-testid={`complete-${apt.id}`}
+                                  className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                                    apt.is_completed 
+                                      ? 'bg-green-500 text-white' 
+                                      : 'bg-slate-100 text-slate-400 hover:bg-green-100 hover:text-green-600'
+                                  }`}
+                                >
+                                  <Check className="w-4 h-4" />
+                                </button>
+                              </div>
                             </div>
                             
                             {apt.status === 'current' && !apt.is_completed && (
@@ -238,17 +332,208 @@ function MedicalAppointmentsPage() {
                             </button>
                             
                             {expandedId === apt.id && (
-                              <div className="mt-3 p-3 bg-slate-50 rounded-xl space-y-2 animate-fade-in">
-                                <p className="text-sm text-slate-600">{apt.description}</p>
-                                {apt.documents && apt.documents.length > 0 && (
-                                  <div className="mt-2">
-                                    <p className="text-xs font-semibold text-slate-500 mb-1">Documents à prévoir :</p>
-                                    <div className="flex flex-wrap gap-1">
-                                      {apt.documents.map((doc, i) => (
-                                        <span key={i} className="text-xs bg-white px-2 py-1 rounded-full text-slate-600 border border-slate-200">
-                                          {doc}
-                                        </span>
-                                      ))}
+                              <div className="mt-3 space-y-3 animate-fade-in">
+                                {/* Info section */}
+                                <div className="p-3 bg-slate-50 rounded-xl space-y-2">
+                                  <p className="text-sm text-slate-600">{apt.description}</p>
+                                  {apt.documents && apt.documents.length > 0 && (
+                                    <div className="mt-2">
+                                      <p className="text-xs font-semibold text-slate-500 mb-1">Documents à prévoir :</p>
+                                      <div className="flex flex-wrap gap-1">
+                                        {apt.documents.map((doc, i) => (
+                                          <span key={i} className="text-xs bg-white px-2 py-1 rounded-full text-slate-600 border border-slate-200">
+                                            {doc}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Display existing notes if not editing */}
+                                {!editingNotes && hasNotes(apt.id) && (
+                                  <div className="p-3 bg-blue-50 rounded-xl">
+                                    <h5 className="text-sm font-bold text-blue-700 mb-2 flex items-center gap-2">
+                                      <Edit3 className="w-4 h-4" /> Mes notes
+                                    </h5>
+                                    <div className="grid grid-cols-2 gap-2 text-xs">
+                                      {allNotes[apt.id].weight && (
+                                        <div className="flex items-center gap-1">
+                                          <Scale className="w-3 h-3 text-blue-500" />
+                                          <span>Poids: {allNotes[apt.id].weight} kg</span>
+                                        </div>
+                                      )}
+                                      {allNotes[apt.id].blood_pressure_systolic && (
+                                        <div className="flex items-center gap-1">
+                                          <Heart className="w-3 h-3 text-red-500" />
+                                          <span>Tension: {allNotes[apt.id].blood_pressure_systolic}/{allNotes[apt.id].blood_pressure_diastolic}</span>
+                                        </div>
+                                      )}
+                                      {allNotes[apt.id].baby_heartbeat && (
+                                        <div className="flex items-center gap-1">
+                                          <Heart className="w-3 h-3 text-pink-500" />
+                                          <span>Cœur bébé: {allNotes[apt.id].baby_heartbeat} bpm</span>
+                                        </div>
+                                      )}
+                                      {allNotes[apt.id].baby_weight && (
+                                        <div className="flex items-center gap-1">
+                                          <Scale className="w-3 h-3 text-purple-500" />
+                                          <span>Poids bébé: {allNotes[apt.id].baby_weight} g</span>
+                                        </div>
+                                      )}
+                                      {allNotes[apt.id].baby_size && (
+                                        <div className="flex items-center gap-1">
+                                          <Ruler className="w-3 h-3 text-green-500" />
+                                          <span>Taille bébé: {allNotes[apt.id].baby_size} cm</span>
+                                        </div>
+                                      )}
+                                      {allNotes[apt.id].doctor_name && (
+                                        <div className="flex items-center gap-1 col-span-2">
+                                          <Stethoscope className="w-3 h-3 text-sky-500" />
+                                          <span>Dr. {allNotes[apt.id].doctor_name}</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                    {allNotes[apt.id].notes && (
+                                      <p className="mt-2 text-xs text-slate-600 bg-white p-2 rounded-lg">
+                                        {allNotes[apt.id].notes}
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Notes editing form */}
+                                {editingNotes === apt.id && (
+                                  <div className="p-4 bg-blue-50 rounded-xl border-2 border-blue-200">
+                                    <div className="flex items-center justify-between mb-3">
+                                      <h5 className="text-sm font-bold text-blue-700 flex items-center gap-2">
+                                        <Edit3 className="w-4 h-4" /> Mes notes du rendez-vous
+                                      </h5>
+                                      <button
+                                        onClick={cancelEditingNotes}
+                                        className="text-slate-400 hover:text-slate-600"
+                                      >
+                                        <X className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-2 gap-3">
+                                      {/* Maman */}
+                                      <div className="col-span-2">
+                                        <p className="text-xs font-semibold text-pink-600 mb-1">👩 Maman</p>
+                                      </div>
+                                      <div>
+                                        <label className="text-xs text-slate-500 block mb-1">Poids (kg)</label>
+                                        <Input
+                                          type="number"
+                                          step="0.1"
+                                          placeholder="ex: 65.5"
+                                          value={noteForm.weight}
+                                          onChange={(e) => setNoteForm({...noteForm, weight: e.target.value})}
+                                          className="text-sm h-9 rounded-xl"
+                                          data-testid="note-weight"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="text-xs text-slate-500 block mb-1">Tension (sys/dia)</label>
+                                        <div className="flex gap-1">
+                                          <Input
+                                            type="number"
+                                            placeholder="120"
+                                            value={noteForm.blood_pressure_systolic}
+                                            onChange={(e) => setNoteForm({...noteForm, blood_pressure_systolic: e.target.value})}
+                                            className="text-sm h-9 rounded-xl w-16"
+                                            data-testid="note-bp-sys"
+                                          />
+                                          <span className="text-slate-400 self-center">/</span>
+                                          <Input
+                                            type="number"
+                                            placeholder="80"
+                                            value={noteForm.blood_pressure_diastolic}
+                                            onChange={(e) => setNoteForm({...noteForm, blood_pressure_diastolic: e.target.value})}
+                                            className="text-sm h-9 rounded-xl w-16"
+                                            data-testid="note-bp-dia"
+                                          />
+                                        </div>
+                                      </div>
+
+                                      {/* Bébé */}
+                                      <div className="col-span-2 mt-2">
+                                        <p className="text-xs font-semibold text-sky-600 mb-1">👶 Bébé</p>
+                                      </div>
+                                      <div>
+                                        <label className="text-xs text-slate-500 block mb-1">Cœur (bpm)</label>
+                                        <Input
+                                          type="number"
+                                          placeholder="ex: 145"
+                                          value={noteForm.baby_heartbeat}
+                                          onChange={(e) => setNoteForm({...noteForm, baby_heartbeat: e.target.value})}
+                                          className="text-sm h-9 rounded-xl"
+                                          data-testid="note-heartbeat"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="text-xs text-slate-500 block mb-1">Poids (g)</label>
+                                        <Input
+                                          type="number"
+                                          placeholder="ex: 1500"
+                                          value={noteForm.baby_weight}
+                                          onChange={(e) => setNoteForm({...noteForm, baby_weight: e.target.value})}
+                                          className="text-sm h-9 rounded-xl"
+                                          data-testid="note-baby-weight"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="text-xs text-slate-500 block mb-1">Taille (cm)</label>
+                                        <Input
+                                          type="number"
+                                          step="0.1"
+                                          placeholder="ex: 35"
+                                          value={noteForm.baby_size}
+                                          onChange={(e) => setNoteForm({...noteForm, baby_size: e.target.value})}
+                                          className="text-sm h-9 rounded-xl"
+                                          data-testid="note-baby-size"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="text-xs text-slate-500 block mb-1">Médecin</label>
+                                        <Input
+                                          type="text"
+                                          placeholder="Nom du médecin"
+                                          value={noteForm.doctor_name}
+                                          onChange={(e) => setNoteForm({...noteForm, doctor_name: e.target.value})}
+                                          className="text-sm h-9 rounded-xl"
+                                          data-testid="note-doctor"
+                                        />
+                                      </div>
+
+                                      {/* Notes libres */}
+                                      <div className="col-span-2">
+                                        <label className="text-xs text-slate-500 block mb-1">Notes personnelles</label>
+                                        <textarea
+                                          placeholder="Observations, questions pour le prochain RDV..."
+                                          value={noteForm.notes}
+                                          onChange={(e) => setNoteForm({...noteForm, notes: e.target.value})}
+                                          className="w-full text-sm p-2 rounded-xl border border-slate-200 resize-none h-20"
+                                          data-testid="note-text"
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div className="flex justify-end gap-2 mt-3">
+                                      <Button
+                                        onClick={cancelEditingNotes}
+                                        className="bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-xl px-4 py-2 text-sm"
+                                      >
+                                        Annuler
+                                      </Button>
+                                      <Button
+                                        onClick={() => saveNotes(apt.id)}
+                                        data-testid="save-notes"
+                                        className="bg-gradient-to-r from-blue-500 to-blue-400 text-white rounded-xl px-4 py-2 text-sm flex items-center gap-2"
+                                      >
+                                        <Save className="w-4 h-4" /> Enregistrer
+                                      </Button>
                                     </div>
                                   </div>
                                 )}

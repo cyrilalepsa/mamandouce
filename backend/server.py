@@ -124,6 +124,24 @@ class FavoriteFood(BaseModel):
     category: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+class AppointmentNote(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    appointment_id: str
+    weight: Optional[float] = None  # Poids en kg
+    blood_pressure_systolic: Optional[int] = None  # Tension systolique
+    blood_pressure_diastolic: Optional[int] = None  # Tension diastolique
+    baby_heartbeat: Optional[int] = None  # Battements cardiaques bébé
+    baby_weight: Optional[float] = None  # Poids estimé du bébé en g
+    baby_size: Optional[float] = None  # Taille du bébé en cm
+    notes: Optional[str] = None  # Notes personnelles libres
+    doctor_name: Optional[str] = None  # Nom du médecin
+    next_appointment: Optional[str] = None  # Date prochain RDV
+    attachments: List[str] = []  # URLs des documents joints
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 class EmailRequest(BaseModel):
     recipient_email: EmailStr
     subject: str
@@ -847,6 +865,112 @@ async def unmark_appointment_completed(appointment_id: str, current_user: User =
         raise HTTPException(status_code=404, detail="Rendez-vous non trouvé")
     
     return {"success": True, "message": "Rendez-vous marqué comme non complété"}
+
+# Appointment Notes endpoints
+@api_router.post("/medical/notes/{appointment_id}")
+async def save_appointment_note(appointment_id: str, note_data: dict, current_user: User = Depends(get_current_user)):
+    """Save or update notes for a medical appointment"""
+    existing = await db.appointment_notes.find_one({
+        "user_id": current_user.id,
+        "appointment_id": appointment_id
+    })
+    
+    note_fields = {
+        "weight": note_data.get("weight"),
+        "blood_pressure_systolic": note_data.get("blood_pressure_systolic"),
+        "blood_pressure_diastolic": note_data.get("blood_pressure_diastolic"),
+        "baby_heartbeat": note_data.get("baby_heartbeat"),
+        "baby_weight": note_data.get("baby_weight"),
+        "baby_size": note_data.get("baby_size"),
+        "notes": note_data.get("notes"),
+        "doctor_name": note_data.get("doctor_name"),
+        "next_appointment": note_data.get("next_appointment"),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    if existing:
+        await db.appointment_notes.update_one(
+            {"user_id": current_user.id, "appointment_id": appointment_id},
+            {"$set": note_fields}
+        )
+        return {"success": True, "message": "Notes mises à jour", "id": existing["id"]}
+    else:
+        note = AppointmentNote(
+            user_id=current_user.id,
+            appointment_id=appointment_id,
+            **{k: v for k, v in note_fields.items() if k != "updated_at"}
+        )
+        note_dict = note.model_dump()
+        note_dict["created_at"] = note_dict["created_at"].isoformat()
+        note_dict["updated_at"] = note_dict["updated_at"].isoformat()
+        await db.appointment_notes.insert_one(note_dict)
+        return {"success": True, "message": "Notes enregistrées", "id": note.id}
+
+@api_router.get("/medical/notes/{appointment_id}")
+async def get_appointment_note(appointment_id: str, current_user: User = Depends(get_current_user)):
+    """Get notes for a specific appointment"""
+    note = await db.appointment_notes.find_one(
+        {"user_id": current_user.id, "appointment_id": appointment_id},
+        {"_id": 0}
+    )
+    return note or {}
+
+@api_router.get("/medical/notes")
+async def get_all_appointment_notes(current_user: User = Depends(get_current_user)):
+    """Get all appointment notes for the user"""
+    notes = await db.appointment_notes.find(
+        {"user_id": current_user.id},
+        {"_id": 0}
+    ).to_list(100)
+    
+    # Convert to dict keyed by appointment_id
+    notes_dict = {n["appointment_id"]: n for n in notes}
+    return notes_dict
+
+@api_router.get("/medical/health-summary")
+async def get_health_summary(current_user: User = Depends(get_current_user)):
+    """Get a summary of health metrics over time"""
+    notes = await db.appointment_notes.find(
+        {"user_id": current_user.id},
+        {"_id": 0}
+    ).sort("created_at", 1).to_list(100)
+    
+    weight_history = []
+    blood_pressure_history = []
+    baby_growth_history = []
+    
+    for note in notes:
+        date = note.get("created_at", note.get("updated_at", ""))
+        
+        if note.get("weight"):
+            weight_history.append({
+                "date": date,
+                "value": note["weight"],
+                "appointment_id": note["appointment_id"]
+            })
+        
+        if note.get("blood_pressure_systolic") and note.get("blood_pressure_diastolic"):
+            blood_pressure_history.append({
+                "date": date,
+                "systolic": note["blood_pressure_systolic"],
+                "diastolic": note["blood_pressure_diastolic"],
+                "appointment_id": note["appointment_id"]
+            })
+        
+        if note.get("baby_weight") or note.get("baby_size"):
+            baby_growth_history.append({
+                "date": date,
+                "weight": note.get("baby_weight"),
+                "size": note.get("baby_size"),
+                "heartbeat": note.get("baby_heartbeat"),
+                "appointment_id": note["appointment_id"]
+            })
+    
+    return {
+        "weight_history": weight_history,
+        "blood_pressure_history": blood_pressure_history,
+        "baby_growth_history": baby_growth_history
+    }
 
 app.include_router(api_router)
 
