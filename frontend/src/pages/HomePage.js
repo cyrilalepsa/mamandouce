@@ -130,9 +130,9 @@ function HomePage() {
           <div className="flex justify-between items-center">
             <div>
               <img 
-                src="/logo-mamandouce-header.png" 
+                src="/logo-mamandouce.png" 
                 alt="MamanDouce" 
-                className="h-16 object-contain"
+                className="h-20 object-contain"
                 data-testid="app-logo"
               />
               <p className="text-lg text-slate-500 mt-2">Bonjour, {userName} ❤️</p>
