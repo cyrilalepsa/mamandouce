@@ -281,16 +281,18 @@ function HomePage() {
                 <span className="font-semibold text-slate-700">Mairie</span>
               </button>
 
-              <button
-                onClick={() => window.open('https://www.google.com/maps/search/mairie/', '_blank')}
+              <a
+                href="https://www.google.com/maps/search/mairie/"
+                target="_blank"
+                rel="noopener noreferrer"
                 data-testid="maps-button"
-                className="flex items-center gap-3 bg-white rounded-full px-5 py-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer transition-all hover:-translate-y-0.5"
+                className="flex items-center gap-3 bg-white rounded-full px-5 py-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer transition-all hover:-translate-y-0.5 no-underline"
               >
                 <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-400 rounded-full flex items-center justify-center">
                   <MapPin className="w-5 h-5 text-white" />
                 </div>
                 <span className="font-semibold text-slate-700">Maps</span>
-              </button>
+              </a>
             </div>
           </div>
 
