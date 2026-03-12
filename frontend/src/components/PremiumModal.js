@@ -62,10 +62,13 @@ function PremiumModal({ isOpen, onClose, feature }) {
 
           <div className="text-center mb-6">
             <div className="flex items-center justify-center gap-2">
-              <span className="text-4xl font-bold text-sky-600">15€</span>
+              <span className="text-4xl font-bold text-sky-600">25€</span>
               <span className="text-xl text-slate-500">/an</span>
             </div>
-            <p className="text-sm text-slate-500 mt-1">soit 1,25€/mois</p>
+            <p className="text-sm text-slate-500 mt-1">soit 2,08€/mois</p>
+            <div className="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold mt-2">
+              Sans renouvellement auto
+            </div>
           </div>
 
           <Button
