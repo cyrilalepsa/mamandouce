@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Users, HeartHandshake, Landmark, CalendarHeart, ScanBarcode, History, Bell, BookOpen, User, LogOut, Cloud, Feather, RotateCw, Settings, Heart, AlertTriangle, ShieldCheck, Lightbulb, Stethoscope, Calendar, Scan, TestTube, Crown, MapPin, Apple, Baby, Library } from 'lucide-react';
+import { Users, HeartHandshake, Landmark, CalendarHeart, ScanBarcode, History, Bell, BookOpen, User, LogOut, Cloud, Feather, RotateCw, Settings, Heart, AlertTriangle, ShieldCheck, Lightbulb, Stethoscope, Calendar, Scan, TestTube, Crown, MapPin, Apple, Baby, Library, Youtube, Gift } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import AppTitle from '../components/AppTitle';
@@ -246,7 +246,7 @@ function HomePage() {
           )}
 
           <div>
-            <h2 className="text-xl font-semibold text-slate-600 mb-3" style={{ fontFamily: 'Nunito, sans-serif' }}>Services administratifs</h2>
+            <h2 className="text-xl font-semibold text-slate-600 mb-3" style={{ fontFamily: 'Nunito, sans-serif' }}>Services & Ressources</h2>
             <div className="flex flex-wrap gap-3 justify-center">
               <button
                 onClick={() => handleServiceClick('caf')}
@@ -270,16 +270,18 @@ function HomePage() {
                 <span className="font-semibold text-slate-700">Ameli</span>
               </button>
 
-              <button
-                onClick={() => handleServiceClick('mairie')}
-                data-testid="mairie-button"
-                className="flex items-center gap-3 bg-white rounded-full px-5 py-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer transition-all hover:-translate-y-0.5"
+              <a
+                href="https://www.youtube.com/@LaMaisondesMaternelles"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="youtube-button"
+                className="flex items-center gap-3 bg-white rounded-full px-5 py-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer transition-all hover:-translate-y-0.5 no-underline"
               >
-                <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-400 rounded-full flex items-center justify-center">
-                  <Landmark className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-500 rounded-full flex items-center justify-center">
+                  <Youtube className="w-5 h-5 text-white" />
                 </div>
-                <span className="font-semibold text-slate-700">Mairie</span>
-              </button>
+                <span className="font-semibold text-slate-700">Maternelles TV</span>
+              </a>
 
               <a
                 href="https://www.google.com/maps/search/mairie/"
@@ -360,6 +362,16 @@ function HomePage() {
                 <CalendarHeart className="w-12 h-12 text-sky-400 mx-auto mb-3" />
                 <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Calculateur</h3>
                 <p className="text-xs text-slate-500 mt-1">Dates clés</p>
+              </Card>
+
+              <Card
+                onClick={() => navigate('/birth-list')}
+                data-testid="birthlist-nav"
+                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+              >
+                <Gift className="w-12 h-12 text-pink-400 mx-auto mb-3" />
+                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Liste de naissance</h3>
+                <p className="text-xs text-slate-500 mt-1">À partager</p>
               </Card>
 
               <Card

@@ -7,6 +7,8 @@ import PregnancyCalculator from './pages/PregnancyCalculator';
 import PregnancyWheel from './pages/PregnancyWheel';
 import FoodScanner from './pages/FoodScanner';
 import FoodLibraryPage from './pages/FoodLibraryPage';
+import BirthListPage from './pages/BirthListPage';
+import SharedBirthListPage from './pages/SharedBirthListPage';
 import EmbryoTracker from './pages/EmbryoTracker';
 import HistoryPage from './pages/HistoryPage';
 import FavoritesPage from './pages/FavoritesPage';
@@ -52,6 +54,8 @@ function App() {
           <Route path="/wheel" element={<ProtectedRoute><PregnancyWheel /></ProtectedRoute>} />
           <Route path="/scanner" element={<ProtectedRoute><FoodScanner /></ProtectedRoute>} />
           <Route path="/library" element={<ProtectedRoute><FoodLibraryPage /></ProtectedRoute>} />
+          <Route path="/birth-list" element={<ProtectedRoute><BirthListPage /></ProtectedRoute>} />
+          <Route path="/birth-list/shared/:shareId" element={<SharedBirthListPage />} />
           <Route path="/embryo" element={<ProtectedRoute><EmbryoTracker /></ProtectedRoute>} />
           <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
           <Route path="/favorites" element={<ProtectedRoute><FavoritesPage /></ProtectedRoute>} />

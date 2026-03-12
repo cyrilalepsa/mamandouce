@@ -33,6 +33,15 @@ export const api = {
     addFood: (data) => axios.post(`${API}/user-added-foods`, data, getAuthHeaders()),
     getUserAdded: () => axios.get(`${API}/user-added-foods`, getAuthHeaders()),
   },
+  birthList: {
+    get: () => axios.get(`${API}/birth-list`, getAuthHeaders()),
+    create: () => axios.post(`${API}/birth-list`, {}, getAuthHeaders()),
+    addItem: (item) => axios.post(`${API}/birth-list/items`, item, getAuthHeaders()),
+    removeItem: (itemId) => axios.delete(`${API}/birth-list/items/${itemId}`, getAuthHeaders()),
+    toggleReserved: (itemId) => axios.post(`${API}/birth-list/items/${itemId}/toggle`, {}, getAuthHeaders()),
+    getShared: (shareId) => axios.get(`${API}/birth-list/shared/${shareId}`),
+    toggleReservedShared: (shareId, itemId) => axios.post(`${API}/birth-list/shared/${shareId}/items/${itemId}/toggle`),
+  },
   history: {
     getSearch: () => axios.get(`${API}/history/search`, getAuthHeaders()),
   },
