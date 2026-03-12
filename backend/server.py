@@ -14,11 +14,18 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 import httpx
 import io
-import cv2
-import numpy as np
-from pyzbar.pyzbar import decode
 import resend
 import asyncio
+
+# Optional imports for barcode scanning
+try:
+    import cv2
+    import numpy as np
+    from pyzbar.pyzbar import decode as pyzbar_decode
+    BARCODE_SCANNER_AVAILABLE = True
+except ImportError:
+    BARCODE_SCANNER_AVAILABLE = False
+    logging.warning("Barcode scanner not available - pyzbar/opencv not installed")
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
