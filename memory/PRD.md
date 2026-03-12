@@ -1,131 +1,119 @@
 # MamanDouce - Product Requirements Document
 
 ## Original Problem Statement
-Application recensant tous les aliments consommables pour les femmes enceintes avec:
-- Page d'accueil avec dégradé bleu ciel → rose (diagonal)
-- Logo calligraphique "MamanDouce"
-- Boutons d'accès CAF, Ameli, Mairie (avec icône Maps)
-- Calculateurs d'ovulation, date de grossesse, date d'accouchement (durée de cycle 24-34 jours)
-- Scanner de produits par nom, code-barres manuel ou scan caméra
-- Bibliothèque alimentaire complète avec recherche
-- Historique de recherche
-- Système de favoris avec alertes personnalisées
-- Suivi des rendez-vous médicaux avec notes personnelles
+Application pour les femmes enceintes avec :
+- Scanner d'aliments (caméra + manuel)
+- Calculateur de grossesse avec dates clés
+- Conseils hebdomadaires et suivi médical
+- Liste de naissance partageable
+- Liens vers services administratifs et ressources
 
 ## Architecture Technique
 - **Frontend**: React.js + Tailwind CSS + Shadcn/UI + Capacitor (PWA/Mobile)
 - **Backend**: FastAPI (Python)
 - **Database**: MongoDB
-- **Payments**: Stripe (paiement unique 25€)
-- **Email**: Resend (notifications)
-- **Barcode Scanner**: html5-qrcode (frontend)
+- **Payments**: Stripe (25€ paiement unique)
+- **Email**: Resend
 
-## Completed Features (March 2026)
-
-### Core Features
-- [x] Authentification utilisateur (inscription/connexion JWT)
-- [x] Page d'accueil avec dégradé diagonal bleu→rose, catégories Alimentation/Grossesse
-- [x] **Logo calligraphique "MamanDouce"** - Style Dancing Script avec dégradé rose vif
-- [x] Liens vers services administratifs (CAF, Ameli, Mairie avec icône Maps)
-- [x] Calculateur de grossesse (ovulation, conception, accouchement) - **Durée de cycle 24-34 jours**
-- [x] Scanner d'aliments (recherche par nom, code-barres manuel, **scan caméra**)
-- [x] **Bibliothèque alimentaire** - 192 aliments référencés, recherche et filtres
-- [x] **Ajout d'aliments par utilisateurs** - Proposition d'aliments non répertoriés
-- [x] Historique de recherche fonctionnel
-- [x] Conseils hebdomadaires (41 semaines) avec démarches administratives
-- [x] **Aliments favoris** - Sauvegarde et gestion des aliments favoris
-- [x] **Alertes personnalisées** - Alertes basées sur les favoris et la semaine de grossesse
-- [x] **Rendez-vous médicaux** - Calendrier complet des 20 rendez-vous avec rappels automatiques
-- [x] **Notes de rendez-vous** - Suivi santé maman (poids, tension) et bébé (cœur, poids, taille)
+## Completed Features (Mars 2026)
 
 ### Interface & Design
-- [x] Titres calligraphiques "Dancing Script" sur toutes les pages
-- [x] Composant PageHeader réutilisable avec style unifié
-- [x] Dégradé rose vif (rose-400 → pink-400 → coral-400) pour les titres
+- [x] Logo "MamanDouce" en Dancing Script avec dégradé rose
+- [x] Nom utilisateur en police **Caveat** (arrondie et douce)
+- [x] Badge Emergent ultra-discret (20px, opacité 40%)
+- [x] Composants PageHeader avec titres calligraphiques
 
-### Monetization & Premium
-- [x] Système de paiement Stripe (25€ paiement unique, sans renouvellement auto)
-- [x] Page pricing avec comparatif gratuit/premium
-- [x] Gestion des abonnements
+### Page d'accueil
+- [x] Premium en haut à gauche, Déconnexion en haut à droite
+- [x] Logo MamanDouce centré
+- [x] "Bonjour, [Prénom]" avec police Caveat
+- [x] Services & Ressources : CAF, Ameli, **Maternelles TV** (YouTube), Maps
 
-### Technical
-- [x] PWA avec service worker + Capacitor (Google Play Store ready)
-- [x] Système de notifications email (Resend)
-- [x] Préférences de notification
+### Calculateur de grossesse
+- [x] Date des prochaines règles
+- [x] Date d'ovulation estimée
+- [x] Date de conception estimée
+- [x] **Date de nidation estimée** (9 jours après ovulation)
+- [x] Date prévue d'accouchement
+- [x] Semaines de grossesse
+- [x] **Conseils médicaux par trimestre** avec disclaimer
+- [x] Signes d'urgence à surveiller
+- [x] Sélection durée de cycle (24-34 jours)
 
-## Fonctionnalités supprimées (à la demande utilisateur)
-- Disque de grossesse interactif
-- Évolution de l'embryon avec images
+### Scanner d'aliments
+- [x] Scan par caméra (html5-qrcode)
+- [x] Recherche par nom
+- [x] Saisie manuelle code-barres
+- [x] **Bibliothèque alimentaire** (192 aliments, recherche, filtres)
+- [x] **Ajout d'aliments** par utilisateurs
+
+### Liste de naissance
+- [x] Création de liste personnelle
+- [x] Choix magasins : Orchestra, Vertbaudet, Amazon, Aubert, Kiabi, Autre
+- [x] Ajout articles : nom, magasin, lien, prix, quantité, notes
+- [x] **Lien de partage** pour les proches
+- [x] **Réservation d'articles** par les proches
+
+### Suivi médical
+- [x] 20 rendez-vous médicaux prédéfinis
+- [x] Statut complété/à venir
+- [x] Notes personnelles (poids, tension, bébé)
+- [x] Alertes personnalisées
+
+### Conseils hebdomadaires
+- [x] 41 semaines de conseils
+- [x] Démarches administratives
+- [x] **Note importante dents & cheveux** (fragilisés pendant grossesse)
+
+### Fonctionnalités annexes
+- [x] Historique de recherche
+- [x] Aliments favoris avec alertes
+- [x] Système de notifications/rappels
+- [x] Paiement Stripe (25€)
+- [x] Emails via Resend
 
 ## API Endpoints
-### Auth
-- `POST /api/auth/register` - Inscription
-- `POST /api/auth/login` - Connexion
-- `GET /api/auth/me` - Profil utilisateur
+
+### Auth & User
+- `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`
 
 ### Pregnancy
-- `POST /api/pregnancy/calculate` - Calcul dates grossesse (avec cycle_duration)
-- `GET /api/pregnancy/profile` - Profil grossesse
+- `POST /api/pregnancy/calculate` (avec next_period_date, implantation_date)
 
-### Food & Scanner
-- `POST /api/scan/barcode` - Scan code-barres
-- `POST /api/scan/search` - Recherche aliment
-- `GET /api/food-library` - Bibliothèque complète avec pagination/filtres
-- `POST /api/user-added-foods` - Proposer un nouvel aliment
-- `GET /api/user-added-foods` - Voir ses propositions
+### Food
+- `POST /api/scan/barcode`, `POST /api/scan/search`
+- `GET /api/food-library`, `POST /api/user-added-foods`
 
-### History & Favorites
-- `GET /api/history/search` - Historique recherches
-- `POST /api/favorites` - Ajouter un favori
-- `GET /api/favorites` - Liste des favoris
-- `DELETE /api/favorites/{food_name}` - Supprimer un favori
-- `GET /api/alerts/personalized` - Alertes personnalisées
+### Birth List
+- `GET /api/birth-list`, `POST /api/birth-list`
+- `POST /api/birth-list/items`, `DELETE /api/birth-list/items/{id}`
+- `GET /api/birth-list/shared/{share_id}` (public)
+- `POST /api/birth-list/shared/{share_id}/items/{id}/toggle` (public)
 
-### Medical
-- `GET /api/medical/appointments` - Tous les rendez-vous médicaux
-- `GET /api/medical/upcoming` - Rendez-vous à venir
-- `POST /api/medical/complete/{id}` - Marquer rendez-vous complété
-- `DELETE /api/medical/complete/{id}` - Annuler complétion
-- `POST /api/medical/notes/{id}` - Sauvegarder notes de rendez-vous
-- `GET /api/medical/notes` - Toutes les notes utilisateur
+### Medical & Favorites
+- `GET /api/medical/appointments`, `POST /api/medical/complete/{id}`
+- `GET /api/favorites`, `POST /api/favorites`
 
-### Payments & Email
-- `POST /api/payments/checkout/session` - Créer session Stripe
-- `POST /api/email/send-reminder` - Envoyer rappel email
+## Database Collections
+- `users`, `pregnancy_profiles`, `search_history`
+- `favorites`, `notifications`, `notification_preferences`
+- `completed_appointments`, `appointment_notes`
+- `user_added_foods`, `birth_lists`
 
-## Database Schema
-### MongoDB Collections
-- `users`: {id, email, name, hashed_password, subscription_status}
-- `pregnancy_profiles`: {id, user_id, last_period_date, cycle_duration, estimated_due_date, current_week}
-- `search_history`: {id, user_id, query, result_type, created_at}
-- `notifications`: {id, user_id, title, description, date, completed}
-- `notification_preferences`: {id, user_id, email_notifications, weekly_tips}
-- `favorites`: {id, user_id, name, status, reason, category, created_at}
-- `completed_appointments`: {id, user_id, appointment_id, completed_at}
-- `appointment_notes`: {id, user_id, appointment_id, weight, blood_pressure_*, baby_*, notes, doctor_name}
-- `user_added_foods`: {id, user_id, name, barcode, status, safe_for_pregnancy, category, notes}
-
-## Key Files
-- `/app/backend/server.py` - API principale
-- `/app/backend/data/food_database.py` - Base 192 aliments
-- `/app/frontend/src/components/AppTitle.js` - Titre calligraphique
-- `/app/frontend/src/components/PageHeader.js` - En-tête de page
-- `/app/frontend/src/pages/FoodLibraryPage.js` - Bibliothèque alimentaire
-- `/app/frontend/src/pages/FoodScanner.js` - Scanner avec modal d'ajout
+## Deployment
+- **PWA** : Service Worker actif
+- **Google Play** : Capacitor configuré, guide dans `GOOGLE_PLAY_GUIDE.md`
+- **Polices** : Dancing Script, Caveat, Quicksand, Nunito, Pacifico, Satisfy, Betania Patmos
 
 ## Known Limitations
-- Stripe et Resend nécessitent des clés API configurées
-- Scan caméra dépend de la permission navigateur
-- pyzbar optionnel côté backend (pas bloquant)
-
-## Backlog / Future Tasks (P2)
-- [ ] Graphiques de suivi de la grossesse (poids mère, croissance bébé)
-- [ ] Administration des aliments proposés par utilisateurs
-- [ ] Mode hors-ligne complet
-- [ ] Notifications push
+- Stripe/Resend nécessitent clés API
+- Scan caméra dépend permission navigateur
 
 ## Session Summary (12 Mars 2026)
-1. **Style calligraphique** - Ajout de la police Dancing Script, composants AppTitle et PageHeader avec dégradé rose vif
-2. **Bibliothèque alimentaire** - Page complète avec 192 aliments, recherche, filtres par catégorie/statut, pagination
-3. **Ajout d'aliments utilisateur** - Modal d'ajout accessible depuis scanner et bibliothèque
-4. **Navigation** - Bouton "Bibliothèque" ajouté sur la page d'accueil (catégorie Alimentation)
+1. Style calligraphique amélioré (titres, nom utilisateur en Caveat)
+2. Badge Emergent 2x plus petit et discret
+3. Mairie remplacée par **Maternelles TV** (YouTube)
+4. **Liste de naissance** avec magasins et partage
+5. **Conseils médicaux** dans calculateur avec disclaimer
+6. **Note dents & cheveux** dans conseils hebdomadaires
+7. Date nidation et prochaines règles ajoutées au calculateur
