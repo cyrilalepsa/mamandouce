@@ -161,8 +161,8 @@ function HomePage() {
             >
               <span className="text-slate-500 font-medium" style={{ fontFamily: "'Quicksand', sans-serif" }}>Bonjour, </span>
               <span 
-                className="text-slate-600 font-bold text-3xl sm:text-4xl"
-                style={{ fontFamily: "'Dancing Script', cursive" }}
+                className="text-slate-700 font-semibold text-3xl sm:text-4xl italic"
+                style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 {userName}
               </span>
@@ -246,48 +246,41 @@ function HomePage() {
           )}
 
           <div>
-            <h2 className="text-2xl font-semibold text-slate-600 mb-4" style={{ fontFamily: 'Nunito, sans-serif' }}>Services administratifs</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card
+            <h2 className="text-xl font-semibold text-slate-600 mb-3" style={{ fontFamily: 'Nunito, sans-serif' }}>Services administratifs</h2>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <button
                 onClick={() => handleServiceClick('caf')}
                 data-testid="caf-button"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover"
+                className="flex items-center gap-3 bg-white rounded-full px-5 py-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer transition-all hover:-translate-y-0.5"
               >
-                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-400 rounded-2xl flex items-center justify-center mb-4">
-                  <Users className="w-8 h-8 text-white" />
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-400 rounded-full flex items-center justify-center">
+                  <Users className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>CAF</h3>
-                <p className="text-slate-500 text-sm mt-2">Caisse d'Allocations Familiales</p>
-              </Card>
+                <span className="font-semibold text-slate-700">CAF</span>
+              </button>
 
-              <Card
+              <button
                 onClick={() => handleServiceClick('ameli')}
                 data-testid="ameli-button"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover"
+                className="flex items-center gap-3 bg-white rounded-full px-5 py-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer transition-all hover:-translate-y-0.5"
               >
-                <div className="w-14 h-14 bg-gradient-to-br from-sky-500 to-sky-400 rounded-2xl flex items-center justify-center mb-4">
-                  <HeartHandshake className="w-8 h-8 text-white" />
+                <div className="w-10 h-10 bg-gradient-to-br from-sky-500 to-sky-400 rounded-full flex items-center justify-center">
+                  <HeartHandshake className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Ameli</h3>
-                <p className="text-slate-500 text-sm mt-2">Assurance Maladie</p>
-              </Card>
+                <span className="font-semibold text-slate-700">Ameli</span>
+              </button>
 
-              <Card
+              <button
                 onClick={() => handleServiceClick('mairie')}
                 data-testid="mairie-button"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover"
+                className="flex items-center gap-3 bg-white rounded-full px-5 py-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer transition-all hover:-translate-y-0.5"
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-red-500 to-red-400 rounded-2xl flex items-center justify-center">
-                    <Landmark className="w-8 h-8 text-white" />
-                  </div>
-                  <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-400 rounded-xl flex items-center justify-center">
-                    <MapPin className="w-5 h-5 text-white" />
-                  </div>
+                <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-400 rounded-full flex items-center justify-center">
+                  <Landmark className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Mairie</h3>
-                <p className="text-slate-500 text-sm mt-2">Services municipaux</p>
-              </Card>
+                <span className="font-semibold text-slate-700">Mairie</span>
+                <MapPin className="w-4 h-4 text-green-500" />
+              </button>
             </div>
           </div>
 
