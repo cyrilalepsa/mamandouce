@@ -127,30 +127,42 @@ function HomePage() {
       <Feather className="absolute bottom-20 left-40 w-24 h-24 text-pink-100 opacity-20 animate-float-delayed" />
 
       <div className="relative z-10">
-        <div className="max-w-4xl mx-auto p-6 space-y-8 animate-fade-in">
+        <div className="max-w-4xl mx-auto p-6 space-y-6 animate-fade-in">
+          
+          {/* Top Bar - Premium à gauche, Déconnexion à droite */}
           <div className="flex justify-between items-center">
-            <div>
-              <AppTitle size="lg" className="text-left" />
-              <p className="text-lg text-slate-500 mt-2">Bonjour, {userName} ❤️</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button
-                onClick={() => navigate('/pricing')}
-                data-testid="premium-button"
-                className="bg-gradient-to-r from-amber-400 to-amber-300 text-white rounded-full px-5 py-2 font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2"
-              >
-                <Crown className="w-4 h-4" />
-                Premium
-              </Button>
-              <Button
-                onClick={handleLogout}
-                data-testid="logout-button"
-                className="bg-white text-sky-500 border border-sky-100 rounded-full px-6 py-2 font-semibold hover:bg-sky-50"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Déconnexion
-              </Button>
-            </div>
+            <Button
+              onClick={() => navigate('/pricing')}
+              data-testid="premium-button"
+              className="bg-gradient-to-r from-amber-400 to-amber-300 text-white rounded-full px-5 py-2 font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2"
+            >
+              <Crown className="w-4 h-4" />
+              Premium
+            </Button>
+            <Button
+              onClick={handleLogout}
+              data-testid="logout-button"
+              className="bg-white text-slate-500 border border-slate-200 rounded-full p-2.5 hover:bg-slate-50"
+            >
+              <LogOut className="w-5 h-5" />
+            </Button>
+          </div>
+
+          {/* Logo MamanDouce centré */}
+          <div className="text-center py-4">
+            <AppTitle size="xl" showSubtitle={false} />
+          </div>
+
+          {/* Message de bienvenue avec prénom en valeur */}
+          <div className="text-center">
+            <p className="text-lg text-slate-500">Bonjour,</p>
+            <h2 
+              className="text-3xl sm:text-4xl font-bold text-slate-700 mt-1"
+              style={{ fontFamily: "'Quicksand', sans-serif" }}
+              data-testid="user-welcome"
+            >
+              {userName} <span className="text-pink-400">❤️</span>
+            </h2>
           </div>
 
           {pregnancyProfile && pregnancyProfile.current_week && (
