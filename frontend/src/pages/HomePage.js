@@ -155,13 +155,14 @@ function HomePage() {
 
           {/* Message de bienvenue avec prénom en valeur */}
           <div className="text-center">
-            <p className="text-lg text-slate-500">Bonjour,</p>
             <h2 
-              className="text-3xl sm:text-4xl font-bold text-slate-700 mt-1"
+              className="text-2xl sm:text-3xl font-bold"
               style={{ fontFamily: "'Quicksand', sans-serif" }}
               data-testid="user-welcome"
             >
-              {userName} <span className="text-pink-400">❤️</span>
+              <span className="text-slate-600">Bonjour, </span>
+              <span className="text-pink-500">{userName}</span>
+              <span className="text-pink-400 ml-1">❤️</span>
             </h2>
           </div>
 
