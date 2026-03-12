@@ -271,7 +271,7 @@ function HomePage() {
               </button>
 
               <a
-                href="https://www.youtube.com/@LaMaisondesMaternelles"
+                href="https://www.youtube.com/c/LaMaisondesMaternelles"
                 target="_blank"
                 rel="noopener noreferrer"
                 data-testid="youtube-button"
