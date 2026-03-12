@@ -46,6 +46,15 @@ export const api = {
   location: {
     getServices: (params) => axios.get(`${API}/location/services`, { params }),
   },
+  email: {
+    send: (data) => axios.post(`${API}/email/send`, data, getAuthHeaders()),
+    sendReminder: (notificationId) => axios.post(`${API}/email/send-reminder?notification_id=${notificationId}`, {}, getAuthHeaders()),
+    sendWeeklyTip: (week) => axios.post(`${API}/email/send-weekly-tip?week=${week}`, {}, getAuthHeaders()),
+  },
+  preferences: {
+    get: () => axios.get(`${API}/notifications/preferences`, getAuthHeaders()),
+    update: (data) => axios.post(`${API}/notifications/preferences`, data, getAuthHeaders()),
+  },
 };
 
 export default api;

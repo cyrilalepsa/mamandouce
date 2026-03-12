@@ -5,7 +5,7 @@ import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
-import { ArrowLeft, Bell, Plus, Check, Trash2 } from 'lucide-react';
+import { ArrowLeft, Bell, Plus, Check, Trash2, Mail } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import api from '../utils/api';
 import { toast } from 'sonner';
@@ -67,6 +67,19 @@ function NotificationsPage() {
       toast.success('Rappel supprimé');
     } catch (error) {
       toast.error('Erreur lors de la suppression');
+    }
+  };
+
+  const handleSendEmail = async (id) => {
+    try {
+      await api.email.sendReminder(id);
+      toast.success('Email de rappel envoyé!');
+    } catch (error) {
+      if (error.response?.status === 503) {
+        toast.error('Service email non configuré. Ajoutez votre clé API Resend.');
+      } else {
+        toast.error('Erreur lors de l\'envoi de l\'email');
+      }
     }
   };
 
@@ -199,13 +212,23 @@ function NotificationsPage() {
                       {notif.time && <span className="text-xs text-sky-500 font-semibold">{notif.time}</span>}
                     </div>
                   </div>
-                  <button
-                    onClick={() => handleDelete(notif.id)}
-                    data-testid={`delete-notification-${index}`}
-                    className="text-red-400 hover:text-red-600"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleSendEmail(notif.id)}
+                      data-testid={`email-notification-${index}`}
+                      className="text-sky-400 hover:text-sky-600"
+                      title="Envoyer par email"
+                    >
+                      <Mail className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(notif.id)}
+                      data-testid={`delete-notification-${index}`}
+                      className="text-red-400 hover:text-red-600"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
               </Card>
             ))}

@@ -17,6 +17,8 @@ import io
 import cv2
 import numpy as np
 from pyzbar.pyzbar import decode
+import resend
+import asyncio
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -34,6 +36,11 @@ security = HTTPBearer()
 SECRET_KEY = os.environ.get("SECRET_KEY", "votre-cle-secrete-changez-moi")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
+
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
+if RESEND_API_KEY:
+    resend.api_key = RESEND_API_KEY
 
 logger = logging.getLogger(__name__)
 
@@ -96,6 +103,21 @@ class WeeklyTip(BaseModel):
     description: str
     embryo_size: str
     development: str
+
+class NotificationPreferences(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    email_notifications: bool = True
+    weekly_tips: bool = True
+    appointment_reminders: bool = True
+    email_address: str
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class EmailRequest(BaseModel):
+    recipient_email: EmailStr
+    subject: str
+    html_content: str
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
@@ -363,6 +385,201 @@ async def get_location_services(lat: Optional[float] = None, lng: Optional[float
         "ameli": {"name": "Ameli", "url": "https://www.ameli.fr"},
         "mairie": {"name": "Mairie", "url": "https://www.service-public.fr/particuliers/vosdroits/F1175"}
     }
+
+@api_router.get("/notifications/preferences")
+async def get_notification_preferences(current_user: User = Depends(get_current_user)):
+    prefs = await db.notification_preferences.find_one({"user_id": current_user.id}, {"_id": 0})
+    if not prefs:
+        default_prefs = NotificationPreferences(
+            user_id=current_user.id,
+            email_address=current_user.email
+        )
+        return default_prefs.model_dump()
+    return prefs
+
+@api_router.post("/notifications/preferences")
+async def update_notification_preferences(preferences: NotificationPreferences, current_user: User = Depends(get_current_user)):
+    preferences.user_id = current_user.id
+    prefs_dict = preferences.model_dump()
+    prefs_dict["updated_at"] = prefs_dict["updated_at"].isoformat()
+    
+    await db.notification_preferences.update_one(
+        {"user_id": current_user.id},
+        {"$set": prefs_dict},
+        upsert=True
+    )
+    return {"success": True, "message": "Préférences mises à jour"}
+
+@api_router.post("/email/send")
+async def send_email(request: EmailRequest, current_user: User = Depends(get_current_user)):
+    if not RESEND_API_KEY or RESEND_API_KEY == "re_votre_cle_api_resend":
+        raise HTTPException(status_code=503, detail="Service email non configuré. Veuillez ajouter votre clé API Resend.")
+    
+    params = {
+        "from": SENDER_EMAIL,
+        "to": [request.recipient_email],
+        "subject": request.subject,
+        "html": request.html_content
+    }
+    
+    try:
+        email = await asyncio.to_thread(resend.Emails.send, params)
+        return {
+            "status": "success",
+            "message": f"Email envoyé à {request.recipient_email}",
+            "email_id": email.get("id")
+        }
+    except Exception as e:
+        logger.error(f"Erreur envoi email: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de l'envoi de l'email: {str(e)}")
+
+@api_router.post("/email/send-reminder")
+async def send_reminder_email(notification_id: str, current_user: User = Depends(get_current_user)):
+    notification = await db.notifications.find_one({"id": notification_id, "user_id": current_user.id}, {"_id": 0})
+    if not notification:
+        raise HTTPException(status_code=404, detail="Notification non trouvée")
+    
+    prefs = await db.notification_preferences.find_one({"user_id": current_user.id}, {"_id": 0})
+    if not prefs or not prefs.get("email_notifications") or not prefs.get("appointment_reminders"):
+        return {"success": False, "message": "Notifications email désactivées"}
+    
+    if not RESEND_API_KEY or RESEND_API_KEY == "re_votre_cle_api_resend":
+        raise HTTPException(status_code=503, detail="Service email non configuré")
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{ font-family: 'Arial', sans-serif; background-color: #F8FAFC; padding: 20px; }}
+            .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 24px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }}
+            .header {{ text-align: center; margin-bottom: 30px; }}
+            .title {{ color: #87CEEB; font-size: 32px; font-weight: bold; margin: 0; }}
+            .content {{ background: linear-gradient(to bottom right, #FED7E2, #BFDBFE); border-radius: 16px; padding: 24px; margin: 20px 0; }}
+            .notification-title {{ color: #1E293B; font-size: 24px; font-weight: bold; margin-bottom: 10px; }}
+            .notification-desc {{ color: #475569; font-size: 16px; line-height: 1.6; }}
+            .date-info {{ background: white; border-radius: 12px; padding: 16px; margin-top: 16px; }}
+            .footer {{ text-align: center; color: #94A3B8; font-size: 14px; margin-top: 30px; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1 class="title">MamanDouce 💕</h1>
+                <p style="color: #64748B;">Votre compagnon de grossesse</p>
+            </div>
+            
+            <div class="content">
+                <h2 class="notification-title">📅 Rappel : {notification["title"]}</h2>
+                <p class="notification-desc">{notification.get("description", "")}</p>
+                <div class="date-info">
+                    <strong>📆 Date :</strong> {notification["date"]}<br>
+                    {f'<strong>🕐 Heure :</strong> {notification["time"]}' if notification.get("time") else ''}
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>Cet email est envoyé automatiquement depuis MamanDouce</p>
+                <p>Vous pouvez désactiver les notifications dans vos préférences</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    params = {
+        "from": SENDER_EMAIL,
+        "to": [prefs["email_address"]],
+        "subject": f"Rappel MamanDouce : {notification['title']}",
+        "html": html_content
+    }
+    
+    try:
+        email = await asyncio.to_thread(resend.Emails.send, params)
+        return {
+            "status": "success",
+            "message": "Email de rappel envoyé",
+            "email_id": email.get("id")
+        }
+    except Exception as e:
+        logger.error(f"Erreur envoi rappel: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/email/send-weekly-tip")
+async def send_weekly_tip_email(week: int, current_user: User = Depends(get_current_user)):
+    prefs = await db.notification_preferences.find_one({"user_id": current_user.id}, {"_id": 0})
+    if not prefs or not prefs.get("email_notifications") or not prefs.get("weekly_tips"):
+        return {"success": False, "message": "Notifications email désactivées"}
+    
+    if not RESEND_API_KEY or RESEND_API_KEY == "re_votre_cle_api_resend":
+        raise HTTPException(status_code=503, detail="Service email non configuré")
+    
+    tips = await get_weekly_tips_database()
+    tip = next((t for t in tips if t["week"] == week), None)
+    if not tip:
+        raise HTTPException(status_code=404, detail="Conseil introuvable")
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{ font-family: 'Arial', sans-serif; background-color: #F8FAFC; padding: 20px; }}
+            .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 24px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }}
+            .header {{ text-align: center; margin-bottom: 30px; }}
+            .title {{ color: #87CEEB; font-size: 32px; font-weight: bold; margin: 0; }}
+            .week-badge {{ display: inline-block; background: linear-gradient(to right, #14B8A6, #06B6D4); color: white; padding: 8px 20px; border-radius: 20px; font-weight: bold; margin: 20px 0; }}
+            .content {{ background: linear-gradient(to bottom right, #E0F2FE, #D1FAE5); border-radius: 16px; padding: 24px; margin: 20px 0; }}
+            .tip-title {{ color: #1E293B; font-size: 24px; font-weight: bold; margin-bottom: 16px; }}
+            .tip-desc {{ color: #475569; font-size: 16px; line-height: 1.8; }}
+            .info-box {{ background: white; border-radius: 12px; padding: 16px; margin-top: 16px; }}
+            .footer {{ text-align: center; color: #94A3B8; font-size: 14px; margin-top: 30px; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1 class="title">MamanDouce 💕</h1>
+                <p style="color: #64748B;">Votre conseil hebdomadaire</p>
+                <span class="week-badge">Semaine {week}</span>
+            </div>
+            
+            <div class="content">
+                <h2 class="tip-title">{tip["title"]}</h2>
+                <p class="tip-desc">{tip["description"]}</p>
+                
+                <div class="info-box">
+                    <p><strong>📏 Taille de l'embryon :</strong> {tip["embryo_size"]}</p>
+                    <p style="margin-top: 12px;"><strong>🌱 Développement :</strong><br>{tip["development"]}</p>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>Continuez à prendre soin de vous ! 🤰</p>
+                <p>Vous pouvez désactiver ces conseils dans vos préférences</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    params = {
+        "from": SENDER_EMAIL,
+        "to": [prefs["email_address"]],
+        "subject": f"Semaine {week} : {tip['title']} 🤰",
+        "html": html_content
+    }
+    
+    try:
+        email = await asyncio.to_thread(resend.Emails.send, params)
+        return {
+            "status": "success",
+            "message": "Conseil hebdomadaire envoyé par email",
+            "email_id": email.get("id")
+        }
+    except Exception as e:
+        logger.error(f"Erreur envoi conseil: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 async def get_food_safety_database():
     from data.food_database import FOOD_SAFETY_DATABASE
