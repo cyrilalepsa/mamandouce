@@ -284,7 +284,9 @@ async def calculate_pregnancy(data: PregnancyCalculation, current_user: User = D
         "conception_date": conception_date.isoformat(),
         "due_date": due_date.isoformat(),
         "weeks_pregnant": weeks_pregnant,
-        "cycle_duration": cycle_duration
+        "cycle_duration": cycle_duration,
+        "next_period_date": (last_period + timedelta(days=cycle_duration)).isoformat(),
+        "implantation_date": (ovulation_date + timedelta(days=9)).isoformat()
     }
 
 @api_router.get("/pregnancy/profile")

@@ -115,6 +115,11 @@ function PregnancyCalculator() {
             
             <div className="space-y-4">
               <div className="bg-white rounded-2xl p-4">
+                <p className="text-sm text-slate-500 font-semibold">Date des prochaines règles</p>
+                <p className="text-lg font-bold text-purple-600">{formatDate(results.next_period_date)}</p>
+              </div>
+
+              <div className="bg-white rounded-2xl p-4">
                 <p className="text-sm text-slate-500 font-semibold">Date d'ovulation estimée</p>
                 <p className="text-lg font-bold text-sky-600">{formatDate(results.ovulation_date)}</p>
               </div>
@@ -122,6 +127,12 @@ function PregnancyCalculator() {
               <div className="bg-white rounded-2xl p-4">
                 <p className="text-sm text-slate-500 font-semibold">Date de conception estimée</p>
                 <p className="text-lg font-bold text-pink-600">{formatDate(results.conception_date)}</p>
+              </div>
+
+              <div className="bg-white rounded-2xl p-4">
+                <p className="text-sm text-slate-500 font-semibold">Date de nidation estimée</p>
+                <p className="text-lg font-bold text-amber-600">{formatDate(results.implantation_date)}</p>
+                <p className="text-xs text-slate-400 mt-1">Environ 9 jours après l'ovulation</p>
               </div>
 
               <div className="bg-white rounded-2xl p-4">
