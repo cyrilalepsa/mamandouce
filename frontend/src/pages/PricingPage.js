@@ -49,9 +49,13 @@ function PricingPage() {
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <div>
-            <h1 className="text-4xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Choisissez votre formule</h1>
-            <p className="text-slate-500 mt-2">Accompagnement complet pour votre grossesse</p>
+          <div className="flex-1">
+            <img 
+              src="/logo-mamandouce-header.png" 
+              alt="MamanDouce" 
+              className="h-12 object-contain mb-2"
+            />
+            <p className="text-slate-500">Accompagnement complet pour votre grossesse</p>
           </div>
         </div>
 

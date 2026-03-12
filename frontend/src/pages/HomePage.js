@@ -52,7 +52,12 @@ function HomePage() {
         <div className="max-w-4xl mx-auto p-6 space-y-8 animate-fade-in">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-5xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }} data-testid="app-title">MamanDouce</h1>
+              <img 
+                src="/logo-mamandouce-header.png" 
+                alt="MamanDouce" 
+                className="h-16 object-contain"
+                data-testid="app-logo"
+              />
               <p className="text-lg text-slate-500 mt-2">Bonjour, {userName} ❤️</p>
             </div>
             <Button

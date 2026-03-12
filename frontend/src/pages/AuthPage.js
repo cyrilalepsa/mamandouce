@@ -43,7 +43,11 @@ function AuthPage({ setIsAuthenticated }) {
 
       <Card className="w-full max-w-md bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-[0_20px_50px_rgb(0,0,0,0.08)] border border-white/40 relative z-10 animate-fade-in" data-testid="auth-card">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-sky-400 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>MamanDouce</h1>
+          <img 
+            src="/logo-mamandouce.png" 
+            alt="MamanDouce" 
+            className="w-full max-w-sm mx-auto mb-4"
+          />
           <p className="text-slate-500">Votre compagnon de grossesse</p>
         </div>
 
