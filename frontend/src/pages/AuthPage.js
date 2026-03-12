@@ -7,6 +7,7 @@ import { Card } from '../components/ui/card';
 import { toast } from 'sonner';
 import api from '../utils/api';
 import { Cloud, Feather } from 'lucide-react';
+import AppTitle from '../components/AppTitle';
 
 function AuthPage({ setIsAuthenticated }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -43,12 +44,7 @@ function AuthPage({ setIsAuthenticated }) {
 
       <Card className="w-full max-w-md bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-[0_20px_50px_rgb(0,0,0,0.08)] border border-white/40 relative z-10 animate-fade-in" data-testid="auth-card">
         <div className="text-center mb-8">
-          <img 
-            src="/logo-mamandouce.png" 
-            alt="MamanDouce" 
-            className="w-full max-w-sm mx-auto mb-4"
-          />
-          <p className="text-slate-500">Votre compagnon de grossesse</p>
+          <AppTitle size="xl" showSubtitle={true} className="mb-4" />
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">

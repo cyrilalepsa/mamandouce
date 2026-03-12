@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import PregnancyCalculator from './pages/PregnancyCalculator';
 import PregnancyWheel from './pages/PregnancyWheel';
 import FoodScanner from './pages/FoodScanner';
+import FoodLibraryPage from './pages/FoodLibraryPage';
 import EmbryoTracker from './pages/EmbryoTracker';
 import HistoryPage from './pages/HistoryPage';
 import FavoritesPage from './pages/FavoritesPage';
@@ -50,6 +51,7 @@ function App() {
           <Route path="/calculator" element={<ProtectedRoute><PregnancyCalculator /></ProtectedRoute>} />
           <Route path="/wheel" element={<ProtectedRoute><PregnancyWheel /></ProtectedRoute>} />
           <Route path="/scanner" element={<ProtectedRoute><FoodScanner /></ProtectedRoute>} />
+          <Route path="/library" element={<ProtectedRoute><FoodLibraryPage /></ProtectedRoute>} />
           <Route path="/embryo" element={<ProtectedRoute><EmbryoTracker /></ProtectedRoute>} />
           <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
           <Route path="/favorites" element={<ProtectedRoute><FavoritesPage /></ProtectedRoute>} />

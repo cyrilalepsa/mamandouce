@@ -155,6 +155,25 @@ class EmailRequest(BaseModel):
     subject: str
     html_content: str
 
+class UserAddedFood(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    name: str
+    barcode: Optional[str] = None
+    status: str  # pending, approved, rejected
+    safe_for_pregnancy: str = "unknown"  # safe, caution, avoid, unsafe, unknown
+    category: Optional[str] = None
+    reason: Optional[str] = None
+    notes: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class AddFoodRequest(BaseModel):
+    name: str
+    barcode: Optional[str] = None
+    category: Optional[str] = None
+    notes: Optional[str] = None
+
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
@@ -342,6 +361,115 @@ async def get_safe_foods(current_user: User = Depends(get_current_user)):
     food_db = await get_food_safety_database()
     safe_foods = [v for v in food_db.values() if v["safe_for_pregnancy"] == "safe"]
     return safe_foods
+
+@api_router.get("/food-library")
+async def get_food_library(
+    search: Optional[str] = None,
+    category: Optional[str] = None,
+    status: Optional[str] = None,
+    page: int = 1,
+    limit: int = 50,
+    current_user: User = Depends(get_current_user)
+):
+    """Get complete food library with search and filtering"""
+    food_db = await get_food_safety_database()
+    
+    # Convert dict to list and sort alphabetically
+    foods = sorted(food_db.values(), key=lambda x: x["name"].lower())
+    
+    # Filter by search query
+    if search:
+        search_lower = search.lower()
+        foods = [f for f in foods if search_lower in f["name"].lower() or search_lower in f.get("category", "").lower()]
+    
+    # Filter by category
+    if category:
+        foods = [f for f in foods if f.get("category", "").lower() == category.lower()]
+    
+    # Filter by safety status
+    if status:
+        foods = [f for f in foods if f.get("safe_for_pregnancy") == status]
+    
+    # Get unique categories
+    all_foods = list(food_db.values())
+    categories = sorted(list(set(f.get("category", "Autre") for f in all_foods)))
+    
+    # Pagination
+    total = len(foods)
+    start = (page - 1) * limit
+    end = start + limit
+    foods_page = foods[start:end]
+    
+    return {
+        "foods": foods_page,
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "pages": (total + limit - 1) // limit,
+        "categories": categories
+    }
+
+@api_router.post("/user-added-foods")
+async def add_user_food(food_data: AddFoodRequest, current_user: User = Depends(get_current_user)):
+    """Allow users to submit new foods not in the database"""
+    # Check if food already exists in database
+    food_db = await get_food_safety_database()
+    normalized_name = food_data.name.lower().strip()
+    
+    for key, value in food_db.items():
+        if normalized_name == value["name"].lower():
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cet aliment existe déjà dans la base: {value['name']}"
+            )
+    
+    # Check if already submitted by user
+    existing = await db.user_added_foods.find_one({
+        "name": {"$regex": f"^{normalized_name}$", "$options": "i"}
+    })
+    
+    if existing:
+        raise HTTPException(
+            status_code=400,
+            detail="Cet aliment a déjà été soumis par un utilisateur"
+        )
+    
+    # Create new food submission
+    user_food = UserAddedFood(
+        user_id=current_user.id,
+        name=food_data.name.strip(),
+        barcode=food_data.barcode,
+        status="pending",
+        safe_for_pregnancy="unknown",
+        category=food_data.category,
+        notes=food_data.notes
+    )
+    
+    food_dict = user_food.model_dump()
+    food_dict["created_at"] = food_dict["created_at"].isoformat()
+    
+    await db.user_added_foods.insert_one(food_dict)
+    
+    return {
+        "success": True,
+        "message": f"L'aliment '{food_data.name}' a été soumis pour vérification",
+        "food": {
+            "id": user_food.id,
+            "name": user_food.name,
+            "status": user_food.status
+        }
+    }
+
+@api_router.get("/user-added-foods")
+async def get_user_added_foods(current_user: User = Depends(get_current_user)):
+    """Get foods submitted by users (for admin or viewing own submissions)"""
+    # Get user's own submissions
+    foods = await db.user_added_foods.find(
+        {"user_id": current_user.id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return foods
 
 @api_router.get("/history/search")
 async def get_search_history(current_user: User = Depends(get_current_user)):

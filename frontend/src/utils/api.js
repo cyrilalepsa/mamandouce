@@ -28,6 +28,11 @@ export const api = {
   foods: {
     getSafe: () => axios.get(`${API}/foods/safe`, getAuthHeaders()),
   },
+  foodLibrary: {
+    getAll: (params) => axios.get(`${API}/food-library?${params}`, getAuthHeaders()),
+    addFood: (data) => axios.post(`${API}/user-added-foods`, data, getAuthHeaders()),
+    getUserAdded: () => axios.get(`${API}/user-added-foods`, getAuthHeaders()),
+  },
   history: {
     getSearch: () => axios.get(`${API}/history/search`, getAuthHeaders()),
   },

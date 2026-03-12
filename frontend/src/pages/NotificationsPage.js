@@ -5,10 +5,11 @@ import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
-import { ArrowLeft, Bell, Plus, Check, Trash2, Mail } from 'lucide-react';
+import { Bell, Plus, Check, Trash2, Mail } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import api from '../utils/api';
 import { toast } from 'sonner';
+import PageHeader from '../components/PageHeader';
 
 function NotificationsPage() {
   const navigate = useNavigate();
@@ -94,15 +95,8 @@ function NotificationsPage() {
   return (
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-        <div className="flex items-center gap-4">
-          <Button
-            onClick={() => navigate('/')}
-            data-testid="back-button"
-            className="bg-white text-sky-500 border border-sky-100 rounded-full p-2 hover:bg-sky-50"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-3xl font-bold text-slate-700 flex-1" style={{ fontFamily: 'Nunito, sans-serif' }}>Rappels médicaux</h1>
+        <div className="flex items-center gap-4 mb-6">
+          <PageHeader title="Rappels médicaux" />
           
           <Dialog open={showDialog} onOpenChange={setShowDialog}>
             <DialogTrigger asChild>

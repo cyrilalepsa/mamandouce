@@ -4,9 +4,10 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Label } from '../components/ui/label';
 import { Input } from '../components/ui/input';
-import { ArrowLeft, Bell, Mail, BookOpen, Calendar, Check } from 'lucide-react';
+import { Bell, Mail, BookOpen, Calendar, Check } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
+import PageHeader from '../components/PageHeader';
 
 function SettingsPage() {
   const navigate = useNavigate();
@@ -53,16 +54,7 @@ function SettingsPage() {
   return (
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-        <div className="flex items-center gap-4">
-          <Button
-            onClick={() => navigate('/')}
-            data-testid="back-button"
-            className="bg-white text-sky-500 border border-sky-100 rounded-full p-2 hover:bg-sky-50"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-3xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Paramètres</h1>
-        </div>
+        <PageHeader title="Paramètres" />
 
         {loading ? (
           <Card className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 text-center">

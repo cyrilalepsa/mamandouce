@@ -1,15 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { ArrowLeft, Camera, Search, ShieldCheck, ShieldAlert, ShieldX, AlertTriangle, Heart, X, Keyboard } from 'lucide-react';
+import { Camera, Search, ShieldCheck, ShieldAlert, ShieldX, AlertTriangle, Heart, X, Keyboard, Plus, Library } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import { Html5Qrcode } from 'html5-qrcode';
+import PageHeader from '../components/PageHeader';
 
 function FoodScanner() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [barcode, setBarcode] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [result, setResult] = useState(null);
@@ -18,15 +21,23 @@ function FoodScanner() {
   const [activeTab, setActiveTab] = useState('camera');
   const [favorites, setFavorites] = useState(new Set());
   const [scanning, setScanning] = useState(false);
+  const [showAddFoodModal, setShowAddFoodModal] = useState(false);
+  const [newFoodData, setNewFoodData] = useState({ name: '', barcode: '', category: '', notes: '' });
+  const [addingFood, setAddingFood] = useState(false);
+  const [notFound, setNotFound] = useState(false);
   const html5QrCodeRef = useRef(null);
   const scannerRef = useRef(null);
 
   useEffect(() => {
     loadFavorites();
+    // Check if we should open the add modal
+    if (location.state?.openAddModal) {
+      setShowAddFoodModal(true);
+    }
     return () => {
       stopScanner();
     };
-  }, []);
+  }, [location.state]);
 
   const loadFavorites = async () => {
     try {
@@ -133,14 +144,40 @@ function FoodScanner() {
     if (!searchQuery.trim()) return;
     
     setLoading(true);
+    setNotFound(false);
     try {
       const response = await api.scan.search(searchQuery);
       setSearchResults(response.data);
       setResult(null);
+      if (response.data.length === 0) {
+        setNotFound(true);
+        setNewFoodData(prev => ({ ...prev, name: searchQuery }));
+      }
     } catch (error) {
       toast.error('Erreur lors de la recherche');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddFood = async (e) => {
+    e.preventDefault();
+    if (!newFoodData.name.trim()) {
+      toast.error('Le nom de l\'aliment est requis');
+      return;
+    }
+    
+    setAddingFood(true);
+    try {
+      await api.foodLibrary.addFood(newFoodData);
+      toast.success('Aliment soumis pour vérification !');
+      setShowAddFoodModal(false);
+      setNewFoodData({ name: '', barcode: '', category: '', notes: '' });
+      setNotFound(false);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erreur lors de l\'ajout');
+    } finally {
+      setAddingFood(false);
     }
   };
 
@@ -177,16 +214,7 @@ function FoodScanner() {
   return (
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-        <div className="flex items-center gap-4">
-          <Button
-            onClick={() => { stopScanner(); navigate('/'); }}
-            data-testid="back-button"
-            className="bg-white text-sky-500 border border-sky-100 rounded-full p-2 hover:bg-sky-50"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-3xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Scanner d'aliments</h1>
-        </div>
+        <PageHeader title="Scanner d'aliments" />
 
         {/* Tabs */}
         <div className="flex gap-2">
@@ -370,6 +398,132 @@ function FoodScanner() {
             ))}
           </div>
         )}
+
+        {/* Not Found - Suggest adding */}
+        {notFound && searchQuery && searchResults.length === 0 && (
+          <Card className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 border-2 border-amber-200" data-testid="not-found-card">
+            <div className="text-center">
+              <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
+              <h3 className="text-xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                Aliment non trouvé
+              </h3>
+              <p className="text-slate-600 mb-4">
+                "{searchQuery}" n'est pas dans notre base de données.
+              </p>
+              <Button
+                onClick={() => {
+                  setNewFoodData(prev => ({ ...prev, name: searchQuery }));
+                  setShowAddFoodModal(true);
+                }}
+                data-testid="add-unknown-food"
+                className="bg-gradient-to-r from-pink-400 to-pink-300 text-white rounded-full px-6 py-3 font-semibold"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Proposer cet aliment
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {/* Quick Actions */}
+        <div className="flex gap-3">
+          <Button
+            onClick={() => navigate('/library')}
+            data-testid="go-to-library"
+            className="flex-1 bg-white text-slate-600 border border-slate-200 rounded-2xl py-3 font-semibold hover:bg-slate-50"
+          >
+            <Library className="w-5 h-5 mr-2" />
+            Voir la bibliothèque
+          </Button>
+          <Button
+            onClick={() => setShowAddFoodModal(true)}
+            data-testid="add-new-food"
+            className="flex-1 bg-gradient-to-r from-green-400 to-green-300 text-white rounded-2xl py-3 font-semibold"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Ajouter un aliment
+          </Button>
+        </div>
+
+        {/* Add Food Modal */}
+        <Dialog open={showAddFoodModal} onOpenChange={setShowAddFoodModal}>
+          <DialogContent className="bg-white rounded-3xl max-w-md" data-testid="add-food-modal">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-slate-700" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                Proposer un aliment
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleAddFood} className="space-y-4 mt-4">
+              <div>
+                <label className="text-sm font-semibold text-slate-600 mb-2 block">Nom de l'aliment *</label>
+                <Input
+                  value={newFoodData.name}
+                  onChange={(e) => setNewFoodData(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Ex: Quinoa, Tofu..."
+                  className="rounded-xl"
+                  data-testid="add-food-name"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-sm font-semibold text-slate-600 mb-2 block">Code-barres (optionnel)</label>
+                <Input
+                  value={newFoodData.barcode}
+                  onChange={(e) => setNewFoodData(prev => ({ ...prev, barcode: e.target.value }))}
+                  placeholder="Ex: 3700000000000"
+                  className="rounded-xl"
+                  data-testid="add-food-barcode"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-semibold text-slate-600 mb-2 block">Catégorie</label>
+                <select
+                  value={newFoodData.category}
+                  onChange={(e) => setNewFoodData(prev => ({ ...prev, category: e.target.value }))}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-600"
+                  data-testid="add-food-category"
+                >
+                  <option value="">Sélectionner une catégorie</option>
+                  <option value="Fruits">Fruits</option>
+                  <option value="Légumes">Légumes</option>
+                  <option value="Viandes">Viandes</option>
+                  <option value="Poissons">Poissons</option>
+                  <option value="Produits laitiers">Produits laitiers</option>
+                  <option value="Fromages">Fromages</option>
+                  <option value="Céréales">Céréales</option>
+                  <option value="Légumineuses">Légumineuses</option>
+                  <option value="Boissons">Boissons</option>
+                  <option value="Condiments">Condiments</option>
+                  <option value="Produits sucrés">Produits sucrés</option>
+                  <option value="Autre">Autre</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-semibold text-slate-600 mb-2 block">Notes / Commentaires</label>
+                <textarea
+                  value={newFoodData.notes}
+                  onChange={(e) => setNewFoodData(prev => ({ ...prev, notes: e.target.value }))}
+                  placeholder="Informations supplémentaires..."
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-600 resize-none h-20"
+                  data-testid="add-food-notes"
+                />
+              </div>
+              <div className="pt-2">
+                <Button
+                  type="submit"
+                  disabled={addingFood || !newFoodData.name.trim()}
+                  data-testid="submit-add-food"
+                  className="w-full bg-gradient-to-r from-green-400 to-green-300 text-white rounded-full py-3 font-bold disabled:opacity-50"
+                >
+                  {addingFood ? 'Envoi en cours...' : 'Soumettre pour vérification'}
+                </Button>
+              </div>
+              <p className="text-xs text-slate-500 text-center">
+                Votre proposition sera examinée avant d'être ajoutée à la bibliothèque.
+              </p>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

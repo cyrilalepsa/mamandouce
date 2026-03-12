@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Check, X, Crown, ArrowLeft } from 'lucide-react';
+import { Check, X, Crown } from 'lucide-react';
+import AppTitle from '../components/AppTitle';
+import PageHeader from '../components/PageHeader';
 
 function PricingPage() {
   const navigate = useNavigate();
@@ -42,19 +44,8 @@ function PricingPage() {
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-6xl mx-auto space-y-8 animate-fade-in">
         <div className="flex items-center gap-4 mb-8">
-          <Button
-            onClick={() => navigate('/')}
-            data-testid="back-button"
-            className="bg-white text-sky-500 border border-sky-100 rounded-full p-2 hover:bg-sky-50"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div className="flex-1">
-            <img 
-              src="/logo-mamandouce-header.png" 
-              alt="MamanDouce" 
-              className="h-12 object-contain mb-2"
-            />
+          <PageHeader title="Abonnements" />
+          <div className="flex-1 text-right">
             <p className="text-slate-500">Accompagnement complet pour votre grossesse</p>
           </div>
         </div>

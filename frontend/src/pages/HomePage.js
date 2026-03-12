@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Users, HeartHandshake, Landmark, CalendarHeart, ScanBarcode, History, Bell, BookOpen, User, LogOut, Cloud, Feather, RotateCw, Settings, Heart, AlertTriangle, ShieldCheck, Lightbulb, Stethoscope, Calendar, Scan, TestTube, Crown, MapPin, Apple, Baby } from 'lucide-react';
+import { Users, HeartHandshake, Landmark, CalendarHeart, ScanBarcode, History, Bell, BookOpen, User, LogOut, Cloud, Feather, RotateCw, Settings, Heart, AlertTriangle, ShieldCheck, Lightbulb, Stethoscope, Calendar, Scan, TestTube, Crown, MapPin, Apple, Baby, Library } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
+import AppTitle from '../components/AppTitle';
 
 function HomePage() {
   const navigate = useNavigate();
@@ -129,12 +130,7 @@ function HomePage() {
         <div className="max-w-4xl mx-auto p-6 space-y-8 animate-fade-in">
           <div className="flex justify-between items-center">
             <div>
-              <img 
-                src="/logo-mamandouce.png" 
-                alt="MamanDouce" 
-                className="h-20 object-contain"
-                data-testid="app-logo"
-              />
+              <AppTitle size="lg" className="text-left" />
               <p className="text-lg text-slate-500 mt-2">Bonjour, {userName} ❤️</p>
             </div>
             <div className="flex items-center gap-3">
@@ -284,7 +280,7 @@ function HomePage() {
               <Apple className="w-6 h-6 text-green-500" />
               Alimentation
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Card
                 onClick={() => navigate('/scanner')}
                 data-testid="scanner-nav"
@@ -293,6 +289,16 @@ function HomePage() {
                 <ScanBarcode className="w-12 h-12 text-pink-400 mx-auto mb-3" />
                 <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Scanner</h3>
                 <p className="text-xs text-slate-500 mt-1">Caméra ou manuel</p>
+              </Card>
+
+              <Card
+                onClick={() => navigate('/library')}
+                data-testid="library-nav"
+                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+              >
+                <Library className="w-12 h-12 text-green-400 mx-auto mb-3" />
+                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Bibliothèque</h3>
+                <p className="text-xs text-slate-500 mt-1">Tous les aliments</p>
               </Card>
 
               <Card
