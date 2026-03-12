@@ -34,6 +34,8 @@ Application recensant tous les aliments consommables pour les femmes enceintes a
 - [x] Suivi évolution embryon avec images IA (6 images)
 - [x] Conseils hebdomadaires (41 semaines)
 - [x] Démarches administratives par semaine
+- [x] **Aliments favoris** - Sauvegarde et gestion des aliments favoris
+- [x] **Alertes personnalisées** - Alertes basées sur les favoris et la semaine de grossesse
 
 ### Monetization & Premium
 - [x] Système de paiement Stripe (25€ paiement unique, sans renouvellement auto)
@@ -56,6 +58,10 @@ Application recensant tous les aliments consommables pour les femmes enceintes a
 - `GET /api/history/search` - Historique recherches
 - `GET /api/tips/weekly/{week}` - Conseils hebdomadaires
 - `POST /api/payments/create-checkout-session` - Créer session Stripe
+- `POST /api/favorites` - Ajouter un favori
+- `GET /api/favorites` - Liste des favoris
+- `DELETE /api/favorites/{food_name}` - Supprimer un favori
+- `GET /api/alerts/personalized` - Alertes personnalisées
 
 ## Database Schema
 ### MongoDB Collections
@@ -64,6 +70,7 @@ Application recensant tous les aliments consommables pour les femmes enceintes a
 - `search_history`: {id, user_id, query, result_type, created_at}
 - `notifications`: {id, user_id, title, description, date, completed}
 - `notification_preferences`: {id, user_id, email_notifications, weekly_tips}
+- `favorites`: {id, user_id, name, status, reason, category, created_at}
 
 ## Key Files
 - `/app/backend/server.py` - API principale

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { ArrowLeft, ScanBarcode, Search, ShieldCheck, ShieldAlert, ShieldX, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, ScanBarcode, Search, ShieldCheck, ShieldAlert, ShieldX, AlertTriangle, Heart } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 
@@ -15,6 +15,46 @@ function FoodScanner() {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('barcode');
+  const [favorites, setFavorites] = useState(new Set());
+
+  useEffect(() => {
+    loadFavorites();
+  }, []);
+
+  const loadFavorites = async () => {
+    try {
+      const response = await api.favorites.getAll();
+      const favNames = new Set(response.data.map(f => f.name));
+      setFavorites(favNames);
+    } catch (error) {
+      console.error('Erreur chargement favoris:', error);
+    }
+  };
+
+  const toggleFavorite = async (food) => {
+    try {
+      if (favorites.has(food.name)) {
+        await api.favorites.remove(food.name);
+        setFavorites(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(food.name);
+          return newSet;
+        });
+        toast.success('Retiré des favoris');
+      } else {
+        await api.favorites.add({
+          name: food.name,
+          status: food.safe_for_pregnancy || food.status || 'unknown',
+          reason: food.reason || '',
+          category: food.category || ''
+        });
+        setFavorites(prev => new Set([...prev, food.name]));
+        toast.success('Ajouté aux favoris');
+      }
+    } catch (error) {
+      toast.error('Erreur lors de la modification des favoris');
+    }
+  };
 
   const handleScanBarcode = async (e) => {
     e.preventDefault();
@@ -165,8 +205,21 @@ function FoodScanner() {
                 <img src={result.image_url} alt={result.name} className="w-24 h-24 object-cover rounded-2xl" />
               )}
               <div className="flex-1">
-                <h3 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{result.name}</h3>
-                {result.brand && <p className="text-slate-500 text-sm">{result.brand}</p>}
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{result.name}</h3>
+                    {result.brand && <p className="text-slate-500 text-sm">{result.brand}</p>}
+                  </div>
+                  <button
+                    onClick={() => toggleFavorite(result)}
+                    data-testid="favorite-button"
+                    className="p-2 rounded-full hover:bg-pink-50 transition-colors"
+                  >
+                    <Heart 
+                      className={`w-6 h-6 ${favorites.has(result.name) ? 'fill-pink-500 text-pink-500' : 'text-slate-300'}`} 
+                    />
+                  </button>
+                </div>
                 <div className={`inline-flex items-center gap-2 mt-3 px-4 py-2 rounded-full ${getSafetyText(result.safe_for_pregnancy).color}`}>
                   {getSafetyIcon(result.safe_for_pregnancy)}
                   <span className="font-semibold">{getSafetyText(result.safe_for_pregnancy).text}</span>
@@ -182,13 +235,24 @@ function FoodScanner() {
             {searchResults.map((item, index) => (
               <Card key={index} className="bg-white rounded-3xl p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 card-hover" data-testid={`search-result-${index}`}>
                 <div className="flex items-center justify-between">
-                  <div>
+                  <div className="flex-1">
                     <h4 className="font-bold text-slate-700">{item.name}</h4>
                     <p className="text-sm text-slate-500">{item.category}</p>
                   </div>
-                  <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${getSafetyText(item.safe_for_pregnancy).color}`}>
-                    {getSafetyIcon(item.safe_for_pregnancy)}
-                    <span className="text-xs font-semibold">{getSafetyText(item.safe_for_pregnancy).text}</span>
+                  <div className="flex items-center gap-3">
+                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${getSafetyText(item.safe_for_pregnancy).color}`}>
+                      {getSafetyIcon(item.safe_for_pregnancy)}
+                      <span className="text-xs font-semibold">{getSafetyText(item.safe_for_pregnancy).text}</span>
+                    </div>
+                    <button
+                      onClick={() => toggleFavorite(item)}
+                      data-testid={`favorite-button-${index}`}
+                      className="p-2 rounded-full hover:bg-pink-50 transition-colors"
+                    >
+                      <Heart 
+                        className={`w-5 h-5 ${favorites.has(item.name) ? 'fill-pink-500 text-pink-500' : 'text-slate-300'}`} 
+                      />
+                    </button>
                   </div>
                 </div>
               </Card>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Users, HeartHandshake, Landmark, CalendarHeart, ScanBarcode, History, Bell, BookOpen, User, LogOut, Cloud, Feather, RotateCw, Settings } from 'lucide-react';
+import { Users, HeartHandshake, Landmark, CalendarHeart, ScanBarcode, History, Bell, BookOpen, User, LogOut, Cloud, Feather, RotateCw, Settings, Heart, AlertTriangle, ShieldCheck, Lightbulb } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 
@@ -10,9 +10,11 @@ function HomePage() {
   const navigate = useNavigate();
   const [userName, setUserName] = useState('');
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
+  const [alerts, setAlerts] = useState([]);
 
   useEffect(() => {
     loadUserData();
+    loadAlerts();
   }, []);
 
   const loadUserData = async () => {
@@ -24,6 +26,45 @@ function HomePage() {
       setPregnancyProfile(profileRes.data);
     } catch (error) {
       console.error('Erreur chargement données:', error);
+    }
+  };
+
+  const loadAlerts = async () => {
+    try {
+      const response = await api.alerts.getPersonalized();
+      setAlerts(response.data.alerts || []);
+    } catch (error) {
+      console.error('Erreur chargement alertes:', error);
+    }
+  };
+
+  const getAlertIcon = (type) => {
+    switch (type) {
+      case 'warning':
+        return <AlertTriangle className="w-5 h-5 text-orange-500" />;
+      case 'caution':
+        return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
+      case 'safe':
+        return <ShieldCheck className="w-5 h-5 text-green-500" />;
+      case 'tip':
+        return <Lightbulb className="w-5 h-5 text-sky-500" />;
+      default:
+        return <Bell className="w-5 h-5 text-slate-400" />;
+    }
+  };
+
+  const getAlertStyle = (type) => {
+    switch (type) {
+      case 'warning':
+        return 'bg-orange-50 border-orange-200';
+      case 'caution':
+        return 'bg-yellow-50 border-yellow-200';
+      case 'safe':
+        return 'bg-green-50 border-green-200';
+      case 'tip':
+        return 'bg-sky-50 border-sky-200';
+      default:
+        return 'bg-slate-50 border-slate-200';
     }
   };
 
@@ -76,6 +117,30 @@ function HomePage() {
               <p className="text-3xl font-bold text-sky-600 mt-2">Semaine {pregnancyProfile.current_week}</p>
               <p className="text-slate-600 mt-2">Date prévue d'accouchement: {new Date(pregnancyProfile.estimated_due_date).toLocaleDateString('fr-FR')}</p>
             </Card>
+          )}
+
+          {/* Personalized Alerts Section */}
+          {alerts.length > 0 && (
+            <div>
+              <h2 className="text-2xl font-semibold text-slate-600 mb-4" style={{ fontFamily: 'Nunito, sans-serif' }}>Vos alertes personnalisées</h2>
+              <div className="space-y-3">
+                {alerts.slice(0, 3).map((alert, index) => (
+                  <Card 
+                    key={index} 
+                    className={`rounded-2xl p-4 border-2 ${getAlertStyle(alert.type)}`}
+                    data-testid={`alert-${index}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      {getAlertIcon(alert.type)}
+                      <div className="flex-1">
+                        <h4 className="font-bold text-slate-700 text-sm">{alert.title}</h4>
+                        <p className="text-xs text-slate-600 mt-1">{alert.message}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
           )}
 
           <div>
@@ -156,6 +221,15 @@ function HomePage() {
               >
                 <HeartHandshake className="w-12 h-12 text-rose-400 mx-auto mb-3" />
                 <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Évolution</h3>
+              </Card>
+
+              <Card
+                onClick={() => navigate('/favorites')}
+                data-testid="favorites-nav"
+                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+              >
+                <Heart className="w-12 h-12 text-pink-400 mx-auto mb-3" />
+                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Favoris</h3>
               </Card>
 
               <Card

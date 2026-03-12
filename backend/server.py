@@ -114,6 +114,16 @@ class NotificationPreferences(BaseModel):
     email_address: str
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+class FavoriteFood(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    name: str
+    status: str  # safe, caution, avoid, unsafe
+    reason: Optional[str] = None
+    category: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 class EmailRequest(BaseModel):
     recipient_email: EmailStr
     subject: str
@@ -339,6 +349,123 @@ async def delete_notification(notification_id: str, current_user: User = Depends
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Notification non trouvée")
     return {"success": True}
+
+# Favorites endpoints
+@api_router.post("/favorites")
+async def add_favorite(food_data: dict, current_user: User = Depends(get_current_user)):
+    existing = await db.favorites.find_one({
+        "user_id": current_user.id,
+        "name": food_data.get("name")
+    })
+    if existing:
+        return {"success": True, "message": "Déjà en favoris", "id": existing["id"]}
+    
+    favorite = FavoriteFood(
+        user_id=current_user.id,
+        name=food_data.get("name", ""),
+        status=food_data.get("status", "unknown"),
+        reason=food_data.get("reason"),
+        category=food_data.get("category")
+    )
+    fav_dict = favorite.model_dump()
+    fav_dict["created_at"] = fav_dict["created_at"].isoformat()
+    await db.favorites.insert_one(fav_dict)
+    return {"success": True, "message": "Ajouté aux favoris", "id": favorite.id}
+
+@api_router.get("/favorites")
+async def get_favorites(current_user: User = Depends(get_current_user)):
+    favorites = await db.favorites.find(
+        {"user_id": current_user.id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    return favorites
+
+@api_router.delete("/favorites/{food_name}")
+async def remove_favorite(food_name: str, current_user: User = Depends(get_current_user)):
+    result = await db.favorites.delete_one({
+        "user_id": current_user.id,
+        "name": food_name
+    })
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Favori non trouvé")
+    return {"success": True, "message": "Retiré des favoris"}
+
+@api_router.get("/favorites/check/{food_name}")
+async def check_favorite(food_name: str, current_user: User = Depends(get_current_user)):
+    existing = await db.favorites.find_one({
+        "user_id": current_user.id,
+        "name": food_name
+    })
+    return {"is_favorite": existing is not None}
+
+@api_router.get("/alerts/personalized")
+async def get_personalized_alerts(current_user: User = Depends(get_current_user)):
+    # Get user's pregnancy profile
+    profile = await db.pregnancy_profiles.find_one({"user_id": current_user.id}, {"_id": 0})
+    current_week = profile.get("current_week", 1) if profile else 1
+    
+    # Get user's favorite foods
+    favorites = await db.favorites.find(
+        {"user_id": current_user.id},
+        {"_id": 0}
+    ).to_list(100)
+    
+    alerts = []
+    
+    # Generate alerts based on food safety and pregnancy week
+    for fav in favorites:
+        if fav["status"] == "avoid":
+            alerts.append({
+                "type": "warning",
+                "title": f"Attention: {fav['name']}",
+                "message": f"Cet aliment favori est à éviter pendant la grossesse. {fav.get('reason', '')}",
+                "food_name": fav["name"],
+                "priority": "high"
+            })
+        elif fav["status"] == "caution":
+            alerts.append({
+                "type": "caution",
+                "title": f"Précaution: {fav['name']}",
+                "message": f"Consommez avec modération. {fav.get('reason', '')}",
+                "food_name": fav["name"],
+                "priority": "medium"
+            })
+        elif fav["status"] == "safe":
+            alerts.append({
+                "type": "safe",
+                "title": f"Recommandé: {fav['name']}",
+                "message": "Cet aliment est sûr et recommandé pendant la grossesse.",
+                "food_name": fav["name"],
+                "priority": "low"
+            })
+    
+    # Add week-specific tips
+    if current_week <= 12:
+        alerts.append({
+            "type": "tip",
+            "title": "Premier trimestre",
+            "message": "Privilégiez les aliments riches en acide folique : légumes verts, oranges, légumineuses.",
+            "priority": "info"
+        })
+    elif current_week <= 24:
+        alerts.append({
+            "type": "tip",
+            "title": "Deuxième trimestre",
+            "message": "Augmentez votre apport en fer et calcium pour le développement osseux du bébé.",
+            "priority": "info"
+        })
+    else:
+        alerts.append({
+            "type": "tip",
+            "title": "Troisième trimestre",
+            "message": "Consommez des protéines de qualité et des oméga-3 pour le développement cérébral.",
+            "priority": "info"
+        })
+    
+    return {
+        "current_week": current_week,
+        "alerts": sorted(alerts, key=lambda x: {"high": 0, "medium": 1, "low": 2, "info": 3}.get(x["priority"], 4))
+    }
 
 @api_router.get("/tips/weekly/{week}")
 async def get_weekly_tip(week: int, current_user: User = Depends(get_current_user)):

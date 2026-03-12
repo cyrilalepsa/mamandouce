@@ -31,6 +31,15 @@ export const api = {
   history: {
     getSearch: () => axios.get(`${API}/history/search`, getAuthHeaders()),
   },
+  favorites: {
+    add: (data) => axios.post(`${API}/favorites`, data, getAuthHeaders()),
+    getAll: () => axios.get(`${API}/favorites`, getAuthHeaders()),
+    remove: (foodName) => axios.delete(`${API}/favorites/${encodeURIComponent(foodName)}`, getAuthHeaders()),
+    check: (foodName) => axios.get(`${API}/favorites/check/${encodeURIComponent(foodName)}`, getAuthHeaders()),
+  },
+  alerts: {
+    getPersonalized: () => axios.get(`${API}/alerts/personalized`, getAuthHeaders()),
+  },
   notifications: {
     create: (data) => axios.post(`${API}/notifications`, data, getAuthHeaders()),
     getAll: () => axios.get(`${API}/notifications`, getAuthHeaders()),
