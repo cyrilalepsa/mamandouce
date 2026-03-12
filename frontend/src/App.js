@@ -19,6 +19,7 @@ import SubscriptionCheckout from './pages/SubscriptionCheckout';
 import SubscriptionSuccess from './pages/SubscriptionSuccess';
 import SubscriptionCancel from './pages/SubscriptionCancel';
 import SubscriptionManage from './pages/SubscriptionManage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import { Toaster } from './components/ui/sonner';
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
         <Routes>
           <Route path="/auth" element={<AuthPage setIsAuthenticated={setIsAuthenticated} />} />
           <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
           <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
           <Route path="/calculator" element={<ProtectedRoute><PregnancyCalculator /></ProtectedRoute>} />
           <Route path="/wheel" element={<ProtectedRoute><PregnancyWheel /></ProtectedRoute>} />
