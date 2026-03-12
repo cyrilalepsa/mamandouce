@@ -156,13 +156,17 @@ function HomePage() {
           {/* Message de bienvenue avec prénom en valeur */}
           <div className="text-center">
             <h2 
-              className="text-2xl sm:text-3xl font-bold"
-              style={{ fontFamily: "'Quicksand', sans-serif" }}
+              className="text-2xl sm:text-3xl"
               data-testid="user-welcome"
             >
-              <span className="text-slate-600">Bonjour, </span>
-              <span className="text-pink-500">{userName}</span>
-              <span className="text-pink-400 ml-1">❤️</span>
+              <span className="text-slate-500 font-medium" style={{ fontFamily: "'Quicksand', sans-serif" }}>Bonjour, </span>
+              <span 
+                className="text-slate-600 font-bold text-3xl sm:text-4xl"
+                style={{ fontFamily: "'Dancing Script', cursive" }}
+              >
+                {userName}
+              </span>
+              <span className="text-pink-400 ml-2">❤️</span>
             </h2>
           </div>
 
