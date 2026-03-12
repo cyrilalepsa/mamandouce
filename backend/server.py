@@ -368,6 +368,81 @@ async def delete_notification(notification_id: str, current_user: User = Depends
         raise HTTPException(status_code=404, detail="Notification non trouvée")
     return {"success": True}
 
+# Email endpoints
+@api_router.post("/email/send")
+async def send_email(email_data: dict, current_user: User = Depends(get_current_user)):
+    """Send an email using Resend"""
+    if not RESEND_API_KEY or RESEND_API_KEY == "re_votre_cle_api_resend":
+        raise HTTPException(status_code=500, detail="API Resend non configurée")
+    
+    try:
+        params = {
+            "from": SENDER_EMAIL,
+            "to": [email_data.get("to", current_user.email)],
+            "subject": email_data.get("subject", "Message de MamanDouce"),
+            "html": email_data.get("html", "<p>Contenu du message</p>")
+        }
+        
+        email_response = resend.Emails.send(params)
+        return {"success": True, "message": "Email envoyé", "id": email_response.get("id")}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur envoi email: {str(e)}")
+
+@api_router.post("/email/send-weekly-tip")
+async def send_weekly_tip_email(current_user: User = Depends(get_current_user)):
+    """Send the weekly pregnancy tip by email"""
+    if not RESEND_API_KEY or RESEND_API_KEY == "re_votre_cle_api_resend":
+        raise HTTPException(status_code=500, detail="API Resend non configurée")
+    
+    # Get user's pregnancy profile
+    profile = await db.pregnancy_profiles.find_one({"user_id": current_user.id}, {"_id": 0})
+    if not profile or not profile.get("current_week"):
+        raise HTTPException(status_code=400, detail="Profil de grossesse non configuré")
+    
+    current_week = profile.get("current_week", 1)
+    
+    # Get the weekly tip
+    tips = await get_weekly_tips_database()
+    tip = next((t for t in tips if t["week"] == current_week), None)
+    
+    if not tip:
+        raise HTTPException(status_code=404, detail="Conseil non trouvé pour cette semaine")
+    
+    html_content = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #87CEEB 0%, #F472B6 100%); padding: 20px; border-radius: 20px; text-align: center;">
+            <h1 style="color: white; margin: 0;">MamanDouce</h1>
+            <p style="color: white; opacity: 0.9;">Semaine {current_week} de votre grossesse</p>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; margin-top: 20px;">
+            <h2 style="color: #0ea5e9;">🍼 {tip['title']}</h2>
+            <p style="color: #64748b; line-height: 1.6;">{tip['description']}</p>
+            
+            <div style="background: white; padding: 15px; border-radius: 10px; margin-top: 15px;">
+                <p style="margin: 0;"><strong>📏 Taille de votre bébé:</strong> {tip['embryo_size']}</p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px; color: #94a3b8; font-size: 12px;">
+            <p>Cet email a été envoyé par MamanDouce</p>
+        </div>
+    </div>
+    """
+    
+    try:
+        params = {
+            "from": SENDER_EMAIL,
+            "to": [current_user.email],
+            "subject": f"🍼 Semaine {current_week} - {tip['title']}",
+            "html": html_content
+        }
+        
+        email_response = resend.Emails.send(params)
+        return {"success": True, "message": f"Conseil semaine {current_week} envoyé à {current_user.email}", "id": email_response.get("id")}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur envoi email: {str(e)}")
+
 # Favorites endpoints
 @api_router.post("/favorites")
 async def add_favorite(food_data: dict, current_user: User = Depends(get_current_user)):
