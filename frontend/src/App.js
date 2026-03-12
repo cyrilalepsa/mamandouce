@@ -1,52 +1,50 @@
-import { useEffect } from "react";
-import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
-
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import '@/App.css';
+import AuthPage from './pages/AuthPage';
+import HomePage from './pages/HomePage';
+import PregnancyCalculator from './pages/PregnancyCalculator';
+import FoodScanner from './pages/FoodScanner';
+import EmbryoTracker from './pages/EmbryoTracker';
+import HistoryPage from './pages/HistoryPage';
+import NotificationsPage from './pages/NotificationsPage';
+import WeeklyTipsPage from './pages/WeeklyTipsPage';
+import ProfilePage from './pages/ProfilePage';
+import { Toaster } from './components/ui/sonner';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+    }
+    setLoading(false);
+  }, []);
+
+  const ProtectedRoute = ({ children }) => {
+    if (loading) return <div>Chargement...</div>;
+    return isAuthenticated ? children : <Navigate to="/auth" />;
+  };
+
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
+          <Route path="/auth" element={<AuthPage setIsAuthenticated={setIsAuthenticated} />} />
+          <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+          <Route path="/calculator" element={<ProtectedRoute><PregnancyCalculator /></ProtectedRoute>} />
+          <Route path="/scanner" element={<ProtectedRoute><FoodScanner /></ProtectedRoute>} />
+          <Route path="/embryo" element={<ProtectedRoute><EmbryoTracker /></ProtectedRoute>} />
+          <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
+          <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+          <Route path="/tips" element={<ProtectedRoute><WeeklyTipsPage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
+      <Toaster />
     </div>
   );
 }
