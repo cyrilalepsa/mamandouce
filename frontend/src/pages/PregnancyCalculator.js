@@ -4,10 +4,71 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { CalendarHeart, ChevronDown } from 'lucide-react';
+import { CalendarHeart, ChevronDown, Stethoscope, AlertTriangle } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
+
+// Conseils médicaux par trimestre/semaine
+const getMedicalAdvice = (week) => {
+  if (week < 0) return null;
+  
+  if (week <= 4) {
+    return {
+      title: "Début de grossesse (Semaines 1-4)",
+      advice: [
+        "Prenez de l'acide folique (400 µg/jour) pour prévenir les malformations du tube neural",
+        "Évitez l'alcool, le tabac et les médicaments non prescrits",
+        "Consultez votre médecin pour confirmer la grossesse"
+      ],
+      urgentSigns: ["Saignements abondants", "Douleurs intenses au ventre"]
+    };
+  } else if (week <= 12) {
+    return {
+      title: "Premier trimestre (Semaines 5-12)",
+      advice: [
+        "Première consultation prénatale obligatoire avant la fin du 3ème mois",
+        "Échographie de datation recommandée entre 11 et 13 SA",
+        "Prise de sang pour dépistage (toxoplasmose, rubéole, VIH...)",
+        "Nausées fréquentes : fractionnez vos repas"
+      ],
+      urgentSigns: ["Saignements", "Fièvre > 38°C", "Douleurs pelviennes intenses"]
+    };
+  } else if (week <= 24) {
+    return {
+      title: "Deuxième trimestre (Semaines 13-24)",
+      advice: [
+        "Échographie morphologique entre 20 et 24 SA",
+        "Consultation mensuelle obligatoire",
+        "Surveillez votre prise de poids (environ 1 kg/mois)",
+        "Commencez les cours de préparation à l'accouchement"
+      ],
+      urgentSigns: ["Contractions régulières", "Perte de liquide", "Diminution des mouvements du bébé"]
+    };
+  } else if (week <= 36) {
+    return {
+      title: "Troisième trimestre (Semaines 25-36)",
+      advice: [
+        "Consultations toutes les 3-4 semaines",
+        "Échographie du 3ème trimestre vers 32 SA",
+        "Préparez votre valise de maternité",
+        "Surveillez les mouvements du bébé quotidiennement"
+      ],
+      urgentSigns: ["Contractions douloureuses et régulières", "Saignements", "Maux de tête violents", "Gonflement soudain"]
+    };
+  } else {
+    return {
+      title: "Fin de grossesse (Semaines 37+)",
+      advice: [
+        "Consultation hebdomadaire",
+        "Monitoring du bébé si dépassement du terme",
+        "Restez attentive aux signes du travail",
+        "Gardez vos documents médicaux à portée de main"
+      ],
+      urgentSigns: ["Perte des eaux", "Contractions toutes les 5 minutes", "Saignements", "Absence de mouvements du bébé"]
+    };
+  }
+};
 
 function PregnancyCalculator() {
   const navigate = useNavigate();
@@ -144,6 +205,58 @@ function PregnancyCalculator() {
                 <p className="text-sm text-slate-600 font-semibold">Semaines de grossesse</p>
                 <p className="text-3xl font-bold text-slate-700">{results.weeks_pregnant} semaines</p>
               </div>
+            </div>
+          </Card>
+        )}
+
+        {/* Conseils médicaux */}
+        {results && results.weeks_pregnant >= 0 && getMedicalAdvice(results.weeks_pregnant) && (
+          <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 animate-fade-in" data-testid="medical-advice-card">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-400 rounded-2xl flex items-center justify-center">
+                <Stethoscope className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                  {getMedicalAdvice(results.weeks_pregnant).title}
+                </h3>
+                <p className="text-sm text-slate-500">Conseils pour cette période</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 mb-4">
+              {getMedicalAdvice(results.weeks_pregnant).advice.map((tip, index) => (
+                <div key={index} className="flex items-start gap-3 bg-teal-50 rounded-xl p-3">
+                  <div className="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs font-bold">{index + 1}</span>
+                  </div>
+                  <p className="text-sm text-slate-700">{tip}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Signes d'urgence */}
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertTriangle className="w-5 h-5 text-red-500" />
+                <h4 className="font-bold text-red-700 text-sm">Consultez en urgence si :</h4>
+              </div>
+              <ul className="space-y-1">
+                {getMedicalAdvice(results.weeks_pregnant).urgentSigns.map((sign, index) => (
+                  <li key={index} className="text-sm text-red-600 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                    {sign}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Disclaimer */}
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+              <p className="text-xs text-amber-800 leading-relaxed">
+                <strong>Important :</strong> Ces informations sont données à titre indicatif et ne remplacent en aucun cas l'avis d'un professionnel de santé. 
+                En cas de doute ou de symptômes inhabituels, <strong>consultez immédiatement votre médecin ou votre sage-femme</strong>.
+              </p>
             </div>
           </Card>
         )}
