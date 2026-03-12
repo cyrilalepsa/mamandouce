@@ -4,6 +4,7 @@ import '@/App.css';
 import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import PregnancyCalculator from './pages/PregnancyCalculator';
+import PregnancyWheel from './pages/PregnancyWheel';
 import FoodScanner from './pages/FoodScanner';
 import EmbryoTracker from './pages/EmbryoTracker';
 import HistoryPage from './pages/HistoryPage';
@@ -36,6 +37,7 @@ function App() {
           <Route path="/auth" element={<AuthPage setIsAuthenticated={setIsAuthenticated} />} />
           <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
           <Route path="/calculator" element={<ProtectedRoute><PregnancyCalculator /></ProtectedRoute>} />
+          <Route path="/wheel" element={<ProtectedRoute><PregnancyWheel /></ProtectedRoute>} />
           <Route path="/scanner" element={<ProtectedRoute><FoodScanner /></ProtectedRoute>} />
           <Route path="/embryo" element={<ProtectedRoute><EmbryoTracker /></ProtectedRoute>} />
           <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />

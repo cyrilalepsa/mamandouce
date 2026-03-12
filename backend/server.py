@@ -365,25 +365,12 @@ async def get_location_services(lat: Optional[float] = None, lng: Optional[float
     }
 
 async def get_food_safety_database():
-    return {
-        "3017620422003": {"barcode": "3017620422003", "name": "Nutella", "safe_for_pregnancy": "safe", "category": "Pâte à tartiner"},
-        "3228020000000": {"barcode": "3228020000000", "name": "Lait pasteurisé", "safe_for_pregnancy": "safe", "category": "Laitages"},
-        "3250391600007": {"barcode": "3250391600007", "name": "Emmental", "safe_for_pregnancy": "safe", "category": "Fromage à pâte dure"},
-        "saumon-fume": {"barcode": "saumon-fume", "name": "Saumon fumé", "safe_for_pregnancy": "caution", "category": "Poisson fumé"},
-        "camembert": {"barcode": "camembert", "name": "Camembert au lait cru", "safe_for_pregnancy": "avoid", "category": "Fromage à pâte molle"},
-        "raw-fish": {"barcode": "raw-fish", "name": "Poisson cru (sushi)", "safe_for_pregnancy": "unsafe", "category": "Poisson cru"}
-    }
+    from data.food_database import FOOD_SAFETY_DATABASE
+    return FOOD_SAFETY_DATABASE
 
 async def get_weekly_tips_database():
-    return [
-        {"week": 1, "title": "Début de grossesse", "description": "Prenez de l'acide folique quotidiennement.", "embryo_size": "< 1mm", "development": "Implantation dans l'utérus"},
-        {"week": 4, "title": "Semaine 4", "description": "L'embryon mesure environ 2mm.", "embryo_size": "2mm", "development": "Formation du tube neural"},
-        {"week": 8, "title": "Semaine 8", "description": "Tous les organes principaux se forment.", "embryo_size": "1.6cm", "development": "Bras et jambes se développent"},
-        {"week": 12, "title": "Semaine 12", "description": "Fin du premier trimestre.", "embryo_size": "5.4cm", "development": "Les organes fonctionnent"},
-        {"week": 20, "title": "Semaine 20", "description": "Mi-parcours de la grossesse.", "embryo_size": "16cm", "development": "Mouvements perceptibles"},
-        {"week": 32, "title": "Semaine 32", "description": "Bébé prend du poids rapidement.", "embryo_size": "42cm", "development": "Poumons en maturation"},
-        {"week": 40, "title": "Semaine 40", "description": "Date prévue d'accouchement.", "embryo_size": "50cm", "development": "Prêt pour la naissance"}
-    ]
+    from data.weekly_tips import WEEKLY_TIPS
+    return WEEKLY_TIPS
 
 app.include_router(api_router)
 

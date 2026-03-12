@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Users, HeartHandshake, Landmark, CalendarHeart, ScanBarcode, History, Bell, BookOpen, User, LogOut, Cloud, Feather } from 'lucide-react';
+import { Users, HeartHandshake, Landmark, CalendarHeart, ScanBarcode, History, Bell, BookOpen, User, LogOut, Cloud, Feather, RotateCw } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 
@@ -124,6 +124,15 @@ function HomePage() {
               >
                 <CalendarHeart className="w-12 h-12 text-sky-400 mx-auto mb-3" />
                 <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Calculateur</h3>
+              </Card>
+
+              <Card
+                onClick={() => navigate('/wheel')}
+                data-testid="wheel-nav"
+                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+              >
+                <RotateCw className="w-12 h-12 text-cyan-400 mx-auto mb-3" />
+                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Disque</h3>
               </Card>
 
               <Card
