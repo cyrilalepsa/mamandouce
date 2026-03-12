@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { BookOpen, ChevronRight } from 'lucide-react';
+import { BookOpen, ChevronRight, AlertTriangle } from 'lucide-react';
 import api from '../utils/api';
 import PageHeader from '../components/PageHeader';
 
@@ -148,6 +148,36 @@ function WeeklyTipsPage() {
                   </ul>
                 </div>
               )}
+
+              {/* Note importante dents et cheveux */}
+              <div className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl p-6 border-2 border-rose-200">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <AlertTriangle className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-rose-800 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                      ⚠️ Note importante
+                    </h4>
+                    <p className="text-slate-700 leading-relaxed mb-3">
+                      <strong>Ne négligez pas vos dents et vos cheveux !</strong> Durant la grossesse, ils sont très fragilisés en raison des changements hormonaux.
+                    </p>
+                    <ul className="space-y-2 text-slate-600 text-sm">
+                      <li className="flex items-start gap-2">
+                        <span className="text-rose-500 font-bold">🦷</span>
+                        <span><strong>Dents :</strong> Consultez votre dentiste dès le début de la grossesse et signalez tout saignement des gencives.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-rose-500 font-bold">💇</span>
+                        <span><strong>Cheveux :</strong> Une chute de cheveux peut survenir. N'hésitez pas à consulter un dermatologue si nécessaire.</span>
+                      </li>
+                    </ul>
+                    <p className="text-xs text-rose-600 mt-3 italic">
+                      N'hésitez pas à consulter les spécialistes pour prendre soin de vous !
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </Card>
         )}
