@@ -162,7 +162,7 @@ function HomePage() {
               <span className="text-slate-500 font-medium" style={{ fontFamily: "'Quicksand', sans-serif" }}>Bonjour, </span>
               <span 
                 className="text-slate-700 font-bold text-3xl sm:text-4xl"
-                style={{ fontFamily: "'Nunito', sans-serif", letterSpacing: '0.5px' }}
+                style={{ fontFamily: "'Dancing Script', cursive" }}
               >
                 {userName}
               </span>
