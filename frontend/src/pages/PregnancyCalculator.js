@@ -4,13 +4,14 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { ArrowLeft, CalendarHeart } from 'lucide-react';
+import { ArrowLeft, CalendarHeart, ChevronDown } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 
 function PregnancyCalculator() {
   const navigate = useNavigate();
   const [lastPeriodDate, setLastPeriodDate] = useState('');
+  const [cycleDuration, setCycleDuration] = useState(28);
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +20,10 @@ function PregnancyCalculator() {
     setLoading(true);
 
     try {
-      const response = await api.pregnancy.calculate({ last_period_date: lastPeriodDate });
+      const response = await api.pregnancy.calculate({ 
+        last_period_date: lastPeriodDate,
+        cycle_duration: cycleDuration
+      });
       setResults(response.data);
       toast.success('Calcul effectué avec succès!');
     } catch (error) {
@@ -36,6 +40,9 @@ function PregnancyCalculator() {
       day: 'numeric'
     });
   };
+
+  // Generate cycle duration options from 24 to 34 days
+  const cycleDurations = Array.from({ length: 11 }, (_, i) => 24 + i);
 
   return (
     <div className="min-h-screen gradient-bg p-6">
@@ -75,6 +82,30 @@ function PregnancyCalculator() {
                 required
               />
             </div>
+
+            <div>
+              <Label htmlFor="cycleDuration" className="text-slate-600 font-semibold">Durée de votre cycle menstruel</Label>
+              <div className="relative">
+                <select
+                  id="cycleDuration"
+                  data-testid="cycle-duration-select"
+                  value={cycleDuration}
+                  onChange={(e) => setCycleDuration(parseInt(e.target.value))}
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-600 focus:border-sky-300 focus:ring-4 focus:ring-sky-100 appearance-none cursor-pointer"
+                >
+                  {cycleDurations.map(days => (
+                    <option key={days} value={days}>
+                      {days} jours {days === 28 && '(standard)'}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+              </div>
+              <p className="mt-2 text-xs text-slate-500">
+                La durée moyenne d'un cycle est de 28 jours, mais peut varier de 24 à 34 jours.
+              </p>
+            </div>
+
             <Button
               type="submit"
               data-testid="calculate-button"

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Users, HeartHandshake, Landmark, CalendarHeart, ScanBarcode, History, Bell, BookOpen, User, LogOut, Cloud, Feather, RotateCw, Settings, Heart, AlertTriangle, ShieldCheck, Lightbulb, Stethoscope, Calendar, Scan, TestTube, Crown } from 'lucide-react';
+import { Users, HeartHandshake, Landmark, CalendarHeart, ScanBarcode, History, Bell, BookOpen, User, LogOut, Cloud, Feather, RotateCw, Settings, Heart, AlertTriangle, ShieldCheck, Lightbulb, Stethoscope, Calendar, Scan, TestTube, Crown, MapPin, Apple, Baby } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 
@@ -264,8 +264,13 @@ function HomePage() {
                 data-testid="mairie-button"
                 className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover"
               >
-                <div className="w-14 h-14 bg-gradient-to-br from-red-500 to-red-400 rounded-2xl flex items-center justify-center mb-4">
-                  <Landmark className="w-8 h-8 text-white" />
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-red-500 to-red-400 rounded-2xl flex items-center justify-center">
+                    <Landmark className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-400 rounded-xl flex items-center justify-center">
+                    <MapPin className="w-5 h-5 text-white" />
+                  </div>
                 </div>
                 <h3 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Mairie</h3>
                 <p className="text-slate-500 text-sm mt-2">Services municipaux</p>
@@ -273,27 +278,13 @@ function HomePage() {
             </div>
           </div>
 
+          {/* Catégorie Alimentation */}
           <div>
-            <h2 className="text-2xl font-semibold text-slate-600 mb-4" style={{ fontFamily: 'Nunito, sans-serif' }}>Fonctionnalités</h2>
+            <h2 className="text-2xl font-semibold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              <Apple className="w-6 h-6 text-green-500" />
+              Alimentation
+            </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <Card
-                onClick={() => navigate('/calculator')}
-                data-testid="calculator-nav"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-              >
-                <CalendarHeart className="w-12 h-12 text-sky-400 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Calculateur</h3>
-              </Card>
-
-              <Card
-                onClick={() => navigate('/wheel')}
-                data-testid="wheel-nav"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-              >
-                <RotateCw className="w-12 h-12 text-cyan-400 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Disque</h3>
-              </Card>
-
               <Card
                 onClick={() => navigate('/scanner')}
                 data-testid="scanner-nav"
@@ -301,24 +292,7 @@ function HomePage() {
               >
                 <ScanBarcode className="w-12 h-12 text-pink-400 mx-auto mb-3" />
                 <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Scanner</h3>
-              </Card>
-
-              <Card
-                onClick={() => navigate('/embryo')}
-                data-testid="embryo-nav"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-              >
-                <HeartHandshake className="w-12 h-12 text-rose-400 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Évolution</h3>
-              </Card>
-
-              <Card
-                onClick={() => navigate('/medical')}
-                data-testid="medical-nav"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-              >
-                <Stethoscope className="w-12 h-12 text-sky-500 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Rendez-vous</h3>
+                <p className="text-xs text-slate-500 mt-1">Caméra ou manuel</p>
               </Card>
 
               <Card
@@ -328,6 +302,7 @@ function HomePage() {
               >
                 <Heart className="w-12 h-12 text-pink-400 mx-auto mb-3" />
                 <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Favoris</h3>
+                <p className="text-xs text-slate-500 mt-1">Aliments sauvegardés</p>
               </Card>
 
               <Card
@@ -337,15 +312,36 @@ function HomePage() {
               >
                 <History className="w-12 h-12 text-purple-400 mx-auto mb-3" />
                 <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Historique</h3>
+                <p className="text-xs text-slate-500 mt-1">Recherches récentes</p>
+              </Card>
+            </div>
+          </div>
+
+          {/* Catégorie Grossesse */}
+          <div>
+            <h2 className="text-2xl font-semibold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              <Baby className="w-6 h-6 text-pink-500" />
+              Grossesse
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <Card
+                onClick={() => navigate('/calculator')}
+                data-testid="calculator-nav"
+                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+              >
+                <CalendarHeart className="w-12 h-12 text-sky-400 mx-auto mb-3" />
+                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Calculateur</h3>
+                <p className="text-xs text-slate-500 mt-1">Dates clés</p>
               </Card>
 
               <Card
-                onClick={() => navigate('/notifications')}
-                data-testid="notifications-nav"
+                onClick={() => navigate('/medical')}
+                data-testid="medical-nav"
                 className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
               >
-                <Bell className="w-12 h-12 text-amber-400 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Rappels</h3>
+                <Stethoscope className="w-12 h-12 text-sky-500 mx-auto mb-3" />
+                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Rendez-vous</h3>
+                <p className="text-xs text-slate-500 mt-1">Suivi médical</p>
               </Card>
 
               <Card
@@ -355,6 +351,17 @@ function HomePage() {
               >
                 <BookOpen className="w-12 h-12 text-teal-400 mx-auto mb-3" />
                 <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Conseils</h3>
+                <p className="text-xs text-slate-500 mt-1">Hebdomadaires</p>
+              </Card>
+
+              <Card
+                onClick={() => navigate('/notifications')}
+                data-testid="notifications-nav"
+                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+              >
+                <Bell className="w-12 h-12 text-amber-400 mx-auto mb-3" />
+                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Rappels</h3>
+                <p className="text-xs text-slate-500 mt-1">Notifications</p>
               </Card>
 
               <Card
@@ -364,6 +371,7 @@ function HomePage() {
               >
                 <Settings className="w-12 h-12 text-indigo-400 mx-auto mb-3" />
                 <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Paramètres</h3>
+                <p className="text-xs text-slate-500 mt-1">Préférences</p>
               </Card>
             </div>
           </div>

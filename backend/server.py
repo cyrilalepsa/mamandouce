@@ -84,6 +84,7 @@ class PregnancyProfile(BaseModel):
 
 class PregnancyCalculation(BaseModel):
     last_period_date: str
+    cycle_duration: int = 28  # Default 28 days, can be 24-34
 
 class SearchHistoryItem(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -223,7 +224,13 @@ async def calculate_pregnancy(data: PregnancyCalculation, current_user: User = D
     from datetime import datetime
     last_period = datetime.fromisoformat(data.last_period_date)
     
-    ovulation_date = last_period + timedelta(days=14)
+    # Use custom cycle duration (default 28 days)
+    cycle_duration = max(24, min(34, data.cycle_duration))  # Clamp between 24-34
+    
+    # Ovulation occurs approximately 14 days before the next period
+    # For a 28-day cycle: day 14, for a 30-day cycle: day 16, etc.
+    ovulation_day = cycle_duration - 14
+    ovulation_date = last_period + timedelta(days=ovulation_day)
     conception_date = ovulation_date
     due_date = last_period + timedelta(days=280)
     
@@ -242,6 +249,7 @@ async def calculate_pregnancy(data: PregnancyCalculation, current_user: User = D
     profile_dict = profile.model_dump()
     profile_dict["created_at"] = profile_dict["created_at"].isoformat()
     profile_dict["updated_at"] = profile_dict["updated_at"].isoformat()
+    profile_dict["cycle_duration"] = cycle_duration
     
     if existing:
         await db.pregnancy_profiles.update_one(
@@ -256,7 +264,8 @@ async def calculate_pregnancy(data: PregnancyCalculation, current_user: User = D
         "ovulation_date": ovulation_date.isoformat(),
         "conception_date": conception_date.isoformat(),
         "due_date": due_date.isoformat(),
-        "weeks_pregnant": weeks_pregnant
+        "weeks_pregnant": weeks_pregnant,
+        "cycle_duration": cycle_duration
     }
 
 @api_router.get("/pregnancy/profile")

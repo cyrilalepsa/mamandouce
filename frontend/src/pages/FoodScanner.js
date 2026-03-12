@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { ArrowLeft, ScanBarcode, Search, ShieldCheck, ShieldAlert, ShieldX, AlertTriangle, Heart } from 'lucide-react';
+import { ArrowLeft, Camera, Search, ShieldCheck, ShieldAlert, ShieldX, AlertTriangle, Heart, X, Keyboard } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
+import { Html5Qrcode } from 'html5-qrcode';
 
 function FoodScanner() {
   const navigate = useNavigate();
@@ -14,11 +15,17 @@ function FoodScanner() {
   const [result, setResult] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('barcode');
+  const [activeTab, setActiveTab] = useState('camera');
   const [favorites, setFavorites] = useState(new Set());
+  const [scanning, setScanning] = useState(false);
+  const html5QrCodeRef = useRef(null);
+  const scannerRef = useRef(null);
 
   useEffect(() => {
     loadFavorites();
+    return () => {
+      stopScanner();
+    };
   }, []);
 
   const loadFavorites = async () => {
@@ -28,6 +35,65 @@ function FoodScanner() {
       setFavorites(favNames);
     } catch (error) {
       console.error('Erreur chargement favoris:', error);
+    }
+  };
+
+  const startScanner = async () => {
+    try {
+      if (scannerRef.current) {
+        await stopScanner();
+      }
+      
+      setScanning(true);
+      const html5QrCode = new Html5Qrcode("qr-reader");
+      scannerRef.current = html5QrCode;
+      
+      await html5QrCode.start(
+        { facingMode: "environment" },
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 150 },
+          aspectRatio: 1.0
+        },
+        async (decodedText) => {
+          await stopScanner();
+          setBarcode(decodedText);
+          handleBarcodeScanned(decodedText);
+        },
+        (errorMessage) => {
+          // Ignore scan errors
+        }
+      );
+    } catch (err) {
+      console.error("Erreur démarrage caméra:", err);
+      toast.error("Impossible d'accéder à la caméra. Vérifiez les permissions.");
+      setScanning(false);
+    }
+  };
+
+  const stopScanner = async () => {
+    if (scannerRef.current) {
+      try {
+        await scannerRef.current.stop();
+        scannerRef.current = null;
+      } catch (err) {
+        console.error("Erreur arrêt scanner:", err);
+      }
+    }
+    setScanning(false);
+  };
+
+  const handleBarcodeScanned = async (code) => {
+    setLoading(true);
+    try {
+      const response = await api.scan.barcode(code);
+      setResult(response.data);
+      setSearchResults([]);
+      toast.success('Produit trouvé !');
+    } catch (error) {
+      toast.error('Erreur lors du scan');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,20 +122,10 @@ function FoodScanner() {
     }
   };
 
-  const handleScanBarcode = async (e) => {
+  const handleManualBarcode = async (e) => {
     e.preventDefault();
     if (!barcode.trim()) return;
-    
-    setLoading(true);
-    try {
-      const response = await api.scan.barcode(barcode);
-      setResult(response.data);
-      setSearchResults([]);
-    } catch (error) {
-      toast.error('Erreur lors du scan');
-    } finally {
-      setLoading(false);
-    }
+    await handleBarcodeScanned(barcode);
   };
 
   const handleSearch = async (e) => {
@@ -81,9 +137,6 @@ function FoodScanner() {
       const response = await api.scan.search(searchQuery);
       setSearchResults(response.data);
       setResult(null);
-      if (response.data.length === 0) {
-        toast.info('Aucun résultat trouvé');
-      }
     } catch (error) {
       toast.error('Erreur lors de la recherche');
     } finally {
@@ -94,30 +147,30 @@ function FoodScanner() {
   const getSafetyIcon = (status) => {
     switch (status) {
       case 'safe':
-        return <ShieldCheck className="w-6 h-6 text-green-500" />;
+        return <ShieldCheck className="w-5 h-5 text-green-500" />;
       case 'caution':
-        return <ShieldAlert className="w-6 h-6 text-yellow-500" />;
+        return <ShieldAlert className="w-5 h-5 text-yellow-500" />;
       case 'avoid':
-        return <AlertTriangle className="w-6 h-6 text-orange-500" />;
+        return <AlertTriangle className="w-5 h-5 text-orange-500" />;
       case 'unsafe':
-        return <ShieldX className="w-6 h-6 text-red-500" />;
+        return <ShieldX className="w-5 h-5 text-red-500" />;
       default:
-        return <ShieldAlert className="w-6 h-6 text-gray-400" />;
+        return <ShieldAlert className="w-5 h-5 text-gray-400" />;
     }
   };
 
   const getSafetyText = (status) => {
     switch (status) {
       case 'safe':
-        return { text: 'Sûr pour la grossesse', color: 'text-green-600 bg-green-50' };
+        return { text: 'Sûr', color: 'text-green-600 bg-green-50' };
       case 'caution':
-        return { text: 'Avec précaution', color: 'text-yellow-600 bg-yellow-50' };
+        return { text: 'Précaution', color: 'text-yellow-600 bg-yellow-50' };
       case 'avoid':
         return { text: 'À éviter', color: 'text-orange-600 bg-orange-50' };
       case 'unsafe':
         return { text: 'Non sûr', color: 'text-red-600 bg-red-50' };
       default:
-        return { text: 'Statut inconnu', color: 'text-gray-600 bg-gray-50' };
+        return { text: 'Inconnu', color: 'text-gray-600 bg-gray-50' };
     }
   };
 
@@ -126,7 +179,7 @@ function FoodScanner() {
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
         <div className="flex items-center gap-4">
           <Button
-            onClick={() => navigate('/')}
+            onClick={() => { stopScanner(); navigate('/'); }}
             data-testid="back-button"
             className="bg-white text-sky-500 border border-sky-100 rounded-full p-2 hover:bg-sky-50"
           >
@@ -135,69 +188,123 @@ function FoodScanner() {
           <h1 className="text-3xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Scanner d'aliments</h1>
         </div>
 
-        <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
-          <div className="flex gap-2 mb-6">
-            <Button
-              onClick={() => setActiveTab('barcode')}
-              data-testid="barcode-tab"
-              className={`flex-1 rounded-full py-2 font-semibold ${activeTab === 'barcode' ? 'bg-gradient-to-r from-sky-400 to-sky-300 text-white' : 'bg-slate-100 text-slate-600'}`}
-            >
-              <ScanBarcode className="w-4 h-4 mr-2" />
-              Code-barres
-            </Button>
-            <Button
-              onClick={() => setActiveTab('search')}
-              data-testid="search-tab"
-              className={`flex-1 rounded-full py-2 font-semibold ${activeTab === 'search' ? 'bg-gradient-to-r from-pink-400 to-pink-300 text-white' : 'bg-slate-100 text-slate-600'}`}
-            >
-              <Search className="w-4 h-4 mr-2" />
-              Recherche
-            </Button>
-          </div>
+        {/* Tabs */}
+        <div className="flex gap-2">
+          <Button
+            onClick={() => { setActiveTab('camera'); if (!scanning) startScanner(); }}
+            data-testid="camera-tab"
+            className={`flex-1 rounded-full py-3 font-semibold ${activeTab === 'camera' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
+          >
+            <Camera className="w-4 h-4 mr-2" />
+            Caméra
+          </Button>
+          <Button
+            onClick={() => { stopScanner(); setActiveTab('manual'); }}
+            data-testid="manual-tab"
+            className={`flex-1 rounded-full py-3 font-semibold ${activeTab === 'manual' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
+          >
+            <Keyboard className="w-4 h-4 mr-2" />
+            Manuel
+          </Button>
+          <Button
+            onClick={() => { stopScanner(); setActiveTab('search'); }}
+            data-testid="search-tab"
+            className={`flex-1 rounded-full py-3 font-semibold ${activeTab === 'search' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
+          >
+            <Search className="w-4 h-4 mr-2" />
+            Recherche
+          </Button>
+        </div>
 
-          {activeTab === 'barcode' && (
-            <form onSubmit={handleScanBarcode} className="space-y-4">
-              <Input
-                data-testid="barcode-input"
-                type="text"
-                placeholder="Entrez le code-barres"
-                value={barcode}
-                onChange={(e) => setBarcode(e.target.value)}
-                className="w-full rounded-2xl border-slate-200 bg-white px-4 py-3 text-slate-600 focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
-              />
+        {/* Camera Scanner */}
+        {activeTab === 'camera' && (
+          <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
+            <div className="text-center mb-4">
+              <p className="text-slate-600 mb-4">Pointez la caméra vers le code-barres du produit</p>
+              
+              <div id="qr-reader" className="mx-auto rounded-2xl overflow-hidden" style={{ maxWidth: '100%' }}></div>
+              
+              {!scanning && (
+                <Button
+                  onClick={startScanner}
+                  data-testid="start-camera"
+                  className="mt-4 bg-gradient-to-r from-sky-500 to-sky-400 text-white rounded-full px-8 py-3 font-semibold"
+                >
+                  <Camera className="w-5 h-5 mr-2" />
+                  Démarrer la caméra
+                </Button>
+              )}
+              
+              {scanning && (
+                <Button
+                  onClick={stopScanner}
+                  data-testid="stop-camera"
+                  className="mt-4 bg-red-500 text-white rounded-full px-8 py-3 font-semibold"
+                >
+                  <X className="w-5 h-5 mr-2" />
+                  Arrêter
+                </Button>
+              )}
+            </div>
+          </Card>
+        )}
+
+        {/* Manual Barcode Input */}
+        {activeTab === 'manual' && (
+          <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
+            <form onSubmit={handleManualBarcode} className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-slate-600 mb-2 block">Code-barres (EAN)</label>
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="Ex: 3017620422003"
+                  value={barcode}
+                  onChange={(e) => setBarcode(e.target.value)}
+                  className="rounded-xl border-slate-200 focus:ring-sky-500"
+                  data-testid="barcode-input"
+                />
+              </div>
               <Button
                 type="submit"
+                disabled={loading || !barcode.trim()}
                 data-testid="scan-button"
-                disabled={loading}
-                className="w-full bg-gradient-to-r from-sky-400 to-sky-300 text-white rounded-full px-8 py-3 font-bold shadow-lg hover:shadow-sky-200/50 hover:-translate-y-0.5"
+                className="w-full bg-gradient-to-r from-sky-500 to-sky-400 text-white rounded-full py-3 font-semibold disabled:opacity-50"
               >
-                {loading ? 'Scan en cours...' : 'Scanner'}
+                {loading ? 'Recherche...' : 'Rechercher le produit'}
               </Button>
             </form>
-          )}
+          </Card>
+        )}
 
-          {activeTab === 'search' && (
+        {/* Search by Name */}
+        {activeTab === 'search' && (
+          <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
             <form onSubmit={handleSearch} className="space-y-4">
-              <Input
-                data-testid="search-input"
-                type="text"
-                placeholder="Rechercher un aliment"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-2xl border-slate-200 bg-white px-4 py-3 text-slate-600 focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
-              />
+              <div>
+                <label className="text-sm font-medium text-slate-600 mb-2 block">Nom de l'aliment</label>
+                <Input
+                  type="text"
+                  placeholder="Ex: fromage, saumon, café..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="rounded-xl border-slate-200 focus:ring-sky-500"
+                  data-testid="search-input"
+                />
+              </div>
               <Button
                 type="submit"
+                disabled={loading || !searchQuery.trim()}
                 data-testid="search-button"
-                disabled={loading}
-                className="w-full bg-gradient-to-r from-pink-400 to-pink-300 text-white rounded-full px-8 py-3 font-bold shadow-lg hover:shadow-pink-200/50 hover:-translate-y-0.5"
+                className="w-full bg-gradient-to-r from-pink-500 to-pink-400 text-white rounded-full py-3 font-semibold disabled:opacity-50"
               >
                 {loading ? 'Recherche...' : 'Rechercher'}
               </Button>
             </form>
-          )}
-        </Card>
+          </Card>
+        )}
 
+        {/* Single Result */}
         {result && (
           <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 animate-fade-in" data-testid="result-card">
             <div className="flex items-start gap-4">
@@ -224,11 +331,15 @@ function FoodScanner() {
                   {getSafetyIcon(result.safe_for_pregnancy)}
                   <span className="font-semibold">{getSafetyText(result.safe_for_pregnancy).text}</span>
                 </div>
+                {result.reason && (
+                  <p className="mt-3 text-sm text-slate-600 bg-slate-50 p-3 rounded-xl">{result.reason}</p>
+                )}
               </div>
             </div>
           </Card>
         )}
 
+        {/* Search Results */}
         {searchResults.length > 0 && (
           <div className="space-y-3">
             <h3 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Résultats ({searchResults.length})</h3>
