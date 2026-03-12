@@ -591,6 +591,13 @@ async def get_weekly_tips_database():
 
 app.include_router(api_router)
 
+# Intégrer le router de paiements
+try:
+    from routes.payments import router as payments_router
+    app.include_router(payments_router, prefix="/api/payments", tags=["payments"])
+except Exception as e:
+    logger.error(f"Erreur chargement router payments: {str(e)}")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,

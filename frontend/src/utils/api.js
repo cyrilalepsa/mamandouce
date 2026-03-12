@@ -55,6 +55,10 @@ export const api = {
     get: () => axios.get(`${API}/notifications/preferences`, getAuthHeaders()),
     update: (data) => axios.post(`${API}/notifications/preferences`, data, getAuthHeaders()),
   },
+  subscription: {
+    createCheckout: (data) => axios.post(`${API}/payments/checkout/session`, data, getAuthHeaders()),
+    checkStatus: (sessionId) => axios.get(`${API}/payments/checkout/status/${sessionId}`, getAuthHeaders()),
+  },
 };
 
 export default api;

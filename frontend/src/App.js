@@ -12,6 +12,11 @@ import NotificationsPage from './pages/NotificationsPage';
 import WeeklyTipsPage from './pages/WeeklyTipsPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
+import PricingPage from './pages/PricingPage';
+import SubscriptionCheckout from './pages/SubscriptionCheckout';
+import SubscriptionSuccess from './pages/SubscriptionSuccess';
+import SubscriptionCancel from './pages/SubscriptionCancel';
+import SubscriptionManage from './pages/SubscriptionManage';
 import { Toaster } from './components/ui/sonner';
 
 function App() {
@@ -36,6 +41,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<AuthPage setIsAuthenticated={setIsAuthenticated} />} />
+          <Route path="/pricing" element={<PricingPage />} />
           <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
           <Route path="/calculator" element={<ProtectedRoute><PregnancyCalculator /></ProtectedRoute>} />
           <Route path="/wheel" element={<ProtectedRoute><PregnancyWheel /></ProtectedRoute>} />
@@ -46,6 +52,10 @@ function App() {
           <Route path="/tips" element={<ProtectedRoute><WeeklyTipsPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+          <Route path="/subscription/checkout" element={<ProtectedRoute><SubscriptionCheckout /></ProtectedRoute>} />
+          <Route path="/subscription/success" element={<ProtectedRoute><SubscriptionSuccess /></ProtectedRoute>} />
+          <Route path="/subscription/cancel" element={<ProtectedRoute><SubscriptionCancel /></ProtectedRoute>} />
+          <Route path="/subscription/manage" element={<ProtectedRoute><SubscriptionManage /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
       <Toaster />
