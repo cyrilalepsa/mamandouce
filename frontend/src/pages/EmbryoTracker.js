@@ -122,6 +122,16 @@ function EmbryoTracker() {
         {embryoData && (
           <Card className="bg-gradient-to-br from-sky-50 to-pink-50 rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 animate-fade-in" data-testid="embryo-info-card">
             <div className="space-y-6">
+              {embryoData.image_url && (
+                <div className="flex justify-center mb-6">
+                  <img 
+                    src={embryoData.image_url} 
+                    alt={`Embryon semaine ${currentWeek}`}
+                    className="w-64 h-64 object-contain rounded-2xl"
+                  />
+                </div>
+              )}
+              
               <div>
                 <h3 className="text-2xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>Taille de l'embryon</h3>
                 <p className="text-4xl font-bold text-sky-600">{embryoData.embryo_size}</p>

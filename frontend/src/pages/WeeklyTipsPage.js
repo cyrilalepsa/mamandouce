@@ -114,6 +114,16 @@ function WeeklyTipsPage() {
                 <h2 className="text-3xl font-bold text-slate-700 mb-4" style={{ fontFamily: 'Nunito, sans-serif' }}>{currentTip.title}</h2>
               </div>
 
+              {currentTip.image_url && (
+                <div className="flex justify-center">
+                  <img 
+                    src={currentTip.image_url} 
+                    alt={`Embryon semaine ${currentTip.week}`}
+                    className="w-64 h-64 object-contain rounded-2xl"
+                  />
+                </div>
+              )}
+
               {currentTip.embryo_size && (
                 <div className="bg-white rounded-2xl p-6">
                   <p className="text-sm text-slate-500 font-semibold mb-1">Taille de l'embryon</p>
@@ -129,6 +139,21 @@ function WeeklyTipsPage() {
                 <div className="bg-gradient-to-br from-pink-100 to-sky-100 rounded-2xl p-6">
                   <h4 className="font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>Développement</h4>
                   <p className="text-slate-600">{currentTip.development}</p>
+                </div>
+              )}
+
+              {currentTip.administrative_tasks && currentTip.administrative_tasks.length > 0 && (
+                <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 border-2 border-amber-200">
+                  <h4 className="font-bold text-amber-800 mb-3 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                    📋 Démarches administratives
+                  </h4>
+                  <ul className="space-y-2">
+                    {currentTip.administrative_tasks.map((task, index) => (
+                      <li key={index} className="text-slate-700 leading-relaxed">
+                        {task}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
             </div>
