@@ -7,12 +7,14 @@ Application pour les femmes enceintes avec :
 - Conseils hebdomadaires et suivi médical
 - Liste de naissance partageable
 - Liens vers services administratifs et ressources
+- Système d'abonnement Premium (27€/an)
+- Page d'administration complète
 
 ## Architecture Technique
 - **Frontend**: React.js + Tailwind CSS + Shadcn/UI + Capacitor (PWA/Mobile)
 - **Backend**: FastAPI (Python)
 - **Database**: MongoDB
-- **Payments**: Stripe (25€ paiement unique)
+- **Payments**: Stripe (27€/an non-tacite)
 - **Email**: Resend
 
 ## Completed Features (Mars 2026)
@@ -45,7 +47,7 @@ Application pour les femmes enceintes avec :
 - [x] Recherche par nom
 - [x] Saisie manuelle code-barres
 - [x] **Bibliothèque alimentaire** (192 aliments, recherche, filtres)
-- [x] **Ajout d'aliments** par utilisateurs
+- [x] **Ajout d'aliments** par utilisateurs (soumis pour validation admin)
 
 ### Liste de naissance
 - [x] Création de liste personnelle
@@ -65,11 +67,34 @@ Application pour les femmes enceintes avec :
 - [x] Démarches administratives
 - [x] **Note importante dents & cheveux** (fragilisés pendant grossesse)
 
+### Page d'Administration (NOUVEAU - 13 Mars 2026)
+- [x] **Onglet Utilisateurs** : Liste complète avec statuts
+  - Bêta testeuse (utilisateurs ayant utilisé un code promo)
+  - Premium (abonnés payants)
+  - Gratuit
+- [x] **Onglet Messages** : Réception et gestion des messages utilisateurs
+  - Compteur de messages non lus
+  - Bouton "Marquer comme lu"
+- [x] **Onglet Aliments** : Validation des aliments proposés
+  - Liste des aliments en attente
+  - Boutons Approuver/Rejeter
+- [x] **Onglet Codes Promo** : Génération et gestion
+  - Génération de 1-20 codes à la fois
+  - Note optionnelle pour chaque code
+  - Liste des codes avec statut (utilisé/disponible)
+
+### Système de Contact (NOUVEAU - 13 Mars 2026)
+- [x] **Formulaire de contact** dans la page Profil
+  - Sujet et message
+  - Envoi vers la boîte admin
+  - Confirmation visuelle
+
 ### Fonctionnalités annexes
 - [x] Historique de recherche
 - [x] Aliments favoris avec alertes
 - [x] Système de notifications/rappels
-- [x] Paiement Stripe (25€)
+- [x] Paiement Stripe (27€/an)
+- [x] Codes promo à usage unique pour bêta testeuses
 - [x] Emails via Resend
 
 ## API Endpoints
@@ -94,11 +119,30 @@ Application pour les femmes enceintes avec :
 - `GET /api/medical/appointments`, `POST /api/medical/complete/{id}`
 - `GET /api/favorites`, `POST /api/favorites`
 
+### Admin (NOUVEAU)
+- `GET /api/admin/users?admin_secret=xxx` - Liste des utilisateurs
+- `GET /api/admin/pending-foods?admin_secret=xxx` - Aliments en attente
+- `POST /api/admin/food-status/{id}?status=xxx&admin_secret=xxx` - Approuver/Rejeter
+- `GET /api/admin/messages?admin_secret=xxx` - Messages reçus
+- `POST /api/admin/messages/{id}/read?admin_secret=xxx` - Marquer lu
+- `POST /api/admin/generate-codes` - Générer codes promo
+- `GET /api/admin/promo-codes` - Lister codes
+
+### Contact (NOUVEAU)
+- `POST /api/contact/send` - Envoyer message à l'admin
+
 ## Database Collections
 - `users`, `pregnancy_profiles`, `search_history`
 - `favorites`, `notifications`, `notification_preferences`
 - `completed_appointments`, `appointment_notes`
 - `user_added_foods`, `birth_lists`
+- `promo_codes` (NOUVEAU)
+- `admin_messages` (NOUVEAU)
+
+## Credentials Admin
+- **Email**: cyrilalepsa@gmail.com
+- **Password**: Cyc@dmin9630
+- **API Secret**: Cyca-admin2026
 
 ## Deployment
 - **PWA** : Service Worker actif
@@ -108,12 +152,16 @@ Application pour les femmes enceintes avec :
 ## Known Limitations
 - Stripe/Resend nécessitent clés API
 - Scan caméra dépend permission navigateur
+- Scan code-barres avec pyzbar ne fonctionne pas si libzbar0 manquant sur le serveur
 
-## Session Summary (12 Mars 2026)
-1. Style calligraphique amélioré (titres, nom utilisateur en Caveat)
-2. Badge Emergent 2x plus petit et discret
-3. Mairie remplacée par **Maternelles TV** (YouTube)
-4. **Liste de naissance** avec magasins et partage
-5. **Conseils médicaux** dans calculateur avec disclaimer
-6. **Note dents & cheveux** dans conseils hebdomadaires
-7. Date nidation et prochaines règles ajoutées au calculateur
+## Test Results (13 Mars 2026)
+- Backend: 100% (11/11 tests passés)
+- Frontend: 100% (tous les onglets et fonctionnalités testés)
+- Rapport: `/app/test_reports/iteration_1.json`
+
+## Session Summary (13 Mars 2026)
+1. **Page Admin complète** avec 4 onglets fonctionnels
+2. **Statuts utilisateurs** : Bêta testeuse / Premium / Gratuit
+3. **Système de messagerie** utilisateur vers admin
+4. **Validation des aliments** proposés par la communauté
+5. **Tous les tests passent** (backend + frontend)
