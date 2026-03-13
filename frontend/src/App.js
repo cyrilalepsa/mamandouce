@@ -24,6 +24,7 @@ import SubscriptionCancel from './pages/SubscriptionCancel';
 import SubscriptionManage from './pages/SubscriptionManage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import AdminPage from './pages/AdminPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import { Toaster } from './components/ui/sonner';
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<AuthPage setIsAuthenticated={setIsAuthenticated} />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />
           <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
