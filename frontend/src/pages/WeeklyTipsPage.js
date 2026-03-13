@@ -111,18 +111,27 @@ function WeeklyTipsPage() {
                   <div className="flex items-center gap-6">
                     <img 
                       src={currentTip.image_url} 
-                      alt={`Embryon semaine ${currentTip.week}`}
-                      className="w-40 h-40 object-contain rounded-2xl"
+                      alt={`Fœtus semaine ${currentTip.week}`}
+                      className="w-48 h-48 object-contain rounded-2xl"
                     />
-                    <div className="flex-1 space-y-4">
-                      <div>
-                        <p className="text-sm text-slate-500 font-semibold mb-1">Taille</p>
-                        <p className="text-2xl font-bold text-sky-600">{currentTip.embryo_size}</p>
+                    <div className="flex-1 space-y-3">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-sky-50 rounded-xl p-3">
+                          <p className="text-xs text-slate-500 font-semibold mb-1">Taille</p>
+                          <p className="text-xl font-bold text-sky-600">{currentTip.embryo_size}</p>
+                        </div>
+                        {currentTip.embryo_weight && (
+                          <div className="bg-pink-50 rounded-xl p-3">
+                            <p className="text-xs text-slate-500 font-semibold mb-1">Poids</p>
+                            <p className="text-xl font-bold text-pink-500">{currentTip.embryo_weight}</p>
+                          </div>
+                        )}
                       </div>
-                      {currentTip.embryo_weight && (
-                        <div>
-                          <p className="text-sm text-slate-500 font-semibold mb-1">Poids</p>
-                          <p className="text-2xl font-bold text-pink-500">{currentTip.embryo_weight}</p>
+                      {currentTip.fruit_comparison && (
+                        <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 border border-amber-200">
+                          <p className="text-sm text-amber-700">
+                            <span className="font-semibold">Taille comparable à :</span> {currentTip.fruit_comparison}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -131,15 +140,24 @@ function WeeklyTipsPage() {
               )}
 
               {!currentTip.image_url && currentTip.embryo_size && (
-                <div className="bg-white rounded-2xl p-6 grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-slate-500 font-semibold mb-1">Taille</p>
-                    <p className="text-2xl font-bold text-sky-600">{currentTip.embryo_size}</p>
+                <div className="bg-white rounded-2xl p-6">
+                  <div className="grid grid-cols-2 gap-4 mb-3">
+                    <div className="bg-sky-50 rounded-xl p-3">
+                      <p className="text-xs text-slate-500 font-semibold mb-1">Taille</p>
+                      <p className="text-xl font-bold text-sky-600">{currentTip.embryo_size}</p>
+                    </div>
+                    {currentTip.embryo_weight && (
+                      <div className="bg-pink-50 rounded-xl p-3">
+                        <p className="text-xs text-slate-500 font-semibold mb-1">Poids</p>
+                        <p className="text-xl font-bold text-pink-500">{currentTip.embryo_weight}</p>
+                      </div>
+                    )}
                   </div>
-                  {currentTip.embryo_weight && (
-                    <div>
-                      <p className="text-sm text-slate-500 font-semibold mb-1">Poids</p>
-                      <p className="text-2xl font-bold text-pink-500">{currentTip.embryo_weight}</p>
+                  {currentTip.fruit_comparison && (
+                    <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 border border-amber-200">
+                      <p className="text-sm text-amber-700">
+                        <span className="font-semibold">Taille comparable à :</span> {currentTip.fruit_comparison}
+                      </p>
                     </div>
                   )}
                 </div>
