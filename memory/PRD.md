@@ -90,6 +90,10 @@ Application pour les femmes enceintes avec :
   - Envoi vers la boîte admin
   - Confirmation visuelle
 - [x] **Réponse admin** par email avec template HTML stylisé
+- [x] **Historique des échanges** côté utilisateur (NOUVEAU)
+  - Liste dépliable "Mes échanges"
+  - Compteur réponses / en attente
+  - Détails complets (message + réponse)
 
 ### Fonctionnalités annexes
 - [x] Historique de recherche
@@ -133,6 +137,7 @@ Application pour les femmes enceintes avec :
 
 ### Contact
 - `POST /api/contact/send` - Envoyer message à l'admin
+- `GET /api/contact/my-messages` - Historique des échanges utilisateur (NOUVEAU)
 
 ## Database Collections
 - `users`, `pregnancy_profiles`, `search_history`

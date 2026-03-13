@@ -59,6 +59,7 @@ export const api = {
   },
   contact: {
     sendMessage: (data) => axios.post(`${API}/contact/send`, data, getAuthHeaders()),
+    getMyMessages: () => axios.get(`${API}/contact/my-messages`, getAuthHeaders()),
   },
   history: {
     getSearch: () => axios.get(`${API}/history/search`, getAuthHeaders()),

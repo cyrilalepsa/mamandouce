@@ -1621,6 +1621,18 @@ async def send_contact_message(request: ContactMessageRequest, current_user: Use
     
     return {"success": True, "message": "Message envoyé à l'administratrice"}
 
+@api_router.get("/contact/my-messages")
+async def get_my_messages(current_user: User = Depends(get_current_user)):
+    """Get all messages sent by the current user with admin replies"""
+    messages = await db.admin_messages.find(
+        {"user_email": current_user.email},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    
+    return {"messages": messages}
+    
+    return {"success": True, "message": "Message envoyé à l'administratrice"}
+
 @api_router.post("/redeem-code")
 async def redeem_promo_code(request: RedeemCodeRequest, current_user: User = Depends(get_current_user)):
     """Redeem a promo code to get premium access"""
