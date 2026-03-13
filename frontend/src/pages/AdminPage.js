@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { Shield, Plus, Copy, Check, Users, Gift, AlertTriangle, Apple, Mail, MessageSquare, CheckCircle, XCircle, Clock, ChevronDown, ChevronUp, Star, Sparkles, Send, Reply, LayoutDashboard, Eye, TrendingUp, UserPlus } from 'lucide-react';
+import { Shield, Plus, Copy, Check, Users, Gift, AlertTriangle, Apple, Mail, MessageSquare, CheckCircle, XCircle, Clock, ChevronDown, ChevronUp, Star, Sparkles, Send, Reply, LayoutDashboard, Eye, TrendingUp, UserPlus, Crown } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
@@ -416,62 +416,58 @@ function AdminPage() {
           <div className="space-y-6">
             {/* Main Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card className="bg-gradient-to-br from-sky-400 to-sky-500 rounded-2xl p-5 text-white">
-                <div className="flex items-center justify-between mb-3">
-                  <Eye className="w-8 h-8 opacity-80" />
-                  <TrendingUp className="w-5 h-5 opacity-60" />
+              <Card className="bg-gradient-to-br from-sky-400 to-sky-500 rounded-2xl p-4 text-white">
+                <div className="flex items-center justify-between mb-2">
+                  <Eye className="w-5 h-5 opacity-80" />
                 </div>
-                <p className="text-3xl font-bold">{globalStats.visits}</p>
-                <p className="text-sm opacity-80">Visites totales</p>
+                <p className="text-2xl font-bold">{globalStats.visits}</p>
+                <p className="text-xs opacity-80">Visites</p>
               </Card>
               
-              <Card className="bg-gradient-to-br from-green-400 to-green-500 rounded-2xl p-5 text-white">
-                <div className="flex items-center justify-between mb-3">
-                  <UserPlus className="w-8 h-8 opacity-80" />
-                  <TrendingUp className="w-5 h-5 opacity-60" />
+              <Card className="bg-gradient-to-br from-green-400 to-green-500 rounded-2xl p-4 text-white">
+                <div className="flex items-center justify-between mb-2">
+                  <UserPlus className="w-5 h-5 opacity-80" />
                 </div>
-                <p className="text-3xl font-bold">{globalStats.registrations || globalStats.users.total}</p>
-                <p className="text-sm opacity-80">Inscriptions</p>
+                <p className="text-2xl font-bold">{globalStats.registrations || globalStats.users.total}</p>
+                <p className="text-xs opacity-80">Inscriptions</p>
               </Card>
               
-              <Card className="bg-gradient-to-br from-amber-400 to-amber-500 rounded-2xl p-5 text-white">
-                <div className="flex items-center justify-between mb-3">
-                  <Star className="w-8 h-8 opacity-80" />
-                  <span className="text-xs bg-white/20 px-2 py-1 rounded-full">Payants</span>
+              <Card className="bg-gradient-to-br from-amber-400 to-amber-500 rounded-2xl p-4 text-white">
+                <div className="flex items-center justify-between mb-2">
+                  <Crown className="w-5 h-5 opacity-80" />
                 </div>
-                <p className="text-3xl font-bold">{globalStats.users.premium}</p>
-                <p className="text-sm opacity-80">Premium</p>
+                <p className="text-2xl font-bold">{globalStats.users.premium}</p>
+                <p className="text-xs opacity-80">Premium</p>
               </Card>
               
-              <Card className="bg-gradient-to-br from-purple-400 to-purple-500 rounded-2xl p-5 text-white">
-                <div className="flex items-center justify-between mb-3">
-                  <Sparkles className="w-8 h-8 opacity-80" />
-                  <span className="text-xs bg-white/20 px-2 py-1 rounded-full">Bêta</span>
+              <Card className="bg-gradient-to-br from-purple-400 to-purple-500 rounded-2xl p-4 text-white">
+                <div className="flex items-center justify-between mb-2">
+                  <Sparkles className="w-5 h-5 opacity-80" />
                 </div>
-                <p className="text-3xl font-bold">{globalStats.users.beta_tester}</p>
-                <p className="text-sm opacity-80">Bêta testeuses</p>
+                <p className="text-2xl font-bold">{globalStats.users.beta_tester}</p>
+                <p className="text-xs opacity-80">Bêta</p>
               </Card>
             </div>
 
             {/* Secondary Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="bg-white rounded-2xl p-5 border-l-4 border-slate-400">
+              <Card className="bg-white rounded-2xl p-4 border-l-4 border-slate-400">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-slate-500 font-semibold">Utilisateurs gratuits</p>
-                    <p className="text-2xl font-bold text-slate-700">{globalStats.users.free}</p>
+                    <p className="text-xs text-slate-500 font-semibold">Utilisateurs gratuits</p>
+                    <p className="text-xl font-bold text-slate-700">{globalStats.users.free}</p>
                   </div>
-                  <Users className="w-10 h-10 text-slate-300" />
+                  <Users className="w-6 h-6 text-slate-300" />
                 </div>
               </Card>
               
-              <Card className="bg-white rounded-2xl p-5 border-l-4 border-red-400">
+              <Card className="bg-white rounded-2xl p-4 border-l-4 border-red-400">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-slate-500 font-semibold">Messages non lus</p>
-                    <p className="text-2xl font-bold text-red-600">{globalStats.unread_messages}</p>
+                    <p className="text-xs text-slate-500 font-semibold">Messages non lus</p>
+                    <p className="text-xl font-bold text-red-600">{globalStats.unread_messages}</p>
                   </div>
-                  <MessageSquare className="w-10 h-10 text-red-200" />
+                  <MessageSquare className="w-6 h-6 text-red-200" />
                 </div>
                 {globalStats.unread_messages > 0 && (
                   <Button 
@@ -483,48 +479,48 @@ function AdminPage() {
                 )}
               </Card>
               
-              <Card className="bg-white rounded-2xl p-5 border-l-4 border-amber-400">
+              <Card className="bg-white rounded-2xl p-4 border-l-4 border-amber-400">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-slate-500 font-semibold">Aliments en attente</p>
-                    <p className="text-2xl font-bold text-amber-600">{globalStats.pending_foods}</p>
+                    <p className="text-xs text-slate-500 font-semibold">Aliments en attente</p>
+                    <p className="text-xl font-bold text-amber-600">{globalStats.pending_foods}</p>
                   </div>
-                  <Apple className="w-10 h-10 text-amber-200" />
+                  <Apple className="w-6 h-6 text-amber-200" />
                 </div>
                 {globalStats.pending_foods > 0 && (
                   <Button 
                     onClick={() => setActiveTab('foods')}
                     className="mt-3 w-full bg-amber-100 text-amber-700 rounded-lg py-2 text-sm hover:bg-amber-200"
                   >
-                    Valider les aliments
+                    Valider
                   </Button>
                 )}
               </Card>
             </div>
 
             {/* Summary */}
-            <Card className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl p-6 border border-pink-100">
-              <h3 className="text-lg font-bold text-slate-700 mb-4">Résumé</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <Card className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl p-5 border border-pink-100">
+              <h3 className="text-base font-bold text-slate-700 mb-3">Résumé</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
                 <div>
-                  <p className="text-3xl font-bold text-slate-700">{globalStats.users.total}</p>
-                  <p className="text-sm text-slate-500">Total utilisateurs</p>
+                  <p className="text-2xl font-bold text-slate-700">{globalStats.users.total}</p>
+                  <p className="text-xs text-slate-500">Total</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-green-600">
+                  <p className="text-2xl font-bold text-green-600">
                     {globalStats.users.total > 0 
                       ? Math.round((globalStats.users.premium + globalStats.users.beta_tester) / globalStats.users.total * 100) 
                       : 0}%
                   </p>
-                  <p className="text-sm text-slate-500">Taux premium</p>
+                  <p className="text-xs text-slate-500">Taux premium</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-sky-600">{codeStats.available}</p>
-                  <p className="text-sm text-slate-500">Codes dispo</p>
+                  <p className="text-2xl font-bold text-sky-600">{codeStats.available}</p>
+                  <p className="text-xs text-slate-500">Codes dispo</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-purple-600">{codeStats.used}</p>
-                  <p className="text-sm text-slate-500">Codes utilisés</p>
+                  <p className="text-2xl font-bold text-purple-600">{codeStats.used}</p>
+                  <p className="text-xs text-slate-500">Codes utilisés</p>
                 </div>
               </div>
             </Card>

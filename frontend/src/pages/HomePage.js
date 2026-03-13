@@ -141,19 +141,19 @@ function HomePage() {
               <Button
                 onClick={() => navigate('/pricing')}
                 data-testid="premium-button"
-                className="bg-gradient-to-r from-amber-400 to-amber-300 text-white rounded-full px-5 py-2 font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                className="bg-gradient-to-r from-amber-400 to-amber-300 text-white rounded-full p-2.5 hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                title="Premium"
               >
-                <Crown className="w-4 h-4" />
-                Premium
+                <Crown className="w-5 h-5" />
               </Button>
               {isAdmin && (
                 <Button
                   onClick={() => navigate('/admin')}
                   data-testid="admin-button"
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full px-5 py-2 font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full p-2.5 hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                  title="Administration"
                 >
-                  <Shield className="w-4 h-4" />
-                  Admin
+                  <Shield className="w-5 h-5" />
                 </Button>
               )}
             </div>
