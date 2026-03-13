@@ -61,6 +61,11 @@ export const api = {
     sendMessage: (data) => axios.post(`${API}/contact/send`, data, getAuthHeaders()),
     getMyMessages: () => axios.get(`${API}/contact/my-messages`, getAuthHeaders()),
   },
+  notifications: {
+    getVapidKey: () => axios.get(`${API}/notifications/vapid-public-key`),
+    subscribe: (subscription, userEmail) => axios.post(`${API}/notifications/subscribe`, { subscription, user_email: userEmail }, getAuthHeaders()),
+    unsubscribe: (subscription) => axios.post(`${API}/notifications/unsubscribe`, { subscription }, getAuthHeaders()),
+  },
   history: {
     getSearch: () => axios.get(`${API}/history/search`, getAuthHeaders()),
   },

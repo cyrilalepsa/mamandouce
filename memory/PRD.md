@@ -9,99 +9,86 @@ Application pour les femmes enceintes avec :
 - Liens vers services administratifs et ressources
 - Système d'abonnement Premium (27€/an)
 - Page d'administration complète avec messagerie
+- Notifications push
 
 ## Architecture Technique
 - **Frontend**: React.js + Tailwind CSS + Shadcn/UI + Capacitor (PWA/Mobile)
-- **Backend**: FastAPI (Python)
+- **Backend**: FastAPI (Python) - **REFACTORED** en modules
 - **Database**: MongoDB
 - **Payments**: Stripe (27€/an non-tacite)
 - **Email**: Resend
+- **Push Notifications**: Web Push API + pywebpush
+
+## Backend Architecture (Refactored - Mars 2026)
+```
+/app/backend/
+├── core/
+│   ├── __init__.py      # Exports
+│   ├── config.py        # Configuration (secrets, keys)
+│   ├── database.py      # MongoDB connection
+│   └── security.py      # Auth, JWT, password
+├── models/
+│   ├── __init__.py      # Exports
+│   └── schemas.py       # All Pydantic models
+├── routes/
+│   ├── __init__.py      # Exports
+│   ├── admin.py         # Admin endpoints (users, codes, foods, messages)
+│   └── payments.py      # Stripe payments
+├── data/
+│   └── food_database.py # Food data
+└── server.py            # Main app (still contains most endpoints)
+```
 
 ## Completed Features (Mars 2026)
 
 ### Interface & Design
 - [x] Logo "MamanDouce" en Dancing Script avec dégradé rose
-- [x] Nom utilisateur en police **Caveat** (arrondie et douce)
-- [x] Badge Emergent ultra-discret (20px, opacité 40%)
-- [x] Composants PageHeader avec titres calligraphiques
+- [x] Nom utilisateur en police **Caveat**
+- [x] Badge Emergent ultra-discret
 
 ### Page d'accueil
-- [x] Premium en haut à gauche, Déconnexion en haut à droite
-- [x] Logo MamanDouce centré
-- [x] "Bonjour, [Prénom]" avec police Caveat
-- [x] Services & Ressources : CAF, Ameli, **Maternelles TV** (YouTube), Maps
+- [x] Services & Ressources : CAF, Ameli, Maternelles TV, Maps
 
 ### Calculateur de grossesse
-- [x] Date des prochaines règles
-- [x] Date d'ovulation estimée
-- [x] Date de conception estimée
-- [x] **Date de nidation estimée** (9 jours après ovulation)
-- [x] Date prévue d'accouchement
-- [x] Semaines de grossesse
-- [x] **Conseils médicaux par trimestre** avec disclaimer
-- [x] Signes d'urgence à surveiller
-- [x] Sélection durée de cycle (24-34 jours)
+- [x] Toutes les dates clés (conception, ovulation, nidation, accouchement)
+- [x] Conseils médicaux par trimestre
 
 ### Scanner d'aliments
-- [x] Scan par caméra (html5-qrcode)
-- [x] Recherche par nom
-- [x] Saisie manuelle code-barres
-- [x] **Bibliothèque alimentaire** (192 aliments, recherche, filtres)
-- [x] **Ajout d'aliments** par utilisateurs (soumis pour validation admin)
+- [x] Scan caméra + recherche + saisie manuelle
+- [x] Bibliothèque 192 aliments
+- [x] Ajout d'aliments par utilisateurs
 
 ### Liste de naissance
-- [x] Création de liste personnelle
-- [x] Choix magasins : Orchestra, Vertbaudet, Amazon, Aubert, Kiabi, Autre
-- [x] Ajout articles : nom, magasin, lien, prix, quantité, notes
-- [x] **Lien de partage** pour les proches
-- [x] **Réservation d'articles** par les proches
+- [x] Création, partage, réservation
 
 ### Suivi médical
-- [x] 20 rendez-vous médicaux prédéfinis
-- [x] Statut complété/à venir
-- [x] Notes personnelles (poids, tension, bébé)
-- [x] Alertes personnalisées
+- [x] 20 RDV médicaux, notes personnelles
 
 ### Conseils hebdomadaires
 - [x] 41 semaines de conseils
-- [x] Démarches administratives
-- [x] **Note importante dents & cheveux** (fragilisés pendant grossesse)
 
 ### Page d'Administration
-- [x] **Onglet Utilisateurs** : Liste complète avec statuts
-  - Bêta testeuse (utilisateurs ayant utilisé un code promo)
-  - Premium (abonnés payants)
-  - Gratuit
-- [x] **Onglet Messages** : Réception et gestion des messages utilisateurs
-  - Compteur de messages non lus
-  - Bouton "Marquer comme lu"
-  - **Fonctionnalité de réponse** avec envoi d'email automatique (NOUVEAU)
-- [x] **Onglet Aliments** : Validation des aliments proposés
-  - Liste des aliments en attente
-  - Boutons Approuver/Rejeter
-- [x] **Onglet Codes Promo** : Génération et gestion
-  - Génération de 1-20 codes à la fois
-  - Note optionnelle pour chaque code
-  - Liste des codes avec statut (utilisé/disponible)
+- [x] Onglet Utilisateurs (beta testeuse/premium/gratuit)
+- [x] Onglet Messages avec réponse + email + push
+- [x] Onglet Aliments (validation)
+- [x] Onglet Codes Promo
 
 ### Système de Contact
-- [x] **Formulaire de contact** dans la page Profil
-  - Sujet et message
-  - Envoi vers la boîte admin
-  - Confirmation visuelle
-- [x] **Réponse admin** par email avec template HTML stylisé
-- [x] **Historique des échanges** côté utilisateur (NOUVEAU)
-  - Liste dépliable "Mes échanges"
-  - Compteur réponses / en attente
-  - Détails complets (message + réponse)
+- [x] Formulaire de contact
+- [x] Réponse admin par email
+- [x] Historique des échanges côté utilisateur
+
+### Notifications Push (NOUVEAU - Mars 2026)
+- [x] Web Push API avec VAPID
+- [x] Abonnement/désabonnement depuis Profil
+- [x] Notification automatique lors réponse admin
+- [x] Service Worker configuré
 
 ### Fonctionnalités annexes
-- [x] Historique de recherche
-- [x] Aliments favoris avec alertes
-- [x] Système de notifications/rappels
+- [x] Historique, favoris, rappels
 - [x] Paiement Stripe (27€/an)
-- [x] Codes promo à usage unique pour bêta testeuses
-- [x] Emails via Resend
+- [x] Codes promo à usage unique
+- [x] Emails Resend
 
 ## API Endpoints
 
@@ -109,74 +96,55 @@ Application pour les femmes enceintes avec :
 - `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`
 
 ### Pregnancy
-- `POST /api/pregnancy/calculate` (avec next_period_date, implantation_date)
+- `POST /api/pregnancy/calculate`
 
 ### Food
 - `POST /api/scan/barcode`, `POST /api/scan/search`
 - `GET /api/food-library`, `POST /api/user-added-foods`
 
 ### Birth List
-- `GET /api/birth-list`, `POST /api/birth-list`
-- `POST /api/birth-list/items`, `DELETE /api/birth-list/items/{id}`
+- `GET/POST /api/birth-list`, `POST/DELETE /api/birth-list/items`
 - `GET /api/birth-list/shared/{share_id}` (public)
-- `POST /api/birth-list/shared/{share_id}/items/{id}/toggle` (public)
-
-### Medical & Favorites
-- `GET /api/medical/appointments`, `POST /api/medical/complete/{id}`
-- `GET /api/favorites`, `POST /api/favorites`
 
 ### Admin
-- `GET /api/admin/users?admin_secret=xxx` - Liste des utilisateurs
-- `GET /api/admin/pending-foods?admin_secret=xxx` - Aliments en attente
-- `POST /api/admin/food-status/{id}?status=xxx&admin_secret=xxx` - Approuver/Rejeter
-- `GET /api/admin/messages?admin_secret=xxx` - Messages reçus
-- `POST /api/admin/messages/{id}/read?admin_secret=xxx` - Marquer lu
-- `POST /api/admin/messages/{id}/reply?admin_secret=xxx` - **Répondre** (NOUVEAU)
-- `POST /api/admin/generate-codes` - Générer codes promo
-- `GET /api/admin/promo-codes` - Lister codes
+- `GET /api/admin/users`, `GET /api/admin/pending-foods`
+- `POST /api/admin/food-status/{id}`, `GET /api/admin/messages`
+- `POST /api/admin/messages/{id}/read`, `POST /api/admin/messages/{id}/reply`
+- `POST /api/admin/generate-codes`, `GET /api/admin/promo-codes`
 
 ### Contact
-- `POST /api/contact/send` - Envoyer message à l'admin
-- `GET /api/contact/my-messages` - Historique des échanges utilisateur (NOUVEAU)
+- `POST /api/contact/send`, `GET /api/contact/my-messages`
+
+### Notifications (NOUVEAU)
+- `GET /api/notifications/vapid-public-key`
+- `POST /api/notifications/subscribe`
+- `POST /api/notifications/unsubscribe`
 
 ## Database Collections
-- `users`, `pregnancy_profiles`, `search_history`
-- `favorites`, `notifications`, `notification_preferences`
+- `users`, `pregnancy_profiles`, `search_history`, `favorites`
+- `notifications`, `notification_preferences`
 - `completed_appointments`, `appointment_notes`
 - `user_added_foods`, `birth_lists`
-- `promo_codes`
-- `admin_messages` (avec champs `admin_reply` et `replied_at`)
+- `promo_codes`, `admin_messages`
+- `push_subscriptions` (NOUVEAU)
 
 ## Credentials Admin
 - **Email**: cyrilalepsa@gmail.com
 - **Password**: Cyc@dmin9630
 - **API Secret**: Cyca-admin2026
 
-## Deployment
-- **PWA** : Service Worker actif
-- **Google Play** : Capacitor configuré, guide dans `GOOGLE_PLAY_GUIDE.md`
-- **Polices** : Dancing Script, Caveat, Quicksand, Nunito, Pacifico, Satisfy, Betania Patmos
-
 ## Known Limitations
 - Stripe/Resend nécessitent clés API
 - Scan caméra dépend permission navigateur
-- Scan code-barres avec pyzbar ne fonctionne pas si libzbar0 manquant sur le serveur
-
-## Test Results
-- Backend: 100% (11/11 tests passés)
-- Frontend: 100% (tous les onglets et fonctionnalités testés)
-- Rapport: `/app/test_reports/iteration_1.json`
+- Push notifications nécessitent HTTPS et permission utilisateur
 
 ## Session Summary (13 Mars 2026)
-1. **Page Admin complète** avec 4 onglets fonctionnels
-2. **Statuts utilisateurs** : Bêta testeuse / Premium / Gratuit
-3. **Système de messagerie** bidirectionnel :
-   - Utilisateurs → Admin (formulaire profil)
-   - Admin → Utilisateurs (réponse avec email automatique)
-4. **Validation des aliments** proposés par la communauté
-5. **Email de réponse** avec template HTML stylisé MamanDouce
+1. **Notifications Push** implémentées avec Web Push API
+2. **Refactoring partiel** de server.py en modules (core/, models/, routes/)
+3. **Abonnement notifications** depuis page Profil
+4. **Notification automatique** quand admin répond à un message
 
 ## Future Tasks (Backlog)
-- **(P2)** Graphiques de suivi grossesse (poids mère, croissance bébé)
-- **(P2)** Mode hors-ligne complet et notifications push
-- **(P3)** Refactoring de server.py en modules séparés
+- **(P2)** Graphiques de suivi grossesse
+- **(P2)** Mode hors-ligne complet
+- **(P3)** Continuer le refactoring (déplacer plus d'endpoints vers routes/)

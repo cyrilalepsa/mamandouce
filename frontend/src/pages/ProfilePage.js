@@ -3,9 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { ArrowLeft, User, Mail, Calendar, MessageSquare, Send, CheckCircle, Clock, ChevronDown, ChevronUp, Inbox } from 'lucide-react';
+import { ArrowLeft, User, Mail, Calendar, MessageSquare, Send, CheckCircle, Clock, ChevronDown, ChevronUp, Inbox, Bell, BellOff } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
+
+// Helper function to convert base64 to Uint8Array for VAPID key
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -24,9 +38,15 @@ function ProfilePage() {
   const [myMessages, setMyMessages] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
   const [expandedMessageId, setExpandedMessageId] = useState(null);
+  
+  // Push notifications
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
+  const [notificationsSupported, setNotificationsSupported] = useState(false);
 
   useEffect(() => {
     loadUserData();
+    checkNotificationStatus();
   }, []);
 
   const loadUserData = async () => {
@@ -44,6 +64,86 @@ function ProfilePage() {
       console.error('Erreur chargement profil:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkNotificationStatus = async () => {
+    // Check if push notifications are supported
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      setNotificationsSupported(true);
+      
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        setNotificationsEnabled(!!subscription);
+      } catch (error) {
+        console.error('Error checking notification status:', error);
+      }
+    }
+  };
+
+  const toggleNotifications = async () => {
+    if (!notificationsSupported) {
+      toast.error('Les notifications ne sont pas supportées sur cet appareil');
+      return;
+    }
+
+    setNotificationsLoading(true);
+    
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      
+      if (notificationsEnabled) {
+        // Unsubscribe
+        const subscription = await registration.pushManager.getSubscription();
+        if (subscription) {
+          await subscription.unsubscribe();
+          await api.notifications.unsubscribe({
+            endpoint: subscription.endpoint,
+            keys: {
+              p256dh: btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('p256dh')))),
+              auth: btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('auth'))))
+            }
+          });
+        }
+        setNotificationsEnabled(false);
+        toast.success('Notifications désactivées');
+      } else {
+        // Subscribe
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+          toast.error('Permission refusée pour les notifications');
+          setNotificationsLoading(false);
+          return;
+        }
+
+        // Get VAPID key from server
+        const vapidResponse = await api.notifications.getVapidKey();
+        const vapidKey = urlBase64ToUint8Array(vapidResponse.data.publicKey);
+
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: vapidKey
+        });
+
+        // Send subscription to server
+        const subscriptionJSON = subscription.toJSON();
+        await api.notifications.subscribe({
+          endpoint: subscriptionJSON.endpoint,
+          keys: {
+            p256dh: subscriptionJSON.keys.p256dh,
+            auth: subscriptionJSON.keys.auth
+          }
+        }, user?.email);
+
+        setNotificationsEnabled(true);
+        toast.success('Notifications activées ! Vous serez alertée des nouvelles réponses.');
+      }
+    } catch (error) {
+      console.error('Error toggling notifications:', error);
+      toast.error('Erreur lors de la configuration des notifications');
+    } finally {
+      setNotificationsLoading(false);
     }
   };
 
@@ -162,6 +262,47 @@ function ProfilePage() {
                     <p className="text-sm text-slate-600 font-semibold">Semaine actuelle</p>
                     <p className="text-3xl font-bold text-slate-700">{pregnancyProfile.current_week} semaines</p>
                   </div>
+                </div>
+              </Card>
+            )}
+
+            {/* Notifications Card */}
+            {notificationsSupported && (
+              <Card className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-amber-100" data-testid="notifications-card">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      notificationsEnabled 
+                        ? 'bg-gradient-to-br from-amber-400 to-orange-400' 
+                        : 'bg-slate-300'
+                    }`}>
+                      {notificationsEnabled ? (
+                        <Bell className="w-5 h-5 text-white" />
+                      ) : (
+                        <BellOff className="w-5 h-5 text-white" />
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Notifications</h3>
+                      <p className="text-sm text-slate-500">
+                        {notificationsEnabled 
+                          ? 'Vous recevrez une alerte pour les nouvelles réponses'
+                          : 'Activez pour être alertée des réponses'}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={toggleNotifications}
+                    disabled={notificationsLoading}
+                    data-testid="toggle-notifications"
+                    className={`rounded-full px-6 py-2 transition-all ${
+                      notificationsEnabled
+                        ? 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        : 'bg-gradient-to-r from-amber-400 to-orange-400 text-white hover:opacity-90'
+                    }`}
+                  >
+                    {notificationsLoading ? '...' : notificationsEnabled ? 'Désactiver' : 'Activer'}
+                  </Button>
                 </div>
               </Card>
             )}

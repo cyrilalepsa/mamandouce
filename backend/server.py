@@ -16,6 +16,7 @@ import httpx
 import io
 import resend
 import asyncio
+import json
 
 # Optional imports for barcode scanning
 try:
@@ -26,6 +27,14 @@ try:
 except ImportError:
     BARCODE_SCANNER_AVAILABLE = False
     logging.warning("Barcode scanner not available - pyzbar/opencv not installed")
+
+# Optional imports for push notifications
+try:
+    from pywebpush import webpush, WebPushException
+    WEBPUSH_AVAILABLE = True
+except ImportError:
+    WEBPUSH_AVAILABLE = False
+    logging.warning("Push notifications not available - pywebpush not installed")
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -48,6 +57,11 @@ RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
+
+# VAPID configuration for Push Notifications
+VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY", "").replace("\\n", "\n")
+VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "")
+VAPID_CLAIMS_EMAIL = os.environ.get("VAPID_CLAIMS_EMAIL", "cyrilalepsa@gmail.com")
 
 logger = logging.getLogger(__name__)
 
@@ -233,6 +247,18 @@ class ContactMessageRequest(BaseModel):
 
 class AdminReplyRequest(BaseModel):
     reply: str
+
+class PushSubscriptionKeys(BaseModel):
+    p256dh: str
+    auth: str
+
+class PushSubscription(BaseModel):
+    endpoint: str
+    keys: PushSubscriptionKeys
+
+class SubscribeRequest(BaseModel):
+    subscription: PushSubscription
+    user_email: Optional[str] = None
 
 # Code admin secret pour générer des codes promo (à garder secret !)
 ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "Cyca-admin2026")
@@ -1596,10 +1622,24 @@ async def reply_to_message(message_id: str, request: AdminReplyRequest, admin_se
         except Exception as e:
             logger.error(f"Error sending reply email: {e}")
     
+    # Send push notification
+    push_sent = False
+    if message.get("user_email"):
+        try:
+            push_sent = await send_push_notification(
+                user_email=message["user_email"],
+                title="Nouvelle réponse MamanDouce",
+                body=f"Vous avez reçu une réponse à votre message : {message.get('subject', 'Sans sujet')}",
+                url="/profile"
+            )
+        except Exception as e:
+            logger.error(f"Error sending push notification: {e}")
+    
     return {
         "success": True,
         "email_sent": email_sent,
-        "message": "Réponse envoyée" + (" et email envoyé" if email_sent else " (email non envoyé)")
+        "push_sent": push_sent,
+        "message": "Réponse envoyée" + (" et email envoyé" if email_sent else "") + (" et notification push envoyée" if push_sent else "")
     }
 
 @api_router.post("/contact/send")
@@ -1630,8 +1670,6 @@ async def get_my_messages(current_user: User = Depends(get_current_user)):
     ).sort("created_at", -1).to_list(50)
     
     return {"messages": messages}
-    
-    return {"success": True, "message": "Message envoyé à l'administratrice"}
 
 @api_router.post("/redeem-code")
 async def redeem_promo_code(request: RedeemCodeRequest, current_user: User = Depends(get_current_user)):
@@ -1692,6 +1730,96 @@ async def get_subscription_status(current_user: User = Depends(get_current_user)
         "premium_since": user.get("premium_since"),
         "premium_source": user.get("premium_source")
     }
+
+# ==================== PUSH NOTIFICATIONS ====================
+
+@api_router.get("/notifications/vapid-public-key")
+async def get_vapid_public_key():
+    """Get the VAPID public key for client-side subscription"""
+    if not VAPID_PUBLIC_KEY:
+        raise HTTPException(status_code=500, detail="VAPID key not configured")
+    return {"publicKey": VAPID_PUBLIC_KEY}
+
+@api_router.post("/notifications/subscribe")
+async def subscribe_to_push(request: SubscribeRequest, current_user: User = Depends(get_current_user)):
+    """Subscribe a user to push notifications"""
+    subscription_data = {
+        "endpoint": request.subscription.endpoint,
+        "keys": {
+            "p256dh": request.subscription.keys.p256dh,
+            "auth": request.subscription.keys.auth
+        },
+        "user_email": current_user.email,
+        "user_id": current_user.id,
+        "active": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    # Upsert subscription
+    await db.push_subscriptions.update_one(
+        {"endpoint": request.subscription.endpoint},
+        {"$set": subscription_data},
+        upsert=True
+    )
+    
+    return {"success": True, "message": "Notifications activées"}
+
+@api_router.post("/notifications/unsubscribe")
+async def unsubscribe_from_push(request: SubscribeRequest, current_user: User = Depends(get_current_user)):
+    """Unsubscribe from push notifications"""
+    await db.push_subscriptions.delete_one(
+        {"endpoint": request.subscription.endpoint}
+    )
+    
+    return {"success": True, "message": "Notifications désactivées"}
+
+async def send_push_notification(user_email: str, title: str, body: str, url: str = "/profile"):
+    """Send a push notification to a specific user"""
+    if not WEBPUSH_AVAILABLE or not VAPID_PRIVATE_KEY:
+        logger.warning("Push notifications not available")
+        return False
+    
+    subscriptions = await db.push_subscriptions.find(
+        {"user_email": user_email, "active": True},
+        {"_id": 0}
+    ).to_list(10)
+    
+    if not subscriptions:
+        return False
+    
+    success_count = 0
+    for sub in subscriptions:
+        try:
+            subscription_info = {
+                "endpoint": sub["endpoint"],
+                "keys": sub["keys"]
+            }
+            
+            data = json.dumps({
+                "title": title,
+                "body": body,
+                "url": url
+            })
+            
+            webpush(
+                subscription_info=subscription_info,
+                data=data,
+                vapid_private_key=VAPID_PRIVATE_KEY,
+                vapid_claims={"sub": f"mailto:{VAPID_CLAIMS_EMAIL}"}
+            )
+            success_count += 1
+            logger.info(f"Push notification sent to {user_email}")
+        except WebPushException as e:
+            logger.error(f"Push notification failed: {e}")
+            if e.response and e.response.status_code in [404, 410]:
+                await db.push_subscriptions.update_one(
+                    {"endpoint": sub["endpoint"]},
+                    {"$set": {"active": False}}
+                )
+        except Exception as e:
+            logger.error(f"Push error: {e}")
+    
+    return success_count > 0
 
 app.include_router(api_router)
 
