@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Users, HeartHandshake, Landmark, CalendarHeart, ScanBarcode, History, Bell, BookOpen, User, LogOut, Cloud, Feather, RotateCw, Settings, Heart, AlertTriangle, ShieldCheck, Lightbulb, Stethoscope, Calendar, Scan, TestTube, Crown, MapPin, Apple, Baby, Library, Youtube, Gift } from 'lucide-react';
+import { Users, HeartHandshake, Landmark, CalendarHeart, ScanBarcode, History, Bell, BookOpen, User, LogOut, Cloud, Feather, RotateCw, Settings, Heart, AlertTriangle, ShieldCheck, Lightbulb, Stethoscope, Calendar, Scan, TestTube, Crown, MapPin, Apple, Baby, Library, Youtube, Gift, Shield } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import AppTitle from '../components/AppTitle';
 
+const ADMIN_EMAIL = 'cyrilalepsa@gmail.com';
+
 function HomePage() {
   const navigate = useNavigate();
   const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [alerts, setAlerts] = useState([]);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
@@ -24,6 +27,7 @@ function HomePage() {
     try {
       const userRes = await api.auth.getMe();
       setUserName(userRes.data.name);
+      setUserEmail(userRes.data.email);
       
       const profileRes = await api.pregnancy.getProfile();
       setPregnancyProfile(profileRes.data);
@@ -31,6 +35,8 @@ function HomePage() {
       console.error('Erreur chargement données:', error);
     }
   };
+
+  const isAdmin = userEmail === ADMIN_EMAIL;
 
   const loadAlerts = async () => {
     try {
@@ -129,16 +135,28 @@ function HomePage() {
       <div className="relative z-10">
         <div className="max-w-4xl mx-auto p-6 space-y-6 animate-fade-in">
           
-          {/* Top Bar - Premium à gauche, Déconnexion à droite */}
+          {/* Top Bar - Premium à gauche, Admin (si admin), Déconnexion à droite */}
           <div className="flex justify-between items-center">
-            <Button
-              onClick={() => navigate('/pricing')}
-              data-testid="premium-button"
-              className="bg-gradient-to-r from-amber-400 to-amber-300 text-white rounded-full px-5 py-2 font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2"
-            >
-              <Crown className="w-4 h-4" />
-              Premium
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => navigate('/pricing')}
+                data-testid="premium-button"
+                className="bg-gradient-to-r from-amber-400 to-amber-300 text-white rounded-full px-5 py-2 font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2"
+              >
+                <Crown className="w-4 h-4" />
+                Premium
+              </Button>
+              {isAdmin && (
+                <Button
+                  onClick={() => navigate('/admin')}
+                  data-testid="admin-button"
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full px-5 py-2 font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                >
+                  <Shield className="w-4 h-4" />
+                  Admin
+                </Button>
+              )}
+            </div>
             <Button
               onClick={handleLogout}
               data-testid="logout-button"
