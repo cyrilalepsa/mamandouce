@@ -415,112 +415,88 @@ function AdminPage() {
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
             {/* Main Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card className="bg-gradient-to-br from-sky-400 to-sky-500 rounded-2xl p-4 text-white">
-                <div className="flex items-center justify-between mb-2">
-                  <Eye className="w-5 h-5 opacity-80" />
-                </div>
-                <p className="text-2xl font-bold">{globalStats.visits}</p>
-                <p className="text-xs opacity-80">Visites</p>
+            <div className="grid grid-cols-4 gap-3">
+              <Card className="bg-gradient-to-br from-sky-400 to-sky-500 rounded-xl p-3 text-white">
+                <Eye className="w-3.5 h-3.5 opacity-70 mb-1" />
+                <p className="text-xl font-bold">{globalStats.visits}</p>
+                <p className="text-[10px] opacity-70">Visites</p>
               </Card>
               
-              <Card className="bg-gradient-to-br from-green-400 to-green-500 rounded-2xl p-4 text-white">
-                <div className="flex items-center justify-between mb-2">
-                  <UserPlus className="w-5 h-5 opacity-80" />
-                </div>
-                <p className="text-2xl font-bold">{globalStats.registrations || globalStats.users.total}</p>
-                <p className="text-xs opacity-80">Inscriptions</p>
+              <Card className="bg-gradient-to-br from-green-400 to-green-500 rounded-xl p-3 text-white">
+                <UserPlus className="w-3.5 h-3.5 opacity-70 mb-1" />
+                <p className="text-xl font-bold">{globalStats.registrations || globalStats.users.total}</p>
+                <p className="text-[10px] opacity-70">Inscrits</p>
               </Card>
               
-              <Card className="bg-gradient-to-br from-amber-400 to-amber-500 rounded-2xl p-4 text-white">
-                <div className="flex items-center justify-between mb-2">
-                  <Crown className="w-5 h-5 opacity-80" />
-                </div>
-                <p className="text-2xl font-bold">{globalStats.users.premium}</p>
-                <p className="text-xs opacity-80">Premium</p>
+              <Card className="bg-gradient-to-br from-amber-400 to-amber-500 rounded-xl p-3 text-white">
+                <Crown className="w-3.5 h-3.5 opacity-70 mb-1" />
+                <p className="text-xl font-bold">{globalStats.users.premium}</p>
+                <p className="text-[10px] opacity-70">Premium</p>
               </Card>
               
-              <Card className="bg-gradient-to-br from-purple-400 to-purple-500 rounded-2xl p-4 text-white">
-                <div className="flex items-center justify-between mb-2">
-                  <Sparkles className="w-5 h-5 opacity-80" />
-                </div>
-                <p className="text-2xl font-bold">{globalStats.users.beta_tester}</p>
-                <p className="text-xs opacity-80">Bêta</p>
+              <Card className="bg-gradient-to-br from-purple-400 to-purple-500 rounded-xl p-3 text-white">
+                <Sparkles className="w-3.5 h-3.5 opacity-70 mb-1" />
+                <p className="text-xl font-bold">{globalStats.users.beta_tester}</p>
+                <p className="text-[10px] opacity-70">Bêta</p>
               </Card>
             </div>
 
             {/* Secondary Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="bg-white rounded-2xl p-4 border-l-4 border-slate-400">
+            <div className="grid grid-cols-3 gap-3">
+              <Card className="bg-white rounded-xl p-3 border-l-3 border-slate-400">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-slate-500 font-semibold">Utilisateurs gratuits</p>
-                    <p className="text-xl font-bold text-slate-700">{globalStats.users.free}</p>
+                    <p className="text-[10px] text-slate-500 font-semibold">Gratuits</p>
+                    <p className="text-lg font-bold text-slate-700">{globalStats.users.free}</p>
                   </div>
-                  <Users className="w-6 h-6 text-slate-300" />
+                  <Users className="w-4 h-4 text-slate-300" />
                 </div>
               </Card>
               
-              <Card className="bg-white rounded-2xl p-4 border-l-4 border-red-400">
+              <Card className="bg-white rounded-xl p-3 border-l-3 border-red-400 cursor-pointer hover:bg-red-50 transition-colors" onClick={() => globalStats.unread_messages > 0 && setActiveTab('messages')}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-slate-500 font-semibold">Messages non lus</p>
-                    <p className="text-xl font-bold text-red-600">{globalStats.unread_messages}</p>
+                    <p className="text-[10px] text-slate-500 font-semibold">Non lus</p>
+                    <p className="text-lg font-bold text-red-600">{globalStats.unread_messages}</p>
                   </div>
-                  <MessageSquare className="w-6 h-6 text-red-200" />
+                  <MessageSquare className="w-4 h-4 text-red-300" />
                 </div>
-                {globalStats.unread_messages > 0 && (
-                  <Button 
-                    onClick={() => setActiveTab('messages')}
-                    className="mt-3 w-full bg-red-100 text-red-700 rounded-lg py-2 text-sm hover:bg-red-200"
-                  >
-                    Voir les messages
-                  </Button>
-                )}
               </Card>
               
-              <Card className="bg-white rounded-2xl p-4 border-l-4 border-amber-400">
+              <Card className="bg-white rounded-xl p-3 border-l-3 border-amber-400 cursor-pointer hover:bg-amber-50 transition-colors" onClick={() => globalStats.pending_foods > 0 && setActiveTab('foods')}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-slate-500 font-semibold">Aliments en attente</p>
-                    <p className="text-xl font-bold text-amber-600">{globalStats.pending_foods}</p>
+                    <p className="text-[10px] text-slate-500 font-semibold">En attente</p>
+                    <p className="text-lg font-bold text-amber-600">{globalStats.pending_foods}</p>
                   </div>
-                  <Apple className="w-6 h-6 text-amber-200" />
+                  <Apple className="w-4 h-4 text-amber-300" />
                 </div>
-                {globalStats.pending_foods > 0 && (
-                  <Button 
-                    onClick={() => setActiveTab('foods')}
-                    className="mt-3 w-full bg-amber-100 text-amber-700 rounded-lg py-2 text-sm hover:bg-amber-200"
-                  >
-                    Valider
-                  </Button>
-                )}
               </Card>
             </div>
 
             {/* Summary */}
-            <Card className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl p-5 border border-pink-100">
-              <h3 className="text-base font-bold text-slate-700 mb-3">Résumé</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+            <Card className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-4 border border-pink-100">
+              <h3 className="text-sm font-bold text-slate-700 mb-2">Résumé</h3>
+              <div className="grid grid-cols-4 gap-2 text-center">
                 <div>
-                  <p className="text-2xl font-bold text-slate-700">{globalStats.users.total}</p>
-                  <p className="text-xs text-slate-500">Total</p>
+                  <p className="text-xl font-bold text-slate-700">{globalStats.users.total}</p>
+                  <p className="text-[10px] text-slate-500">Total</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-green-600">
+                  <p className="text-xl font-bold text-green-600">
                     {globalStats.users.total > 0 
                       ? Math.round((globalStats.users.premium + globalStats.users.beta_tester) / globalStats.users.total * 100) 
                       : 0}%
                   </p>
-                  <p className="text-xs text-slate-500">Taux premium</p>
+                  <p className="text-[10px] text-slate-500">Taux premium</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-sky-600">{codeStats.available}</p>
-                  <p className="text-xs text-slate-500">Codes dispo</p>
+                  <p className="text-xl font-bold text-sky-600">{codeStats.available}</p>
+                  <p className="text-[10px] text-slate-500">Codes dispo</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-purple-600">{codeStats.used}</p>
-                  <p className="text-xs text-slate-500">Codes utilisés</p>
+                  <p className="text-xl font-bold text-purple-600">{codeStats.used}</p>
+                  <p className="text-[10px] text-slate-500">Codes utilisés</p>
                 </div>
               </div>
             </Card>
