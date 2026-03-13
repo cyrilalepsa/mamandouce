@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -6,8 +6,9 @@ import { Label } from '../components/ui/label';
 import { Card } from '../components/ui/card';
 import { toast } from 'sonner';
 import api from '../utils/api';
-import { Cloud, Feather, ArrowLeft, Mail } from 'lucide-react';
+import { Cloud, Feather, ArrowLeft, Mail, Fingerprint } from 'lucide-react';
 import AppTitle from '../components/AppTitle';
+import { isBiometricEnabled, getSavedCredentials, enableBiometricLogin } from '../utils/biometricAuth';
 
 function AuthPage({ setIsAuthenticated }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -15,7 +16,47 @@ function AuthPage({ setIsAuthenticated }) {
   const [formData, setFormData] = useState({ email: '', password: '', name: '' });
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [showBiometricOption, setShowBiometricOption] = useState(false);
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [showEnableBiometric, setShowEnableBiometric] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if biometric login is available
+    const checkBiometric = async () => {
+      const enabled = isBiometricEnabled();
+      setBiometricAvailable(enabled);
+      if (enabled) {
+        setShowBiometricOption(true);
+      }
+    };
+    checkBiometric();
+  }, []);
+
+  const handleBiometricLogin = async () => {
+    setLoading(true);
+    try {
+      const credentials = await getSavedCredentials();
+      if (credentials) {
+        const response = await api.auth.login({ 
+          email: credentials.email, 
+          password: credentials.password 
+        });
+        localStorage.setItem('token', response.data.access_token);
+        setIsAuthenticated(true);
+        toast.success('Connexion réussie!');
+        navigate('/');
+      } else {
+        toast.error('Aucune empreinte enregistrée');
+        setShowBiometricOption(false);
+      }
+    } catch (error) {
+      toast.error('Échec de la connexion. Veuillez réessayer manuellement.');
+      setShowBiometricOption(false);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,6 +68,13 @@ function AuthPage({ setIsAuthenticated }) {
         : await api.auth.register(formData);
 
       localStorage.setItem('token', response.data.access_token);
+      
+      // After successful login, ask to enable biometric if not already enabled
+      if (isLogin && !isBiometricEnabled()) {
+        setShowEnableBiometric(true);
+        return;
+      }
+      
       setIsAuthenticated(true);
       toast.success(isLogin ? 'Connexion réussie!' : 'Inscription réussie!');
       navigate('/');
@@ -35,6 +83,17 @@ function AuthPage({ setIsAuthenticated }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEnableBiometric = async (enable) => {
+    if (enable) {
+      const success = await enableBiometricLogin(formData.email, formData.password);
+      if (success) {
+        toast.success('Connexion rapide activée !');
+      }
+    }
+    setIsAuthenticated(true);
+    navigate('/');
   };
 
   const handleForgotPassword = async (e) => {
@@ -55,6 +114,7 @@ function AuthPage({ setIsAuthenticated }) {
   const resetForm = () => {
     setIsForgotPassword(false);
     setEmailSent(false);
+    setShowEnableBiometric(false);
     setFormData({ email: '', password: '', name: '' });
   };
 
@@ -70,8 +130,34 @@ function AuthPage({ setIsAuthenticated }) {
           <AppTitle size="xl" showSubtitle={true} className="mb-4" />
         </div>
 
-        {/* Forgot Password View */}
-        {isForgotPassword ? (
+        {/* Enable Biometric Prompt */}
+        {showEnableBiometric ? (
+          <div className="text-center py-4">
+            <div className="w-20 h-20 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Fingerprint className="w-10 h-10 text-pink-500" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-700 mb-2">Connexion rapide</h2>
+            <p className="text-slate-500 text-sm mb-6">
+              Voulez-vous activer la connexion rapide par empreinte digitale pour vos prochaines visites ?
+            </p>
+            <div className="space-y-3">
+              <Button
+                onClick={() => handleEnableBiometric(true)}
+                className="w-full bg-gradient-to-r from-pink-400 to-purple-400 text-white rounded-full px-6 py-3 font-bold"
+              >
+                <Fingerprint className="w-5 h-5 mr-2" />
+                Oui, activer
+              </Button>
+              <Button
+                onClick={() => handleEnableBiometric(false)}
+                variant="outline"
+                className="w-full rounded-full px-6 py-3 font-semibold text-slate-600"
+              >
+                Non, plus tard
+              </Button>
+            </div>
+          </div>
+        ) : isForgotPassword ? (
           <div className="space-y-5">
             {!emailSent ? (
               <>
@@ -141,6 +227,26 @@ function AuthPage({ setIsAuthenticated }) {
         ) : (
           /* Login/Register Form */
           <>
+            {/* Biometric Quick Login Button */}
+            {showBiometricOption && isLogin && (
+              <div className="mb-6">
+                <Button
+                  onClick={handleBiometricLogin}
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-pink-400 to-purple-400 text-white rounded-full px-6 py-4 font-bold shadow-lg hover:shadow-pink-200/50"
+                  data-testid="biometric-login-button"
+                >
+                  <Fingerprint className="w-6 h-6 mr-2" />
+                  {loading ? 'Connexion...' : 'Connexion rapide'}
+                </Button>
+                <div className="flex items-center gap-4 my-4">
+                  <div className="flex-1 h-px bg-slate-200"></div>
+                  <span className="text-slate-400 text-sm">ou</span>
+                  <div className="flex-1 h-px bg-slate-200"></div>
+                </div>
+              </div>
+            )}
+            
             <form onSubmit={handleSubmit} className="space-y-5">
               {!isLogin && (
                 <div>
