@@ -16,6 +16,7 @@ function HomePage() {
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [alerts, setAlerts] = useState([]);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [userRole, setUserRole] = useState('user');
 
   useEffect(() => {
     loadUserData();
@@ -28,6 +29,7 @@ function HomePage() {
       const userRes = await api.auth.getMe();
       setUserName(userRes.data.name);
       setUserEmail(userRes.data.email);
+      setUserRole(userRes.data.role || 'user');
       
       const profileRes = await api.pregnancy.getProfile();
       setPregnancyProfile(profileRes.data);
@@ -36,7 +38,8 @@ function HomePage() {
     }
   };
 
-  const isAdmin = userEmail === ADMIN_EMAIL;
+  // Check admin by role first, then by email for backward compatibility
+  const isAdmin = userRole === 'admin' || userEmail === ADMIN_EMAIL;
 
   const loadAlerts = async () => {
     try {

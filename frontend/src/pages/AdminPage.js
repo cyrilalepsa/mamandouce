@@ -217,7 +217,8 @@ function AdminPage() {
   const checkAdmin = async () => {
     try {
       const response = await api.auth.me();
-      if (response.data.email === ADMIN_EMAIL) {
+      // Check role field first, fallback to email for backward compatibility
+      if (response.data.role === 'admin' || response.data.email === ADMIN_EMAIL) {
         setIsAdmin(true);
         loadAllData();
       } else {
@@ -417,27 +418,27 @@ function AdminPage() {
             {/* Main Stats Cards */}
             <div className="grid grid-cols-4 gap-3">
               <Card className="bg-gradient-to-br from-sky-400 to-sky-500 rounded-xl p-3 text-white">
-                <Eye className="w-3.5 h-3.5 opacity-70 mb-1" />
+                <Eye className="w-3 h-3 opacity-30 mb-1" />
                 <p className="text-xl font-bold">{globalStats.visits}</p>
-                <p className="text-[10px] opacity-70">Visites</p>
+                <p className="text-[10px] opacity-60">Visites</p>
               </Card>
               
               <Card className="bg-gradient-to-br from-green-400 to-green-500 rounded-xl p-3 text-white">
-                <UserPlus className="w-3.5 h-3.5 opacity-70 mb-1" />
+                <UserPlus className="w-3 h-3 opacity-30 mb-1" />
                 <p className="text-xl font-bold">{globalStats.registrations || globalStats.users.total}</p>
-                <p className="text-[10px] opacity-70">Inscrits</p>
+                <p className="text-[10px] opacity-60">Inscrits</p>
               </Card>
               
               <Card className="bg-gradient-to-br from-amber-400 to-amber-500 rounded-xl p-3 text-white">
-                <Crown className="w-3.5 h-3.5 opacity-70 mb-1" />
+                <Crown className="w-3 h-3 opacity-30 mb-1" />
                 <p className="text-xl font-bold">{globalStats.users.premium}</p>
-                <p className="text-[10px] opacity-70">Premium</p>
+                <p className="text-[10px] opacity-60">Premium</p>
               </Card>
               
               <Card className="bg-gradient-to-br from-purple-400 to-purple-500 rounded-xl p-3 text-white">
-                <Sparkles className="w-3.5 h-3.5 opacity-70 mb-1" />
+                <Sparkles className="w-3 h-3 opacity-30 mb-1" />
                 <p className="text-xl font-bold">{globalStats.users.beta_tester}</p>
-                <p className="text-[10px] opacity-70">Bêta</p>
+                <p className="text-[10px] opacity-60">Bêta</p>
               </Card>
             </div>
 
@@ -449,7 +450,7 @@ function AdminPage() {
                     <p className="text-[10px] text-slate-500 font-semibold">Gratuits</p>
                     <p className="text-lg font-bold text-slate-700">{globalStats.users.free}</p>
                   </div>
-                  <Users className="w-4 h-4 text-slate-300" />
+                  <Users className="w-4 h-4 text-slate-200" />
                 </div>
               </Card>
               
@@ -459,7 +460,7 @@ function AdminPage() {
                     <p className="text-[10px] text-slate-500 font-semibold">Non lus</p>
                     <p className="text-lg font-bold text-red-600">{globalStats.unread_messages}</p>
                   </div>
-                  <MessageSquare className="w-4 h-4 text-red-300" />
+                  <MessageSquare className="w-4 h-4 text-red-200" />
                 </div>
               </Card>
               
@@ -469,7 +470,7 @@ function AdminPage() {
                     <p className="text-[10px] text-slate-500 font-semibold">En attente</p>
                     <p className="text-lg font-bold text-amber-600">{globalStats.pending_foods}</p>
                   </div>
-                  <Apple className="w-4 h-4 text-amber-300" />
+                  <Apple className="w-4 h-4 text-amber-200" />
                 </div>
               </Card>
             </div>

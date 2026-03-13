@@ -192,7 +192,7 @@ Application pour les femmes enceintes avec :
 ## Credentials Admin
 - **Email**: cyrilalepsa@gmail.com
 - **Password**: Cyc@dmin9630
-- **API Secret**: Cyca-admin2026
+- **Role in DB**: `admin` (champ `role` dans collection `users`)
 
 ## Session Summary (13 Mars 2026)
 1. **Notifications Push** - Web Push API avec VAPID
@@ -202,6 +202,15 @@ Application pour les femmes enceintes avec :
    - Core (config, database, security)
    - Models (schemas)
 3. Tous les tests passent après refactoring
+
+## Session Update (13 Mars 2026 - v2)
+1. **UI Admin Dashboard** - Icônes compteurs réduites (`w-3 h-3`) et transparentes (`opacity-30`)
+2. **P3 Complété - Gestion du rôle admin** :
+   - Ajout champ `role` ("user"/"admin") au modèle User
+   - Création fonction `get_admin_user` dans security.py
+   - Routes admin utilisent maintenant l'authentification JWT (plus de `admin_secret` dans l'URL)
+   - Migration effectuée : admin a `role: "admin"` en BDD
+   - Compatibilité arrière maintenue (fallback sur email)
 
 ## Future Tasks (Backlog)
 - **(P2)** Graphiques de suivi grossesse

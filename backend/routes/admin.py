@@ -8,8 +8,8 @@ import logging
 import json
 
 from core.database import db
-from core.config import ADMIN_SECRET, RESEND_API_KEY, SENDER_EMAIL, VAPID_PRIVATE_KEY, VAPID_CLAIMS_EMAIL
-from core.security import get_current_user
+from core.config import RESEND_API_KEY, SENDER_EMAIL, VAPID_PRIVATE_KEY, VAPID_CLAIMS_EMAIL
+from core.security import get_admin_user
 from models.schemas import (
     User, PromoCode, AdminMessage, ContactMessageRequest, AdminReplyRequest,
     SubscribeRequest
@@ -35,11 +35,8 @@ router = APIRouter(tags=["admin"])
 # ==================== PROMO CODES ====================
 
 @router.post("/admin/generate-codes")
-async def generate_promo_codes(count: int = 1, note: str = "", admin_secret: str = ""):
+async def generate_promo_codes(count: int = 1, note: str = "", admin: User = Depends(get_admin_user)):
     """Generate promo codes for beta testers (admin only)"""
-    if admin_secret != ADMIN_SECRET:
-        raise HTTPException(status_code=403, detail="Accès non autorisé")
-    
     if count < 1 or count > 20:
         raise HTTPException(status_code=400, detail="Nombre de codes entre 1 et 20")
     
@@ -54,11 +51,8 @@ async def generate_promo_codes(count: int = 1, note: str = "", admin_secret: str
     return {"success": True, "message": f"{count} code(s) généré(s)", "codes": codes}
 
 @router.get("/admin/promo-codes")
-async def list_promo_codes(admin_secret: str = ""):
+async def list_promo_codes(admin: User = Depends(get_admin_user)):
     """List all promo codes (admin only)"""
-    if admin_secret != ADMIN_SECRET:
-        raise HTTPException(status_code=403, detail="Accès non autorisé")
-    
     codes = await db.promo_codes.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
     return {
         "codes": codes,
@@ -70,11 +64,8 @@ async def list_promo_codes(admin_secret: str = ""):
 # ==================== USERS ====================
 
 @router.get("/admin/users")
-async def get_admin_users(admin_secret: str = ""):
+async def get_admin_users(admin: User = Depends(get_admin_user)):
     """Get all registered users with their status"""
-    if admin_secret != ADMIN_SECRET:
-        raise HTTPException(status_code=403, detail="Accès non autorisé")
-    
     users = await db.users.find({}, {"_id": 0, "hashed_password": 0}).sort("created_at", -1).to_list(1000)
     
     for user in users:
@@ -96,11 +87,8 @@ async def get_admin_users(admin_secret: str = ""):
     return {"users": users, "stats": stats}
 
 @router.get("/admin/stats")
-async def get_admin_stats(admin_secret: str = ""):
+async def get_admin_stats(admin: User = Depends(get_admin_user)):
     """Get global statistics for admin dashboard"""
-    if admin_secret != ADMIN_SECRET:
-        raise HTTPException(status_code=403, detail="Accès non autorisé")
-    
     # Count users by status
     users = await db.users.find({}, {"_id": 0, "subscription_status": 1, "premium_source": 1}).to_list(10000)
     
@@ -146,11 +134,8 @@ async def get_admin_stats(admin_secret: str = ""):
 # ==================== FOODS ====================
 
 @router.get("/admin/pending-foods")
-async def get_pending_foods(admin_secret: str = ""):
+async def get_pending_foods(admin: User = Depends(get_admin_user)):
     """Get all user-submitted foods pending approval"""
-    if admin_secret != ADMIN_SECRET:
-        raise HTTPException(status_code=403, detail="Accès non autorisé")
-    
     pending = await db.user_added_foods.find({"status": "pending"}, {"_id": 0}).sort("created_at", -1).to_list(100)
     
     for food in pending:
@@ -167,11 +152,8 @@ async def get_pending_foods(admin_secret: str = ""):
     return {"foods": pending, "stats": stats}
 
 @router.post("/admin/food-status/{food_id}")
-async def update_food_status(food_id: str, status: str, admin_secret: str = ""):
+async def update_food_status(food_id: str, status: str, admin: User = Depends(get_admin_user)):
     """Approve or reject a user-submitted food"""
-    if admin_secret != ADMIN_SECRET:
-        raise HTTPException(status_code=403, detail="Accès non autorisé")
-    
     if status not in ["approved", "rejected"]:
         raise HTTPException(status_code=400, detail="Status invalide")
     
@@ -188,11 +170,8 @@ async def update_food_status(food_id: str, status: str, admin_secret: str = ""):
 # ==================== MESSAGES ====================
 
 @router.get("/admin/messages")
-async def get_admin_messages(admin_secret: str = ""):
+async def get_admin_messages(admin: User = Depends(get_admin_user)):
     """Get all messages sent to admin"""
-    if admin_secret != ADMIN_SECRET:
-        raise HTTPException(status_code=403, detail="Accès non autorisé")
-    
     messages = await db.admin_messages.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
     
     stats = {
@@ -203,11 +182,8 @@ async def get_admin_messages(admin_secret: str = ""):
     return {"messages": messages, "stats": stats}
 
 @router.post("/admin/messages/{message_id}/read")
-async def mark_message_read(message_id: str, admin_secret: str = ""):
+async def mark_message_read(message_id: str, admin: User = Depends(get_admin_user)):
     """Mark a message as read"""
-    if admin_secret != ADMIN_SECRET:
-        raise HTTPException(status_code=403, detail="Accès non autorisé")
-    
     result = await db.admin_messages.update_one(
         {"id": message_id},
         {"$set": {"is_read": True}}
@@ -219,11 +195,8 @@ async def mark_message_read(message_id: str, admin_secret: str = ""):
     return {"success": True}
 
 @router.post("/admin/messages/{message_id}/reply")
-async def reply_to_message(message_id: str, request: AdminReplyRequest, admin_secret: str = ""):
+async def reply_to_message(message_id: str, request: AdminReplyRequest, admin: User = Depends(get_admin_user)):
     """Reply to a user message and send email + push notification"""
-    if admin_secret != ADMIN_SECRET:
-        raise HTTPException(status_code=403, detail="Accès non autorisé")
-    
     message = await db.admin_messages.find_one({"id": message_id}, {"_id": 0})
     if not message:
         raise HTTPException(status_code=404, detail="Message non trouvé")
