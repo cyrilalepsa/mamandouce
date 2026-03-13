@@ -83,6 +83,18 @@ Application pour les femmes enceintes avec :
 - [x] 41 semaines de conseils
 
 ### Page d'Administration
+- [x] **Onglet Dashboard** (NOUVEAU) avec compteurs :
+  - Visites totales
+  - Inscriptions
+  - Premium (payants)
+  - Bêta testeuses
+  - Utilisateurs gratuits
+  - Messages non lus
+  - Aliments en attente
+  - Résumé (taux premium, codes)
+- [x] **Notifications push admin** quand :
+  - Nouvelle inscription
+  - Nouveau message
 - [x] Onglet Utilisateurs (beta testeuse/premium/gratuit)
 - [x] Onglet Messages avec réponse + email + push
 - [x] Onglet Aliments (validation)

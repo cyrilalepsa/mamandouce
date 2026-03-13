@@ -95,6 +95,54 @@ async def get_admin_users(admin_secret: str = ""):
     
     return {"users": users, "stats": stats}
 
+@router.get("/admin/stats")
+async def get_admin_stats(admin_secret: str = ""):
+    """Get global statistics for admin dashboard"""
+    if admin_secret != ADMIN_SECRET:
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+    
+    # Count users by status
+    users = await db.users.find({}, {"_id": 0, "subscription_status": 1, "premium_source": 1}).to_list(10000)
+    
+    premium_count = 0
+    beta_count = 0
+    free_count = 0
+    
+    for user in users:
+        sub_status = user.get("subscription_status", "free")
+        premium_source = user.get("premium_source", "")
+        
+        if sub_status == "premium":
+            if premium_source == "promo_code":
+                beta_count += 1
+            else:
+                premium_count += 1
+        else:
+            free_count += 1
+    
+    # Get visit stats
+    visits_doc = await db.site_stats.find_one({"type": "visits"}, {"_id": 0})
+    registrations_doc = await db.site_stats.find_one({"type": "registrations"}, {"_id": 0})
+    
+    # Get unread messages count
+    unread_messages = await db.admin_messages.count_documents({"is_read": False})
+    
+    # Get pending foods count
+    pending_foods = await db.user_added_foods.count_documents({"status": "pending"})
+    
+    return {
+        "users": {
+            "total": len(users),
+            "premium": premium_count,
+            "beta_tester": beta_count,
+            "free": free_count
+        },
+        "visits": visits_doc.get("count", 0) if visits_doc else 0,
+        "registrations": registrations_doc.get("count", 0) if registrations_doc else len(users),
+        "unread_messages": unread_messages,
+        "pending_foods": pending_foods
+    }
+
 # ==================== FOODS ====================
 
 @router.get("/admin/pending-foods")

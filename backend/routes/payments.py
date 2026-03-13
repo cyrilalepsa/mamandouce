@@ -4,8 +4,13 @@ from pydantic import BaseModel
 from typing import Dict
 from datetime import datetime, timezone
 import os
+import logging
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionRequest
 
+from core.database import db
+from core.config import ADMIN_EMAIL
+
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "sk_test_emergent")
@@ -17,6 +22,19 @@ SUBSCRIPTION_PACKAGES = {
         "currency": "eur"
     }
 }
+
+async def notify_admin_new_subscription(user_email: str, package_name: str, amount: float):
+    """Send push notification to admin for new subscription"""
+    from routes.push_notifications import send_push_notification
+    try:
+        await send_push_notification(
+            user_email=ADMIN_EMAIL,
+            title="Nouvel abonnement Premium !",
+            body=f"{user_email} vient de s'abonner ({amount}€)",
+            url="/admin"
+        )
+    except Exception as e:
+        logger.error(f"Error notifying admin: {e}")
 
 class CheckoutRequest(BaseModel):
     package_id: str

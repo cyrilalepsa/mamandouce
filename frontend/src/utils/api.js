@@ -51,6 +51,7 @@ export const api = {
     generateCodes: (count, note) => axios.post(`${API}/admin/generate-codes?count=${count}&note=${encodeURIComponent(note)}&admin_secret=Cyca-admin2026`, {}, getAuthHeaders()),
     getCodes: () => axios.get(`${API}/admin/promo-codes?admin_secret=Cyca-admin2026`, getAuthHeaders()),
     getUsers: () => axios.get(`${API}/admin/users?admin_secret=Cyca-admin2026`, getAuthHeaders()),
+    getStats: () => axios.get(`${API}/admin/stats?admin_secret=Cyca-admin2026`, getAuthHeaders()),
     getPendingFoods: () => axios.get(`${API}/admin/pending-foods?admin_secret=Cyca-admin2026`, getAuthHeaders()),
     updateFoodStatus: (foodId, status) => axios.post(`${API}/admin/food-status/${foodId}?status=${status}&admin_secret=Cyca-admin2026`, {}, getAuthHeaders()),
     getMessages: () => axios.get(`${API}/admin/messages?admin_secret=Cyca-admin2026`, getAuthHeaders()),
