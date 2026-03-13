@@ -42,6 +42,10 @@ export const api = {
     getShared: (shareId) => axios.get(`${API}/birth-list/shared/${shareId}`),
     toggleReservedShared: (shareId, itemId) => axios.post(`${API}/birth-list/shared/${shareId}/items/${itemId}/toggle`),
   },
+  subscription: {
+    getStatus: () => axios.get(`${API}/subscription-status`, getAuthHeaders()),
+    redeemCode: (code) => axios.post(`${API}/redeem-code`, { code }, getAuthHeaders()),
+  },
   history: {
     getSearch: () => axios.get(`${API}/history/search`, getAuthHeaders()),
   },

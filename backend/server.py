@@ -202,6 +202,21 @@ class AddBirthListItemRequest(BaseModel):
     quantity: int = 1
     notes: Optional[str] = None
 
+class PromoCode(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    code: str = Field(default_factory=lambda: f"BETA-{''.join([uuid.uuid4().hex[:5].upper()])}")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    used: bool = False
+    used_by: Optional[str] = None
+    used_at: Optional[datetime] = None
+    note: Optional[str] = None  # Pour noter à qui vous avez envoyé le code
+
+class RedeemCodeRequest(BaseModel):
+    code: str
+
+# Code admin secret pour générer des codes promo (à garder secret !)
+ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "mamandouce-admin-2026")
+
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
@@ -1353,6 +1368,105 @@ async def toggle_shared_item_reserved(share_id: str, item_id: str):
     )
     
     return updated_list
+
+# ============ PROMO CODES ENDPOINTS ============
+
+@api_router.post("/admin/generate-codes")
+async def generate_promo_codes(count: int = 1, note: str = "", admin_secret: str = ""):
+    """Generate promo codes (admin only)"""
+    if admin_secret != ADMIN_SECRET:
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+    
+    codes = []
+    for _ in range(count):
+        promo = PromoCode(note=note)
+        promo_dict = promo.model_dump()
+        promo_dict["created_at"] = promo_dict["created_at"].isoformat()
+        await db.promo_codes.insert_one(promo_dict)
+        codes.append({
+            "code": promo.code,
+            "note": note
+        })
+    
+    return {
+        "success": True,
+        "message": f"{count} code(s) généré(s)",
+        "codes": codes
+    }
+
+@api_router.get("/admin/promo-codes")
+async def list_promo_codes(admin_secret: str = ""):
+    """List all promo codes (admin only)"""
+    if admin_secret != ADMIN_SECRET:
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+    
+    codes = await db.promo_codes.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return {
+        "codes": codes,
+        "total": len(codes),
+        "used": len([c for c in codes if c.get("used")]),
+        "available": len([c for c in codes if not c.get("used")])
+    }
+
+@api_router.post("/redeem-code")
+async def redeem_promo_code(request: RedeemCodeRequest, current_user: User = Depends(get_current_user)):
+    """Redeem a promo code to get premium access"""
+    code = request.code.strip().upper()
+    
+    # Check if user already has premium
+    user = await db.users.find_one({"email": current_user.email})
+    if user and user.get("subscription_status") == "premium":
+        raise HTTPException(status_code=400, detail="Vous avez déjà un accès premium")
+    
+    # Find the promo code
+    promo = await db.promo_codes.find_one({"code": code})
+    
+    if not promo:
+        raise HTTPException(status_code=404, detail="Code invalide")
+    
+    if promo.get("used"):
+        raise HTTPException(status_code=400, detail="Ce code a déjà été utilisé")
+    
+    # Mark code as used
+    await db.promo_codes.update_one(
+        {"code": code},
+        {
+            "$set": {
+                "used": True,
+                "used_by": current_user.email,
+                "used_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    # Upgrade user to premium
+    await db.users.update_one(
+        {"email": current_user.email},
+        {
+            "$set": {
+                "subscription_status": "premium",
+                "premium_since": datetime.now(timezone.utc).isoformat(),
+                "premium_source": "promo_code",
+                "promo_code_used": code
+            }
+        }
+    )
+    
+    return {
+        "success": True,
+        "message": "Félicitations ! Votre accès Premium à vie est maintenant activé !",
+        "subscription_status": "premium"
+    }
+
+@api_router.get("/subscription-status")
+async def get_subscription_status(current_user: User = Depends(get_current_user)):
+    """Get current subscription status"""
+    user = await db.users.find_one({"email": current_user.email}, {"_id": 0})
+    return {
+        "subscription_status": user.get("subscription_status", "free"),
+        "premium_since": user.get("premium_since"),
+        "premium_source": user.get("premium_source")
+    }
 
 app.include_router(api_router)
 
