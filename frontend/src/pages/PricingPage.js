@@ -20,7 +20,6 @@ function PricingPage() {
       { text: 'Scanner illimité', included: false },
       { text: 'Démarches administratives', included: false },
       { text: 'Notifications email', included: false },
-      { text: 'Disque de grossesse', included: false },
       { text: 'Historique complet', included: false },
       { text: 'Support prioritaire', included: false }
     ],
@@ -31,7 +30,6 @@ function PricingPage() {
       { text: 'Accès CAF/Ameli/Mairie', included: true },
       { text: '6 images évolution embryon/fœtus', included: true },
       { text: 'Démarches administratives détaillées', included: true },
-      { text: 'Disque de grossesse interactif', included: true },
       { text: 'Notifications email automatiques', included: true },
       { text: 'Historique complet recherches', included: true },
       { text: 'Sans publicité', included: true },
