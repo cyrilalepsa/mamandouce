@@ -61,7 +61,7 @@ function PricingPage() {
               <span className="text-2xl text-slate-500 block">/an</span>
             </div>
           </div>
-          <p className="text-slate-500 mt-2">soit seulement 2,08€/mois</p>
+          <p className="text-slate-500 mt-2">soit seulement 2,25€/mois</p>
           <div className="inline-block bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold mt-4">
             ✓ Sans renouvellement automatique
           </div>
@@ -108,7 +108,7 @@ function PricingPage() {
             <div className="text-center mb-6">
               <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>Premium</h3>
               <div className="text-5xl font-bold text-white mb-2">27€</div>
-              <p className="text-sky-100">/an (2,08€/mois)</p>
+              <p className="text-sky-100">/an (2,25€/mois)</p>
               <div className="inline-block bg-white/20 text-white px-3 py-1 rounded-full text-xs font-semibold mt-2">
                 Sans renouvellement auto
               </div>
