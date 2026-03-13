@@ -45,6 +45,8 @@ function WeeklyTipsPage() {
 
   const weeks = [
     { week: 1, trimester: 1 },
+    { week: 2, trimester: 1 },
+    { week: 3, trimester: 1 },
     { week: 4, trimester: 1 },
     { week: 8, trimester: 1 },
     { week: 12, trimester: 1 },

@@ -15,9 +15,31 @@ WEEKLY_TIPS = {
         "description": "Félicitations ! Votre grossesse commence. L'ovule fécondé voyage vers l'utérus pour s'implanter.",
         "embryo_size": "0.1 mm",
         "embryo_weight": "< 1 g",
-        "fruit_comparison": "une graine de pavot",
+        "fruit_comparison": "un grain de sable",
         "development": "L'œuf fécondé se divise en plusieurs cellules tout en descendant vers l'utérus.",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/d98e4aeffa0b7c51bdbc3ca2dc3d57d5922fab22f31d3706d73e32b1d19d86d0.png",
+        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/567f5aaf98d3d7561c70ef9ccc960898b70a245510e02ff09397291427f4b8d1.png",
+        "administrative_tasks": []
+    },
+    2: {
+        "week": 2,
+        "title": "La division cellulaire",
+        "description": "L'œuf fécondé continue de se diviser en descendant vers l'utérus. Il forme maintenant un blastocyste.",
+        "embryo_size": "0.2 mm",
+        "embryo_weight": "< 1 g",
+        "fruit_comparison": "une graine de pavot",
+        "development": "Les cellules se multiplient rapidement. Le blastocyste se prépare à l'implantation.",
+        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/5f52def3945d90beceac7a74b216efcf80c8afafc8f885eeb96b4cfdcfd5f2af.png",
+        "administrative_tasks": []
+    },
+    3: {
+        "week": 3,
+        "title": "L'implantation commence",
+        "description": "Le blastocyste s'implante dans la paroi utérine. C'est le début de la nidation !",
+        "embryo_size": "0.3 mm",
+        "embryo_weight": "< 1 g",
+        "fruit_comparison": "une graine de sésame",
+        "development": "L'embryon s'enfouit dans la muqueuse utérine. Les premières connexions avec votre corps s'établissent.",
+        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/52f53fe8fb4f90c2234895f6ea9d009ab295ec0aa5547ba29e28280fc76fdb99.png",
         "administrative_tasks": []
     },
     4: {
