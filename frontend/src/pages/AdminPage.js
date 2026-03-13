@@ -418,25 +418,21 @@ function AdminPage() {
             {/* Main Stats Cards */}
             <div className="grid grid-cols-4 gap-3">
               <Card className="bg-gradient-to-br from-sky-400 to-sky-500 rounded-xl p-3 text-white">
-                <Eye className="w-3 h-3 opacity-10 mb-1" />
                 <p className="text-2xl font-bold">{globalStats.visits}</p>
                 <p className="text-xs font-medium opacity-90">Visites</p>
               </Card>
               
               <Card className="bg-gradient-to-br from-green-400 to-green-500 rounded-xl p-3 text-white">
-                <UserPlus className="w-3 h-3 opacity-10 mb-1" />
                 <p className="text-2xl font-bold">{globalStats.registrations || globalStats.users.total}</p>
                 <p className="text-xs font-medium opacity-90">Inscrits</p>
               </Card>
               
               <Card className="bg-gradient-to-br from-amber-400 to-amber-500 rounded-xl p-3 text-white">
-                <Crown className="w-3 h-3 opacity-10 mb-1" />
                 <p className="text-2xl font-bold">{globalStats.users.premium}</p>
                 <p className="text-xs font-medium opacity-90">Premium</p>
               </Card>
               
               <Card className="bg-gradient-to-br from-purple-400 to-purple-500 rounded-xl p-3 text-white">
-                <Sparkles className="w-3 h-3 opacity-10 mb-1" />
                 <p className="text-2xl font-bold">{globalStats.users.beta_tester}</p>
                 <p className="text-xs font-medium opacity-90">Bêta</p>
               </Card>
