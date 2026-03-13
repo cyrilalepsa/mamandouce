@@ -169,7 +169,7 @@ function PricingPage() {
             </div>
             <div>
               <h4 className="font-bold text-slate-700 mb-2">Comment fonctionne le paiement ?</h4>
-              <p className="text-slate-600">Paiement sécurisé unique de 15€ pour 12 mois d'accès complet.</p>
+              <p className="text-slate-600">Paiement sécurisé unique de 25€ pour un accès à vie.</p>
             </div>
             <div>
               <h4 className="font-bold text-slate-700 mb-2">Mes données sont-elles sécurisées ?</h4>
