@@ -6,7 +6,7 @@ import { Input } from '../components/ui/input';
 import { ArrowLeft, User, Mail, Calendar, MessageSquare, Send, CheckCircle, Clock, ChevronDown, ChevronUp, Inbox, Bell, BellOff, Fingerprint } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
-import { isBiometricEnabled, disableBiometricLogin } from '../utils/biometricAuth';
+import { isBiometricEnabled, disableBiometricLogin, checkBiometricSupport } from '../utils/biometricAuth';
 
 // Helper function to convert base64 to Uint8Array for VAPID key
 function urlBase64ToUint8Array(base64String) {
@@ -47,11 +47,19 @@ function ProfilePage() {
   
   // Biometric login
   const [biometricEnabled, setBiometricEnabled] = useState(false);
+  const [biometricSupported, setBiometricSupported] = useState(false);
 
   useEffect(() => {
     loadUserData();
     checkNotificationStatus();
     setBiometricEnabled(isBiometricEnabled());
+    
+    // Check biometric support
+    const checkSupport = async () => {
+      const support = await checkBiometricSupport();
+      setBiometricSupported(support.platformAuthenticator);
+    };
+    checkSupport();
   }, []);
 
   const loadUserData = async () => {
@@ -327,8 +335,10 @@ function ProfilePage() {
                     <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Connexion rapide</h3>
                     <p className="text-sm text-slate-500">
                       {biometricEnabled 
-                        ? 'Connexion par empreinte activée'
-                        : 'Connectez-vous rapidement avec votre empreinte'}
+                        ? 'Empreinte digitale / Face ID activé'
+                        : biometricSupported
+                          ? 'Utilisez votre empreinte pour vous connecter'
+                          : 'Non disponible sur cet appareil'}
                     </p>
                   </div>
                 </div>
@@ -346,9 +356,14 @@ function ProfilePage() {
                   </Button>
                 )}
               </div>
-              {!biometricEnabled && (
+              {!biometricEnabled && biometricSupported && (
                 <p className="mt-3 text-xs text-slate-500 bg-white/50 rounded-xl p-3">
-                  Pour activer la connexion rapide, déconnectez-vous puis reconnectez-vous. L'option vous sera proposée.
+                  Pour activer la connexion par empreinte, déconnectez-vous puis reconnectez-vous. L'option vous sera proposée automatiquement.
+                </p>
+              )}
+              {!biometricSupported && (
+                <p className="mt-3 text-xs text-amber-600 bg-amber-50 rounded-xl p-3">
+                  Votre appareil ne supporte pas l'authentification biométrique (empreinte/Face ID). Cette fonctionnalité est disponible sur les smartphones et tablettes récents.
                 </p>
               )}
             </Card>

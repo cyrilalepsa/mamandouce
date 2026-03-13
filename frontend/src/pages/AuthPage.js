@@ -8,7 +8,13 @@ import { toast } from 'sonner';
 import api from '../utils/api';
 import { Cloud, Feather, ArrowLeft, Mail, Fingerprint } from 'lucide-react';
 import AppTitle from '../components/AppTitle';
-import { isBiometricEnabled, getSavedCredentials, enableBiometricLogin } from '../utils/biometricAuth';
+import { 
+  isBiometricEnabled, 
+  isBiometricAvailable,
+  authenticateWithBiometric, 
+  enableBiometricLogin,
+  checkBiometricSupport
+} from '../utils/biometricAuth';
 
 function AuthPage({ setIsAuthenticated }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,15 +23,17 @@ function AuthPage({ setIsAuthenticated }) {
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [showBiometricOption, setShowBiometricOption] = useState(false);
-  const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [biometricSupported, setBiometricSupported] = useState(false);
   const [showEnableBiometric, setShowEnableBiometric] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if biometric login is available
+    // Check if biometric login is available and enabled
     const checkBiometric = async () => {
       const enabled = isBiometricEnabled();
-      setBiometricAvailable(enabled);
+      const support = await checkBiometricSupport();
+      setBiometricSupported(support.platformAuthenticator);
+      
       if (enabled) {
         setShowBiometricOption(true);
       }
@@ -36,23 +44,27 @@ function AuthPage({ setIsAuthenticated }) {
   const handleBiometricLogin = async () => {
     setLoading(true);
     try {
-      const credentials = await getSavedCredentials();
+      // This will trigger the device's biometric prompt (fingerprint/Face ID)
+      const credentials = await authenticateWithBiometric();
+      
       if (credentials) {
+        // Use the credentials to login
         const response = await api.auth.login({ 
           email: credentials.email, 
           password: credentials.password 
         });
         localStorage.setItem('token', response.data.access_token);
         setIsAuthenticated(true);
-        toast.success('Connexion réussie!');
+        toast.success('Connexion réussie !');
         navigate('/');
-      } else {
-        toast.error('Aucune empreinte enregistrée');
-        setShowBiometricOption(false);
       }
     } catch (error) {
-      toast.error('Échec de la connexion. Veuillez réessayer manuellement.');
-      setShowBiometricOption(false);
+      console.error('Biometric login error:', error);
+      if (error.message === 'Authentification annulée') {
+        toast.info('Authentification annulée');
+      } else {
+        toast.error(error.message || 'Échec de la connexion biométrique');
+      }
     } finally {
       setLoading(false);
     }
@@ -69,10 +81,15 @@ function AuthPage({ setIsAuthenticated }) {
 
       localStorage.setItem('token', response.data.access_token);
       
-      // After successful login, ask to enable biometric if not already enabled
+      // After successful login, check if we should offer biometric
       if (isLogin && !isBiometricEnabled()) {
-        setShowEnableBiometric(true);
-        return;
+        // Check if device supports biometric
+        const canUseBiometric = await isBiometricAvailable();
+        if (canUseBiometric) {
+          setShowEnableBiometric(true);
+          setLoading(false);
+          return;
+        }
       }
       
       setIsAuthenticated(true);
