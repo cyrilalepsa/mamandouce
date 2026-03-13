@@ -55,6 +55,7 @@ export const api = {
     updateFoodStatus: (foodId, status) => axios.post(`${API}/admin/food-status/${foodId}?status=${status}&admin_secret=Cyca-admin2026`, {}, getAuthHeaders()),
     getMessages: () => axios.get(`${API}/admin/messages?admin_secret=Cyca-admin2026`, getAuthHeaders()),
     markMessageRead: (messageId) => axios.post(`${API}/admin/messages/${messageId}/read?admin_secret=Cyca-admin2026`, {}, getAuthHeaders()),
+    replyToMessage: (messageId, reply) => axios.post(`${API}/admin/messages/${messageId}/reply?admin_secret=Cyca-admin2026`, { reply }, getAuthHeaders()),
   },
   contact: {
     sendMessage: (data) => axios.post(`${API}/contact/send`, data, getAuthHeaders()),

@@ -223,11 +223,16 @@ class AdminMessage(BaseModel):
     subject: str
     message: str
     is_read: bool = False
+    admin_reply: Optional[str] = None
+    replied_at: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class ContactMessageRequest(BaseModel):
     subject: str
     message: str
+
+class AdminReplyRequest(BaseModel):
+    reply: str
 
 # Code admin secret pour générer des codes promo (à garder secret !)
 ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "Cyca-admin2026")
@@ -1529,6 +1534,73 @@ async def mark_message_read(message_id: str, admin_secret: str = ""):
         raise HTTPException(status_code=404, detail="Message non trouvé")
     
     return {"success": True}
+
+@api_router.post("/admin/messages/{message_id}/reply")
+async def reply_to_message(message_id: str, request: AdminReplyRequest, admin_secret: str = ""):
+    """Reply to a user message and send email notification"""
+    if admin_secret != ADMIN_SECRET:
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+    
+    # Get the message
+    message = await db.admin_messages.find_one({"id": message_id}, {"_id": 0})
+    if not message:
+        raise HTTPException(status_code=404, detail="Message non trouvé")
+    
+    # Update message with reply
+    replied_at = datetime.now(timezone.utc).isoformat()
+    await db.admin_messages.update_one(
+        {"id": message_id},
+        {
+            "$set": {
+                "admin_reply": request.reply,
+                "replied_at": replied_at,
+                "is_read": True
+            }
+        }
+    )
+    
+    # Try to send email notification to user
+    email_sent = False
+    if RESEND_API_KEY and message.get("user_email"):
+        try:
+            resend.Emails.send({
+                "from": SENDER_EMAIL,
+                "to": message["user_email"],
+                "subject": f"Réponse à votre message : {message.get('subject', 'Sans sujet')}",
+                "html": f"""
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <div style="background: linear-gradient(135deg, #ec4899, #8b5cf6); padding: 20px; border-radius: 15px; text-align: center;">
+                        <h1 style="color: white; margin: 0;">MamanDouce</h1>
+                    </div>
+                    <div style="padding: 30px 20px;">
+                        <p style="color: #374151;">Bonjour {message.get('user_name', 'Chère utilisatrice')},</p>
+                        <p style="color: #374151;">Vous avez reçu une réponse à votre message :</p>
+                        
+                        <div style="background: #f3f4f6; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                            <p style="color: #6b7280; font-size: 14px; margin: 0 0 5px 0;"><strong>Votre message :</strong></p>
+                            <p style="color: #374151; margin: 0;">{message.get('message', '')}</p>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #fdf2f8, #f5f3ff); padding: 15px; border-radius: 10px; border-left: 4px solid #ec4899;">
+                            <p style="color: #6b7280; font-size: 14px; margin: 0 0 5px 0;"><strong>Notre réponse :</strong></p>
+                            <p style="color: #374151; margin: 0;">{request.reply}</p>
+                        </div>
+                        
+                        <p style="color: #374151; margin-top: 30px;">À bientôt sur MamanDouce !</p>
+                        <p style="color: #9ca3af; font-size: 12px;">L'équipe MamanDouce</p>
+                    </div>
+                </div>
+                """
+            })
+            email_sent = True
+        except Exception as e:
+            logger.error(f"Error sending reply email: {e}")
+    
+    return {
+        "success": True,
+        "email_sent": email_sent,
+        "message": "Réponse envoyée" + (" et email envoyé" if email_sent else " (email non envoyé)")
+    }
 
 @api_router.post("/contact/send")
 async def send_contact_message(request: ContactMessageRequest, current_user: User = Depends(get_current_user)):

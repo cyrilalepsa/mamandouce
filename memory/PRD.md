@@ -8,7 +8,7 @@ Application pour les femmes enceintes avec :
 - Liste de naissance partageable
 - Liens vers services administratifs et ressources
 - Système d'abonnement Premium (27€/an)
-- Page d'administration complète
+- Page d'administration complète avec messagerie
 
 ## Architecture Technique
 - **Frontend**: React.js + Tailwind CSS + Shadcn/UI + Capacitor (PWA/Mobile)
@@ -67,7 +67,7 @@ Application pour les femmes enceintes avec :
 - [x] Démarches administratives
 - [x] **Note importante dents & cheveux** (fragilisés pendant grossesse)
 
-### Page d'Administration (NOUVEAU - 13 Mars 2026)
+### Page d'Administration
 - [x] **Onglet Utilisateurs** : Liste complète avec statuts
   - Bêta testeuse (utilisateurs ayant utilisé un code promo)
   - Premium (abonnés payants)
@@ -75,6 +75,7 @@ Application pour les femmes enceintes avec :
 - [x] **Onglet Messages** : Réception et gestion des messages utilisateurs
   - Compteur de messages non lus
   - Bouton "Marquer comme lu"
+  - **Fonctionnalité de réponse** avec envoi d'email automatique (NOUVEAU)
 - [x] **Onglet Aliments** : Validation des aliments proposés
   - Liste des aliments en attente
   - Boutons Approuver/Rejeter
@@ -83,11 +84,12 @@ Application pour les femmes enceintes avec :
   - Note optionnelle pour chaque code
   - Liste des codes avec statut (utilisé/disponible)
 
-### Système de Contact (NOUVEAU - 13 Mars 2026)
+### Système de Contact
 - [x] **Formulaire de contact** dans la page Profil
   - Sujet et message
   - Envoi vers la boîte admin
   - Confirmation visuelle
+- [x] **Réponse admin** par email avec template HTML stylisé
 
 ### Fonctionnalités annexes
 - [x] Historique de recherche
@@ -119,16 +121,17 @@ Application pour les femmes enceintes avec :
 - `GET /api/medical/appointments`, `POST /api/medical/complete/{id}`
 - `GET /api/favorites`, `POST /api/favorites`
 
-### Admin (NOUVEAU)
+### Admin
 - `GET /api/admin/users?admin_secret=xxx` - Liste des utilisateurs
 - `GET /api/admin/pending-foods?admin_secret=xxx` - Aliments en attente
 - `POST /api/admin/food-status/{id}?status=xxx&admin_secret=xxx` - Approuver/Rejeter
 - `GET /api/admin/messages?admin_secret=xxx` - Messages reçus
 - `POST /api/admin/messages/{id}/read?admin_secret=xxx` - Marquer lu
+- `POST /api/admin/messages/{id}/reply?admin_secret=xxx` - **Répondre** (NOUVEAU)
 - `POST /api/admin/generate-codes` - Générer codes promo
 - `GET /api/admin/promo-codes` - Lister codes
 
-### Contact (NOUVEAU)
+### Contact
 - `POST /api/contact/send` - Envoyer message à l'admin
 
 ## Database Collections
@@ -136,8 +139,8 @@ Application pour les femmes enceintes avec :
 - `favorites`, `notifications`, `notification_preferences`
 - `completed_appointments`, `appointment_notes`
 - `user_added_foods`, `birth_lists`
-- `promo_codes` (NOUVEAU)
-- `admin_messages` (NOUVEAU)
+- `promo_codes`
+- `admin_messages` (avec champs `admin_reply` et `replied_at`)
 
 ## Credentials Admin
 - **Email**: cyrilalepsa@gmail.com
@@ -154,7 +157,7 @@ Application pour les femmes enceintes avec :
 - Scan caméra dépend permission navigateur
 - Scan code-barres avec pyzbar ne fonctionne pas si libzbar0 manquant sur le serveur
 
-## Test Results (13 Mars 2026)
+## Test Results
 - Backend: 100% (11/11 tests passés)
 - Frontend: 100% (tous les onglets et fonctionnalités testés)
 - Rapport: `/app/test_reports/iteration_1.json`
@@ -162,6 +165,13 @@ Application pour les femmes enceintes avec :
 ## Session Summary (13 Mars 2026)
 1. **Page Admin complète** avec 4 onglets fonctionnels
 2. **Statuts utilisateurs** : Bêta testeuse / Premium / Gratuit
-3. **Système de messagerie** utilisateur vers admin
+3. **Système de messagerie** bidirectionnel :
+   - Utilisateurs → Admin (formulaire profil)
+   - Admin → Utilisateurs (réponse avec email automatique)
 4. **Validation des aliments** proposés par la communauté
-5. **Tous les tests passent** (backend + frontend)
+5. **Email de réponse** avec template HTML stylisé MamanDouce
+
+## Future Tasks (Backlog)
+- **(P2)** Graphiques de suivi grossesse (poids mère, croissance bébé)
+- **(P2)** Mode hors-ligne complet et notifications push
+- **(P3)** Refactoring de server.py en modules séparés
