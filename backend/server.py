@@ -46,6 +46,7 @@ from routes.admin import router as admin_router
 from routes.contact import router as contact_router
 from routes.push_notifications import router as push_notifications_router
 from routes.payments import router as payments_router
+from routes.tips import router as tips_router
 
 # Include all routers
 api_router.include_router(auth_router)
@@ -57,6 +58,7 @@ api_router.include_router(admin_router)
 api_router.include_router(contact_router)
 api_router.include_router(push_notifications_router)
 api_router.include_router(payments_router)
+api_router.include_router(tips_router)
 
 # Include main router
 app.include_router(api_router)
