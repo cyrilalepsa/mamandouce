@@ -15,7 +15,7 @@ WEEKLY_TIPS = {
         "description": "Félicitations ! Votre grossesse commence. L'ovule fécondé voyage vers l'utérus pour s'implanter.",
         "embryo_size": "0.1 mm",
         "development": "L'œuf fécondé se divise en plusieurs cellules tout en descendant vers l'utérus.",
-        "image_url": "https://images.unsplash.com/photo-1584582397869-d7a9af824ed8?w=400",
+        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/0bbab837f10c9e69484240309928682546f029561264aa36beaa89af2e6b62a2.png",
         "administrative_tasks": []
     },
     4: {
@@ -24,7 +24,7 @@ WEEKLY_TIPS = {
         "description": "L'embryon s'implante dans la paroi utérine. C'est le moment où vous pourriez avoir un test positif !",
         "embryo_size": "1-2 mm",
         "development": "Le cœur commence à se former. Les premières cellules nerveuses apparaissent.",
-        "image_url": "https://images.unsplash.com/photo-1584582397869-d7a9af824ed8?w=400",
+        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/0bbab837f10c9e69484240309928682546f029561264aa36beaa89af2e6b62a2.png",
         "administrative_tasks": [
             "• Prendre rendez-vous chez votre médecin ou sage-femme",
             "• Commencer à prendre de l'acide folique si ce n'est pas déjà fait"
@@ -36,7 +36,7 @@ WEEKLY_TIPS = {
         "description": "Votre bébé est maintenant officiellement un fœtus ! Tous les organes majeurs sont en place.",
         "embryo_size": "1.6 cm",
         "development": "Les bras et jambes s'allongent. Les doigts et orteils commencent à se former. Le visage prend forme.",
-        "image_url": "https://images.unsplash.com/photo-1584582397869-d7a9af824ed8?w=400",
+        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/1f4a318a55d19ab6d3e8c11a32e65803c1d03c9d489ee66a53c380d83eb5bb5e.png",
         "administrative_tasks": [
             "• Première échographie à programmer (entre 11-13 SA)",
             "• Déclarer votre grossesse à la CAF et à l'Assurance Maladie avant la fin du 3ème mois"
@@ -48,7 +48,7 @@ WEEKLY_TIPS = {
         "description": "Le risque de fausse couche diminue considérablement. C'est souvent le moment d'annoncer la bonne nouvelle !",
         "embryo_size": "5-6 cm",
         "development": "Le fœtus peut bouger ses membres. Les organes génitaux commencent à se différencier.",
-        "image_url": "https://images.unsplash.com/photo-1584582397869-d7a9af824ed8?w=400",
+        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/999a64924c3cdd97db37f6b69abd53331c5e640c2e5612deeffdea8a9280afe2.png",
         "administrative_tasks": [
             "• Déclaration de grossesse obligatoire (avant 15 SA)",
             "• Choisir votre maternité",
@@ -61,7 +61,7 @@ WEEKLY_TIPS = {
         "description": "Vous pourriez commencer à sentir les premiers mouvements de bébé, comme des bulles ou papillons.",
         "embryo_size": "11 cm",
         "development": "Le fœtus peut sucer son pouce. Les cheveux et sourcils apparaissent. Il peut entendre les sons.",
-        "image_url": "https://images.unsplash.com/photo-1584582397869-d7a9af824ed8?w=400",
+        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/999a64924c3cdd97db37f6b69abd53331c5e640c2e5612deeffdea8a9280afe2.png",
         "administrative_tasks": [
             "• Deuxième échographie à programmer (entre 20-24 SA)",
             "• S'inscrire aux cours de préparation à l'accouchement"
@@ -73,7 +73,7 @@ WEEKLY_TIPS = {
         "description": "Vous êtes à mi-chemin ! L'échographie morphologique permet de vérifier le bon développement de bébé.",
         "embryo_size": "16 cm",
         "development": "Le fœtus est recouvert de vernix (substance protectrice). Il alterne phases de sommeil et d'éveil.",
-        "image_url": "https://images.unsplash.com/photo-1584582397869-d7a9af824ed8?w=400",
+        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/bb6c725791be0cdea1c4d313eeb9051da166e9141b808cde2ec71a1a7445d448.png",
         "administrative_tasks": [
             "• Échographie morphologique (20-22 SA)",
             "• Commencer à réfléchir à la liste de naissance"
@@ -85,7 +85,7 @@ WEEKLY_TIPS = {
         "description": "Le fœtus prend du poids et développe ses sens. Il peut réagir aux sons et à la lumière.",
         "embryo_size": "30 cm",
         "development": "Les poumons se développent. Le cerveau se complexifie. Bébé a des cycles de sommeil réguliers.",
-        "image_url": "https://images.unsplash.com/photo-1584582397869-d7a9af824ed8?w=400",
+        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/bb6c725791be0cdea1c4d313eeb9051da166e9141b808cde2ec71a1a7445d448.png",
         "administrative_tasks": [
             "• Visite du 6ème mois chez le médecin/sage-femme",
             "• Penser à l'inscription en crèche si nécessaire"
@@ -97,7 +97,7 @@ WEEKLY_TIPS = {
         "description": "Début du dernier trimestre ! Bébé continue de grossir et ses mouvements sont bien perceptibles.",
         "embryo_size": "37 cm",
         "development": "Les yeux s'ouvrent. Le système nerveux se perfectionne. Bébé reconnaît votre voix.",
-        "image_url": "https://images.unsplash.com/photo-1584582397869-d7a9af824ed8?w=400",
+        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/9ab1cd60c07750f17e763f8b1ddfd2609451feb13d9cb4d30fdecb3aca855a43.png",
         "administrative_tasks": [
             "• Troisième échographie à programmer (30-32 SA)",
             "• Commencer les cours de préparation à l'accouchement",
@@ -110,7 +110,7 @@ WEEKLY_TIPS = {
         "description": "Le bébé commence généralement à se positionner la tête en bas pour l'accouchement.",
         "embryo_size": "42 cm",
         "development": "Les poumons arrivent à maturité. Bébé stocke du fer et du calcium. Il prend environ 200g par semaine.",
-        "image_url": "https://images.unsplash.com/photo-1584582397869-d7a9af824ed8?w=400",
+        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/9ab1cd60c07750f17e763f8b1ddfd2609451feb13d9cb4d30fdecb3aca855a43.png",
         "administrative_tasks": [
             "• Troisième échographie (30-32 SA)",
             "• Préparer la valise de maternité",
@@ -123,7 +123,7 @@ WEEKLY_TIPS = {
         "description": "Bébé est presque prêt à naître. Il prend ses derniers grammes et peaufine ses poumons.",
         "embryo_size": "47 cm",
         "development": "La plupart des organes sont matures. Bébé descend dans le bassin. Il a moins de place pour bouger.",
-        "image_url": "https://images.unsplash.com/photo-1584582397869-d7a9af824ed8?w=400",
+        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/2f5e522f2b941e79f7625c2a59e5f94956d64f3b2b040a0b37390de680960a89.png",
         "administrative_tasks": [
             "• Consultation anesthésiste si péridurale souhaitée",
             "• Vérifier que la valise est prête",
@@ -136,7 +136,7 @@ WEEKLY_TIPS = {
         "description": "C'est la date prévue d'accouchement ! Bébé peut arriver à tout moment maintenant.",
         "embryo_size": "50 cm",
         "development": "Bébé est prêt à naître. Il pèse en moyenne 3.3 kg. Ses réflexes sont au point.",
-        "image_url": "https://images.unsplash.com/photo-1584582397869-d7a9af824ed8?w=400",
+        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/b5dbbd61c22245437260356aabfd5b97b03e9c8fc8bad7f582662b0e4475d76e.png",
         "administrative_tasks": [
             "• Surveiller les signes de travail",
             "• Rester sereine, bébé arrive quand il est prêt !",
