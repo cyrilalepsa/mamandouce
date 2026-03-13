@@ -1,0 +1,277 @@
+"""
+Food routes for MamanDouce
+Handles: Barcode scan, Food search, Food library, User-added foods, Favorites
+"""
+from fastapi import APIRouter, HTTPException, Depends
+from typing import Optional
+from datetime import datetime, timezone
+import httpx
+import logging
+
+from core.database import db
+from core.security import get_current_user
+from models.schemas import User, UserAddedFood, AddFoodRequest, Favorite, AddFavoriteRequest
+
+logger = logging.getLogger(__name__)
+router = APIRouter(tags=["food"])
+
+# Import food database
+from data.food_database import FOOD_SAFETY_DATABASE as FOOD_DATABASE
+
+async def get_food_safety_database():
+    """Get the food safety database"""
+    return FOOD_DATABASE
+
+# Pydantic model for search history (inline to avoid circular import)
+from pydantic import BaseModel, Field
+import uuid
+
+class SearchHistoryItem(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    query: str
+    result_type: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+# ==================== SCAN & SEARCH ====================
+
+@router.post("/scan/barcode")
+async def scan_barcode(barcode: str, current_user: User = Depends(get_current_user)):
+    """Scan a barcode and get food information"""
+    try:
+        food_safety_db = await get_food_safety_database()
+        product_info = food_safety_db.get(barcode, None)
+        
+        if not product_info:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(
+                    f"https://world.openfoodfacts.org/api/v0/product/{barcode}.json",
+                    timeout=10.0
+                )
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get("status") == 1:
+                        product = data.get("product", {})
+                        product_info = {
+                            "barcode": barcode,
+                            "name": product.get("product_name", "Produit inconnu"),
+                            "brand": product.get("brands", ""),
+                            "image_url": product.get("image_url", ""),
+                            "categories": product.get("categories", ""),
+                            "ingredients": product.get("ingredients_text_fr", ""),
+                            "safe_for_pregnancy": "unknown"
+                        }
+        
+        if product_info:
+            history = SearchHistoryItem(
+                user_id=current_user.id,
+                query=barcode,
+                result_type="barcode"
+            )
+            history_dict = history.model_dump()
+            history_dict["created_at"] = history_dict["created_at"].isoformat()
+            await db.search_history.insert_one(history_dict)
+        
+        return product_info or {"barcode": barcode, "name": "Produit non trouvé", "safe_for_pregnancy": "unknown"}
+    except Exception as e:
+        logger.error(f"Erreur scan barcode: {str(e)}")
+        return {"barcode": barcode, "name": "Erreur lors du scan", "safe_for_pregnancy": "unknown"}
+
+@router.post("/scan/search")
+async def search_food(query: str, current_user: User = Depends(get_current_user)):
+    """Search for food by name"""
+    food_safety_db = await get_food_safety_database()
+    results = []
+    
+    for key, value in food_safety_db.items():
+        if query.lower() in value["name"].lower():
+            results.append(value)
+    
+    if results:
+        history = SearchHistoryItem(
+            user_id=current_user.id,
+            query=query,
+            result_type="search"
+        )
+        history_dict = history.model_dump()
+        history_dict["created_at"] = history_dict["created_at"].isoformat()
+        await db.search_history.insert_one(history_dict)
+    
+    return results[:10]
+
+@router.get("/foods/safe")
+async def get_safe_foods(current_user: User = Depends(get_current_user)):
+    """Get all safe foods"""
+    food_db = await get_food_safety_database()
+    safe_foods = [v for v in food_db.values() if v["safe_for_pregnancy"] == "safe"]
+    return safe_foods
+
+# ==================== FOOD LIBRARY ====================
+
+@router.get("/food-library")
+async def get_food_library(
+    search: Optional[str] = None,
+    category: Optional[str] = None,
+    status: Optional[str] = None,
+    page: int = 1,
+    limit: int = 50,
+    current_user: User = Depends(get_current_user)
+):
+    """Get complete food library with search and filtering"""
+    food_db = await get_food_safety_database()
+    
+    foods = sorted(food_db.values(), key=lambda x: x["name"].lower())
+    
+    if search:
+        search_lower = search.lower()
+        foods = [f for f in foods if search_lower in f["name"].lower() or search_lower in f.get("category", "").lower()]
+    
+    if category:
+        foods = [f for f in foods if f.get("category", "").lower() == category.lower()]
+    
+    if status:
+        foods = [f for f in foods if f.get("safe_for_pregnancy") == status]
+    
+    all_foods = list(food_db.values())
+    categories = sorted(list(set(f.get("category", "Autre") for f in all_foods)))
+    
+    total = len(foods)
+    start = (page - 1) * limit
+    end = start + limit
+    foods_page = foods[start:end]
+    
+    return {
+        "foods": foods_page,
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "pages": (total + limit - 1) // limit,
+        "categories": categories
+    }
+
+# ==================== USER-ADDED FOODS ====================
+
+@router.post("/user-added-foods")
+async def add_user_food(food_data: AddFoodRequest, current_user: User = Depends(get_current_user)):
+    """Allow users to submit new foods not in the database"""
+    food_db = await get_food_safety_database()
+    normalized_name = food_data.name.lower().strip()
+    
+    for key, value in food_db.items():
+        if normalized_name == value["name"].lower():
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cet aliment existe déjà dans la base: {value['name']}"
+            )
+    
+    existing = await db.user_added_foods.find_one({
+        "name": {"$regex": f"^{normalized_name}$", "$options": "i"}
+    })
+    
+    if existing:
+        raise HTTPException(
+            status_code=400,
+            detail="Cet aliment a déjà été soumis par un utilisateur"
+        )
+    
+    user_food = UserAddedFood(
+        user_id=current_user.id,
+        name=food_data.name.strip(),
+        barcode=food_data.barcode,
+        status="pending",
+        safety_level="unknown",
+        is_safe=False,
+        category=food_data.category,
+        notes=food_data.notes
+    )
+    
+    food_dict = user_food.model_dump()
+    food_dict["created_at"] = food_dict["created_at"].isoformat()
+    
+    await db.user_added_foods.insert_one(food_dict)
+    
+    return {
+        "success": True,
+        "message": f"L'aliment '{food_data.name}' a été soumis pour vérification",
+        "food": {
+            "id": user_food.id,
+            "name": user_food.name,
+            "status": user_food.status
+        }
+    }
+
+@router.get("/user-added-foods")
+async def get_user_added_foods(current_user: User = Depends(get_current_user)):
+    """Get foods submitted by current user"""
+    foods = await db.user_added_foods.find(
+        {"user_id": current_user.id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return foods
+
+@router.get("/history/search")
+async def get_search_history(current_user: User = Depends(get_current_user)):
+    """Get user's search history"""
+    history = await db.search_history.find(
+        {"user_id": current_user.id},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    return history
+
+# ==================== FAVORITES ====================
+
+@router.post("/favorites")
+async def add_favorite(request: AddFavoriteRequest, current_user: User = Depends(get_current_user)):
+    """Add a food to favorites"""
+    existing = await db.favorites.find_one({
+        "user_id": current_user.id,
+        "food_name": request.food_name
+    })
+    
+    if existing:
+        raise HTTPException(status_code=400, detail="Aliment déjà dans les favoris")
+    
+    favorite = Favorite(
+        user_id=current_user.id,
+        food_name=request.food_name,
+        safety_level=request.safety_level,
+        notes=request.notes
+    )
+    
+    fav_dict = favorite.model_dump()
+    fav_dict["created_at"] = fav_dict["created_at"].isoformat()
+    await db.favorites.insert_one(fav_dict)
+    
+    return {"success": True, "message": "Ajouté aux favoris", "favorite": fav_dict}
+
+@router.get("/favorites")
+async def get_favorites(current_user: User = Depends(get_current_user)):
+    """Get user's favorite foods"""
+    favorites = await db.favorites.find(
+        {"user_id": current_user.id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    return favorites
+
+@router.delete("/favorites/{food_name}")
+async def remove_favorite(food_name: str, current_user: User = Depends(get_current_user)):
+    """Remove a food from favorites"""
+    result = await db.favorites.delete_one({
+        "user_id": current_user.id,
+        "food_name": food_name
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Favori non trouvé")
+    
+    return {"success": True, "message": "Retiré des favoris"}
+
+@router.get("/favorites/check/{food_name}")
+async def check_favorite(food_name: str, current_user: User = Depends(get_current_user)):
+    """Check if a food is in favorites"""
+    favorite = await db.favorites.find_one({
+        "user_id": current_user.id,
+        "food_name": food_name
+    })
+    return {"is_favorite": favorite is not None}
