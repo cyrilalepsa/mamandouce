@@ -214,6 +214,21 @@ class PromoCode(BaseModel):
 class RedeemCodeRequest(BaseModel):
     code: str
 
+class AdminMessage(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    user_email: str
+    user_name: Optional[str] = None
+    subject: str
+    message: str
+    is_read: bool = False
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ContactMessageRequest(BaseModel):
+    subject: str
+    message: str
+
 # Code admin secret pour générer des codes promo (à garder secret !)
 ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "Cyca-admin2026")
 
@@ -1407,6 +1422,132 @@ async def list_promo_codes(admin_secret: str = ""):
         "used": len([c for c in codes if c.get("used")]),
         "available": len([c for c in codes if not c.get("used")])
     }
+
+@api_router.get("/admin/users")
+async def get_admin_users(admin_secret: str = ""):
+    """Get all registered users with their status"""
+    if admin_secret != ADMIN_SECRET:
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+    
+    users = await db.users.find({}, {"_id": 0, "hashed_password": 0}).sort("created_at", -1).to_list(1000)
+    
+    # Determine status for each user
+    for user in users:
+        sub_status = user.get("subscription_status", "free")
+        premium_source = user.get("premium_source", "")
+        
+        if sub_status == "premium":
+            if premium_source == "promo_code":
+                user["display_status"] = "beta_tester"
+            else:
+                user["display_status"] = "premium"
+        else:
+            user["display_status"] = "free"
+    
+    stats = {
+        "total": len(users),
+        "premium": len([u for u in users if u.get("display_status") == "premium"]),
+        "beta_tester": len([u for u in users if u.get("display_status") == "beta_tester"]),
+        "free": len([u for u in users if u.get("display_status") == "free"])
+    }
+    
+    return {"users": users, "stats": stats}
+
+@api_router.get("/admin/pending-foods")
+async def get_pending_foods(admin_secret: str = ""):
+    """Get all user-submitted foods pending approval"""
+    if admin_secret != ADMIN_SECRET:
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+    
+    # Get all foods with user info
+    pending = await db.user_added_foods.find(
+        {"status": "pending"},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    # Add user email for each food
+    for food in pending:
+        user = await db.users.find_one({"id": food.get("user_id")}, {"_id": 0, "email": 1})
+        food["user_email"] = user.get("email") if user else "Inconnu"
+    
+    # Get stats
+    all_foods = await db.user_added_foods.find({}, {"_id": 0, "status": 1}).to_list(1000)
+    stats = {
+        "pending": len([f for f in all_foods if f.get("status") == "pending"]),
+        "approved": len([f for f in all_foods if f.get("status") == "approved"]),
+        "rejected": len([f for f in all_foods if f.get("status") == "rejected"])
+    }
+    
+    return {"foods": pending, "stats": stats}
+
+@api_router.post("/admin/food-status/{food_id}")
+async def update_food_status(food_id: str, status: str, admin_secret: str = ""):
+    """Approve or reject a user-submitted food"""
+    if admin_secret != ADMIN_SECRET:
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+    
+    if status not in ["approved", "rejected"]:
+        raise HTTPException(status_code=400, detail="Status invalide")
+    
+    result = await db.user_added_foods.update_one(
+        {"id": food_id},
+        {"$set": {"status": status, "reviewed_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Aliment non trouvé")
+    
+    return {"success": True, "status": status}
+
+@api_router.get("/admin/messages")
+async def get_admin_messages(admin_secret: str = ""):
+    """Get all messages sent to admin"""
+    if admin_secret != ADMIN_SECRET:
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+    
+    messages = await db.admin_messages.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    
+    stats = {
+        "total": len(messages),
+        "unread": len([m for m in messages if not m.get("is_read")])
+    }
+    
+    return {"messages": messages, "stats": stats}
+
+@api_router.post("/admin/messages/{message_id}/read")
+async def mark_message_read(message_id: str, admin_secret: str = ""):
+    """Mark a message as read"""
+    if admin_secret != ADMIN_SECRET:
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+    
+    result = await db.admin_messages.update_one(
+        {"id": message_id},
+        {"$set": {"is_read": True}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Message non trouvé")
+    
+    return {"success": True}
+
+@api_router.post("/contact/send")
+async def send_contact_message(request: ContactMessageRequest, current_user: User = Depends(get_current_user)):
+    """Send a message to admin from user"""
+    user = await db.users.find_one({"email": current_user.email}, {"_id": 0})
+    
+    message = AdminMessage(
+        user_id=current_user.id,
+        user_email=current_user.email,
+        user_name=user.get("name") if user else None,
+        subject=request.subject,
+        message=request.message
+    )
+    
+    message_dict = message.model_dump()
+    message_dict["created_at"] = message_dict["created_at"].isoformat()
+    await db.admin_messages.insert_one(message_dict)
+    
+    return {"success": True, "message": "Message envoyé à l'administratrice"}
 
 @api_router.post("/redeem-code")
 async def redeem_promo_code(request: RedeemCodeRequest, current_user: User = Depends(get_current_user)):

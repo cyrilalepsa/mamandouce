@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { Shield, Plus, Copy, Check, Users, Gift, AlertTriangle, Apple, Mail, MessageSquare, CheckCircle, XCircle, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { Shield, Plus, Copy, Check, Users, Gift, AlertTriangle, Apple, Mail, MessageSquare, CheckCircle, XCircle, Clock, ChevronDown, ChevronUp, Star, Sparkles } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
@@ -15,7 +15,7 @@ function AdminPage() {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('codes');
+  const [activeTab, setActiveTab] = useState('users');
   
   // Codes promo
   const [codes, setCodes] = useState([]);
@@ -31,7 +31,11 @@ function AdminPage() {
   
   // Utilisateurs
   const [users, setUsers] = useState([]);
-  const [userStats, setUserStats] = useState({ total: 0, premium: 0, free: 0 });
+  const [userStats, setUserStats] = useState({ total: 0, premium: 0, beta_tester: 0, free: 0 });
+
+  // Messages
+  const [messages, setMessages] = useState([]);
+  const [messageStats, setMessageStats] = useState({ total: 0, unread: 0 });
 
   useEffect(() => {
     checkAdmin();
@@ -56,7 +60,8 @@ function AdminPage() {
     await Promise.all([
       loadCodes(),
       loadPendingFoods(),
-      loadUsers()
+      loadUsers(),
+      loadMessages()
     ]);
     setLoading(false);
   };
@@ -127,9 +132,40 @@ function AdminPage() {
     try {
       const response = await api.admin.getUsers();
       setUsers(response.data.users || []);
-      setUserStats(response.data.stats || { total: 0, premium: 0, free: 0 });
+      setUserStats(response.data.stats || { total: 0, premium: 0, beta_tester: 0, free: 0 });
     } catch (error) {
       console.error('Erreur chargement utilisateurs:', error);
+    }
+  };
+
+  // ========== MESSAGES ==========
+  const loadMessages = async () => {
+    try {
+      const response = await api.admin.getMessages();
+      setMessages(response.data.messages || []);
+      setMessageStats(response.data.stats || { total: 0, unread: 0 });
+    } catch (error) {
+      console.error('Erreur chargement messages:', error);
+    }
+  };
+
+  const markAsRead = async (messageId) => {
+    try {
+      await api.admin.markMessageRead(messageId);
+      loadMessages();
+    } catch (error) {
+      toast.error('Erreur');
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'beta_tester':
+        return { bg: 'bg-purple-100', text: 'text-purple-700', label: 'Bêta testeuse', icon: Sparkles };
+      case 'premium':
+        return { bg: 'bg-amber-100', text: 'text-amber-700', label: 'Premium', icon: Star };
+      default:
+        return { bg: 'bg-slate-200', text: 'text-slate-600', label: 'Gratuit', icon: Users };
     }
   };
 
@@ -163,9 +199,10 @@ function AdminPage() {
   }
 
   const tabs = [
-    { id: 'codes', label: 'Codes Promo', icon: Gift, count: codeStats.available },
-    { id: 'foods', label: 'Aliments', icon: Apple, count: foodStats.pending },
     { id: 'users', label: 'Utilisateurs', icon: Users, count: userStats.total },
+    { id: 'messages', label: 'Messages', icon: MessageSquare, count: messageStats.unread },
+    { id: 'foods', label: 'Aliments', icon: Apple, count: foodStats.pending },
+    { id: 'codes', label: 'Codes Promo', icon: Gift, count: codeStats.available },
   ];
 
   return (
@@ -174,12 +211,12 @@ function AdminPage() {
         <PageHeader title="Administration" />
 
         {/* Tabs */}
-        <div className="flex gap-2 bg-white rounded-2xl p-2 shadow-sm">
+        <div className="flex gap-2 bg-white rounded-2xl p-2 shadow-sm overflow-x-auto">
           {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-all min-w-[80px] ${
                 activeTab === tab.id
                   ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
                   : 'text-slate-600 hover:bg-slate-100'
@@ -189,7 +226,7 @@ function AdminPage() {
               <span className="hidden sm:inline">{tab.label}</span>
               {tab.count > 0 && (
                 <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                  activeTab === tab.id ? 'bg-white/20' : 'bg-pink-100 text-pink-600'
+                  activeTab === tab.id ? 'bg-white/20' : tab.id === 'messages' && messageStats.unread > 0 ? 'bg-red-100 text-red-600' : 'bg-pink-100 text-pink-600'
                 }`}>
                   {tab.count}
                 </span>
@@ -197,6 +234,212 @@ function AdminPage() {
             </button>
           ))}
         </div>
+
+        {/* ========== TAB UTILISATEURS ========== */}
+        {activeTab === 'users' && (
+          <div className="space-y-6">
+            {/* Stats */}
+            <div className="grid grid-cols-4 gap-3">
+              <Card className="bg-white rounded-2xl p-4 text-center">
+                <Users className="w-7 h-7 text-sky-500 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-slate-700">{userStats.total}</p>
+                <p className="text-xs text-slate-500">Total</p>
+              </Card>
+              <Card className="bg-white rounded-2xl p-4 text-center">
+                <Sparkles className="w-7 h-7 text-purple-500 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-purple-600">{userStats.beta_tester}</p>
+                <p className="text-xs text-slate-500">Bêta</p>
+              </Card>
+              <Card className="bg-white rounded-2xl p-4 text-center">
+                <Star className="w-7 h-7 text-amber-500 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-amber-600">{userStats.premium}</p>
+                <p className="text-xs text-slate-500">Premium</p>
+              </Card>
+              <Card className="bg-white rounded-2xl p-4 text-center">
+                <Users className="w-7 h-7 text-slate-400 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-slate-600">{userStats.free}</p>
+                <p className="text-xs text-slate-500">Gratuit</p>
+              </Card>
+            </div>
+
+            {/* Users List */}
+            <Card className="bg-white rounded-3xl p-6">
+              <h3 className="text-lg font-bold text-slate-700 mb-4">Utilisateurs inscrits</h3>
+              {users.length === 0 ? (
+                <div className="text-center py-8">
+                  <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <p className="text-slate-500">Aucun utilisateur inscrit</p>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-96 overflow-y-auto">
+                  {users.map((user, index) => {
+                    const statusBadge = getStatusBadge(user.display_status);
+                    const StatusIcon = statusBadge.icon;
+                    return (
+                      <div key={index} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            user.display_status === 'beta_tester' 
+                              ? 'bg-gradient-to-br from-purple-400 to-purple-500' 
+                              : user.display_status === 'premium'
+                              ? 'bg-gradient-to-br from-amber-400 to-amber-500'
+                              : 'bg-slate-300'
+                          }`}>
+                            <span className="text-white font-bold text-sm">
+                              {(user.name || user.email || '?')[0].toUpperCase()}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-semibold text-slate-700">{user.name || 'Sans nom'}</p>
+                            <p className="text-sm text-slate-500">{user.email}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${statusBadge.bg} ${statusBadge.text}`}>
+                            <StatusIcon className="w-3 h-3" />
+                            {statusBadge.label}
+                          </span>
+                          {user.created_at && (
+                            <p className="text-xs text-slate-400 mt-1">
+                              {new Date(user.created_at).toLocaleDateString('fr-FR')}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </Card>
+          </div>
+        )}
+
+        {/* ========== TAB MESSAGES ========== */}
+        {activeTab === 'messages' && (
+          <div className="space-y-6">
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-4">
+              <Card className="bg-white rounded-2xl p-4 text-center">
+                <MessageSquare className="w-8 h-8 text-sky-500 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-slate-700">{messageStats.total}</p>
+                <p className="text-xs text-slate-500">Total</p>
+              </Card>
+              <Card className="bg-white rounded-2xl p-4 text-center">
+                <Mail className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-red-600">{messageStats.unread}</p>
+                <p className="text-xs text-slate-500">Non lus</p>
+              </Card>
+            </div>
+
+            {/* Messages List */}
+            <Card className="bg-white rounded-3xl p-6">
+              <h3 className="text-lg font-bold text-slate-700 mb-4">Messages reçus</h3>
+              {messages.length === 0 ? (
+                <div className="text-center py-8">
+                  <MessageSquare className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <p className="text-slate-500">Aucun message reçu</p>
+                </div>
+              ) : (
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {messages.map((msg, index) => (
+                    <div key={index} className={`p-4 rounded-xl border ${
+                      msg.is_read 
+                        ? 'bg-slate-50 border-slate-200' 
+                        : 'bg-pink-50 border-pink-200'
+                    }`}>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            {!msg.is_read && <span className="w-2 h-2 bg-red-500 rounded-full"></span>}
+                            <h4 className="font-bold text-slate-700">{msg.subject}</h4>
+                          </div>
+                          <p className="text-sm text-slate-600 mb-2">{msg.message}</p>
+                          <div className="flex items-center gap-3 text-xs text-slate-500">
+                            <span>De: {msg.user_name || 'Anonyme'} ({msg.user_email})</span>
+                            <span>{new Date(msg.created_at).toLocaleDateString('fr-FR')}</span>
+                          </div>
+                        </div>
+                        {!msg.is_read && (
+                          <Button
+                            onClick={() => markAsRead(msg.id)}
+                            className="bg-green-500 text-white rounded-lg px-3 py-2 hover:bg-green-600"
+                          >
+                            <Check className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+          </div>
+        )}
+
+        {/* ========== TAB ALIMENTS ========== */}
+        {activeTab === 'foods' && (
+          <div className="space-y-6">
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-4">
+              <Card className="bg-white rounded-2xl p-4 text-center">
+                <Clock className="w-8 h-8 text-amber-500 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-amber-600">{foodStats.pending}</p>
+                <p className="text-xs text-slate-500">En attente</p>
+              </Card>
+              <Card className="bg-white rounded-2xl p-4 text-center">
+                <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-green-600">{foodStats.approved}</p>
+                <p className="text-xs text-slate-500">Approuvés</p>
+              </Card>
+              <Card className="bg-white rounded-2xl p-4 text-center">
+                <XCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-red-600">{foodStats.rejected}</p>
+                <p className="text-xs text-slate-500">Rejetés</p>
+              </Card>
+            </div>
+
+            {/* Pending Foods */}
+            <Card className="bg-white rounded-3xl p-6">
+              <h3 className="text-lg font-bold text-slate-700 mb-4">Aliments proposés</h3>
+              {pendingFoods.length === 0 ? (
+                <div className="text-center py-8">
+                  <Apple className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <p className="text-slate-500">Aucun aliment en attente de validation</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {pendingFoods.map((food, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                      <div className="flex-1">
+                        <h4 className="font-bold text-slate-700">{food.name}</h4>
+                        <div className="flex gap-4 text-sm text-slate-500 mt-1">
+                          {food.category && <span>📁 {food.category}</span>}
+                          {food.barcode && <span>📊 {food.barcode}</span>}
+                        </div>
+                        {food.notes && <p className="text-xs text-slate-400 mt-1 italic">{food.notes}</p>}
+                        <p className="text-xs text-slate-400 mt-1">Proposé par: {food.user_email || 'Anonyme'}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => handleFoodAction(food.id, 'approved')}
+                          className="bg-green-500 text-white rounded-lg px-3 py-2 hover:bg-green-600"
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          onClick={() => handleFoodAction(food.id, 'rejected')}
+                          className="bg-red-500 text-white rounded-lg px-3 py-2 hover:bg-red-600"
+                        >
+                          <XCircle className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+          </div>
+        )}
 
         {/* ========== TAB CODES PROMO ========== */}
         {activeTab === 'codes' && (
@@ -292,142 +535,6 @@ function AdminPage() {
                           {copiedCode === code.code ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                         </Button>
                       )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Card>
-          </div>
-        )}
-
-        {/* ========== TAB ALIMENTS ========== */}
-        {activeTab === 'foods' && (
-          <div className="space-y-6">
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4">
-              <Card className="bg-white rounded-2xl p-4 text-center">
-                <Clock className="w-8 h-8 text-amber-500 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-amber-600">{foodStats.pending}</p>
-                <p className="text-xs text-slate-500">En attente</p>
-              </Card>
-              <Card className="bg-white rounded-2xl p-4 text-center">
-                <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-green-600">{foodStats.approved}</p>
-                <p className="text-xs text-slate-500">Approuvés</p>
-              </Card>
-              <Card className="bg-white rounded-2xl p-4 text-center">
-                <XCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-red-600">{foodStats.rejected}</p>
-                <p className="text-xs text-slate-500">Rejetés</p>
-              </Card>
-            </div>
-
-            {/* Pending Foods */}
-            <Card className="bg-white rounded-3xl p-6">
-              <h3 className="text-lg font-bold text-slate-700 mb-4">Aliments proposés</h3>
-              {pendingFoods.length === 0 ? (
-                <div className="text-center py-8">
-                  <Apple className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                  <p className="text-slate-500">Aucun aliment en attente de validation</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {pendingFoods.map((food, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                      <div className="flex-1">
-                        <h4 className="font-bold text-slate-700">{food.name}</h4>
-                        <div className="flex gap-4 text-sm text-slate-500 mt-1">
-                          {food.category && <span>📁 {food.category}</span>}
-                          {food.barcode && <span>📊 {food.barcode}</span>}
-                        </div>
-                        {food.notes && <p className="text-xs text-slate-400 mt-1 italic">{food.notes}</p>}
-                        <p className="text-xs text-slate-400 mt-1">Proposé par: {food.user_email || 'Anonyme'}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={() => handleFoodAction(food.id, 'approved')}
-                          className="bg-green-500 text-white rounded-lg px-3 py-2 hover:bg-green-600"
-                        >
-                          <CheckCircle className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          onClick={() => handleFoodAction(food.id, 'rejected')}
-                          className="bg-red-500 text-white rounded-lg px-3 py-2 hover:bg-red-600"
-                        >
-                          <XCircle className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Card>
-          </div>
-        )}
-
-        {/* ========== TAB UTILISATEURS ========== */}
-        {activeTab === 'users' && (
-          <div className="space-y-6">
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4">
-              <Card className="bg-white rounded-2xl p-4 text-center">
-                <Users className="w-8 h-8 text-sky-500 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-slate-700">{userStats.total}</p>
-                <p className="text-xs text-slate-500">Total</p>
-              </Card>
-              <Card className="bg-white rounded-2xl p-4 text-center">
-                <Gift className="w-8 h-8 text-amber-500 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-amber-600">{userStats.premium}</p>
-                <p className="text-xs text-slate-500">Premium</p>
-              </Card>
-              <Card className="bg-white rounded-2xl p-4 text-center">
-                <Users className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-slate-600">{userStats.free}</p>
-                <p className="text-xs text-slate-500">Gratuit</p>
-              </Card>
-            </div>
-
-            {/* Users List */}
-            <Card className="bg-white rounded-3xl p-6">
-              <h3 className="text-lg font-bold text-slate-700 mb-4">Utilisateurs inscrits</h3>
-              {users.length === 0 ? (
-                <div className="text-center py-8">
-                  <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                  <p className="text-slate-500">Aucun utilisateur inscrit</p>
-                </div>
-              ) : (
-                <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {users.map((user, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          user.subscription_status === 'premium' 
-                            ? 'bg-gradient-to-br from-amber-400 to-amber-500' 
-                            : 'bg-slate-300'
-                        }`}>
-                          <span className="text-white font-bold text-sm">
-                            {(user.name || user.email || '?')[0].toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-semibold text-slate-700">{user.name || 'Sans nom'}</p>
-                          <p className="text-sm text-slate-500">{user.email}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          user.subscription_status === 'premium'
-                            ? 'bg-amber-100 text-amber-700'
-                            : 'bg-slate-200 text-slate-600'
-                        }`}>
-                          {user.subscription_status === 'premium' ? 'Premium' : 'Gratuit'}
-                        </span>
-                        {user.created_at && (
-                          <p className="text-xs text-slate-400 mt-1">
-                            {new Date(user.created_at).toLocaleDateString('fr-FR')}
-                          </p>
-                        )}
-                      </div>
                     </div>
                   ))}
                 </div>

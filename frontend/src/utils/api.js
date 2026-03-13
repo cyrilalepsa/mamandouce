@@ -16,6 +16,7 @@ export const api = {
     register: (data) => axios.post(`${API}/auth/register`, data),
     login: (data) => axios.post(`${API}/auth/login`, data),
     getMe: () => axios.get(`${API}/auth/me`, getAuthHeaders()),
+    me: () => axios.get(`${API}/auth/me`, getAuthHeaders()), // Alias for compatibility
   },
   pregnancy: {
     calculate: (data) => axios.post(`${API}/pregnancy/calculate`, data, getAuthHeaders()),
@@ -49,6 +50,14 @@ export const api = {
   admin: {
     generateCodes: (count, note) => axios.post(`${API}/admin/generate-codes?count=${count}&note=${encodeURIComponent(note)}&admin_secret=Cyca-admin2026`, {}, getAuthHeaders()),
     getCodes: () => axios.get(`${API}/admin/promo-codes?admin_secret=Cyca-admin2026`, getAuthHeaders()),
+    getUsers: () => axios.get(`${API}/admin/users?admin_secret=Cyca-admin2026`, getAuthHeaders()),
+    getPendingFoods: () => axios.get(`${API}/admin/pending-foods?admin_secret=Cyca-admin2026`, getAuthHeaders()),
+    updateFoodStatus: (foodId, status) => axios.post(`${API}/admin/food-status/${foodId}?status=${status}&admin_secret=Cyca-admin2026`, {}, getAuthHeaders()),
+    getMessages: () => axios.get(`${API}/admin/messages?admin_secret=Cyca-admin2026`, getAuthHeaders()),
+    markMessageRead: (messageId) => axios.post(`${API}/admin/messages/${messageId}/read?admin_secret=Cyca-admin2026`, {}, getAuthHeaders()),
+  },
+  contact: {
+    sendMessage: (data) => axios.post(`${API}/contact/send`, data, getAuthHeaders()),
   },
   history: {
     getSearch: () => axios.get(`${API}/history/search`, getAuthHeaders()),
