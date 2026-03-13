@@ -275,7 +275,6 @@ function SettingsPage() {
                 <li>• Vous recevrez un conseil hebdomadaire adapté à votre semaine de grossesse</li>
                 <li>• Les rappels de rendez-vous sont envoyés la veille</li>
                 <li>• Vous pouvez désactiver les notifications à tout moment</li>
-                <li>• Configuration requise : Clé API Resend dans le backend</li>
               </ul>
             </Card>
           </>
