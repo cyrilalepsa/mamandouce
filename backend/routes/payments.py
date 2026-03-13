@@ -13,7 +13,7 @@ STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "sk_test_emergent")
 SUBSCRIPTION_PACKAGES = {
     "annual": {
         "name": "MamanDouce Premium - 12 mois d'accès",
-        "amount": 25.00,
+        "amount": 27.00,
         "currency": "eur"
     }
 }

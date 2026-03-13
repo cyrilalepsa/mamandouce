@@ -56,7 +56,7 @@ function PricingPage() {
           <h2 className="text-3xl font-bold text-slate-700 mb-3" style={{ fontFamily: 'Nunito, sans-serif' }}>MamanDouce Premium</h2>
           <p className="text-xl text-slate-600 mb-4">Tout ce dont vous avez besoin pour une grossesse sereine</p>
           <div className="flex items-center justify-center gap-2">
-            <span className="text-5xl font-bold text-sky-600">25€</span>
+            <span className="text-5xl font-bold text-sky-600">27€</span>
             <div className="text-left">
               <span className="text-2xl text-slate-500 block">/an</span>
             </div>
@@ -107,7 +107,7 @@ function PricingPage() {
             </div>
             <div className="text-center mb-6">
               <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>Premium</h3>
-              <div className="text-5xl font-bold text-white mb-2">25€</div>
+              <div className="text-5xl font-bold text-white mb-2">27€</div>
               <p className="text-sky-100">/an (2,08€/mois)</p>
               <div className="inline-block bg-white/20 text-white px-3 py-1 rounded-full text-xs font-semibold mt-2">
                 Sans renouvellement auto
@@ -169,7 +169,7 @@ function PricingPage() {
             </div>
             <div>
               <h4 className="font-bold text-slate-700 mb-2">Comment fonctionne le paiement ?</h4>
-              <p className="text-slate-600">Paiement sécurisé unique de 25€ pour 12 mois d'accès complet. Sans renouvellement automatique.</p>
+              <p className="text-slate-600">Paiement sécurisé unique de 27€ pour 12 mois d'accès complet. Sans renouvellement automatique.</p>
             </div>
             <div>
               <h4 className="font-bold text-slate-700 mb-2">Mes données sont-elles sécurisées ?</h4>

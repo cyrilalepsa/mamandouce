@@ -109,7 +109,7 @@ function SubscriptionManage() {
             {!isActive || isExpired ? (
               <Card className="bg-gradient-to-br from-sky-400 to-sky-300 rounded-3xl p-8 text-white">
                 <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Nunito, sans-serif' }}>Passez à Premium</h3>
-                <p className="text-sky-50 mb-6">Débloquez toutes les fonctionnalités pour seulement 25€/an (sans renouvellement automatique)</p>
+                <p className="text-sky-50 mb-6">Débloquez toutes les fonctionnalités pour seulement 27€/an (sans renouvellement automatique)</p>
                 <ul className="space-y-2 mb-6 text-white">
                   <li>✓ Scanner illimité</li>
                   <li>✓ 41 semaines de conseils</li>
@@ -133,7 +133,7 @@ function SubscriptionManage() {
                     <CreditCard className="w-5 h-5 text-sky-500" />
                     <div>
                       <p className="text-sm text-slate-500">Montant payé</p>
-                      <p className="font-bold text-slate-700">25€/an</p>
+                      <p className="font-bold text-slate-700">27€/an</p>
                     </div>
                   </div>
                   <p className="text-sm text-slate-500 mt-4">
