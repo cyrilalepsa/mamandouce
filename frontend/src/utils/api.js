@@ -46,6 +46,10 @@ export const api = {
     getStatus: () => axios.get(`${API}/subscription-status`, getAuthHeaders()),
     redeemCode: (code) => axios.post(`${API}/redeem-code`, { code }, getAuthHeaders()),
   },
+  admin: {
+    generateCodes: (count, note) => axios.post(`${API}/admin/generate-codes?count=${count}&note=${encodeURIComponent(note)}&admin_secret=Cyca-admin2026`, {}, getAuthHeaders()),
+    getCodes: () => axios.get(`${API}/admin/promo-codes?admin_secret=Cyca-admin2026`, getAuthHeaders()),
+  },
   history: {
     getSearch: () => axios.get(`${API}/history/search`, getAuthHeaders()),
   },

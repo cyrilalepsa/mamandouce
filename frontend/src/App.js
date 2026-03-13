@@ -23,6 +23,7 @@ import SubscriptionSuccess from './pages/SubscriptionSuccess';
 import SubscriptionCancel from './pages/SubscriptionCancel';
 import SubscriptionManage from './pages/SubscriptionManage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import AdminPage from './pages/AdminPage';
 import { Toaster } from './components/ui/sonner';
 
 function App() {
@@ -68,6 +69,7 @@ function App() {
           <Route path="/subscription/success" element={<ProtectedRoute><SubscriptionSuccess /></ProtectedRoute>} />
           <Route path="/subscription/cancel" element={<ProtectedRoute><SubscriptionCancel /></ProtectedRoute>} />
           <Route path="/subscription/manage" element={<ProtectedRoute><SubscriptionManage /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
       <Toaster />
