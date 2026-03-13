@@ -215,7 +215,7 @@ class RedeemCodeRequest(BaseModel):
     code: str
 
 # Code admin secret pour générer des codes promo (à garder secret !)
-ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "mamandouce-admin-2026")
+ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "Cyca-admin2026")
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
