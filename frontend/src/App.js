@@ -24,7 +24,6 @@ import SubscriptionCancel from './pages/SubscriptionCancel';
 import SubscriptionManage from './pages/SubscriptionManage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import AdminPage from './pages/AdminPage';
-import FetusEvolutionPage from './pages/FetusEvolutionPage';
 import { Toaster } from './components/ui/sonner';
 
 function App() {
@@ -59,7 +58,6 @@ function App() {
           <Route path="/birth-list" element={<ProtectedRoute><BirthListPage /></ProtectedRoute>} />
           <Route path="/birth-list/shared/:shareId" element={<SharedBirthListPage />} />
           <Route path="/embryo" element={<ProtectedRoute><EmbryoTracker /></ProtectedRoute>} />
-          <Route path="/evolution" element={<ProtectedRoute><FetusEvolutionPage /></ProtectedRoute>} />
           <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
           <Route path="/favorites" element={<ProtectedRoute><FavoritesPage /></ProtectedRoute>} />
           <Route path="/medical" element={<ProtectedRoute><MedicalAppointmentsPage /></ProtectedRoute>} />

@@ -416,16 +416,6 @@ function HomePage() {
               </Card>
 
               <Card
-                onClick={() => navigate('/evolution')}
-                data-testid="evolution-nav"
-                className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-2 border-pink-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-              >
-                <Baby className="w-12 h-12 text-purple-500 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Évolution 3D</h3>
-                <p className="text-xs text-purple-500 mt-1 font-semibold">Nouveau !</p>
-              </Card>
-
-              <Card
                 onClick={() => navigate('/notifications')}
                 data-testid="notifications-nav"
                 className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"

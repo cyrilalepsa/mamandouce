@@ -107,19 +107,41 @@ function WeeklyTipsPage() {
               </div>
 
               {currentTip.image_url && (
-                <div className="flex justify-center">
-                  <img 
-                    src={currentTip.image_url} 
-                    alt={`Embryon semaine ${currentTip.week}`}
-                    className="w-64 h-64 object-contain rounded-2xl"
-                  />
+                <div className="bg-white rounded-2xl p-6">
+                  <div className="flex items-center gap-6">
+                    <img 
+                      src={currentTip.image_url} 
+                      alt={`Embryon semaine ${currentTip.week}`}
+                      className="w-40 h-40 object-contain rounded-2xl"
+                    />
+                    <div className="flex-1 space-y-4">
+                      <div>
+                        <p className="text-sm text-slate-500 font-semibold mb-1">Taille</p>
+                        <p className="text-2xl font-bold text-sky-600">{currentTip.embryo_size}</p>
+                      </div>
+                      {currentTip.embryo_weight && (
+                        <div>
+                          <p className="text-sm text-slate-500 font-semibold mb-1">Poids</p>
+                          <p className="text-2xl font-bold text-pink-500">{currentTip.embryo_weight}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               )}
 
-              {currentTip.embryo_size && (
-                <div className="bg-white rounded-2xl p-6">
-                  <p className="text-sm text-slate-500 font-semibold mb-1">Taille de l'embryon</p>
-                  <p className="text-2xl font-bold text-sky-600">{currentTip.embryo_size}</p>
+              {!currentTip.image_url && currentTip.embryo_size && (
+                <div className="bg-white rounded-2xl p-6 grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-slate-500 font-semibold mb-1">Taille</p>
+                    <p className="text-2xl font-bold text-sky-600">{currentTip.embryo_size}</p>
+                  </div>
+                  {currentTip.embryo_weight && (
+                    <div>
+                      <p className="text-sm text-slate-500 font-semibold mb-1">Poids</p>
+                      <p className="text-2xl font-bold text-pink-500">{currentTip.embryo_weight}</p>
+                    </div>
+                  )}
                 </div>
               )}
 
