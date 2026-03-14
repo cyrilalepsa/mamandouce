@@ -241,3 +241,9 @@ Application pour les femmes enceintes avec :
    - Détection automatique si l'utilisateur est dans sa fenêtre de fertilité
    - Notification push pendant la période fertile (avec message spécial le jour d'ovulation)
    - Pas de spam : une notification par jour maximum
+   - **Widget Fertilité sur la page d'accueil** : affiche en temps réel si l'utilisateur est dans sa période fertile
+
+4. **Amélioration UX** (NOUVEAU) :
+   - Icône Paramètres déplacée à côté du bouton déconnexion (barre du haut)
+   - Carte "Profil" ajoutée à la place de "Paramètres" dans la section Grossesse
+   - Widget fertilité cliquable (redirige vers le calculateur)

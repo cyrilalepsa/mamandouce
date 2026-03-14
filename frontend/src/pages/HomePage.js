@@ -17,11 +17,13 @@ function HomePage() {
   const [alerts, setAlerts] = useState([]);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [userRole, setUserRole] = useState('user');
+  const [fertilityStatus, setFertilityStatus] = useState(null);
 
   useEffect(() => {
     loadUserData();
     loadAlerts();
     loadUpcomingAppointments();
+    loadFertilityStatus();
   }, []);
 
   const loadUserData = async () => {
@@ -56,6 +58,15 @@ function HomePage() {
       setUpcomingAppointments(response.data.appointments || []);
     } catch (error) {
       console.error('Erreur chargement rendez-vous:', error);
+    }
+  };
+
+  const loadFertilityStatus = async () => {
+    try {
+      const response = await api.pregnancy.checkFertilityWindow();
+      setFertilityStatus(response.data);
+    } catch (error) {
+      console.error('Erreur chargement statut fertilité:', error);
     }
   };
 
@@ -138,7 +149,7 @@ function HomePage() {
       <div className="relative z-10">
         <div className="max-w-4xl mx-auto p-6 space-y-6 animate-fade-in">
           
-          {/* Top Bar - Premium à gauche, Admin (si admin), Déconnexion à droite */}
+          {/* Top Bar - Premium à gauche, Admin (si admin), Paramètres et Déconnexion à droite */}
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Button
@@ -160,13 +171,24 @@ function HomePage() {
                 </Button>
               )}
             </div>
-            <Button
-              onClick={handleLogout}
-              data-testid="logout-button"
-              className="bg-white text-slate-500 border border-slate-200 rounded-full p-2.5 hover:bg-slate-50"
-            >
-              <LogOut className="w-5 h-5" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => navigate('/settings')}
+                data-testid="settings-button"
+                className="bg-white text-slate-500 border border-slate-200 rounded-full p-2.5 hover:bg-slate-50"
+                title="Paramètres"
+              >
+                <Settings className="w-5 h-5" />
+              </Button>
+              <Button
+                onClick={handleLogout}
+                data-testid="logout-button"
+                className="bg-white text-slate-500 border border-slate-200 rounded-full p-2.5 hover:bg-slate-50"
+                title="Déconnexion"
+              >
+                <LogOut className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
 
           {/* Logo MamanDouce centré */}
@@ -196,6 +218,38 @@ function HomePage() {
               <h2 className="text-2xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Votre grossesse</h2>
               <p className="text-3xl font-bold text-sky-600 mt-2">Semaine {pregnancyProfile.current_week}</p>
               <p className="text-slate-600 mt-2">Date prévue d'accouchement: {new Date(pregnancyProfile.estimated_due_date).toLocaleDateString('fr-FR')}</p>
+            </Card>
+          )}
+
+          {/* Widget Fertilité */}
+          {fertilityStatus && fertilityStatus.in_fertile_window && (
+            <Card 
+              className="bg-gradient-to-br from-rose-100 to-pink-100 rounded-3xl p-5 border-2 border-rose-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] cursor-pointer hover:shadow-lg transition-all"
+              onClick={() => navigate('/calculator')}
+              data-testid="fertility-widget"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-rose-400 to-pink-400 rounded-2xl flex items-center justify-center">
+                  <Heart className="w-7 h-7 text-white" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-rose-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                      {fertilityStatus.is_ovulation_day ? "Jour d'ovulation !" : "Période fertile"}
+                    </h3>
+                    <span className="animate-pulse w-2 h-2 bg-rose-500 rounded-full"></span>
+                  </div>
+                  <p className="text-sm text-rose-600 mt-1">
+                    {fertilityStatus.is_ovulation_day 
+                      ? "C'est le moment idéal pour concevoir"
+                      : `Ovulation dans ${fertilityStatus.days_to_ovulation} jour${fertilityStatus.days_to_ovulation > 1 ? 's' : ''}`
+                    }
+                  </p>
+                  <p className="text-xs text-rose-500 mt-1">
+                    Du {new Date(fertilityStatus.fertile_window_start).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} au {new Date(fertilityStatus.fertile_window_end).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                  </p>
+                </div>
+              </div>
             </Card>
           )}
 
@@ -426,13 +480,13 @@ function HomePage() {
               </Card>
 
               <Card
-                onClick={() => navigate('/settings')}
-                data-testid="settings-nav"
+                onClick={() => navigate('/profile')}
+                data-testid="profile-nav"
                 className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
               >
-                <Settings className="w-12 h-12 text-indigo-400 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Paramètres</h3>
-                <p className="text-xs text-slate-500 mt-1">Préférences</p>
+                <User className="w-12 h-12 text-indigo-400 mx-auto mb-3" />
+                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Profil</h3>
+                <p className="text-xs text-slate-500 mt-1">Mon compte</p>
               </Card>
             </div>
           </div>
