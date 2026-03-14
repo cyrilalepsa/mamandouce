@@ -48,6 +48,7 @@ from routes.push_notifications import router as push_notifications_router
 from routes.payments import router as payments_router
 from routes.tips import router as tips_router
 from routes.postpartum import router as postpartum_router
+from routes.referral import router as referral_router
 
 # Include all routers
 api_router.include_router(auth_router)
@@ -61,6 +62,7 @@ api_router.include_router(push_notifications_router)
 api_router.include_router(payments_router)
 api_router.include_router(tips_router)
 api_router.include_router(postpartum_router)
+api_router.include_router(referral_router)
 
 # Include main router
 app.include_router(api_router)

@@ -8,7 +8,7 @@ import {
   User, LogOut, Cloud, Feather, Settings, Heart, Stethoscope, Calendar, 
   Scan, TestTube, Crown, MapPin, Apple, Baby, Library, Youtube, Gift, Shield,
   Sparkles, BookHeart, Video, Book, TrendingUp, ClipboardList, ChevronRight,
-  CalendarDays, Droplets, Egg, Save, CalendarRange
+  CalendarDays, Droplets, Egg, Save, CalendarRange, Briefcase
 } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
@@ -740,6 +740,16 @@ function HomePage() {
                 <p className="text-xs text-slate-500 mt-1">À partager</p>
               </Card>
 
+              <Card
+                onClick={() => navigate('/maternity-bag')}
+                data-testid="maternity-bag-nav"
+                className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-purple-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+              >
+                <Briefcase className="w-10 h-10 text-purple-500 mx-auto mb-2" />
+                <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Sac de maternité</h3>
+                <p className="text-xs text-slate-500 mt-1">Check-list interactive</p>
+              </Card>
+
               <a
                 href="https://www.youtube.com/results?search_query=préparation+accouchement"
                 target="_blank"
@@ -776,21 +786,45 @@ function HomePage() {
                 href="https://www.amazon.fr/s?k=livre+grossesse+bébé"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="no-underline"
+                className="no-underline col-span-2"
               >
                 <Card
                   data-testid="books-nav"
                   className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center h-full"
                 >
                   <Book className="w-10 h-10 text-amber-600 mx-auto mb-2" />
-                  <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Livres</h3>
-                  <p className="text-xs text-slate-500 mt-1">Utiles et pratiques</p>
+                  <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Livres utiles</h3>
+                  <p className="text-xs text-slate-500 mt-1">Grossesse et bébé</p>
                 </Card>
               </a>
             </div>
           </div>
 
-          {/* ========== CATÉGORIE 4: SERVICES & RESSOURCES ========== */}
+          {/* ========== CATÉGORIE 4: SUIVI POST-PARTUM ========== */}
+          <div>
+            <h2 className="text-xl font-bold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              <Heart className="w-5 h-5 text-rose-500" />
+              Suivi post-partum
+            </h2>
+            <Card
+              onClick={() => navigate('/postpartum')}
+              data-testid="postpartum-nav"
+              className="bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-rose-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-rose-400 to-pink-400 rounded-2xl flex items-center justify-center flex-shrink-0">
+                  <Baby className="w-8 h-8 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Les 6 premiers mois avec bébé</h3>
+                  <p className="text-sm text-slate-500 mt-1">Conseils, rendez-vous, allaitement, couches et précautions</p>
+                </div>
+                <ChevronRight className="w-6 h-6 text-rose-400" />
+              </div>
+            </Card>
+          </div>
+
+          {/* ========== CATÉGORIE 5: SERVICES & RESSOURCES ========== */}
           <div>
             <h2 className="text-xl font-bold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
               <Library className="w-5 h-5 text-blue-500" />

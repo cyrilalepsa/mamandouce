@@ -25,6 +25,8 @@ import SubscriptionManage from './pages/SubscriptionManage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import AdminPage from './pages/AdminPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import MaternityBagPage from './pages/MaternityBagPage';
+import PostpartumPage from './pages/PostpartumPage';
 import { Toaster } from './components/ui/sonner';
 
 function App() {
@@ -72,6 +74,8 @@ function App() {
           <Route path="/subscription/cancel" element={<ProtectedRoute><SubscriptionCancel /></ProtectedRoute>} />
           <Route path="/subscription/manage" element={<ProtectedRoute><SubscriptionManage /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
+          <Route path="/maternity-bag" element={<ProtectedRoute><MaternityBagPage /></ProtectedRoute>} />
+          <Route path="/postpartum" element={<ProtectedRoute><PostpartumPage /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
       <Toaster />

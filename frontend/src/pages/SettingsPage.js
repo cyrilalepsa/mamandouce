@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Label } from '../components/ui/label';
 import { Input } from '../components/ui/input';
-import { Bell, Mail, BookOpen, Calendar, Check, Gift, Crown, Sparkles } from 'lucide-react';
+import { Bell, Mail, BookOpen, Calendar, Check, Gift, Crown, Sparkles, Users, Send, Lock, Baby } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
@@ -22,10 +22,23 @@ function SettingsPage() {
   const [promoCode, setPromoCode] = useState('');
   const [redeemingCode, setRedeemingCode] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState('free');
+  
+  // Referral states
+  const [referral1Email, setReferral1Email] = useState('');
+  const [referral1Name, setReferral1Name] = useState('');
+  const [referral2Email, setReferral2Email] = useState('');
+  const [referral2Name, setReferral2Name] = useState('');
+  const [referralStatus, setReferralStatus] = useState(null);
+  const [submittingReferral, setSubmittingReferral] = useState(false);
+  
+  // Subscription full status
+  const [fullStatus, setFullStatus] = useState(null);
 
   useEffect(() => {
     loadPreferences();
     loadSubscriptionStatus();
+    loadReferralStatus();
+    loadFullSubscriptionStatus();
   }, []);
 
   const loadPreferences = async () => {
@@ -45,6 +58,24 @@ function SettingsPage() {
       setSubscriptionStatus(response.data.subscription_status || 'free');
     } catch (error) {
       console.error('Erreur chargement statut:', error);
+    }
+  };
+  
+  const loadReferralStatus = async () => {
+    try {
+      const response = await api.referral.getStatus();
+      setReferralStatus(response.data);
+    } catch (error) {
+      console.error('Erreur chargement parrainages:', error);
+    }
+  };
+  
+  const loadFullSubscriptionStatus = async () => {
+    try {
+      const response = await api.subscription.getFullStatus();
+      setFullStatus(response.data);
+    } catch (error) {
+      console.error('Erreur chargement statut complet:', error);
     }
   };
 
@@ -76,6 +107,33 @@ function SettingsPage() {
       toast.error(error.response?.data?.detail || 'Code invalide');
     } finally {
       setRedeemingCode(false);
+    }
+  };
+  
+  const handleSubmitReferral = async () => {
+    if (!referral1Email.trim() || !referral1Name.trim()) {
+      toast.error('Veuillez remplir au moins le premier parrainage');
+      return;
+    }
+    
+    setSubmittingReferral(true);
+    try {
+      await api.referral.submit({
+        referral1_email: referral1Email,
+        referral1_name: referral1Name,
+        referral2_email: referral2Email || null,
+        referral2_name: referral2Name || null
+      });
+      toast.success('Parrainages enregistrés !');
+      setReferral1Email('');
+      setReferral1Name('');
+      setReferral2Email('');
+      setReferral2Name('');
+      loadReferralStatus();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erreur lors de l\'envoi');
+    } finally {
+      setSubmittingReferral(false);
     }
   };
 
@@ -118,7 +176,7 @@ function SettingsPage() {
                   </h2>
                   <p className="text-slate-500 text-sm">
                     {subscriptionStatus === 'premium' 
-                      ? 'Vous bénéficiez de l\'accès premium à vie !' 
+                      ? 'Vous bénéficiez de l\'accès premium !' 
                       : 'Entrez votre code pour activer le premium'}
                   </p>
                 </div>
@@ -127,7 +185,7 @@ function SettingsPage() {
               {subscriptionStatus === 'premium' ? (
                 <div className="flex items-center gap-2 p-4 bg-amber-100 rounded-2xl">
                   <Sparkles className="w-5 h-5 text-amber-600" />
-                  <p className="text-amber-800 font-semibold">Merci d'être une beta testeuse !</p>
+                  <p className="text-amber-800 font-semibold">Merci d'être abonnée !</p>
                 </div>
               ) : (
                 <div className="flex gap-3">
@@ -149,6 +207,213 @@ function SettingsPage() {
                 </div>
               )}
             </Card>
+            
+            {/* Section Parrainage */}
+            <Card className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-purple-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                    Parrainage
+                  </h2>
+                  <p className="text-slate-500 text-sm">
+                    Parrainez 2 amies et obtenez le suivi post-partum gratuit !
+                  </p>
+                </div>
+              </div>
+              
+              {/* Statut actuel */}
+              {referralStatus && (
+                <div className="mb-4 p-4 bg-white/60 rounded-2xl">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold text-slate-600">Parrainages complétés</span>
+                    <span className="text-lg font-bold text-purple-600">
+                      {referralStatus.completed_count}/2
+                    </span>
+                  </div>
+                  <div className="w-full bg-purple-200 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all"
+                      style={{ width: `${(referralStatus.completed_count / 2) * 100}%` }}
+                    />
+                  </div>
+                  {referralStatus.postpartum_unlocked && (
+                    <div className="mt-3 flex items-center gap-2 text-green-600">
+                      <Check className="w-5 h-5" />
+                      <span className="font-semibold">Suivi post-partum débloqué !</span>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Liste des parrainages existants */}
+              {referralStatus?.referrals?.length > 0 && (
+                <div className="mb-4 space-y-2">
+                  <p className="text-sm font-semibold text-slate-600">Vos parrainages :</p>
+                  {referralStatus.referrals.map((ref, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-white/60 rounded-xl">
+                      <div>
+                        <p className="font-medium text-slate-700">{ref.referral_name}</p>
+                        <p className="text-xs text-slate-500">{ref.referral_email}</p>
+                      </div>
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        ref.status === 'completed' 
+                          ? 'bg-green-100 text-green-700' 
+                          : 'bg-amber-100 text-amber-700'
+                      }`}>
+                        {ref.status === 'completed' ? 'Inscrit(e)' : 'En attente'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* Formulaire de parrainage */}
+              {(!referralStatus?.postpartum_unlocked) && (
+                <div className="space-y-4">
+                  <p className="text-sm text-slate-600">Ajoutez les coordonnées de vos filleules :</p>
+                  
+                  {/* Parrainage 1 */}
+                  <div className="p-4 bg-white/60 rounded-2xl space-y-3">
+                    <p className="text-sm font-semibold text-purple-600">Filleule 1</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <Input
+                        value={referral1Name}
+                        onChange={(e) => setReferral1Name(e.target.value)}
+                        placeholder="Prénom"
+                        className="rounded-xl border-purple-200"
+                        data-testid="referral1-name"
+                      />
+                      <Input
+                        value={referral1Email}
+                        onChange={(e) => setReferral1Email(e.target.value)}
+                        placeholder="Email"
+                        type="email"
+                        className="rounded-xl border-purple-200"
+                        data-testid="referral1-email"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Parrainage 2 */}
+                  <div className="p-4 bg-white/60 rounded-2xl space-y-3">
+                    <p className="text-sm font-semibold text-purple-600">Filleule 2</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <Input
+                        value={referral2Name}
+                        onChange={(e) => setReferral2Name(e.target.value)}
+                        placeholder="Prénom"
+                        className="rounded-xl border-purple-200"
+                        data-testid="referral2-name"
+                      />
+                      <Input
+                        value={referral2Email}
+                        onChange={(e) => setReferral2Email(e.target.value)}
+                        placeholder="Email"
+                        type="email"
+                        className="rounded-xl border-purple-200"
+                        data-testid="referral2-email"
+                      />
+                    </div>
+                  </div>
+                  
+                  <Button
+                    onClick={handleSubmitReferral}
+                    disabled={submittingReferral}
+                    data-testid="submit-referral-button"
+                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full py-3 font-semibold"
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    {submittingReferral ? 'Envoi...' : 'Enregistrer mes parrainages'}
+                  </Button>
+                </div>
+              )}
+            </Card>
+            
+            {/* Section Post-partum (si éligible) */}
+            {fullStatus && subscriptionStatus === 'premium' && (
+              <Card className={`rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border ${
+                fullStatus.postpartum_unlocked
+                  ? 'bg-gradient-to-br from-rose-50 to-pink-50 border-rose-200'
+                  : 'bg-white border-slate-100'
+              }`}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                    fullStatus.postpartum_unlocked
+                      ? 'bg-gradient-to-br from-rose-500 to-pink-500'
+                      : 'bg-gradient-to-br from-slate-400 to-slate-300'
+                  }`}>
+                    <Baby className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                      Suivi Post-partum
+                    </h2>
+                    <p className="text-slate-500 text-sm">
+                      {fullStatus.postpartum_unlocked 
+                        ? 'Accès activé !' 
+                        : `Accessible après 6 mois d'abonnement`}
+                    </p>
+                  </div>
+                </div>
+                
+                {fullStatus.postpartum_unlocked ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 p-4 bg-rose-100 rounded-2xl">
+                      <Check className="w-5 h-5 text-rose-600" />
+                      <p className="text-rose-800 font-semibold">
+                        {fullStatus.postpartum_free_via_referral 
+                          ? 'Offert grâce à vos parrainages !' 
+                          : 'Suivi post-partum activé !'}
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => navigate('/postpartum')}
+                      className="w-full bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full py-3 font-semibold"
+                    >
+                      Accéder au suivi post-partum
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="p-4 bg-slate-50 rounded-2xl">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm text-slate-600">Mois d'abonnement</span>
+                        <span className="font-bold text-slate-700">{fullStatus.months_subscribed}/6</span>
+                      </div>
+                      <div className="w-full bg-slate-200 rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-rose-400 to-pink-400 h-2 rounded-full transition-all"
+                          style={{ width: `${Math.min((fullStatus.months_subscribed / 6) * 100, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                    
+                    {fullStatus.postpartum_eligible ? (
+                      <Button
+                        onClick={() => navigate('/subscription/checkout?product=postpartum')}
+                        className="w-full bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full py-3 font-semibold"
+                      >
+                        Acheter le suivi post-partum (8€)
+                      </Button>
+                    ) : (
+                      <div className="flex items-center gap-2 p-4 bg-amber-50 rounded-2xl text-amber-700">
+                        <Lock className="w-5 h-5" />
+                        <p className="text-sm">
+                          Encore {6 - fullStatus.months_subscribed} mois avant de pouvoir acheter cette option
+                        </p>
+                      </div>
+                    )}
+                    
+                    <p className="text-xs text-center text-slate-500">
+                      Ou parrainez 2 amies pour l'obtenir gratuitement !
+                    </p>
+                  </div>
+                )}
+              </Card>
+            )}
 
             <Card className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
               <div className="flex items-center gap-3 mb-6">

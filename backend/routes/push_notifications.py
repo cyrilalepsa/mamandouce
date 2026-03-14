@@ -109,3 +109,18 @@ async def send_push_notification(user_email: str, title: str, body: str, url: st
             logger.error(f"Push error: {e}")
     
     return success_count > 0
+
+async def send_admin_notification(title: str, body: str, url: str = "/admin", category: str = None):
+    """Send a push notification to admin with optional category"""
+    from core.config import ADMIN_EMAIL
+    
+    # Ajouter la catégorie au titre si fournie
+    if category:
+        title = f"[{category}] {title}"
+    
+    return await send_push_notification(
+        user_email=ADMIN_EMAIL,
+        title=title,
+        body=body,
+        url=url
+    )

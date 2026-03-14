@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Check, X, Crown } from 'lucide-react';
+import { Check, X, Crown, Baby, Users, Lock, Gift } from 'lucide-react';
 import AppTitle from '../components/AppTitle';
 import PageHeader from '../components/PageHeader';
 
@@ -24,17 +24,18 @@ function PricingPage() {
       { text: 'Support prioritaire', included: false }
     ],
     premium: [
-      { text: 'Calculateur de grossesse basique', included: true },
+      { text: 'Calculateur de grossesse complet', included: true },
       { text: 'Scanner ILLIMITÉ de produits', included: true },
       { text: '41 semaines de conseils complets', included: true },
       { text: 'Accès CAF/Ameli/Mairie', included: true },
       { text: '6 images évolution embryon/fœtus', included: true },
+      { text: 'Calendrier de fertilité détaillé', included: true },
+      { text: 'Check-list sac de maternité', included: true },
       { text: 'Démarches administratives détaillées', included: true },
       { text: 'Notifications email automatiques', included: true },
       { text: 'Historique complet recherches', included: true },
       { text: 'Sans publicité', included: true },
-      { text: 'Support prioritaire', included: true },
-      { text: 'Mises à jour gratuites', included: true }
+      { text: 'Support prioritaire', included: true }
     ]
   };
 
@@ -48,22 +49,21 @@ function PricingPage() {
           </div>
         </div>
 
-        {/* Hero */}
+        {/* Hero Premium */}
         <Card className="bg-gradient-to-br from-sky-100 to-pink-100 rounded-3xl p-8 text-center border-0">
           <Crown className="w-16 h-16 text-amber-500 mx-auto mb-4" />
           <h2 className="text-3xl font-bold text-slate-700 mb-3" style={{ fontFamily: 'Nunito, sans-serif' }}>MamanDouce Premium</h2>
-          <p className="text-xl text-slate-600 mb-4">Tout ce dont vous avez besoin pour une grossesse sereine</p>
+          <p className="text-xl text-slate-600 mb-4">Accompagnement complet pendant 9 mois de grossesse</p>
           <div className="flex items-center justify-center gap-2">
             <span className="text-5xl font-bold text-sky-600">27€</span>
             <div className="text-left">
-              <span className="text-2xl text-slate-500 block">/an</span>
+              <span className="text-2xl text-slate-500 block">/9 mois</span>
             </div>
           </div>
-          <p className="text-slate-500 mt-2">soit seulement 2,25€/mois</p>
+          <p className="text-slate-500 mt-2">soit seulement 3€/mois</p>
           <div className="inline-block bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold mt-4">
-            ✓ Sans renouvellement automatique
+            Sans renouvellement automatique
           </div>
-          <p className="text-sm text-slate-500 mt-2">Vous décidez si vous souhaitez renouveler à la fin de l'année</p>
         </Card>
 
         {/* Comparatif */}
@@ -101,12 +101,12 @@ function PricingPage() {
           {/* Premium */}
           <Card className="bg-gradient-to-br from-sky-400 to-sky-300 rounded-3xl p-8 shadow-[0_20px_50px_rgb(0,0,0,0.15)] border-4 border-amber-400 relative">
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-amber-400 text-white px-6 py-1 rounded-full text-sm font-bold">
-              ⭐ RECOMMANDÉ
+              RECOMMANDÉ
             </div>
             <div className="text-center mb-6">
               <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>Premium</h3>
               <div className="text-5xl font-bold text-white mb-2">27€</div>
-              <p className="text-sky-100">/an (2,25€/mois)</p>
+              <p className="text-sky-100">/9 mois (3€/mois)</p>
               <div className="inline-block bg-white/20 text-white px-3 py-1 rounded-full text-xs font-semibold mt-2">
                 Sans renouvellement auto
               </div>
@@ -124,10 +124,46 @@ function PricingPage() {
               data-testid="premium-button"
               className="w-full bg-white text-sky-600 rounded-full py-4 font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1"
             >
-              S'abonner maintenant 💎
+              S'abonner maintenant
             </Button>
           </Card>
         </div>
+
+        {/* Option Post-partum */}
+        <Card className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-3xl p-8 border border-rose-200">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="w-20 h-20 bg-gradient-to-br from-rose-400 to-pink-400 rounded-2xl flex items-center justify-center flex-shrink-0">
+              <Baby className="w-10 h-10 text-white" />
+            </div>
+            <div className="flex-1 text-center md:text-left">
+              <h3 className="text-2xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                Suivi Post-partum
+              </h3>
+              <p className="text-slate-600 mb-3">
+                6 mois d'accompagnement après l'accouchement : conseils, rendez-vous, allaitement, couches, précautions...
+              </p>
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                <span className="text-3xl font-bold text-rose-600">+8€</span>
+                <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
+                  <Lock className="w-4 h-4" />
+                  Accessible après 6 mois d'abonnement
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Parrainage info */}
+          <div className="mt-6 pt-6 border-t border-rose-200">
+            <div className="flex items-center gap-3 mb-3">
+              <Gift className="w-6 h-6 text-purple-500" />
+              <h4 className="font-bold text-slate-700">Ou obtenez-le gratuitement !</h4>
+            </div>
+            <p className="text-slate-600 text-sm">
+              <span className="font-semibold text-purple-600">Parrainez 2 amies</span> qui s'inscrivent sur MamanDouce 
+              et le suivi post-partum vous est offert. Rendez-vous dans vos paramètres pour parrainer.
+            </p>
+          </div>
+        </Card>
 
         {/* Garanties */}
         <Card className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
@@ -135,21 +171,21 @@ function PricingPage() {
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">✓</span>
+                <Check className="w-8 h-8 text-white" />
               </div>
               <h4 className="font-bold text-slate-700 mb-2">Satisfait ou remboursé</h4>
               <p className="text-sm text-slate-500">30 jours pour changer d'avis</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-sky-400 to-sky-300 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">🔒</span>
+                <Lock className="w-8 h-8 text-white" />
               </div>
               <h4 className="font-bold text-slate-700 mb-2">Paiement sécurisé</h4>
               <p className="text-sm text-slate-500">Via Stripe, leader mondial</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-pink-300 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">💝</span>
+                <Users className="w-8 h-8 text-white" />
               </div>
               <h4 className="font-bold text-slate-700 mb-2">Données privées</h4>
               <p className="text-sm text-slate-500">Conforme RGPD</p>
@@ -167,7 +203,11 @@ function PricingPage() {
             </div>
             <div>
               <h4 className="font-bold text-slate-700 mb-2">Comment fonctionne le paiement ?</h4>
-              <p className="text-slate-600">Paiement sécurisé unique de 27€ pour 12 mois d'accès complet. Sans renouvellement automatique.</p>
+              <p className="text-slate-600">Paiement sécurisé unique de 27€ pour 9 mois d'accès complet. Sans renouvellement automatique.</p>
+            </div>
+            <div>
+              <h4 className="font-bold text-slate-700 mb-2">Comment accéder au suivi post-partum ?</h4>
+              <p className="text-slate-600">L'option devient accessible après 6 mois d'abonnement. Vous pouvez aussi l'obtenir gratuitement en parrainant 2 amies !</p>
             </div>
             <div>
               <h4 className="font-bold text-slate-700 mb-2">Mes données sont-elles sécurisées ?</h4>

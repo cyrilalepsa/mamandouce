@@ -122,6 +122,24 @@ export const api = {
   subscription: {
     createCheckout: (data) => axios.post(`${API}/payments/checkout/session`, data, getAuthHeaders()),
     checkStatus: (sessionId) => axios.get(`${API}/payments/checkout/status/${sessionId}`, getAuthHeaders()),
+    getStatus: () => axios.get(`${API}/subscription-status`, getAuthHeaders()),
+    redeemCode: (code) => axios.post(`${API}/redeem-code`, { code }, getAuthHeaders()),
+    getFullStatus: () => axios.get(`${API}/subscription/full-status`, getAuthHeaders()),
+    purchasePostpartum: () => axios.post(`${API}/subscription/purchase-postpartum`, {}, getAuthHeaders()),
+  },
+  referral: {
+    getStatus: () => axios.get(`${API}/referral/status`, getAuthHeaders()),
+    submit: (data) => axios.post(`${API}/referral/submit`, data, getAuthHeaders()),
+    checkCompletion: () => axios.get(`${API}/referral/check-completion`, getAuthHeaders()),
+  },
+  postpartum: {
+    getContent: () => axios.get(`${API}/postpartum/content`, getAuthHeaders()),
+    getAppointments: () => axios.get(`${API}/postpartum/appointments`, getAuthHeaders()),
+    getMaternityBag: () => axios.get(`${API}/maternity-bag`, getAuthHeaders()),
+    toggleMaternityItem: (index, checked, isCustom) => 
+      axios.post(`${API}/maternity-bag/check?item_index=${index}&checked=${checked}&is_custom=${isCustom}`, {}, getAuthHeaders()),
+    suggestMaternityItem: (category, item) => 
+      axios.post(`${API}/maternity-bag/suggest`, { category, item }, getAuthHeaders()),
   },
 };
 

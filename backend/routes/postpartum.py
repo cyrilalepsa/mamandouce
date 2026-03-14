@@ -3,7 +3,8 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
 from core.database import db
-from core.security import get_current_user, User
+from core.security import get_current_user
+from models.schemas import User
 
 router = APIRouter()
 
@@ -113,12 +114,13 @@ async def suggest_item(suggestion: ItemSuggestion, current_user: User = Depends(
     
     await db.maternity_bag_suggestions.insert_one(suggestion_doc)
     
-    # Notifier l'admin
+    # Notifier l'admin avec catégorie
     try:
         await send_admin_notification(
-            title="Nouvelle suggestion - Sac maternité",
+            title="Nouvelle suggestion",
             body=f"{current_user.email} suggère: {suggestion.item}",
-            url="/admin"
+            url="/admin",
+            category="Sac maternité"
         )
     except Exception as e:
         print(f"Erreur notification admin: {e}")
