@@ -935,9 +935,23 @@ function AdminPage() {
                       )}
                       
                       {request.status !== 'pending' && request.processed_at && (
-                        <p className="text-xs text-slate-400 mt-2">
-                          Traité le {new Date(request.processed_at).toLocaleDateString('fr-FR')} par {request.processed_by}
-                        </p>
+                        <div className="mt-3 p-3 bg-white/60 rounded-xl">
+                          <p className="text-xs text-slate-500">
+                            Traité le {new Date(request.processed_at).toLocaleDateString('fr-FR', {
+                              day: 'numeric', month: 'long', year: 'numeric'
+                            })} par {request.processed_by}
+                          </p>
+                          {request.stripe_refund_id && (
+                            <p className="text-xs text-green-600 mt-1">
+                              ✅ Remboursement Stripe effectué (ID: {request.stripe_refund_id})
+                            </p>
+                          )}
+                          {request.manual_refund_required && (
+                            <p className="text-xs text-amber-600 mt-1">
+                              ⚠️ Remboursement manuel requis (pas de paiement Stripe trouvé)
+                            </p>
+                          )}
+                        </div>
                       )}
                     </div>
                   ))}

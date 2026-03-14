@@ -706,8 +706,12 @@ async def get_refund_requests(current_user: User = Depends(get_current_user)):
 
 @router.post("/admin/refund-requests/{user_id}/approve")
 async def approve_refund(user_id: str, approved: bool, current_user: User = Depends(get_current_user)):
-    """Approuver ou rejeter une demande de remboursement (admin)"""
+    """Approuver ou rejeter une demande de remboursement (admin)
+    Si approuvé, le remboursement Stripe est effectué automatiquement.
+    """
     from routes.push_notifications import send_push_notification
+    import stripe
+    import os
     
     if current_user.role != "admin":
         from fastapi import HTTPException
@@ -719,20 +723,58 @@ async def approve_refund(user_id: str, approved: bool, current_user: User = Depe
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Demande non trouvée")
     
-    status = "approved" if approved else "rejected"
+    # Récupérer l'utilisateur
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
     
-    # Mettre à jour le statut
-    await db.refund_requests.update_one(
-        {"user_id": user_id, "status": "pending"},
-        {"$set": {
-            "status": status,
-            "processed_at": datetime.now(timezone.utc).isoformat(),
-            "processed_by": current_user.email
-        }}
-    )
-    
-    # Si approuvé, désactiver l'abonnement
     if approved:
+        # Effectuer le remboursement Stripe
+        payment_intent_id = user.get("stripe_payment_intent_id")
+        
+        if payment_intent_id:
+            try:
+                stripe.api_key = os.environ.get("STRIPE_API_KEY", "sk_test_emergent")
+                refund_amount_cents = int(request["refund_amount"] * 100)
+                
+                refund = stripe.Refund.create(
+                    payment_intent=payment_intent_id,
+                    amount=refund_amount_cents,
+                    reason="requested_by_customer"
+                )
+                
+                if refund.status != "succeeded":
+                    from fastapi import HTTPException
+                    raise HTTPException(status_code=500, detail=f"Échec du remboursement Stripe: {refund.status}")
+                
+                # Mettre à jour avec l'ID du remboursement Stripe
+                await db.refund_requests.update_one(
+                    {"user_id": user_id, "status": "pending"},
+                    {"$set": {
+                        "status": "approved",
+                        "stripe_refund_id": refund.id,
+                        "processed_at": datetime.now(timezone.utc).isoformat(),
+                        "processed_by": current_user.email
+                    }}
+                )
+                
+            except stripe.error.StripeError as e:
+                from fastapi import HTTPException
+                raise HTTPException(status_code=500, detail=f"Erreur Stripe: {str(e)}")
+        else:
+            # Pas de payment_intent_id - approuver sans remboursement automatique
+            await db.refund_requests.update_one(
+                {"user_id": user_id, "status": "pending"},
+                {"$set": {
+                    "status": "approved",
+                    "manual_refund_required": True,
+                    "processed_at": datetime.now(timezone.utc).isoformat(),
+                    "processed_by": current_user.email
+                }}
+            )
+        
+        # Désactiver l'abonnement
         await db.users.update_one(
             {"id": user_id},
             {"$set": {
@@ -741,25 +783,41 @@ async def approve_refund(user_id: str, approved: bool, current_user: User = Depe
                 "refund_amount": request["refund_amount"]
             }}
         )
-    
-    # Notifier l'utilisateur
-    user = await db.users.find_one({"id": user_id}, {"_id": 0, "email": 1})
-    if user:
-        if approved:
-            title = "Remboursement approuvé"
-            body = f"Votre demande de remboursement a été approuvée. Montant: {request['refund_amount']}€"
-        else:
-            title = "Demande de remboursement"
-            body = "Votre demande n'a pas pu être acceptée. Contactez-nous pour plus d'informations."
         
+        # Notifier l'utilisateur
+        refund_method = "sur votre carte bancaire" if payment_intent_id else "(remboursement manuel à venir)"
         try:
             await send_push_notification(
                 user_email=user["email"],
-                title=title,
-                body=body,
+                title="Remboursement effectué",
+                body=f"Votre remboursement de {request['refund_amount']}€ a été effectué {refund_method}.",
                 url="/settings"
             )
         except:
             pass
+        
+        return {"success": True, "status": "approved", "refund_amount": request["refund_amount"]}
     
-    return {"success": True, "status": status}
+    else:
+        # Rejet de la demande
+        await db.refund_requests.update_one(
+            {"user_id": user_id, "status": "pending"},
+            {"$set": {
+                "status": "rejected",
+                "processed_at": datetime.now(timezone.utc).isoformat(),
+                "processed_by": current_user.email
+            }}
+        )
+        
+        # Notifier l'utilisateur
+        try:
+            await send_push_notification(
+                user_email=user["email"],
+                title="Demande de remboursement",
+                body="Votre demande n'a pas pu être acceptée. Contactez-nous pour plus d'informations.",
+                url="/settings"
+            )
+        except:
+            pass
+        
+        return {"success": True, "status": "rejected"}
