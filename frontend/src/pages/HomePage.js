@@ -2,9 +2,13 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Users, HeartHandshake, Landmark, CalendarHeart, ScanBarcode, History, Bell, BookOpen, User, LogOut, Cloud, Feather, RotateCw, Settings, Heart, AlertTriangle, ShieldCheck, Lightbulb, Stethoscope, Calendar, Scan, TestTube, Crown, MapPin, Apple, Baby, Library, Youtube, Gift, Shield } from 'lucide-react';
+import { 
+  Users, HeartHandshake, CalendarHeart, ScanBarcode, History, Bell, BookOpen, 
+  User, LogOut, Cloud, Feather, Settings, Heart, Stethoscope, Calendar, 
+  Scan, TestTube, Crown, MapPin, Apple, Baby, Library, Youtube, Gift, Shield,
+  Sparkles, BookHeart, Video, Book, TrendingUp, ClipboardList, ChevronRight
+} from 'lucide-react';
 import api from '../utils/api';
-import { toast } from 'sonner';
 import AppTitle from '../components/AppTitle';
 
 const ADMIN_EMAIL = 'cyrilalepsa@gmail.com';
@@ -14,14 +18,12 @@ function HomePage() {
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
-  const [alerts, setAlerts] = useState([]);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [userRole, setUserRole] = useState('user');
   const [fertilityStatus, setFertilityStatus] = useState(null);
 
   useEffect(() => {
     loadUserData();
-    loadAlerts();
     loadUpcomingAppointments();
     loadFertilityStatus();
   }, []);
@@ -40,17 +42,7 @@ function HomePage() {
     }
   };
 
-  // Check admin by role first, then by email for backward compatibility
   const isAdmin = userRole === 'admin' || userEmail === ADMIN_EMAIL;
-
-  const loadAlerts = async () => {
-    try {
-      const response = await api.alerts.getPersonalized();
-      setAlerts(response.data.alerts || []);
-    } catch (error) {
-      console.error('Erreur chargement alertes:', error);
-    }
-  };
 
   const loadUpcomingAppointments = async () => {
     try {
@@ -83,61 +75,21 @@ function HomePage() {
     }
   };
 
-  const getAppointmentColor = (type, isUrgent) => {
-    if (isUrgent) return 'bg-amber-100 border-amber-300 text-amber-800';
-    switch (type) {
-      case 'echographie':
-        return 'bg-purple-50 border-purple-200 text-purple-700';
-      case 'prise_sang':
-        return 'bg-red-50 border-red-200 text-red-700';
-      default:
-        return 'bg-sky-50 border-sky-200 text-sky-700';
-    }
-  };
-
-  const getAlertIcon = (type) => {
-    switch (type) {
-      case 'warning':
-        return <AlertTriangle className="w-5 h-5 text-orange-500" />;
-      case 'caution':
-        return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
-      case 'safe':
-        return <ShieldCheck className="w-5 h-5 text-green-500" />;
-      case 'tip':
-        return <Lightbulb className="w-5 h-5 text-sky-500" />;
-      default:
-        return <Bell className="w-5 h-5 text-slate-400" />;
-    }
-  };
-
-  const getAlertStyle = (type) => {
-    switch (type) {
-      case 'warning':
-        return 'bg-orange-50 border-orange-200';
-      case 'caution':
-        return 'bg-yellow-50 border-yellow-200';
-      case 'safe':
-        return 'bg-green-50 border-green-200';
-      case 'tip':
-        return 'bg-sky-50 border-sky-200';
-      default:
-        return 'bg-slate-50 border-slate-200';
-    }
-  };
-
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/auth');
   };
 
-  const handleServiceClick = (service) => {
-    const urls = {
-      caf: 'https://www.caf.fr',
-      ameli: 'https://www.ameli.fr',
-      mairie: 'https://www.service-public.fr/particuliers/vosdroits/F1175'
-    };
-    window.open(urls[service], '_blank');
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'short'
+    });
   };
+
+  // Détermine si l'utilisateur a un profil de grossesse configuré
+  const hasPregnancyProfile = pregnancyProfile && pregnancyProfile.current_week;
 
   return (
     <div className="min-h-screen gradient-bg relative overflow-hidden">
@@ -149,7 +101,7 @@ function HomePage() {
       <div className="relative z-10">
         <div className="max-w-4xl mx-auto p-6 space-y-6 animate-fade-in">
           
-          {/* Top Bar - Premium à gauche, Admin (si admin), Paramètres et Déconnexion à droite */}
+          {/* Barre supérieure */}
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Button
@@ -173,6 +125,14 @@ function HomePage() {
             </div>
             <div className="flex items-center gap-2">
               <Button
+                onClick={() => navigate('/profile')}
+                data-testid="profile-button"
+                className="bg-white text-slate-500 border border-slate-200 rounded-full p-2.5 hover:bg-slate-50"
+                title="Profil"
+              >
+                <User className="w-5 h-5" />
+              </Button>
+              <Button
                 onClick={() => navigate('/settings')}
                 data-testid="settings-button"
                 className="bg-white text-slate-500 border border-slate-200 rounded-full p-2.5 hover:bg-slate-50"
@@ -191,171 +151,351 @@ function HomePage() {
             </div>
           </div>
 
-          {/* Logo MamanDouce centré */}
+          {/* Logo et bienvenue */}
           <div className="text-center py-4">
             <AppTitle size="xl" showSubtitle={false} />
           </div>
 
-          {/* Message de bienvenue avec prénom en valeur */}
           <div className="text-center">
-            <h2 
-              className="text-2xl sm:text-3xl"
-              data-testid="user-welcome"
-            >
+            <h2 className="text-2xl sm:text-3xl" data-testid="user-welcome">
               <span className="text-slate-500 font-medium" style={{ fontFamily: "'Quicksand', sans-serif" }}>Bonjour, </span>
-              <span 
-                className="text-slate-700 text-4xl sm:text-5xl font-semibold"
-                style={{ fontFamily: "'Caveat', cursive" }}
-              >
+              <span className="text-slate-700 text-4xl sm:text-5xl font-semibold" style={{ fontFamily: "'Caveat', cursive" }}>
                 {userName}
               </span>
               <span className="text-pink-400 ml-2">❤️</span>
             </h2>
           </div>
 
-          {pregnancyProfile && pregnancyProfile.current_week && (
-            <Card className="bg-gradient-to-br from-pink-100 to-sky-100 rounded-3xl p-6 border-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)]" data-testid="pregnancy-status-card">
-              <h2 className="text-2xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Votre grossesse</h2>
-              <p className="text-3xl font-bold text-sky-600 mt-2">Semaine {pregnancyProfile.current_week}</p>
-              <p className="text-slate-600 mt-2">Date prévue d'accouchement: {new Date(pregnancyProfile.estimated_due_date).toLocaleDateString('fr-FR')}</p>
-            </Card>
-          )}
-
-          {/* Widget Fertilité */}
-          {fertilityStatus && fertilityStatus.in_fertile_window && (
-            <Card 
-              className="bg-gradient-to-br from-rose-100 to-pink-100 rounded-3xl p-5 border-2 border-rose-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] cursor-pointer hover:shadow-lg transition-all"
-              onClick={() => navigate('/calculator')}
-              data-testid="fertility-widget"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-rose-400 to-pink-400 rounded-2xl flex items-center justify-center">
-                  <Heart className="w-7 h-7 text-white" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-bold text-rose-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                      {fertilityStatus.is_ovulation_day ? "Jour d'ovulation !" : "Période fertile"}
-                    </h3>
-                    <span className="animate-pulse w-2 h-2 bg-rose-500 rounded-full"></span>
-                  </div>
-                  <p className="text-sm text-rose-600 mt-1">
-                    {fertilityStatus.is_ovulation_day 
-                      ? "C'est le moment idéal pour concevoir"
-                      : `Ovulation dans ${fertilityStatus.days_to_ovulation} jour${fertilityStatus.days_to_ovulation > 1 ? 's' : ''}`
-                    }
-                  </p>
-                  <p className="text-xs text-rose-500 mt-1">
-                    Du {new Date(fertilityStatus.fertile_window_start).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} au {new Date(fertilityStatus.fertile_window_end).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
-                  </p>
-                </div>
+          {/* ========== AGENDA ========== */}
+          <Card className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100" data-testid="agenda-card">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-white" />
               </div>
-            </Card>
-          )}
-
-          {/* Personalized Alerts Section */}
-          {alerts.length > 0 && (
-            <div>
-              <h2 className="text-2xl font-semibold text-slate-600 mb-4" style={{ fontFamily: 'Nunito, sans-serif' }}>Vos alertes personnalisées</h2>
-              <div className="space-y-3">
-                {alerts.slice(0, 3).map((alert, index) => (
-                  <Card 
-                    key={index} 
-                    className={`rounded-2xl p-4 border-2 ${getAlertStyle(alert.type)}`}
-                    data-testid={`alert-${index}`}
-                  >
-                    <div className="flex items-start gap-3">
-                      {getAlertIcon(alert.type)}
-                      <div className="flex-1">
-                        <h4 className="font-bold text-slate-700 text-sm">{alert.title}</h4>
-                        <p className="text-xs text-slate-600 mt-1">{alert.message}</p>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
+              <h2 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Mon agenda</h2>
             </div>
-          )}
+            
+            {hasPregnancyProfile ? (
+              <div className="space-y-3">
+                {/* Semaine actuelle */}
+                <div className="flex items-center justify-between bg-gradient-to-r from-pink-50 to-sky-50 rounded-2xl p-4">
+                  <div>
+                    <p className="text-sm text-slate-500">Vous êtes à la</p>
+                    <p className="text-2xl font-bold text-sky-600">Semaine {pregnancyProfile.current_week}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-slate-500">Accouchement prévu</p>
+                    <p className="text-lg font-bold text-pink-600">
+                      {new Date(pregnancyProfile.estimated_due_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
+                    </p>
+                  </div>
+                </div>
 
-          {/* Upcoming Medical Appointments */}
-          {upcomingAppointments.length > 0 && (
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-semibold text-slate-600" style={{ fontFamily: 'Nunito, sans-serif' }}>Rendez-vous à venir</h2>
-                <Button
-                  onClick={() => navigate('/medical')}
-                  className="text-sky-500 bg-transparent hover:bg-sky-50 text-sm"
-                >
-                  Voir tout
-                </Button>
-              </div>
-              <div className="space-y-2">
-                {upcomingAppointments.slice(0, 3).map((apt, index) => (
-                  <Card 
-                    key={apt.id} 
-                    className={`rounded-2xl p-4 border-2 cursor-pointer hover:shadow-md transition-all ${getAppointmentColor(apt.type, apt.is_urgent)}`}
-                    onClick={() => navigate('/medical')}
-                    data-testid={`upcoming-apt-${index}`}
+                {/* Prochains rendez-vous */}
+                {upcomingAppointments.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-slate-600">Prochains rendez-vous</p>
+                    {upcomingAppointments.slice(0, 2).map((apt) => (
+                      <div 
+                        key={apt.id}
+                        className="flex items-center gap-3 bg-slate-50 rounded-xl p-3 cursor-pointer hover:bg-slate-100 transition-all"
+                        onClick={() => navigate('/medical')}
+                      >
+                        <div className="w-8 h-8 bg-sky-100 rounded-lg flex items-center justify-center text-sky-600">
+                          {getAppointmentIcon(apt.type)}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-semibold text-slate-700 text-sm">{apt.title}</p>
+                          <p className="text-xs text-slate-500">Semaines {apt.week_start}-{apt.week_end}</p>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-slate-400" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Fertilité si applicable */}
+                {fertilityStatus && fertilityStatus.in_fertile_window && (
+                  <div 
+                    className="bg-gradient-to-r from-rose-100 to-pink-100 rounded-2xl p-4 cursor-pointer hover:shadow-md transition-all"
+                    onClick={() => navigate('/calculator')}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${apt.is_urgent ? 'bg-amber-200' : 'bg-white/60'}`}>
-                        {getAppointmentIcon(apt.type)}
+                      <div className="w-10 h-10 bg-rose-400 rounded-xl flex items-center justify-center">
+                        <Heart className="w-5 h-5 text-white" />
                       </div>
-                      <div className="flex-1">
+                      <div>
                         <div className="flex items-center gap-2">
-                          <h4 className="font-bold text-sm">{apt.title}</h4>
-                          {apt.is_urgent && (
-                            <span className="text-xs bg-amber-200 px-2 py-0.5 rounded-full font-medium">Maintenant</span>
-                          )}
+                          <p className="font-bold text-rose-700">
+                            {fertilityStatus.is_ovulation_day ? "Jour d'ovulation !" : "Période fertile"}
+                          </p>
+                          <span className="animate-pulse w-2 h-2 bg-rose-500 rounded-full"></span>
                         </div>
-                        <p className="text-xs opacity-80 mt-0.5">
-                          Semaines {apt.week_start}-{apt.week_end}
-                          {apt.weeks_until > 0 && ` • Dans ${apt.weeks_until} semaine${apt.weeks_until > 1 ? 's' : ''}`}
+                        <p className="text-sm text-rose-600">
+                          {fertilityStatus.is_ovulation_day 
+                            ? "Moment idéal pour concevoir"
+                            : `Ovulation dans ${fertilityStatus.days_to_ovulation} jour(s)`}
                         </p>
                       </div>
                     </div>
-                  </Card>
-                ))}
+                  </div>
+                )}
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-slate-500 mb-3">Renseignez vos informations pour personnaliser votre agenda</p>
+                <Button
+                  onClick={() => navigate('/calculator')}
+                  className="bg-gradient-to-r from-sky-400 to-pink-400 text-white rounded-full px-6 py-2"
+                >
+                  Configurer mon cycle
+                </Button>
+              </div>
+            )}
+          </Card>
 
+          {/* ========== CATÉGORIE 1: EN ROUTE VERS LA GROSSESSE ========== */}
           <div>
-            <h2 className="text-xl font-semibold text-slate-600 mb-3" style={{ fontFamily: 'Nunito, sans-serif' }}>Services & Ressources</h2>
-            <div className="flex flex-wrap gap-3 justify-center">
-              <button
-                onClick={() => handleServiceClick('caf')}
-                data-testid="caf-button"
-                className="flex items-center gap-3 bg-white rounded-full px-5 py-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer transition-all hover:-translate-y-0.5"
+            <h2 className="text-xl font-bold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              <Sparkles className="w-5 h-5 text-amber-500" />
+              En route vers la grossesse
+            </h2>
+            <div className="grid grid-cols-2 gap-4">
+              <Card
+                onClick={() => navigate('/calculator')}
+                data-testid="calculator-nav"
+                className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
               >
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-400 rounded-full flex items-center justify-center">
-                  <Users className="w-5 h-5 text-white" />
-                </div>
-                <span className="font-semibold text-slate-700">CAF</span>
-              </button>
+                <CalendarHeart className="w-10 h-10 text-sky-400 mx-auto mb-2" />
+                <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Calculateur</h3>
+                <p className="text-xs text-slate-500 mt-1">Ovulation et dates clés</p>
+              </Card>
 
-              <button
-                onClick={() => handleServiceClick('ameli')}
-                data-testid="ameli-button"
-                className="flex items-center gap-3 bg-white rounded-full px-5 py-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer transition-all hover:-translate-y-0.5"
+              <Card
+                onClick={() => navigate('/tips')}
+                data-testid="preconception-tips-nav"
+                className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
               >
-                <div className="w-10 h-10 bg-gradient-to-br from-sky-500 to-sky-400 rounded-full flex items-center justify-center">
-                  <HeartHandshake className="w-5 h-5 text-white" />
+                <BookHeart className="w-10 h-10 text-pink-400 mx-auto mb-2" />
+                <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Conseils</h3>
+                <p className="text-xs text-slate-500 mt-1">Préparer sa grossesse</p>
+              </Card>
+            </div>
+            
+            {/* Avertissement médical */}
+            <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
+              <p className="text-xs text-amber-700">
+                <strong>Information :</strong> Les conseils fournis sont à titre informatif et ne remplacent pas l'avis d'un médecin. 
+                Consultez un professionnel de santé avant toute prise de médicaments ou compléments.
+              </p>
+            </div>
+          </div>
+
+          {/* ========== CATÉGORIE 2: GROSSESSE ========== */}
+          <div>
+            <h2 className="text-xl font-bold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              <Baby className="w-5 h-5 text-pink-500" />
+              Grossesse
+            </h2>
+
+            {/* Carte de suivi de grossesse */}
+            {hasPregnancyProfile && (
+              <Card 
+                className="bg-gradient-to-br from-pink-100 to-sky-100 rounded-3xl p-5 mb-4 border-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] cursor-pointer hover:shadow-lg transition-all"
+                onClick={() => navigate('/tips')}
+                data-testid="pregnancy-progress-card"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+                    <Baby className="w-8 h-8 text-pink-500" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-slate-600">Votre bébé grandit</p>
+                    <p className="text-2xl font-bold text-slate-700">Semaine {pregnancyProfile.current_week}</p>
+                    <p className="text-sm text-slate-500">
+                      Trimestre {pregnancyProfile.trimester || Math.ceil(pregnancyProfile.current_week / 13)}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-6 h-6 text-slate-400" />
                 </div>
-                <span className="font-semibold text-slate-700">Ameli</span>
-              </button>
+              </Card>
+            )}
+
+            {/* Grille alimentation et suivi */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+              <Card
+                onClick={() => navigate('/scanner')}
+                data-testid="scanner-nav"
+                className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+              >
+                <ScanBarcode className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                <h3 className="text-sm font-bold text-slate-700">Scanner</h3>
+                <p className="text-xs text-slate-500">Aliments</p>
+              </Card>
+
+              <Card
+                onClick={() => navigate('/library')}
+                data-testid="library-nav"
+                className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+              >
+                <Apple className="w-8 h-8 text-red-400 mx-auto mb-2" />
+                <h3 className="text-sm font-bold text-slate-700">Bibliothèque</h3>
+                <p className="text-xs text-slate-500">Aliments</p>
+              </Card>
+
+              <Card
+                onClick={() => navigate('/favorites')}
+                data-testid="favorites-nav"
+                className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+              >
+                <Heart className="w-8 h-8 text-pink-400 mx-auto mb-2" />
+                <h3 className="text-sm font-bold text-slate-700">Favoris</h3>
+                <p className="text-xs text-slate-500">Sauvegardés</p>
+              </Card>
+
+              <Card
+                onClick={() => navigate('/history')}
+                data-testid="history-nav"
+                className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+              >
+                <History className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+                <h3 className="text-sm font-bold text-slate-700">Historique</h3>
+                <p className="text-xs text-slate-500">Recherches</p>
+              </Card>
+            </div>
+
+            {/* Évolution, RDV, Rappels */}
+            <div className="grid grid-cols-3 gap-3">
+              <Card
+                onClick={() => navigate('/tips')}
+                data-testid="evolution-nav"
+                className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+              >
+                <TrendingUp className="w-8 h-8 text-teal-500 mx-auto mb-2" />
+                <h3 className="text-sm font-bold text-slate-700">Évolution</h3>
+                <p className="text-xs text-slate-500">et démarches</p>
+              </Card>
+
+              <Card
+                onClick={() => navigate('/medical')}
+                data-testid="medical-nav"
+                className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+              >
+                <Stethoscope className="w-8 h-8 text-sky-500 mx-auto mb-2" />
+                <h3 className="text-sm font-bold text-slate-700">Rendez-vous</h3>
+                <p className="text-xs text-slate-500">Suivi médical</p>
+              </Card>
+
+              <Card
+                onClick={() => navigate('/notifications')}
+                data-testid="notifications-nav"
+                className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+              >
+                <Bell className="w-8 h-8 text-amber-400 mx-auto mb-2" />
+                <h3 className="text-sm font-bold text-slate-700">Rappels</h3>
+                <p className="text-xs text-slate-500">Notifications</p>
+              </Card>
+            </div>
+          </div>
+
+          {/* ========== CATÉGORIE 3: PRÉPARER L'ARRIVÉE DE BÉBÉ ========== */}
+          <div>
+            <h2 className="text-xl font-bold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              <Gift className="w-5 h-5 text-purple-500" />
+              Préparer l'arrivée de bébé
+            </h2>
+            <div className="grid grid-cols-2 gap-4">
+              <Card
+                onClick={() => navigate('/birth-list')}
+                data-testid="birthlist-nav"
+                className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+              >
+                <ClipboardList className="w-10 h-10 text-pink-400 mx-auto mb-2" />
+                <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Liste de naissance</h3>
+                <p className="text-xs text-slate-500 mt-1">À partager</p>
+              </Card>
+
+              <a
+                href="https://www.youtube.com/results?search_query=préparation+accouchement"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="no-underline"
+              >
+                <Card
+                  data-testid="birth-videos-nav"
+                  className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center h-full"
+                >
+                  <Video className="w-10 h-10 text-red-500 mx-auto mb-2" />
+                  <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Vidéos</h3>
+                  <p className="text-xs text-slate-500 mt-1">Préparation accouchement</p>
+                </Card>
+              </a>
 
               <a
                 href="https://www.youtube.com/c/LaMaisondesMaternelles"
                 target="_blank"
                 rel="noopener noreferrer"
-                data-testid="youtube-button"
+                className="no-underline"
+              >
+                <Card
+                  data-testid="maternelles-nav"
+                  className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center h-full"
+                >
+                  <Youtube className="w-10 h-10 text-red-600 mx-auto mb-2" />
+                  <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Les Maternelles</h3>
+                  <p className="text-xs text-slate-500 mt-1">Chaîne YouTube</p>
+                </Card>
+              </a>
+
+              <a
+                href="https://www.amazon.fr/s?k=livre+grossesse+bébé"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="no-underline"
+              >
+                <Card
+                  data-testid="books-nav"
+                  className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center h-full"
+                >
+                  <Book className="w-10 h-10 text-amber-600 mx-auto mb-2" />
+                  <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Livres</h3>
+                  <p className="text-xs text-slate-500 mt-1">Utiles et pratiques</p>
+                </Card>
+              </a>
+            </div>
+          </div>
+
+          {/* ========== CATÉGORIE 4: SERVICES & RESSOURCES ========== */}
+          <div>
+            <h2 className="text-xl font-bold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              <Library className="w-5 h-5 text-blue-500" />
+              Services et ressources
+            </h2>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <a
+                href="https://www.caf.fr"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="caf-button"
                 className="flex items-center gap-3 bg-white rounded-full px-5 py-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer transition-all hover:-translate-y-0.5 no-underline"
               >
-                <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-500 rounded-full flex items-center justify-center">
-                  <Youtube className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-400 rounded-full flex items-center justify-center">
+                  <Users className="w-5 h-5 text-white" />
                 </div>
-                <span className="font-semibold text-slate-700">Maternelles TV</span>
+                <span className="font-semibold text-slate-700">CAF</span>
+              </a>
+
+              <a
+                href="https://www.ameli.fr"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="ameli-button"
+                className="flex items-center gap-3 bg-white rounded-full px-5 py-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer transition-all hover:-translate-y-0.5 no-underline"
+              >
+                <div className="w-10 h-10 bg-gradient-to-br from-sky-500 to-sky-400 rounded-full flex items-center justify-center">
+                  <HeartHandshake className="w-5 h-5 text-white" />
+                </div>
+                <span className="font-semibold text-slate-700">Ameli</span>
               </a>
 
               <a
@@ -368,128 +508,11 @@ function HomePage() {
                 <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-400 rounded-full flex items-center justify-center">
                   <MapPin className="w-5 h-5 text-white" />
                 </div>
-                <span className="font-semibold text-slate-700">Maps</span>
+                <span className="font-semibold text-slate-700">Mairies proches</span>
               </a>
             </div>
           </div>
 
-          {/* Catégorie Alimentation */}
-          <div>
-            <h2 className="text-2xl font-semibold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-              <Apple className="w-6 h-6 text-green-500" />
-              Alimentation
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card
-                onClick={() => navigate('/scanner')}
-                data-testid="scanner-nav"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-              >
-                <ScanBarcode className="w-12 h-12 text-pink-400 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Scanner</h3>
-                <p className="text-xs text-slate-500 mt-1">Caméra ou manuel</p>
-              </Card>
-
-              <Card
-                onClick={() => navigate('/library')}
-                data-testid="library-nav"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-              >
-                <Library className="w-12 h-12 text-green-400 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Bibliothèque</h3>
-                <p className="text-xs text-slate-500 mt-1">Tous les aliments</p>
-              </Card>
-
-              <Card
-                onClick={() => navigate('/favorites')}
-                data-testid="favorites-nav"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-              >
-                <Heart className="w-12 h-12 text-pink-400 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Favoris</h3>
-                <p className="text-xs text-slate-500 mt-1">Aliments sauvegardés</p>
-              </Card>
-
-              <Card
-                onClick={() => navigate('/history')}
-                data-testid="history-nav"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-              >
-                <History className="w-12 h-12 text-purple-400 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Historique</h3>
-                <p className="text-xs text-slate-500 mt-1">Recherches récentes</p>
-              </Card>
-            </div>
-          </div>
-
-          {/* Catégorie Grossesse */}
-          <div>
-            <h2 className="text-2xl font-semibold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-              <Baby className="w-6 h-6 text-pink-500" />
-              Grossesse
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <Card
-                onClick={() => navigate('/calculator')}
-                data-testid="calculator-nav"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-              >
-                <CalendarHeart className="w-12 h-12 text-sky-400 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Calculateur</h3>
-                <p className="text-xs text-slate-500 mt-1">Dates clés</p>
-              </Card>
-
-              <Card
-                onClick={() => navigate('/birth-list')}
-                data-testid="birthlist-nav"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-              >
-                <Gift className="w-12 h-12 text-pink-400 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Liste de naissance</h3>
-                <p className="text-xs text-slate-500 mt-1">À partager</p>
-              </Card>
-
-              <Card
-                onClick={() => navigate('/medical')}
-                data-testid="medical-nav"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-              >
-                <Stethoscope className="w-12 h-12 text-sky-500 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Rendez-vous</h3>
-                <p className="text-xs text-slate-500 mt-1">Suivi médical</p>
-              </Card>
-
-              <Card
-                onClick={() => navigate('/tips')}
-                data-testid="tips-nav"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-              >
-                <BookOpen className="w-12 h-12 text-teal-400 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Conseils</h3>
-                <p className="text-xs text-slate-500 mt-1">Hebdomadaires</p>
-              </Card>
-
-              <Card
-                onClick={() => navigate('/notifications')}
-                data-testid="notifications-nav"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-              >
-                <Bell className="w-12 h-12 text-amber-400 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Rappels</h3>
-                <p className="text-xs text-slate-500 mt-1">Notifications</p>
-              </Card>
-
-              <Card
-                onClick={() => navigate('/profile')}
-                data-testid="profile-nav"
-                className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-              >
-                <User className="w-12 h-12 text-indigo-400 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Profil</h3>
-                <p className="text-xs text-slate-500 mt-1">Mon compte</p>
-              </Card>
-            </div>
-          </div>
         </div>
       </div>
     </div>
