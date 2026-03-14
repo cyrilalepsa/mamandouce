@@ -121,6 +121,13 @@ Application pour les femmes enceintes avec :
 4. L'admin approuve ou rejette depuis l'interface admin
 5. L'utilisatrice reçoit une notification du résultat
 
+- [x] **Section admin pour les remandes de remboursement**
+  - Onglet "Remboursements" dans l'interface admin
+  - Compteurs : En attente / Approuvés / Rejetés
+  - Liste des demandes avec détails complets
+  - Boutons Approuver/Rejeter pour chaque demande
+  - Notification automatique à l'utilisatrice après traitement
+
 ## Future Tasks (Backlog)
 - **(P2)** Gestion multi-admins depuis l'interface
 - **(P2)** Graphiques de suivi grossesse (poids, croissance)

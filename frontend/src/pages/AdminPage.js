@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { Shield, Plus, Copy, Check, Users, Gift, AlertTriangle, Apple, Mail, MessageSquare, CheckCircle, XCircle, Clock, ChevronDown, ChevronUp, Star, Sparkles, Send, Reply, LayoutDashboard, Eye, TrendingUp, UserPlus, Crown } from 'lucide-react';
+import { Shield, Plus, Copy, Check, Users, Gift, AlertTriangle, Apple, Mail, MessageSquare, CheckCircle, XCircle, Clock, ChevronDown, ChevronUp, Star, Sparkles, Send, Reply, LayoutDashboard, Eye, TrendingUp, UserPlus, Crown, RefreshCw } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
@@ -209,6 +209,10 @@ function AdminPage() {
   // Messages
   const [messages, setMessages] = useState([]);
   const [messageStats, setMessageStats] = useState({ total: 0, unread: 0 });
+  
+  // Refund Requests
+  const [refundRequests, setRefundRequests] = useState([]);
+  const [refundStats, setRefundStats] = useState({ pending: 0, approved: 0, rejected: 0 });
 
   useEffect(() => {
     checkAdmin();
@@ -236,7 +240,8 @@ function AdminPage() {
       loadCodes(),
       loadPendingFoods(),
       loadUsers(),
-      loadMessages()
+      loadMessages(),
+      loadRefundRequests()
     ]);
     setLoading(false);
   };
@@ -333,6 +338,33 @@ function AdminPage() {
       console.error('Erreur chargement messages:', error);
     }
   };
+  
+  // ========== REFUND REQUESTS ==========
+  const loadRefundRequests = async () => {
+    try {
+      const response = await api.admin.getRefundRequests();
+      const requests = response.data.requests || [];
+      setRefundRequests(requests);
+      
+      // Calculate stats
+      const pending = requests.filter(r => r.status === 'pending').length;
+      const approved = requests.filter(r => r.status === 'approved').length;
+      const rejected = requests.filter(r => r.status === 'rejected').length;
+      setRefundStats({ pending, approved, rejected });
+    } catch (error) {
+      console.error('Erreur chargement remboursements:', error);
+    }
+  };
+  
+  const handleRefundAction = async (userId, approved) => {
+    try {
+      await api.admin.approveRefund(userId, approved);
+      toast.success(approved ? 'Remboursement approuvé' : 'Demande rejetée');
+      loadRefundRequests();
+    } catch (error) {
+      toast.error('Erreur lors du traitement');
+    }
+  };
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -380,6 +412,7 @@ function AdminPage() {
     { id: 'messages', label: 'Messages', icon: MessageSquare, count: messageStats.unread },
     { id: 'foods', label: 'Aliments', icon: Apple, count: foodStats.pending },
     { id: 'codes', label: 'Codes Promo', icon: Gift, count: codeStats.available },
+    { id: 'refunds', label: 'Remboursements', icon: RefreshCw, count: refundStats.pending },
   ];
 
   return (
@@ -746,6 +779,132 @@ function AdminPage() {
                         >
                           {copiedCode === code.code ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                         </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+          </div>
+        )}
+        
+        {/* ========== TAB REMBOURSEMENTS ========== */}
+        {activeTab === 'refunds' && (
+          <div className="space-y-6">
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-4">
+              <Card className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-center">
+                <Clock className="w-8 h-8 text-amber-500 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-amber-700">{refundStats.pending}</p>
+                <p className="text-xs text-amber-600">En attente</p>
+              </Card>
+              <Card className="bg-green-50 border border-green-200 rounded-2xl p-4 text-center">
+                <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-green-700">{refundStats.approved}</p>
+                <p className="text-xs text-green-600">Approuvés</p>
+              </Card>
+              <Card className="bg-red-50 border border-red-200 rounded-2xl p-4 text-center">
+                <XCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-red-700">{refundStats.rejected}</p>
+                <p className="text-xs text-red-600">Rejetés</p>
+              </Card>
+            </div>
+            
+            {/* Refund Requests List */}
+            <Card className="bg-white rounded-3xl p-6">
+              <h3 className="text-lg font-bold text-slate-700 mb-4">Demandes de remboursement</h3>
+              {refundRequests.length === 0 ? (
+                <div className="text-center py-8">
+                  <RefreshCw className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <p className="text-slate-500">Aucune demande de remboursement</p>
+                </div>
+              ) : (
+                <div className="space-y-4 max-h-[500px] overflow-y-auto">
+                  {refundRequests.map((request, index) => (
+                    <div 
+                      key={index} 
+                      className={`rounded-xl border p-4 ${
+                        request.status === 'pending' 
+                          ? 'bg-amber-50 border-amber-200' 
+                          : request.status === 'approved'
+                            ? 'bg-green-50 border-green-200'
+                            : 'bg-red-50 border-red-200'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <p className="font-bold text-slate-700">{request.user_name || request.user_email}</p>
+                          <p className="text-sm text-slate-500">{request.user_email}</p>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                          request.status === 'pending' 
+                            ? 'bg-amber-200 text-amber-700' 
+                            : request.status === 'approved'
+                              ? 'bg-green-200 text-green-700'
+                              : 'bg-red-200 text-red-700'
+                        }`}>
+                          {request.status === 'pending' ? 'En attente' : request.status === 'approved' ? 'Approuvé' : 'Rejeté'}
+                        </span>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-3 mb-3 text-sm">
+                        <div className="bg-white/60 rounded-lg p-2">
+                          <p className="text-slate-500">Raison</p>
+                          <p className="font-semibold text-slate-700">
+                            {request.reason === 'miscarriage' ? 'Fausse couche' : request.reason}
+                          </p>
+                        </div>
+                        <div className="bg-white/60 rounded-lg p-2">
+                          <p className="text-slate-500">Montant estimé</p>
+                          <p className="font-bold text-green-600">{request.refund_amount}€</p>
+                        </div>
+                        <div className="bg-white/60 rounded-lg p-2">
+                          <p className="text-slate-500">Jours utilisés</p>
+                          <p className="font-semibold text-slate-700">{request.days_used} jours</p>
+                        </div>
+                        <div className="bg-white/60 rounded-lg p-2">
+                          <p className="text-slate-500">Jours restants</p>
+                          <p className="font-semibold text-slate-700">{request.days_remaining} jours</p>
+                        </div>
+                      </div>
+                      
+                      {request.details && (
+                        <p className="text-sm text-slate-600 mb-3 bg-white/60 rounded-lg p-2">
+                          <strong>Détails:</strong> {request.details}
+                        </p>
+                      )}
+                      
+                      <p className="text-xs text-slate-400 mb-3">
+                        Demande du {new Date(request.created_at).toLocaleDateString('fr-FR', { 
+                          day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' 
+                        })}
+                      </p>
+                      
+                      {request.status === 'pending' && (
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => handleRefundAction(request.user_id, true)}
+                            data-testid={`approve-refund-${index}`}
+                            className="flex-1 bg-green-500 hover:bg-green-600 text-white rounded-xl py-2"
+                          >
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            Approuver ({request.refund_amount}€)
+                          </Button>
+                          <Button
+                            onClick={() => handleRefundAction(request.user_id, false)}
+                            data-testid={`reject-refund-${index}`}
+                            className="flex-1 bg-red-500 hover:bg-red-600 text-white rounded-xl py-2"
+                          >
+                            <XCircle className="w-4 h-4 mr-2" />
+                            Rejeter
+                          </Button>
+                        </div>
+                      )}
+                      
+                      {request.status !== 'pending' && request.processed_at && (
+                        <p className="text-xs text-slate-400 mt-2">
+                          Traité le {new Date(request.processed_at).toLocaleDateString('fr-FR')} par {request.processed_by}
+                        </p>
                       )}
                     </div>
                   ))}
