@@ -6,14 +6,24 @@ import { Label } from '../components/ui/label';
 import { Card } from '../components/ui/card';
 import { toast } from 'sonner';
 import api from '../utils/api';
-import { Cloud, Feather, ArrowLeft, Mail, Fingerprint } from 'lucide-react';
+import { Cloud, Feather, ArrowLeft, Mail, Fingerprint, KeyRound } from 'lucide-react';
 import AppTitle from '../components/AppTitle';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "../components/ui/input-otp";
 import { 
   isBiometricEnabled, 
   isBiometricAvailable,
   authenticateWithBiometric, 
   enableBiometricLogin,
-  checkBiometricSupport
+  checkBiometricSupport,
+  isPinEnabled,
+  enablePinLogin,
+  authenticateWithPin,
+  isQuickLoginAvailable,
+  getQuickLoginType
 } from '../utils/biometricAuth';
 
 function AuthPage({ setIsAuthenticated }) {
@@ -25,20 +35,30 @@ function AuthPage({ setIsAuthenticated }) {
   const [showBiometricOption, setShowBiometricOption] = useState(false);
   const [biometricSupported, setBiometricSupported] = useState(false);
   const [showEnableBiometric, setShowEnableBiometric] = useState(false);
+  const [showEnablePin, setShowEnablePin] = useState(false);
+  const [pinValue, setPinValue] = useState('');
+  const [confirmPinValue, setConfirmPinValue] = useState('');
+  const [isPinSetup, setIsPinSetup] = useState(false);
+  const [showPinLogin, setShowPinLogin] = useState(false);
+  const [quickLoginType, setQuickLoginType] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if biometric login is available and enabled
-    const checkBiometric = async () => {
-      const enabled = isBiometricEnabled();
+    // Check if quick login is available
+    const checkQuickLogin = async () => {
       const support = await checkBiometricSupport();
       setBiometricSupported(support.platformAuthenticator);
       
-      if (enabled) {
+      const loginType = await getQuickLoginType();
+      setQuickLoginType(loginType);
+      
+      if (loginType === 'biometric') {
         setShowBiometricOption(true);
+      } else if (loginType === 'pin') {
+        setShowPinLogin(true);
       }
     };
-    checkBiometric();
+    checkQuickLogin();
   }, []);
 
   const handleBiometricLogin = async () => {
@@ -70,6 +90,35 @@ function AuthPage({ setIsAuthenticated }) {
     }
   };
 
+  const handlePinLogin = async () => {
+    if (pinValue.length < 4) {
+      toast.error('Entrez votre code PIN');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const credentials = authenticateWithPin(pinValue);
+      
+      if (credentials) {
+        const response = await api.auth.login({ 
+          email: credentials.email, 
+          password: credentials.password 
+        });
+        localStorage.setItem('token', response.data.access_token);
+        setIsAuthenticated(true);
+        toast.success('Connexion réussie !');
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('PIN login error:', error);
+      toast.error(error.message || 'Code PIN incorrect');
+      setPinValue('');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -81,12 +130,17 @@ function AuthPage({ setIsAuthenticated }) {
 
       localStorage.setItem('token', response.data.access_token);
       
-      // After successful login, check if we should offer biometric
-      if (isLogin && !isBiometricEnabled()) {
+      // After successful login, check if we should offer quick login
+      if (isLogin && !isQuickLoginAvailable()) {
         // Check if device supports biometric
         const canUseBiometric = await isBiometricAvailable();
         if (canUseBiometric) {
           setShowEnableBiometric(true);
+          setLoading(false);
+          return;
+        } else {
+          // Offer PIN as fallback
+          setShowEnablePin(true);
           setLoading(false);
           return;
         }
@@ -108,9 +162,44 @@ function AuthPage({ setIsAuthenticated }) {
       if (success) {
         toast.success('Connexion rapide activée !');
       }
+    } else {
+      // Offer PIN as alternative
+      setShowEnableBiometric(false);
+      setShowEnablePin(true);
+      return;
     }
     setIsAuthenticated(true);
     navigate('/');
+  };
+
+  const handleEnablePin = (enable) => {
+    if (enable) {
+      setIsPinSetup(true);
+    } else {
+      setIsAuthenticated(true);
+      navigate('/');
+    }
+  };
+
+  const handlePinSetup = () => {
+    if (pinValue.length < 4) {
+      toast.error('Le code PIN doit contenir au moins 4 chiffres');
+      return;
+    }
+    if (pinValue !== confirmPinValue) {
+      toast.error('Les codes PIN ne correspondent pas');
+      setConfirmPinValue('');
+      return;
+    }
+    
+    try {
+      enablePinLogin(formData.email, formData.password, pinValue);
+      toast.success('Code PIN activé !');
+      setIsAuthenticated(true);
+      navigate('/');
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   const handleForgotPassword = async (e) => {
@@ -132,6 +221,11 @@ function AuthPage({ setIsAuthenticated }) {
     setIsForgotPassword(false);
     setEmailSent(false);
     setShowEnableBiometric(false);
+    setShowEnablePin(false);
+    setIsPinSetup(false);
+    setShowPinLogin(false);
+    setPinValue('');
+    setConfirmPinValue('');
     setFormData({ email: '', password: '', name: '' });
   };
 
@@ -170,7 +264,106 @@ function AuthPage({ setIsAuthenticated }) {
                 variant="outline"
                 className="w-full rounded-full px-6 py-3 font-semibold text-slate-600"
               >
+                Non, utiliser un code PIN
+              </Button>
+            </div>
+          </div>
+        ) : showEnablePin && !isPinSetup ? (
+          <div className="text-center py-4">
+            <div className="w-20 h-20 bg-gradient-to-br from-sky-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <KeyRound className="w-10 h-10 text-sky-500" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-700 mb-2">Code PIN rapide</h2>
+            <p className="text-slate-500 text-sm mb-6">
+              Créez un code PIN à 4-6 chiffres pour vous connecter rapidement sans mot de passe.
+            </p>
+            <div className="space-y-3">
+              <Button
+                onClick={() => handleEnablePin(true)}
+                className="w-full bg-gradient-to-r from-sky-400 to-teal-400 text-white rounded-full px-6 py-3 font-bold"
+              >
+                <KeyRound className="w-5 h-5 mr-2" />
+                Créer un code PIN
+              </Button>
+              <Button
+                onClick={() => handleEnablePin(false)}
+                variant="outline"
+                className="w-full rounded-full px-6 py-3 font-semibold text-slate-600"
+              >
                 Non, plus tard
+              </Button>
+            </div>
+          </div>
+        ) : showEnablePin && isPinSetup ? (
+          <div className="text-center py-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-sky-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <KeyRound className="w-8 h-8 text-sky-500" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-700 mb-2">
+              {confirmPinValue === '' && pinValue === '' ? 'Créez votre code PIN' : 
+               pinValue !== '' && confirmPinValue === '' ? 'Confirmez votre code PIN' : 
+               'Codes PIN'}
+            </h2>
+            <p className="text-slate-500 text-sm mb-6">
+              {confirmPinValue === '' && pinValue === '' ? 'Choisissez un code à 4-6 chiffres' : 
+               pinValue !== '' && confirmPinValue === '' ? 'Saisissez-le à nouveau' : ''}
+            </p>
+            <div className="flex justify-center mb-6">
+              {pinValue === '' || (pinValue !== '' && confirmPinValue === '') ? (
+                <InputOTP
+                  maxLength={6}
+                  value={pinValue === '' ? pinValue : confirmPinValue}
+                  onChange={(value) => {
+                    if (pinValue === '') {
+                      setPinValue(value);
+                    } else {
+                      setConfirmPinValue(value);
+                    }
+                  }}
+                >
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} className="w-12 h-14 text-2xl" />
+                    <InputOTPSlot index={1} className="w-12 h-14 text-2xl" />
+                    <InputOTPSlot index={2} className="w-12 h-14 text-2xl" />
+                    <InputOTPSlot index={3} className="w-12 h-14 text-2xl" />
+                    <InputOTPSlot index={4} className="w-12 h-14 text-2xl" />
+                    <InputOTPSlot index={5} className="w-12 h-14 text-2xl" />
+                  </InputOTPGroup>
+                </InputOTP>
+              ) : (
+                <div className="text-green-500 font-semibold">Codes saisis ✓</div>
+              )}
+            </div>
+            <div className="space-y-3">
+              {pinValue !== '' && confirmPinValue !== '' && (
+                <Button
+                  onClick={handlePinSetup}
+                  className="w-full bg-gradient-to-r from-sky-400 to-teal-400 text-white rounded-full px-6 py-3 font-bold"
+                >
+                  Valider
+                </Button>
+              )}
+              {pinValue !== '' && confirmPinValue === '' && pinValue.length >= 4 && (
+                <Button
+                  onClick={() => {}}
+                  className="w-full bg-gradient-to-r from-sky-400 to-teal-400 text-white rounded-full px-6 py-3 font-bold"
+                >
+                  Continuer
+                </Button>
+              )}
+              <Button
+                onClick={() => {
+                  setPinValue('');
+                  setConfirmPinValue('');
+                  setIsPinSetup(false);
+                  setShowEnablePin(false);
+                  setIsAuthenticated(true);
+                  navigate('/');
+                }}
+                variant="outline"
+                className="w-full rounded-full px-6 py-3 font-semibold text-slate-600"
+              >
+                Passer cette étape
               </Button>
             </div>
           </div>
@@ -244,8 +437,55 @@ function AuthPage({ setIsAuthenticated }) {
         ) : (
           /* Login/Register Form */
           <>
+            {/* PIN Quick Login */}
+            {showPinLogin && isLogin && (
+              <div className="mb-6">
+                <div className="text-center mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-sky-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <KeyRound className="w-8 h-8 text-sky-500" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-700">Connexion rapide</h3>
+                  <p className="text-slate-500 text-sm">Entrez votre code PIN</p>
+                </div>
+                <div className="flex justify-center mb-4">
+                  <InputOTP
+                    maxLength={6}
+                    value={pinValue}
+                    onChange={(value) => {
+                      setPinValue(value);
+                      if (value.length >= 4) {
+                        // Auto-submit when PIN is complete
+                      }
+                    }}
+                  >
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} className="w-11 h-12 text-xl" />
+                      <InputOTPSlot index={1} className="w-11 h-12 text-xl" />
+                      <InputOTPSlot index={2} className="w-11 h-12 text-xl" />
+                      <InputOTPSlot index={3} className="w-11 h-12 text-xl" />
+                      <InputOTPSlot index={4} className="w-11 h-12 text-xl" />
+                      <InputOTPSlot index={5} className="w-11 h-12 text-xl" />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
+                <Button
+                  onClick={handlePinLogin}
+                  disabled={loading || pinValue.length < 4}
+                  className="w-full bg-gradient-to-r from-sky-400 to-teal-400 text-white rounded-full px-6 py-3 font-bold shadow-lg hover:shadow-sky-200/50"
+                  data-testid="pin-login-button"
+                >
+                  {loading ? 'Connexion...' : 'Se connecter'}
+                </Button>
+                <div className="flex items-center gap-4 my-4">
+                  <div className="flex-1 h-px bg-slate-200"></div>
+                  <span className="text-slate-400 text-sm">ou</span>
+                  <div className="flex-1 h-px bg-slate-200"></div>
+                </div>
+              </div>
+            )}
+
             {/* Biometric Quick Login Button */}
-            {showBiometricOption && isLogin && (
+            {showBiometricOption && isLogin && !showPinLogin && (
               <div className="mb-6">
                 <Button
                   onClick={handleBiometricLogin}

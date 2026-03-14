@@ -219,7 +219,6 @@ Application pour les femmes enceintes avec :
    - Compatibilité arrière maintenue (fallback sur email)
 
 ## Future Tasks (Backlog)
-- **(P1)** Fallback pour connexion biométrique (PIN rapide pour appareils non compatibles)
 - **(P2)** Gestion multi-admins depuis l'interface
 - **(P2)** Graphiques de suivi grossesse
 - **(P2)** Mode hors-ligne complet
@@ -230,3 +229,15 @@ Application pour les femmes enceintes avec :
    - Backend réécrit avec des calculs médicaux précis (règle de Naegele ajustée, phase lutéale)
    - Frontend mis à jour pour afficher les fenêtres de dates (fertilité, nidation, accouchement)
    - Explications médicales intégrées dans les résultats
+
+2. **P1 - Fallback PIN rapide** (NOUVEAU) :
+   - Ajout d'un système de code PIN 4-6 chiffres pour les appareils sans biométrie
+   - Interface de création du PIN après connexion
+   - Connexion rapide par PIN sur la page d'authentification
+   - Gestion depuis la page Profil
+
+3. **Rappels de fertilité** (NOUVEAU) :
+   - Activation/désactivation depuis la page Profil
+   - Détection automatique si l'utilisateur est dans sa fenêtre de fertilité
+   - Notification push pendant la période fertile (avec message spécial le jour d'ovulation)
+   - Pas de spam : une notification par jour maximum

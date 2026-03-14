@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { ArrowLeft, User, Mail, Calendar, MessageSquare, Send, CheckCircle, Clock, ChevronDown, ChevronUp, Inbox, Bell, BellOff, Fingerprint } from 'lucide-react';
+import { ArrowLeft, User, Mail, Calendar, MessageSquare, Send, CheckCircle, Clock, ChevronDown, ChevronUp, Inbox, Bell, BellOff, Fingerprint, KeyRound, Heart } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
-import { isBiometricEnabled, disableBiometricLogin, checkBiometricSupport } from '../utils/biometricAuth';
+import { isBiometricEnabled, disableBiometricLogin, checkBiometricSupport, isPinEnabled, disablePinLogin, disableAllQuickLogin } from '../utils/biometricAuth';
 
 // Helper function to convert base64 to Uint8Array for VAPID key
 function urlBase64ToUint8Array(base64String) {
@@ -48,11 +48,18 @@ function ProfilePage() {
   // Biometric login
   const [biometricEnabled, setBiometricEnabled] = useState(false);
   const [biometricSupported, setBiometricSupported] = useState(false);
+  const [pinEnabled, setPinEnabled] = useState(false);
+  
+  // Fertility reminders
+  const [fertilityRemindersEnabled, setFertilityRemindersEnabled] = useState(false);
+  const [fertilityRemindersLoading, setFertilityRemindersLoading] = useState(false);
 
   useEffect(() => {
     loadUserData();
     checkNotificationStatus();
     setBiometricEnabled(isBiometricEnabled());
+    setPinEnabled(isPinEnabled());
+    loadFertilityRemindersStatus();
     
     // Check biometric support
     const checkSupport = async () => {
@@ -92,6 +99,41 @@ function ProfilePage() {
       } catch (error) {
         console.error('Error checking notification status:', error);
       }
+    }
+  };
+
+  const loadFertilityRemindersStatus = async () => {
+    try {
+      const response = await api.pregnancy.getFertilityRemindersStatus();
+      setFertilityRemindersEnabled(response.data.enabled);
+    } catch (error) {
+      console.error('Error loading fertility reminders status:', error);
+    }
+  };
+
+  const toggleFertilityReminders = async () => {
+    setFertilityRemindersLoading(true);
+    try {
+      const newStatus = !fertilityRemindersEnabled;
+      await api.pregnancy.toggleFertilityReminders(newStatus);
+      setFertilityRemindersEnabled(newStatus);
+      
+      if (newStatus) {
+        // Check current fertility window
+        const windowCheck = await api.pregnancy.checkFertilityWindow();
+        if (windowCheck.data.in_fertile_window) {
+          toast.success('Rappels activés ! Vous êtes actuellement dans votre période fertile.');
+        } else {
+          toast.success('Rappels de fertilité activés !');
+        }
+      } else {
+        toast.success('Rappels de fertilité désactivés');
+      }
+    } catch (error) {
+      console.error('Error toggling fertility reminders:', error);
+      toast.error('Erreur lors de la modification');
+    } finally {
+      setFertilityRemindersLoading(false);
     }
   };
 
@@ -320,53 +362,102 @@ function ProfilePage() {
               </Card>
             )}
 
-            {/* Biometric Login Card */}
+            {/* Biometric/PIN Login Card */}
             <Card className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-pink-100" data-testid="biometric-card">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    biometricEnabled 
+                    biometricEnabled || pinEnabled
                       ? 'bg-gradient-to-br from-pink-400 to-purple-400' 
                       : 'bg-slate-300'
                   }`}>
-                    <Fingerprint className="w-5 h-5 text-white" />
+                    {biometricEnabled ? (
+                      <Fingerprint className="w-5 h-5 text-white" />
+                    ) : pinEnabled ? (
+                      <KeyRound className="w-5 h-5 text-white" />
+                    ) : (
+                      <Fingerprint className="w-5 h-5 text-white" />
+                    )}
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Connexion rapide</h3>
                     <p className="text-sm text-slate-500">
                       {biometricEnabled 
                         ? 'Empreinte digitale / Face ID activé'
-                        : biometricSupported
-                          ? 'Utilisez votre empreinte pour vous connecter'
-                          : 'Non disponible sur cet appareil'}
+                        : pinEnabled
+                          ? 'Code PIN activé'
+                          : biometricSupported
+                            ? 'Utilisez votre empreinte pour vous connecter'
+                            : 'Non disponible sur cet appareil'}
                     </p>
                   </div>
                 </div>
-                {biometricEnabled && (
+                {(biometricEnabled || pinEnabled) && (
                   <Button
                     onClick={() => {
-                      disableBiometricLogin();
+                      disableAllQuickLogin();
                       setBiometricEnabled(false);
+                      setPinEnabled(false);
                       toast.success('Connexion rapide désactivée');
                     }}
-                    data-testid="disable-biometric"
+                    data-testid="disable-quick-login"
                     className="rounded-full px-6 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300"
                   >
                     Désactiver
                   </Button>
                 )}
               </div>
-              {!biometricEnabled && biometricSupported && (
+              {!biometricEnabled && !pinEnabled && biometricSupported && (
                 <p className="mt-3 text-xs text-slate-500 bg-white/50 rounded-xl p-3">
                   Pour activer la connexion par empreinte, déconnectez-vous puis reconnectez-vous. L'option vous sera proposée automatiquement.
                 </p>
               )}
-              {!biometricSupported && (
+              {!biometricEnabled && !pinEnabled && !biometricSupported && (
                 <p className="mt-3 text-xs text-amber-600 bg-amber-50 rounded-xl p-3">
-                  Votre appareil ne supporte pas l'authentification biométrique (empreinte/Face ID). Cette fonctionnalité est disponible sur les smartphones et tablettes récents.
+                  Votre appareil ne supporte pas l'authentification biométrique. Déconnectez-vous et reconnectez-vous pour configurer un code PIN rapide.
                 </p>
               )}
             </Card>
+
+            {/* Fertility Reminders Card */}
+            {pregnancyProfile && (
+              <Card className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-rose-100" data-testid="fertility-reminders-card">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      fertilityRemindersEnabled 
+                        ? 'bg-gradient-to-br from-rose-400 to-pink-400' 
+                        : 'bg-slate-300'
+                    }`}>
+                      <Heart className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Rappels de fertilité</h3>
+                      <p className="text-sm text-slate-500">
+                        {fertilityRemindersEnabled 
+                          ? 'Notifications activées pour votre fenêtre fertile'
+                          : 'Recevez une alerte pendant votre période fertile'}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={toggleFertilityReminders}
+                    disabled={fertilityRemindersLoading}
+                    data-testid="toggle-fertility-reminders"
+                    className={`rounded-full px-6 py-2 transition-all ${
+                      fertilityRemindersEnabled
+                        ? 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        : 'bg-gradient-to-r from-rose-400 to-pink-400 text-white hover:opacity-90'
+                    }`}
+                  >
+                    {fertilityRemindersLoading ? '...' : fertilityRemindersEnabled ? 'Désactiver' : 'Activer'}
+                  </Button>
+                </div>
+                <p className="mt-3 text-xs text-slate-500 bg-white/50 rounded-xl p-3">
+                  Vous recevrez une notification quand vous serez dans votre fenêtre de fertilité, avec un rappel spécial le jour de l'ovulation.
+                </p>
+              </Card>
+            )}
 
             {/* Contact Admin Card */}
             <Card className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-purple-100" data-testid="contact-admin-card">

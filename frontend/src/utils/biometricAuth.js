@@ -1,11 +1,14 @@
 /**
  * Biometric Authentication Service
  * Uses Web Authentication API for real biometric authentication
+ * With PIN fallback for unsupported devices
  */
 
 const BIOMETRIC_KEY = 'mamandouce_biometric_enabled';
 const CREDENTIALS_KEY = 'mamandouce_saved_credentials';
 const CREDENTIAL_ID_KEY = 'mamandouce_credential_id';
+const PIN_KEY = 'mamandouce_pin_hash';
+const PIN_ENABLED_KEY = 'mamandouce_pin_enabled';
 
 // Check if WebAuthn biometric is available
 export const isBiometricAvailable = async () => {
@@ -209,6 +212,95 @@ export const checkBiometricSupport = async () => {
   return support;
 };
 
+// ==================== PIN FALLBACK ====================
+
+// Simple hash function for PIN (not cryptographically secure, but good enough for local storage)
+const hashPin = (pin) => {
+  let hash = 0;
+  const str = pin + 'mamandouce_salt_2024';
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return hash.toString(36);
+};
+
+// Check if PIN is enabled
+export const isPinEnabled = () => {
+  return localStorage.getItem(PIN_ENABLED_KEY) === 'true' && 
+         localStorage.getItem(PIN_KEY) !== null &&
+         localStorage.getItem(CREDENTIALS_KEY) !== null;
+};
+
+// Enable PIN login
+export const enablePinLogin = (email, password, pin) => {
+  if (pin.length < 4 || pin.length > 6 || !/^\d+$/.test(pin)) {
+    throw new Error('Le code PIN doit contenir entre 4 et 6 chiffres');
+  }
+  
+  const hashedPin = hashPin(pin);
+  const encoded = btoa(JSON.stringify({ email, password }));
+  
+  localStorage.setItem(PIN_KEY, hashedPin);
+  localStorage.setItem(CREDENTIALS_KEY, encoded);
+  localStorage.setItem(PIN_ENABLED_KEY, 'true');
+  
+  return true;
+};
+
+// Disable PIN login
+export const disablePinLogin = () => {
+  localStorage.removeItem(PIN_KEY);
+  localStorage.removeItem(PIN_ENABLED_KEY);
+};
+
+// Verify PIN and get credentials
+export const authenticateWithPin = (pin) => {
+  if (!isPinEnabled()) {
+    throw new Error('PIN non activé');
+  }
+  
+  const storedHash = localStorage.getItem(PIN_KEY);
+  const inputHash = hashPin(pin);
+  
+  if (storedHash !== inputHash) {
+    throw new Error('Code PIN incorrect');
+  }
+  
+  const encoded = localStorage.getItem(CREDENTIALS_KEY);
+  if (encoded) {
+    return JSON.parse(atob(encoded));
+  }
+  
+  throw new Error('Aucune donnée trouvée');
+};
+
+// Check if quick login is available (biometric OR PIN)
+export const isQuickLoginAvailable = () => {
+  return isBiometricEnabled() || isPinEnabled();
+};
+
+// Get quick login type available
+export const getQuickLoginType = async () => {
+  if (isBiometricEnabled()) {
+    const support = await checkBiometricSupport();
+    if (support.platformAuthenticator) {
+      return 'biometric';
+    }
+  }
+  if (isPinEnabled()) {
+    return 'pin';
+  }
+  return null;
+};
+
+// Disable all quick login methods
+export const disableAllQuickLogin = () => {
+  disableBiometricLogin();
+  disablePinLogin();
+};
+
 export default {
   isBiometricAvailable,
   isBiometricEnabled,
@@ -216,5 +308,13 @@ export default {
   disableBiometricLogin,
   authenticateWithBiometric,
   getSavedCredentials,
-  checkBiometricSupport
+  checkBiometricSupport,
+  // PIN methods
+  isPinEnabled,
+  enablePinLogin,
+  disablePinLogin,
+  authenticateWithPin,
+  isQuickLoginAvailable,
+  getQuickLoginType,
+  disableAllQuickLogin
 };

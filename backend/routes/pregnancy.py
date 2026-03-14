@@ -258,3 +258,114 @@ async def calculate_cycle_dates(data: PregnancyCalculation, current_user: User =
             "explanation": "Un test de grossesse est fiable à partir du jour prévu des règles, idéalement 3 jours après."
         }
     }
+
+
+# ==================== FERTILITY REMINDERS ====================
+
+@router.post("/pregnancy/fertility-reminders")
+async def toggle_fertility_reminders(enable: bool, current_user: User = Depends(get_current_user)):
+    """Enable or disable fertility window reminders"""
+    await db.fertility_preferences.update_one(
+        {"user_id": current_user.id},
+        {"$set": {
+            "enabled": enable,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    return {"success": True, "enabled": enable}
+
+
+@router.get("/pregnancy/fertility-reminders")
+async def get_fertility_reminders_status(current_user: User = Depends(get_current_user)):
+    """Get fertility reminders status"""
+    pref = await db.fertility_preferences.find_one({"user_id": current_user.id}, {"_id": 0})
+    return {"enabled": pref.get("enabled", False) if pref else False}
+
+
+@router.get("/pregnancy/check-fertility-window")
+async def check_fertility_window(current_user: User = Depends(get_current_user)):
+    """
+    Check if today is in the user's fertility window.
+    Returns fertility status and sends push notification if enabled.
+    """
+    from routes.push_notifications import send_push_notification
+    
+    # Get user's pregnancy profile
+    profile = await db.pregnancy_profiles.find_one({"user_id": current_user.id})
+    if not profile or not profile.get("last_period_date"):
+        return {"in_fertile_window": False, "message": "Profil de cycle non configuré"}
+    
+    # Get fertility preferences
+    pref = await db.fertility_preferences.find_one({"user_id": current_user.id})
+    reminders_enabled = pref.get("enabled", False) if pref else False
+    
+    # Calculate current cycle dates
+    last_period = datetime.fromisoformat(profile["last_period_date"])
+    cycle_length = profile.get("cycle_length", 28)
+    
+    # Calculate next cycle's dates
+    today = datetime.now(timezone.utc).replace(tzinfo=None)
+    days_since_period = (today - last_period).days
+    
+    # If more than cycle length, calculate for next cycle
+    while days_since_period >= cycle_length:
+        last_period = last_period + timedelta(days=cycle_length)
+        days_since_period = (today - last_period).days
+    
+    result = calculate_pregnancy_dates(last_period, cycle_length)
+    
+    fertile_start = datetime.fromisoformat(result["fertile_window_start"])
+    fertile_end = datetime.fromisoformat(result["fertile_window_end"])
+    ovulation = datetime.fromisoformat(result["ovulation_date"])
+    
+    in_fertile_window = fertile_start <= today <= fertile_end
+    is_ovulation_day = today.date() == ovulation.date()
+    days_to_ovulation = (ovulation - today).days
+    
+    response = {
+        "in_fertile_window": in_fertile_window,
+        "is_ovulation_day": is_ovulation_day,
+        "days_to_ovulation": days_to_ovulation,
+        "fertile_window_start": result["fertile_window_start"],
+        "fertile_window_end": result["fertile_window_end"],
+        "ovulation_date": result["ovulation_date"],
+        "reminders_enabled": reminders_enabled
+    }
+    
+    # Send push notification if in fertile window and reminders enabled
+    if reminders_enabled and in_fertile_window:
+        # Check if we already sent notification today
+        today_str = today.strftime("%Y-%m-%d")
+        last_notification = await db.fertility_notifications.find_one({
+            "user_id": current_user.id,
+            "date": today_str
+        })
+        
+        if not last_notification:
+            # Send notification
+            if is_ovulation_day:
+                title = "Jour d'ovulation !"
+                body = "C'est aujourd'hui votre jour d'ovulation. C'est le moment idéal pour concevoir."
+            else:
+                title = "Période fertile"
+                body = f"Vous êtes dans votre fenêtre de fertilité. Ovulation dans {days_to_ovulation} jour(s)."
+            
+            try:
+                await send_push_notification(
+                    user_email=current_user.email,
+                    title=title,
+                    body=body,
+                    url="/calculator"
+                )
+                # Record that we sent notification today
+                await db.fertility_notifications.insert_one({
+                    "user_id": current_user.id,
+                    "date": today_str,
+                    "sent_at": datetime.now(timezone.utc).isoformat()
+                })
+                response["notification_sent"] = True
+            except Exception as e:
+                response["notification_error"] = str(e)
+    
+    return response

@@ -24,6 +24,9 @@ export const api = {
   pregnancy: {
     calculate: (data) => axios.post(`${API}/pregnancy/calculate`, data, getAuthHeaders()),
     getProfile: () => axios.get(`${API}/pregnancy/profile`, getAuthHeaders()),
+    toggleFertilityReminders: (enable) => axios.post(`${API}/pregnancy/fertility-reminders?enable=${enable}`, {}, getAuthHeaders()),
+    getFertilityRemindersStatus: () => axios.get(`${API}/pregnancy/fertility-reminders`, getAuthHeaders()),
+    checkFertilityWindow: () => axios.get(`${API}/pregnancy/check-fertility-window`, getAuthHeaders()),
   },
   scan: {
     barcode: (barcode) => axios.post(`${API}/scan/barcode?barcode=${barcode}`, {}, getAuthHeaders()),
