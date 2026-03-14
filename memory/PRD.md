@@ -7,7 +7,7 @@ Application pour les femmes enceintes avec :
 - Conseils hebdomadaires et suivi médical
 - Liste de naissance partageable
 - Liens vers services administratifs et ressources
-- Système d'abonnement Premium (27€/an)
+- Système d'abonnement Premium (27€/9 mois)
 - Page d'administration complète avec messagerie
 - Notifications push
 
@@ -15,177 +15,111 @@ Application pour les femmes enceintes avec :
 - **Frontend**: React.js + Tailwind CSS + Shadcn/UI + Capacitor (PWA/Mobile)
 - **Backend**: FastAPI (Python) - **FULLY REFACTORED**
 - **Database**: MongoDB
-- **Payments**: Stripe (27€/an non-tacite)
+- **Payments**: Stripe (27€/9 mois sans renouvellement auto)
 - **Email**: Resend
 - **Push Notifications**: Web Push API + pywebpush
 
-## Backend Architecture (Refactored - 13 Mars 2026)
-
-### Avant
-- `server.py` : 1845 lignes (monolithique)
-
-### Après
-- `server.py` : **78 lignes** (point d'entrée uniquement)
-- Architecture modulaire complète
+## Backend Architecture
 
 ```
 /app/backend/
-├── server.py              # Point d'entrée (78 lignes)
+├── server.py              # Point d'entrée
 ├── core/
-│   ├── __init__.py        # Exports
-│   ├── config.py          # Configuration (secrets, keys, email)
+│   ├── config.py          # Configuration
 │   ├── database.py        # MongoDB connection
-│   └── security.py        # Auth, JWT, password hashing
+│   └── security.py        # Auth, JWT
 ├── models/
-│   ├── __init__.py        # Exports
-│   └── schemas.py         # Tous les modèles Pydantic
+│   └── schemas.py         # Modèles Pydantic
 ├── routes/
-│   ├── __init__.py        # Exports
 │   ├── auth.py            # Register, Login, Me
 │   ├── pregnancy.py       # Calculate, Profile
-│   ├── food.py            # Scan, Search, Library, Favorites
-│   ├── medical.py         # Appointments, Notes, Health summary
-│   ├── birth_list.py      # Birth list, Items, Sharing
+│   ├── food.py            # Scan, Search, Library
+│   ├── medical.py         # Appointments, Notes
+│   ├── birth_list.py      # Birth list, Sharing
 │   ├── admin.py           # Users, Codes, Foods, Messages
 │   ├── contact.py         # User messages
 │   ├── push_notifications.py  # VAPID, Subscribe
-│   └── payments.py        # Stripe
+│   ├── payments.py        # Stripe
+│   ├── tips.py            # Weekly tips
+│   ├── postpartum.py      # Maternity bag & Postpartum content
+│   └── referral.py        # Referral system (NEW)
 └── data/
     └── food_database.py   # 192 aliments
 ```
 
-## Completed Features (Mars 2026)
+## Completed Features
+
+### Core Features
+- [x] Calculateur de grossesse avec dates clés
+- [x] Scanner d'aliments (caméra + manuel)
+- [x] Bibliothèque 192 aliments
+- [x] Liste de naissance partageable
+- [x] 41 semaines de conseils hebdomadaires
+- [x] Suivi médical (20 RDV)
+- [x] Calendrier de fertilité avancé (5 ans vacances/fériés, 6 mois prédictions)
+- [x] Système de paiement Stripe
+
+### New Features (14 Mars 2026)
+- [x] **Check-list Sac de maternité**
+  - 32 articles par défaut (Pour maman, Pour bébé, Pour le retour)
+  - Cases à cocher interactives avec persistence
+  - Barre de progression
+  - Système de suggestions (soumis à validation admin)
+  - Notification admin avec catégorie "[Sac maternité]"
+
+- [x] **Suivi Post-partum**
+  - 6 onglets de contenu (Rendez-vous, Difficultés, Allaitement, Lait infantile, Couches, Précautions)
+  - 9 rendez-vous sur 6 mois (obligatoires + recommandés)
+  - Conseils détaillés sur baby blues, dépression, allaitement, lait infantile
+  - Guide des tailles de couches
+  - Avertissement médical
+
+- [x] **Système de parrainage**
+  - Section dans les paramètres
+  - 2 champs pour filleules (nom + email)
+  - Barre de progression 0/2
+  - Post-partum offert si 2 filleuls inscrits
+  - Notifications admin avec catégorie "[Parrainage]"
+
+- [x] **Nouvelles offres d'abonnement**
+  - Premium: 27€/9 mois (grossesse)
+  - Post-partum: 8€ (accessible après 6 mois d'abonnement)
+  - Alternative: parrainage 2 amies = post-partum gratuit
 
 ### Interface & Design
 - [x] Logo "MamanDouce" en Dancing Script
-- [x] Nom utilisateur en police Caveat
-- [x] Badge Emergent ultra-discret
+- [x] Réorganisation page d'accueil en 5 catégories:
+  1. En route vers la grossesse
+  2. Grossesse
+  3. Préparer l'arrivée de bébé (avec Sac de maternité)
+  4. Suivi post-partum (NOUVEAU)
+  5. Services et ressources
 
-### Page d'accueil
-- [x] Services & Ressources : CAF, Ameli, Maternelles TV, Maps
+### Administration
+- [x] Dashboard avec compteurs
+- [x] Notifications push admin (avec catégories)
+- [x] Gestion utilisateurs, messages, aliments
+- [x] Codes promo
 
-### Calculateur de grossesse
-- [x] Toutes les dates clés
-- [x] Conseils médicaux par trimestre
-- [x] **Calculs précis basés sur la durée du cycle** (14 Mars 2026):
-  - Fenêtre de fertilité (plage de 6 jours)
-  - Fenêtre de nidation (6-12 jours après ovulation)
-  - Plage d'accouchement (±2 semaines)
-  - Âge gestationnel (SA + jours)
-  - Explications médicales détaillées
+## API Endpoints
 
-### Scanner d'aliments
-- [x] Scan caméra + recherche + saisie manuelle
-- [x] Bibliothèque 192 aliments
-- [x] Ajout d'aliments par utilisateurs
+### New Endpoints (14 Mars 2026)
 
-### Liste de naissance
-- [x] Création, partage, réservation
+#### postpartum.py
+- `GET /api/maternity-bag` - Liste du sac de maternité
+- `POST /api/maternity-bag/check` - Cocher/décocher un item
+- `POST /api/maternity-bag/suggest` - Suggérer un article
+- `GET /api/maternity-bag/suggestions` - Liste suggestions (admin)
+- `POST /api/maternity-bag/approve` - Approuver/rejeter (admin)
+- `GET /api/postpartum/content` - Contenu post-partum
+- `GET /api/postpartum/appointments` - Rendez-vous post-partum
 
-### Suivi médical
-- [x] 20 RDV médicaux, notes personnelles
-
-### Conseils hebdomadaires
-- [x] 41 semaines de conseils
-
-### Page d'Administration
-- [x] **Onglet Dashboard** (NOUVEAU) avec compteurs :
-  - Visites totales
-  - Inscriptions
-  - Premium (payants)
-  - Bêta testeuses
-  - Utilisateurs gratuits
-  - Messages non lus
-  - Aliments en attente
-  - Résumé (taux premium, codes)
-- [x] **Notifications push admin** quand :
-  - Nouvelle inscription
-  - Nouveau message
-- [x] Onglet Utilisateurs (beta testeuse/premium/gratuit)
-- [x] Onglet Messages avec réponse + email + push
-- [x] Onglet Aliments (validation)
-- [x] Onglet Codes Promo
-
-### Système de Contact
-- [x] Formulaire de contact
-- [x] Réponse admin par email
-- [x] Historique des échanges côté utilisateur
-
-### Notifications Push
-- [x] Web Push API avec VAPID
-- [x] Abonnement/désabonnement depuis Profil
-- [x] Notification automatique lors réponse admin
-
-### Fonctionnalités annexes
-- [x] Historique, favoris, rappels
-- [x] Paiement Stripe (27€/an)
-- [x] Codes promo à usage unique
-- [x] Emails Resend
-
-## API Endpoints (par module)
-
-### auth.py
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `GET /api/auth/me`
-
-### pregnancy.py
-- `POST /api/pregnancy/calculate`
-- `GET /api/pregnancy/profile`
-
-### food.py
-- `POST /api/scan/barcode`
-- `POST /api/scan/search`
-- `GET /api/foods/safe`
-- `GET /api/food-library`
-- `POST /api/user-added-foods`
-- `GET /api/user-added-foods`
-- `GET /api/history/search`
-- `POST /api/favorites`
-- `GET /api/favorites`
-- `DELETE /api/favorites/{food_name}`
-- `GET /api/favorites/check/{food_name}`
-
-### medical.py
-- `GET /api/medical/appointments`
-- `GET /api/medical/upcoming`
-- `POST /api/medical/complete/{id}`
-- `DELETE /api/medical/complete/{id}`
-- `POST /api/medical/notes/{id}`
-- `GET /api/medical/notes/{id}`
-- `GET /api/medical/notes`
-- `GET /api/medical/health-summary`
-
-### birth_list.py
-- `GET /api/birth-list`
-- `POST /api/birth-list`
-- `POST /api/birth-list/items`
-- `DELETE /api/birth-list/items/{id}`
-- `GET /api/birth-list/shared/{share_id}` (public)
-- `POST /api/birth-list/shared/{share_id}/items/{id}/toggle` (public)
-
-### admin.py
-- `POST /api/admin/generate-codes`
-- `GET /api/admin/promo-codes`
-- `GET /api/admin/users`
-- `GET /api/admin/pending-foods`
-- `POST /api/admin/food-status/{id}`
-- `GET /api/admin/messages`
-- `POST /api/admin/messages/{id}/read`
-- `POST /api/admin/messages/{id}/reply`
-
-### contact.py
-- `POST /api/contact/send`
-- `GET /api/contact/my-messages`
-
-### push_notifications.py
-- `GET /api/notifications/vapid-public-key`
-- `POST /api/notifications/subscribe`
-- `POST /api/notifications/unsubscribe`
-
-### payments.py
-- `POST /api/create-checkout-session`
-- `POST /api/webhook/stripe`
+#### referral.py
+- `GET /api/referral/status` - Statut des parrainages
+- `POST /api/referral/submit` - Soumettre des parrainages
+- `GET /api/referral/check-completion` - Vérifier si 2 complétés
+- `GET /api/subscription/full-status` - Statut complet (premium + post-partum)
+- `POST /api/subscription/purchase-postpartum` - Acheter post-partum
 
 ## Database Collections
 - `users`, `pregnancy_profiles`, `search_history`, `favorites`
@@ -194,70 +128,28 @@ Application pour les femmes enceintes avec :
 - `user_added_foods`, `birth_lists`
 - `promo_codes`, `admin_messages`
 - `push_subscriptions`
+- `maternity_bags` (NEW) - Listes de sac par utilisateur
+- `maternity_bag_suggestions` (NEW) - Suggestions en attente
+- `referrals` (NEW) - Parrainages
 
 ## Credentials Admin
 - **Email**: cyrilalepsa@gmail.com
 - **Password**: Cyc@dmin9630
-- **Role in DB**: `admin` (champ `role` dans collection `users`)
-
-## Session Summary (13 Mars 2026)
-1. **Notifications Push** - Web Push API avec VAPID
-2. **Refactoring COMPLET du backend** :
-   - server.py : 1845 → 78 lignes
-   - 9 fichiers de routes modulaires
-   - Core (config, database, security)
-   - Models (schemas)
-3. Tous les tests passent après refactoring
-
-## Session Update (13 Mars 2026 - v2)
-1. **UI Admin Dashboard** - Icônes compteurs réduites (`w-3 h-3`) et transparentes (`opacity-30`)
-2. **P3 Complété - Gestion du rôle admin** :
-   - Ajout champ `role` ("user"/"admin") au modèle User
-   - Création fonction `get_admin_user` dans security.py
-   - Routes admin utilisent maintenant l'authentification JWT (plus de `admin_secret` dans l'URL)
-   - Migration effectuée : admin a `role: "admin"` en BDD
-   - Compatibilité arrière maintenue (fallback sur email)
+- **Role in DB**: `admin`
 
 ## Future Tasks (Backlog)
 - **(P2)** Gestion multi-admins depuis l'interface
-- **(P2)** Graphiques de suivi grossesse
+- **(P2)** Graphiques de suivi grossesse (poids, croissance)
 - **(P2)** Mode hors-ligne complet
 - **(P3)** Déploiement Google Play Store
 
-## Session Update (14 Mars 2026)
-1. **Calculateur de grossesse amélioré** :
-   - Backend réécrit avec des calculs médicaux précis (règle de Naegele ajustée, phase lutéale)
-   - Frontend mis à jour pour afficher les fenêtres de dates (fertilité, nidation, accouchement)
-   - Explications médicales intégrées dans les résultats
+## Testing Status
+- Backend: 100% (19/19 tests passés)
+- Frontend: 100% (toutes les pages et interactions fonctionnelles)
+- Dernière exécution: 14 Mars 2026
 
-2. **P1 - Fallback PIN rapide** (NOUVEAU) :
-   - Ajout d'un système de code PIN 4-6 chiffres pour les appareils sans biométrie
-   - Interface de création du PIN après connexion
-   - Connexion rapide par PIN sur la page d'authentification
-   - Gestion depuis la page Profil
-
-3. **Rappels de fertilité** (NOUVEAU) :
-   - Activation/désactivation depuis la page Profil
-   - Détection automatique si l'utilisateur est dans sa fenêtre de fertilité
-   - Notification push pendant la période fertile (avec message spécial le jour d'ovulation)
-   - Pas de spam : une notification par jour maximum
-   - **Widget Fertilité sur la page d'accueil** : affiche en temps réel si l'utilisateur est dans sa période fertile
-
-4. **Amélioration UX** (NOUVEAU) :
-   - Icône Paramètres déplacée à côté du bouton déconnexion (barre du haut)
-   - Widget fertilité cliquable (redirige vers le calculateur)
-
-5. **Réorganisation complète de la page d'accueil** (14 Mars 2026) :
-   - **Agenda interactif** : saisie des dernières règles, affichage automatique des dates
-   - **Catégorie 1 "En route vers la grossesse"** : Calculateur + Conseils + avertissement médical
-   - **Catégorie 2 "Grossesse"** : Carte évolution bébé, Scanner/Bibliothèque/Favoris/Historique (aliments), Évolution & démarches, Rendez-vous, Rappels
-   - **Catégorie 3 "Préparer l'arrivée de bébé"** : Liste de naissance, Vidéos préparation accouchement, Les Maternelles (YouTube), Livres
-   - **Catégorie 4 "Services et ressources"** : CAF, Ameli, Mairies proches
-
-6. **Calendrier complet avec fonctionnalités avancées** (14 Mars 2026) :
-   - Numéros de semaine ISO
-   - Vacances scolaires françaises par zone (A, B, C)
-   - Visualisation : pic d'ovulation, fenêtre de fertilité, règles prévues
-   - Enregistrement des dates de rapports
-   - Calcul automatique de la nidation estimée (6-12 jours après rapport)
-   - Légende complète avec code couleur
+## 3rd Party Integrations
+- **Stripe** (Paiements)
+- **Resend** (Emails)
+- **Gemini Nano Banana** (Génération d'images) via Emergent LLM Key
+- **Capacitor** (Mobile)
