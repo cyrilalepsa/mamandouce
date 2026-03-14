@@ -182,13 +182,22 @@ function PregnancyCalculator() {
                 <p className="text-sm text-slate-500 mt-1">Trimestre {results.trimester}</p>
               </div>
 
-              {/* Ovulation */}
-              <div className="bg-white rounded-2xl p-4">
-                <p className="text-sm text-slate-500 font-semibold">Date d'ovulation</p>
-                <p className="text-lg font-bold text-sky-600">{formatDate(results.ovulation_date)}</p>
-                <p className="text-xs text-slate-400 mt-1">
+              {/* Ovulation - Pic de fertilité */}
+              <div className="bg-white rounded-2xl p-4 border-l-4 border-sky-400">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-sm text-slate-500 font-semibold">Pic d'ovulation</span>
+                  <span className="bg-sky-100 text-sky-700 text-xs px-2 py-0.5 rounded-full font-medium">Date clé</span>
+                </div>
+                <p className="text-2xl font-bold text-sky-600">{formatDate(results.ovulation_date)}</p>
+                <p className="text-xs text-slate-500 mt-2">
                   {results.explanations?.ovulation || `Jour ${results.days_to_ovulation} du cycle`}
                 </p>
+                <div className="mt-3 bg-sky-50 rounded-xl p-3">
+                  <p className="text-xs text-sky-700">
+                    <strong>Conseil :</strong> Le pic d'ovulation est le jour où vous êtes la plus fertile. 
+                    Les rapports 1-2 jours avant cette date augmentent vos chances de conception.
+                  </p>
+                </div>
               </div>
 
               {/* Fenêtre de fertilité */}
@@ -200,6 +209,14 @@ function PregnancyCalculator() {
                 <p className="text-xs text-slate-400 mt-1">
                   {results.fertile_days} jours les plus fertiles
                 </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
+                    Jours favorables
+                  </span>
+                  <span className="text-xs bg-sky-100 text-sky-700 px-2 py-1 rounded-full font-semibold">
+                    Pic : {formatDate(results.ovulation_date)}
+                  </span>
+                </div>
               </div>
 
               {/* Conception */}
