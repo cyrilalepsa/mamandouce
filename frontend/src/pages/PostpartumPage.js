@@ -243,11 +243,12 @@ export default function PostpartumPage() {
 
         {/* Content Sections */}
         {activeSection === 'appointments' && content?.appointments && (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <h2 className="text-lg font-bold text-slate-700">Rendez-vous sur 6 mois</h2>
             {content.appointments.map((apt, index) => (
               <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
-                <div className="flex items-start gap-3">
+                {/* Header */}
+                <div className="flex items-start gap-3 mb-3">
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
                     apt.type === 'obligatoire' 
                       ? 'bg-rose-100 text-rose-600' 
@@ -256,7 +257,7 @@ export default function PostpartumPage() {
                     <Stethoscope className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <h3 className="font-bold text-slate-700">{apt.title}</h3>
                       <span className={`text-xs px-2 py-0.5 rounded-full ${
                         apt.type === 'obligatoire'
@@ -267,11 +268,214 @@ export default function PostpartumPage() {
                       </span>
                     </div>
                     <p className="text-sm text-slate-500 mt-1">{apt.description}</p>
-                    <div className="flex items-center gap-1 mt-2 text-xs text-slate-400">
-                      <Clock className="w-3 h-3" />
-                      <span>Semaine {apt.week}</span>
+                    <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-400">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        Semaine {apt.week}
+                      </span>
+                      {apt.duration && (
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {apt.duration}
+                        </span>
+                      )}
+                      {apt.who && (
+                        <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
+                          {apt.who}
+                        </span>
+                      )}
                     </div>
                   </div>
+                </div>
+                
+                {/* Expandable details */}
+                <div className="border-t border-slate-100 pt-3 space-y-3">
+                  {/* For Mom */}
+                  {apt.for_mom && apt.for_mom.length > 0 && (
+                    <div className="bg-pink-50 rounded-xl p-3">
+                      <h4 className="text-sm font-bold text-pink-700 mb-2 flex items-center gap-1">
+                        <Heart className="w-4 h-4" /> Pour maman
+                      </h4>
+                      <ul className="text-xs text-pink-800 space-y-1">
+                        {apt.for_mom.map((item, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-pink-400 mt-0.5">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {/* For Baby */}
+                  {apt.for_baby && apt.for_baby.length > 0 && (
+                    <div className="bg-sky-50 rounded-xl p-3">
+                      <h4 className="text-sm font-bold text-sky-700 mb-2 flex items-center gap-1">
+                        <Baby className="w-4 h-4" /> Pour bébé
+                      </h4>
+                      <ul className="text-xs text-sky-800 space-y-1">
+                        {apt.for_baby.map((item, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-sky-400 mt-0.5">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {/* Vaccines */}
+                  {apt.vaccines && apt.vaccines.length > 0 && (
+                    <div className="bg-green-50 rounded-xl p-3">
+                      <h4 className="text-sm font-bold text-green-700 mb-2 flex items-center gap-1">
+                        <Shield className="w-4 h-4" /> Vaccins administrés
+                      </h4>
+                      <div className="space-y-2">
+                        {apt.vaccines.map((vax, i) => (
+                          <div key={i} className="text-xs">
+                            <span className="font-semibold text-green-800">{vax.name}</span>
+                            <p className="text-green-600 mt-0.5">Protection contre : {vax.protects}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Side effects */}
+                  {apt.side_effects && apt.side_effects.length > 0 && (
+                    <div className="bg-amber-50 rounded-xl p-3">
+                      <h4 className="text-sm font-bold text-amber-700 mb-2 flex items-center gap-1">
+                        <AlertTriangle className="w-4 h-4" /> Effets secondaires possibles
+                      </h4>
+                      <ul className="text-xs text-amber-800 space-y-1">
+                        {apt.side_effects.map((item, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-amber-400 mt-0.5">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {/* What to do */}
+                  {apt.what_to_do && apt.what_to_do.length > 0 && (
+                    <div className="bg-blue-50 rounded-xl p-3">
+                      <h4 className="text-sm font-bold text-blue-700 mb-2">Que faire après ?</h4>
+                      <ul className="text-xs text-blue-800 space-y-1">
+                        {apt.what_to_do.map((item, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-blue-400 mt-0.5">✓</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {/* Why - for reeducation */}
+                  {apt.why && apt.why.length > 0 && (
+                    <div className="bg-purple-50 rounded-xl p-3">
+                      <h4 className="text-sm font-bold text-purple-700 mb-2">Pourquoi c'est important ?</h4>
+                      <ul className="text-xs text-purple-800 space-y-1">
+                        {apt.why.map((item, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-purple-400 mt-0.5">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {/* Methods - for reeducation */}
+                  {apt.methods && apt.methods.length > 0 && (
+                    <div className="bg-indigo-50 rounded-xl p-3">
+                      <h4 className="text-sm font-bold text-indigo-700 mb-2">Méthodes utilisées</h4>
+                      <div className="grid grid-cols-2 gap-2">
+                        {apt.methods.map((method, i) => (
+                          <div key={i} className="text-xs bg-white/60 rounded-lg p-2">
+                            <span className="font-semibold text-indigo-800">{method.name}</span>
+                            <p className="text-indigo-600 mt-0.5">{method.description}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Milestones at 6 months */}
+                  {apt.milestones_6_months && apt.milestones_6_months.length > 0 && (
+                    <div className="bg-teal-50 rounded-xl p-3">
+                      <h4 className="text-sm font-bold text-teal-700 mb-2">Développement attendu à 6 mois</h4>
+                      <div className="grid grid-cols-2 gap-1">
+                        {apt.milestones_6_months.map((item, i) => (
+                          <span key={i} className="text-xs text-teal-800 flex items-center gap-1">
+                            <span className="text-teal-400">✓</span> {item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Diversification */}
+                  {apt.diversification && apt.diversification.length > 0 && (
+                    <div className="bg-orange-50 rounded-xl p-3">
+                      <h4 className="text-sm font-bold text-orange-700 mb-2">Diversification alimentaire</h4>
+                      <ul className="text-xs text-orange-800 space-y-1">
+                        {apt.diversification.map((item, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-orange-400 mt-0.5">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {/* Questions to ask */}
+                  {apt.questions_to_ask && apt.questions_to_ask.length > 0 && (
+                    <div className="bg-violet-50 rounded-xl p-3">
+                      <h4 className="text-sm font-bold text-violet-700 mb-2">Questions à poser au médecin</h4>
+                      <ul className="text-xs text-violet-800 space-y-1">
+                        {apt.questions_to_ask.map((item, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-violet-400 mt-0.5">?</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {/* Documents */}
+                  {apt.documents && apt.documents.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      <span className="text-xs font-semibold text-slate-500">Documents à apporter :</span>
+                      {apt.documents.map((doc, i) => (
+                        <span key={i} className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full">
+                          {doc}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Tips */}
+                  {apt.tips && (
+                    <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-3 border border-pink-100">
+                      <p className="text-xs text-slate-700">
+                        <span className="font-bold text-pink-600">💡 Conseil :</span> {apt.tips}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Reimbursement */}
+                  {apt.reimbursement && (
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold">
+                        💰 {apt.reimbursement}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </Card>
             ))}

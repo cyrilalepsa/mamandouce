@@ -189,15 +189,249 @@ async def approve_suggestion(suggestion_id: str, approved: bool, current_user: U
 
 POSTPARTUM_CONTENT = {
     "appointments": [
-        {"week": 1, "title": "Visite de sortie maternité", "description": "Examen de maman et bébé avant le retour à la maison", "type": "obligatoire"},
-        {"week": 1, "title": "Visite sage-femme à domicile", "description": "Suivi des suites de couches, aide à l'allaitement", "type": "recommandé"},
-        {"week": 2, "title": "Consultation pédiatre", "description": "Premier examen complet du bébé, poids, reflexes", "type": "obligatoire"},
-        {"week": 3, "title": "Visite sage-femme", "description": "Vérification cicatrisation, soutien allaitement", "type": "recommandé"},
-        {"week": 6, "title": "Visite post-natale", "description": "Examen gynécologique, contraception, bien-être psychologique", "type": "obligatoire"},
-        {"week": 8, "title": "Vaccins bébé (2 mois)", "description": "Première série de vaccinations obligatoires", "type": "obligatoire"},
-        {"week": 10, "title": "Rééducation périnéale", "description": "Début des séances avec une sage-femme ou kiné", "type": "recommandé"},
-        {"week": 16, "title": "Vaccins bébé (4 mois)", "description": "Deuxième série de vaccinations", "type": "obligatoire"},
-        {"week": 24, "title": "Bilan 6 mois", "description": "Visite pédiatrique, diversification alimentaire", "type": "recommandé"},
+        {
+            "week": 1, 
+            "title": "Visite de sortie maternité", 
+            "description": "Examen complet de la maman et du bébé avant le retour à la maison",
+            "type": "obligatoire",
+            "duration": "1-2 heures",
+            "who": "Pédiatre + Sage-femme/Gynécologue",
+            "for_mom": [
+                "Vérification de l'utérus (involution utérine)",
+                "Contrôle des saignements (lochies)",
+                "Examen de la cicatrice (césarienne ou épisiotomie)",
+                "Vérification de la tension artérielle",
+                "Discussion sur la contraception",
+                "Évaluation de l'état psychologique"
+            ],
+            "for_baby": [
+                "Poids et mesures (perte de poids normale < 10%)",
+                "Examen clinique complet",
+                "Test de Guthrie (dépistage maladies)",
+                "Contrôle de la jaunisse (bilirubine)",
+                "Vérification de l'alimentation (sein ou biberon)"
+            ],
+            "documents": ["Carnet de santé bébé", "Compte-rendu d'accouchement"],
+            "tips": "Préparez vos questions à l'avance. N'hésitez pas à demander des démonstrations pour les soins du bébé."
+        },
+        {
+            "week": 1, 
+            "title": "Visite sage-femme à domicile", 
+            "description": "Suivi personnalisé des suites de couches et aide à l'allaitement",
+            "type": "recommandé",
+            "duration": "45 min - 1 heure",
+            "who": "Sage-femme libérale",
+            "for_mom": [
+                "Surveillance des saignements",
+                "Vérification de la cicatrisation",
+                "Soutien à l'allaitement (position, prise du sein)",
+                "Conseils pour les soins du périnée",
+                "Écoute et soutien psychologique",
+                "Conseils sur le repos et la récupération"
+            ],
+            "for_baby": [
+                "Pesée (suivi de la reprise de poids)",
+                "Vérification du cordon ombilical",
+                "Observation d'une tétée ou biberon",
+                "Conseils sur le sommeil et les pleurs"
+            ],
+            "documents": ["Carnet de santé bébé"],
+            "tips": "Cette visite est prise en charge à 100% par l'Assurance Maladie. Vous avez droit à 2 visites à domicile.",
+            "reimbursement": "100% Sécurité Sociale"
+        },
+        {
+            "week": 2, 
+            "title": "Consultation pédiatre - J8 à J15", 
+            "description": "Premier examen médical complet du nouveau-né",
+            "type": "obligatoire",
+            "duration": "30-45 minutes",
+            "who": "Pédiatre ou Médecin généraliste",
+            "for_baby": [
+                "Pesée complète (doit avoir repris son poids de naissance)",
+                "Mesure taille et périmètre crânien",
+                "Examen neurologique (tonus, réflexes archaïques)",
+                "Auscultation cardiaque et pulmonaire",
+                "Palpation abdominale",
+                "Examen des hanches (dépistage luxation)",
+                "Vérification des yeux et audition",
+                "Examen de la peau (jaunisse, éruptions)",
+                "Vérification du cordon ombilical"
+            ],
+            "questions_to_ask": [
+                "Fréquence des tétées/biberons normale ?",
+                "Combien de couches mouillées par jour ?",
+                "Quand consulter en urgence ?",
+                "Quand commencer les vitamines D et K ?"
+            ],
+            "documents": ["Carnet de santé", "Résultats du test de Guthrie"],
+            "tips": "Notez le nombre de tétées, selles et urines des derniers jours. Le médecin vous posera ces questions.",
+            "reimbursement": "100% Sécurité Sociale"
+        },
+        {
+            "week": 3, 
+            "title": "Visite sage-femme de suivi", 
+            "description": "Vérification de la cicatrisation et soutien continu",
+            "type": "recommandé",
+            "duration": "30-45 minutes",
+            "who": "Sage-femme",
+            "for_mom": [
+                "Examen du périnée et de la cicatrice",
+                "Vérification de la fin des saignements",
+                "Discussion sur la reprise des rapports",
+                "Point sur la contraception",
+                "Évaluation de la fatigue et du moral",
+                "Conseils rééducation périnéale"
+            ],
+            "for_baby": [
+                "Pesée de contrôle",
+                "Point sur l'alimentation",
+                "Vérification cicatrisation ombilic"
+            ],
+            "tips": "C'est le moment de parler de vos inquiétudes concernant la reprise d'une vie intime.",
+            "reimbursement": "100% Sécurité Sociale"
+        },
+        {
+            "week": 6, 
+            "title": "Visite post-natale obligatoire", 
+            "description": "Examen gynécologique complet et bilan de santé global",
+            "type": "obligatoire",
+            "duration": "30-45 minutes",
+            "who": "Gynécologue ou Sage-femme",
+            "for_mom": [
+                "Examen gynécologique complet",
+                "Frottis cervical si nécessaire",
+                "Examen des seins",
+                "Vérification complète de la cicatrisation",
+                "Prescription de la contraception définitive",
+                "Ordonnance pour la rééducation périnéale",
+                "Évaluation psychologique (dépistage dépression post-partum)",
+                "Discussion sur la reprise du travail"
+            ],
+            "important": "Cette visite doit avoir lieu entre 6 et 8 semaines après l'accouchement",
+            "documents": ["Carte Vitale", "Compte-rendu d'accouchement"],
+            "questions_to_ask": [
+                "Quelle contraception me conseillez-vous ?",
+                "Quand puis-je reprendre le sport ?",
+                "La rééducation périnéale est-elle obligatoire ?",
+                "Quand prévoir la prochaine grossesse ?"
+            ],
+            "tips": "N'hésitez pas à parler de vos difficultés émotionnelles. C'est le moment idéal pour un dépistage de la dépression post-partum.",
+            "reimbursement": "100% Sécurité Sociale"
+        },
+        {
+            "week": 8, 
+            "title": "Vaccins bébé - 2 mois", 
+            "description": "Première série de vaccinations obligatoires du nourrisson",
+            "type": "obligatoire",
+            "duration": "20-30 minutes",
+            "who": "Pédiatre ou Médecin généraliste",
+            "vaccines": [
+                {"name": "Hexavalent (6-en-1)", "protects": "Diphtérie, Tétanos, Coqueluche, Polio, Haemophilus, Hépatite B"},
+                {"name": "Pneumocoque", "protects": "Infections à pneumocoque (méningites, otites)"},
+                {"name": "Méningocoque B", "protects": "Méningite B (recommandé)"}
+            ],
+            "side_effects": [
+                "Fièvre légère (< 38.5°C) pendant 24-48h",
+                "Rougeur et gonflement au point d'injection",
+                "Irritabilité et pleurs",
+                "Perte d'appétit temporaire"
+            ],
+            "what_to_do": [
+                "Donner du paracétamol si fièvre > 38°C",
+                "Câliner et rassurer bébé",
+                "Appliquer une compresse fraîche sur le point d'injection",
+                "Ne pas hésiter à rappeler le médecin si fièvre > 39°C"
+            ],
+            "documents": ["Carnet de santé (pages vaccinations)"],
+            "tips": "Prévoyez une journée calme après les vaccins. Bébé aura besoin de repos et de câlins.",
+            "reimbursement": "100% Sécurité Sociale"
+        },
+        {
+            "week": 10, 
+            "title": "Début rééducation périnéale", 
+            "description": "Séances pour renforcer le périnée après l'accouchement",
+            "type": "recommandé",
+            "duration": "30 minutes par séance (10-20 séances)",
+            "who": "Sage-femme ou Kinésithérapeute spécialisé",
+            "why": [
+                "Prévenir l'incontinence urinaire",
+                "Éviter les descentes d'organes (prolapsus)",
+                "Retrouver une vie intime épanouie",
+                "Préparer une future grossesse",
+                "Renforcer les muscles profonds"
+            ],
+            "methods": [
+                {"name": "Rééducation manuelle", "description": "Exercices guidés par le praticien"},
+                {"name": "Électrostimulation", "description": "Sonde avec stimulation électrique douce"},
+                {"name": "Biofeedback", "description": "Visualisation des contractions sur écran"},
+                {"name": "Exercices à domicile", "description": "Programme personnalisé à faire chez soi"}
+            ],
+            "when_mandatory": [
+                "Accouchement par voie basse",
+                "Épisiotomie ou déchirure",
+                "Bébé de plus de 4kg",
+                "Incontinence urinaire ou fécale",
+                "Sensation de pesanteur pelvienne"
+            ],
+            "tips": "Même après une césarienne, la rééducation est recommandée car la grossesse a sollicité le périnée.",
+            "reimbursement": "100% Sécurité Sociale (10 séances remboursées)"
+        },
+        {
+            "week": 16, 
+            "title": "Vaccins bébé - 4 mois", 
+            "description": "Deuxième série de vaccinations (rappels)",
+            "type": "obligatoire",
+            "duration": "20-30 minutes",
+            "who": "Pédiatre ou Médecin généraliste",
+            "vaccines": [
+                {"name": "Hexavalent (rappel)", "protects": "Diphtérie, Tétanos, Coqueluche, Polio, Haemophilus, Hépatite B"},
+                {"name": "Pneumocoque (rappel)", "protects": "Infections à pneumocoque"},
+                {"name": "Méningocoque B (rappel)", "protects": "Méningite B"}
+            ],
+            "also_checked": [
+                "Poids et taille (courbe de croissance)",
+                "Développement psychomoteur",
+                "Audition et vision",
+                "Alimentation (préparation diversification)"
+            ],
+            "documents": ["Carnet de santé"],
+            "tips": "C'est le moment de poser vos questions sur la diversification alimentaire qui commencera vers 4-6 mois.",
+            "reimbursement": "100% Sécurité Sociale"
+        },
+        {
+            "week": 24, 
+            "title": "Bilan des 6 mois", 
+            "description": "Visite pédiatrique complète et début de la diversification alimentaire",
+            "type": "obligatoire",
+            "duration": "30-45 minutes",
+            "who": "Pédiatre ou Médecin généraliste",
+            "for_baby": [
+                "Examen clinique complet",
+                "Mesures (poids, taille, périmètre crânien)",
+                "Évaluation du développement psychomoteur",
+                "Test de la vision et de l'audition",
+                "Bilan de la diversification alimentaire",
+                "Discussion sur le sommeil"
+            ],
+            "milestones_6_months": [
+                "Tient assis avec appui",
+                "Attrape les objets volontairement",
+                "Rit aux éclats",
+                "Reconnaît les visages familiers",
+                "Gazouille et babille",
+                "Commence à se retourner"
+            ],
+            "diversification": [
+                "Introduction des légumes (1 par 1)",
+                "Introduction des fruits",
+                "Textures lisses puis moulinées",
+                "Éviter sel, sucre, miel avant 1 an",
+                "Maintenir le lait comme base (500-700ml/jour)"
+            ],
+            "documents": ["Carnet de santé"],
+            "tips": "Prenez des photos du développement de bébé pour les montrer au médecin. Notez les nouvelles acquisitions.",
+            "reimbursement": "100% Sécurité Sociale"
+        }
     ],
     "difficulties": [
         {
