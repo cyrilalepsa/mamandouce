@@ -248,8 +248,16 @@ Application pour les femmes enceintes avec :
    - Widget fertilité cliquable (redirige vers le calculateur)
 
 5. **Réorganisation complète de la page d'accueil** (14 Mars 2026) :
-   - **Agenda en haut** : affiche la semaine de grossesse, date d'accouchement, prochains RDV
+   - **Agenda interactif** : saisie des dernières règles, affichage automatique des dates
    - **Catégorie 1 "En route vers la grossesse"** : Calculateur + Conseils + avertissement médical
    - **Catégorie 2 "Grossesse"** : Carte évolution bébé, Scanner/Bibliothèque/Favoris/Historique (aliments), Évolution & démarches, Rendez-vous, Rappels
    - **Catégorie 3 "Préparer l'arrivée de bébé"** : Liste de naissance, Vidéos préparation accouchement, Les Maternelles (YouTube), Livres
    - **Catégorie 4 "Services et ressources"** : CAF, Ameli, Mairies proches
+
+6. **Calendrier complet avec fonctionnalités avancées** (14 Mars 2026) :
+   - Numéros de semaine ISO
+   - Vacances scolaires françaises par zone (A, B, C)
+   - Visualisation : pic d'ovulation, fenêtre de fertilité, règles prévues
+   - Enregistrement des dates de rapports
+   - Calcul automatique de la nidation estimée (6-12 jours après rapport)
+   - Légende complète avec code couleur

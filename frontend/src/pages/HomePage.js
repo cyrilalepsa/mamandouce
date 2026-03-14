@@ -8,11 +8,12 @@ import {
   User, LogOut, Cloud, Feather, Settings, Heart, Stethoscope, Calendar, 
   Scan, TestTube, Crown, MapPin, Apple, Baby, Library, Youtube, Gift, Shield,
   Sparkles, BookHeart, Video, Book, TrendingUp, ClipboardList, ChevronRight,
-  CalendarDays, Droplets, Egg, Save
+  CalendarDays, Droplets, Egg, Save, CalendarRange
 } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import AppTitle from '../components/AppTitle';
+import FertilityCalendar from '../components/FertilityCalendar';
 
 const ADMIN_EMAIL = 'cyrilalepsa@gmail.com';
 
@@ -31,11 +32,14 @@ function HomePage() {
   const [agendaData, setAgendaData] = useState(null);
   const [showAgendaForm, setShowAgendaForm] = useState(false);
   const [agendaLoading, setAgendaLoading] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [rapportDates, setRapportDates] = useState([]);
 
   useEffect(() => {
     loadUserData();
     loadUpcomingAppointments();
     loadFertilityStatus();
+    loadRapportDates();
   }, []);
 
   const loadUserData = async () => {
@@ -158,6 +162,55 @@ function HomePage() {
       day: 'numeric',
       month: 'short'
     });
+  };
+
+  // Charger les dates de rapports depuis le localStorage
+  const loadRapportDates = () => {
+    const saved = localStorage.getItem('mamandouce_rapports');
+    if (saved) {
+      setRapportDates(JSON.parse(saved));
+    }
+  };
+
+  // Ajouter une date de rapport
+  const handleAddRapport = (date) => {
+    const newDates = [...rapportDates, date].sort();
+    setRapportDates(newDates);
+    localStorage.setItem('mamandouce_rapports', JSON.stringify(newDates));
+    toast.success('Rapport enregistré');
+  };
+
+  // Supprimer une date de rapport
+  const handleRemoveRapport = (date) => {
+    const newDates = rapportDates.filter(d => d !== date);
+    setRapportDates(newDates);
+    localStorage.setItem('mamandouce_rapports', JSON.stringify(newDates));
+    toast.success('Rapport supprimé');
+  };
+
+  // Calculer la prochaine nidation estimée
+  const getNextImplantation = () => {
+    if (rapportDates.length === 0) return null;
+    
+    const today = new Date();
+    let nextImplantation = null;
+    
+    for (const rapportDate of rapportDates) {
+      const rapport = new Date(rapportDate);
+      // Nidation 6-12 jours après le rapport
+      const implantationEarly = new Date(rapport);
+      implantationEarly.setDate(implantationEarly.getDate() + 6);
+      const implantationLate = new Date(rapport);
+      implantationLate.setDate(implantationLate.getDate() + 12);
+      
+      if (implantationLate >= today) {
+        if (!nextImplantation || implantationEarly < nextImplantation.early) {
+          nextImplantation = { early: implantationEarly, late: implantationLate, rapportDate: rapport };
+        }
+      }
+    }
+    
+    return nextImplantation;
   };
 
   const isAdmin = userRole === 'admin' || userEmail === ADMIN_EMAIL;
@@ -285,13 +338,23 @@ function HomePage() {
                 </div>
                 <h2 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Mon agenda</h2>
               </div>
-              <Button
-                onClick={() => setShowAgendaForm(!showAgendaForm)}
-                className="bg-slate-100 text-slate-600 rounded-full p-2 hover:bg-slate-200"
-                title="Modifier"
-              >
-                <Settings className="w-4 h-4" />
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => setShowCalendar(true)}
+                  className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-600 rounded-full p-2 hover:from-purple-200 hover:to-pink-200"
+                  title="Ouvrir le calendrier"
+                  data-testid="open-calendar-btn"
+                >
+                  <CalendarRange className="w-4 h-4" />
+                </Button>
+                <Button
+                  onClick={() => setShowAgendaForm(!showAgendaForm)}
+                  className="bg-slate-100 text-slate-600 rounded-full p-2 hover:bg-slate-200"
+                  title="Modifier"
+                >
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
 
             {/* Formulaire de saisie */}
@@ -410,6 +473,46 @@ function HomePage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Nidation estimée si rapports enregistrés */}
+                {getNextImplantation() && (
+                  <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-400 rounded-xl flex items-center justify-center">
+                        <Baby className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-slate-500 font-semibold">Nidation estimée</p>
+                        <p className="text-base font-bold text-amber-600">
+                          Du {formatDateShort(getNextImplantation().early)} au {formatDateShort(getNextImplantation().late)}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          Basé sur le rapport du {formatDateShort(getNextImplantation().rapportDate)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Rapports enregistrés */}
+                {rapportDates.length > 0 && (
+                  <div className="bg-rose-50 rounded-2xl p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Heart className="w-4 h-4 text-rose-500" />
+                      <span className="text-sm font-semibold text-rose-700">Rapports enregistrés</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {rapportDates.slice(-5).map((date, index) => (
+                        <span key={index} className="bg-white text-rose-600 text-xs px-2 py-1 rounded-full border border-rose-200">
+                          {formatDateShort(date)}
+                        </span>
+                      ))}
+                      {rapportDates.length > 5 && (
+                        <span className="text-xs text-rose-500">+{rapportDates.length - 5}</span>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Info cycle */}
                 <div className="text-center pt-2">
@@ -737,6 +840,16 @@ function HomePage() {
 
         </div>
       </div>
+
+      {/* Calendrier Modal */}
+      <FertilityCalendar
+        isOpen={showCalendar}
+        onClose={() => setShowCalendar(false)}
+        agendaData={agendaData}
+        rapportDates={rapportDates}
+        onAddRapport={handleAddRapport}
+        onRemoveRapport={handleRemoveRapport}
+      />
     </div>
   );
 }
