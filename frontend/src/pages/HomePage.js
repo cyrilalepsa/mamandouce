@@ -2,13 +2,16 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
+import { Input } from '../components/ui/input';
 import { 
   Users, HeartHandshake, CalendarHeart, ScanBarcode, History, Bell, BookOpen, 
   User, LogOut, Cloud, Feather, Settings, Heart, Stethoscope, Calendar, 
   Scan, TestTube, Crown, MapPin, Apple, Baby, Library, Youtube, Gift, Shield,
-  Sparkles, BookHeart, Video, Book, TrendingUp, ClipboardList, ChevronRight
+  Sparkles, BookHeart, Video, Book, TrendingUp, ClipboardList, ChevronRight,
+  CalendarDays, Droplets, Egg, Save
 } from 'lucide-react';
 import api from '../utils/api';
+import { toast } from 'sonner';
 import AppTitle from '../components/AppTitle';
 
 const ADMIN_EMAIL = 'cyrilalepsa@gmail.com';
@@ -21,6 +24,13 @@ function HomePage() {
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [userRole, setUserRole] = useState('user');
   const [fertilityStatus, setFertilityStatus] = useState(null);
+  
+  // Agenda states
+  const [lastPeriodDate, setLastPeriodDate] = useState('');
+  const [cycleLength, setCycleLength] = useState(28);
+  const [agendaData, setAgendaData] = useState(null);
+  const [showAgendaForm, setShowAgendaForm] = useState(false);
+  const [agendaLoading, setAgendaLoading] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -37,9 +47,117 @@ function HomePage() {
       
       const profileRes = await api.pregnancy.getProfile();
       setPregnancyProfile(profileRes.data);
+      
+      // Si un profil existe, charger les données de l'agenda
+      if (profileRes.data && profileRes.data.last_period_date) {
+        setLastPeriodDate(profileRes.data.last_period_date.split('T')[0]);
+        setCycleLength(profileRes.data.cycle_length || 28);
+        calculateAgendaDates(profileRes.data.last_period_date, profileRes.data.cycle_length || 28);
+      }
     } catch (error) {
       console.error('Erreur chargement données:', error);
     }
+  };
+
+  // Calculer les dates de l'agenda
+  const calculateAgendaDates = (periodDate, cycle) => {
+    if (!periodDate) return;
+    
+    const lastPeriod = new Date(periodDate);
+    const cycleLen = cycle || 28;
+    
+    // Calcul de l'ovulation (généralement 14 jours avant les prochaines règles)
+    const lutealPhase = 14;
+    const ovulationDay = cycleLen - lutealPhase;
+    
+    // Date d'ovulation
+    const ovulationDate = new Date(lastPeriod);
+    ovulationDate.setDate(ovulationDate.getDate() + ovulationDay);
+    
+    // Fenêtre de fertilité (5 jours avant ovulation + jour d'ovulation + 1 jour après)
+    const fertileStart = new Date(ovulationDate);
+    fertileStart.setDate(fertileStart.getDate() - 5);
+    const fertileEnd = new Date(ovulationDate);
+    fertileEnd.setDate(fertileEnd.getDate() + 1);
+    
+    // Prochaines règles
+    const nextPeriod = new Date(lastPeriod);
+    nextPeriod.setDate(nextPeriod.getDate() + cycleLen);
+    
+    // Si les dates sont passées, calculer pour le prochain cycle
+    const today = new Date();
+    let adjustedOvulation = ovulationDate;
+    let adjustedFertileStart = fertileStart;
+    let adjustedFertileEnd = fertileEnd;
+    let adjustedNextPeriod = nextPeriod;
+    
+    while (adjustedNextPeriod < today) {
+      adjustedOvulation.setDate(adjustedOvulation.getDate() + cycleLen);
+      adjustedFertileStart.setDate(adjustedFertileStart.getDate() + cycleLen);
+      adjustedFertileEnd.setDate(adjustedFertileEnd.getDate() + cycleLen);
+      adjustedNextPeriod.setDate(adjustedNextPeriod.getDate() + cycleLen);
+    }
+    
+    // Vérifier si on est dans la fenêtre fertile
+    const inFertileWindow = today >= adjustedFertileStart && today <= adjustedFertileEnd;
+    const isOvulationDay = today.toDateString() === adjustedOvulation.toDateString();
+    const daysToOvulation = Math.ceil((adjustedOvulation - today) / (1000 * 60 * 60 * 24));
+    const daysToNextPeriod = Math.ceil((adjustedNextPeriod - today) / (1000 * 60 * 60 * 24));
+    
+    setAgendaData({
+      ovulationDate: adjustedOvulation,
+      fertileStart: adjustedFertileStart,
+      fertileEnd: adjustedFertileEnd,
+      nextPeriod: adjustedNextPeriod,
+      inFertileWindow,
+      isOvulationDay,
+      daysToOvulation: daysToOvulation > 0 ? daysToOvulation : 0,
+      daysToNextPeriod: daysToNextPeriod > 0 ? daysToNextPeriod : 0,
+      cycleLength: cycleLen
+    });
+  };
+
+  const handleSaveAgenda = async () => {
+    if (!lastPeriodDate) {
+      toast.error('Veuillez renseigner la date de vos dernières règles');
+      return;
+    }
+    
+    setAgendaLoading(true);
+    try {
+      await api.pregnancy.calculate({
+        last_period_date: lastPeriodDate,
+        cycle_length: cycleLength
+      });
+      
+      calculateAgendaDates(lastPeriodDate, cycleLength);
+      setShowAgendaForm(false);
+      toast.success('Agenda mis à jour !');
+      
+      // Recharger le profil
+      loadUserData();
+    } catch (error) {
+      toast.error('Erreur lors de la mise à jour');
+    } finally {
+      setAgendaLoading(false);
+    }
+  };
+
+  const formatDateFull = (date) => {
+    if (!date) return '';
+    return new Date(date).toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long'
+    });
+  };
+
+  const formatDateShort = (date) => {
+    if (!date) return '';
+    return new Date(date).toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'short'
+    });
   };
 
   const isAdmin = userRole === 'admin' || userEmail === ADMIN_EMAIL;
@@ -78,14 +196,6 @@ function HomePage() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/auth');
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      day: 'numeric',
-      month: 'short'
-    });
   };
 
   // Détermine si l'utilisateur a un profil de grossesse configuré
@@ -166,39 +276,188 @@ function HomePage() {
             </h2>
           </div>
 
-          {/* ========== AGENDA ========== */}
+          {/* ========== AGENDA INTERACTIF ========== */}
           <Card className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100" data-testid="agenda-card">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-white" />
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
+                  <CalendarDays className="w-5 h-5 text-white" />
+                </div>
+                <h2 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Mon agenda</h2>
               </div>
-              <h2 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Mon agenda</h2>
+              <Button
+                onClick={() => setShowAgendaForm(!showAgendaForm)}
+                className="bg-slate-100 text-slate-600 rounded-full p-2 hover:bg-slate-200"
+                title="Modifier"
+              >
+                <Settings className="w-4 h-4" />
+              </Button>
             </div>
-            
-            {hasPregnancyProfile ? (
+
+            {/* Formulaire de saisie */}
+            {showAgendaForm && (
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 mb-4 space-y-3">
+                <div>
+                  <label className="text-sm font-semibold text-slate-600 mb-1 block">
+                    Date de vos dernières règles
+                  </label>
+                  <Input
+                    type="date"
+                    value={lastPeriodDate}
+                    onChange={(e) => setLastPeriodDate(e.target.value)}
+                    className="rounded-xl border-slate-200"
+                    data-testid="agenda-period-input"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-semibold text-slate-600 mb-1 block">
+                    Durée de votre cycle
+                  </label>
+                  <select
+                    value={cycleLength}
+                    onChange={(e) => setCycleLength(parseInt(e.target.value))}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-slate-600"
+                    data-testid="agenda-cycle-select"
+                  >
+                    {[24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35].map(days => (
+                      <option key={days} value={days}>{days} jours {days === 28 && '(standard)'}</option>
+                    ))}
+                  </select>
+                </div>
+                <Button
+                  onClick={handleSaveAgenda}
+                  disabled={agendaLoading}
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full py-2"
+                  data-testid="agenda-save-button"
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {agendaLoading ? 'Enregistrement...' : 'Enregistrer'}
+                </Button>
+              </div>
+            )}
+
+            {/* Affichage des dates calculées */}
+            {agendaData ? (
               <div className="space-y-3">
-                {/* Semaine actuelle */}
-                <div className="flex items-center justify-between bg-gradient-to-r from-pink-50 to-sky-50 rounded-2xl p-4">
-                  <div>
-                    <p className="text-sm text-slate-500">Vous êtes à la</p>
-                    <p className="text-2xl font-bold text-sky-600">Semaine {pregnancyProfile.current_week}</p>
+                {/* Alerte période fertile */}
+                {agendaData.inFertileWindow && (
+                  <div className="bg-gradient-to-r from-rose-100 to-pink-100 rounded-2xl p-4 border-2 border-rose-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-rose-400 rounded-xl flex items-center justify-center">
+                        <Heart className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-rose-700">
+                            {agendaData.isOvulationDay ? "Jour d'ovulation !" : "Période fertile en cours"}
+                          </p>
+                          <span className="animate-pulse w-2 h-2 bg-rose-500 rounded-full"></span>
+                        </div>
+                        <p className="text-sm text-rose-600">
+                          {agendaData.isOvulationDay 
+                            ? "C'est le moment idéal pour concevoir"
+                            : `Pic d'ovulation dans ${agendaData.daysToOvulation} jour(s)`}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm text-slate-500">Accouchement prévu</p>
-                    <p className="text-lg font-bold text-pink-600">
-                      {new Date(pregnancyProfile.estimated_due_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
-                    </p>
+                )}
+
+                {/* Pic d'ovulation */}
+                <div className="bg-gradient-to-r from-sky-50 to-indigo-50 rounded-2xl p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-sky-400 to-indigo-400 rounded-xl flex items-center justify-center">
+                      <Egg className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-slate-500 font-semibold">Pic d'ovulation</p>
+                      <p className="text-lg font-bold text-sky-600">{formatDateFull(agendaData.ovulationDate)}</p>
+                      {agendaData.daysToOvulation > 0 && !agendaData.isOvulationDay && (
+                        <p className="text-xs text-slate-500">Dans {agendaData.daysToOvulation} jour(s)</p>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                {/* Prochains rendez-vous */}
-                {upcomingAppointments.length > 0 && (
+                {/* Fenêtre de fertilité */}
+                <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-xl flex items-center justify-center">
+                      <Heart className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-slate-500 font-semibold">Fenêtre de fertilité</p>
+                      <p className="text-base font-bold text-emerald-600">
+                        Du {formatDateShort(agendaData.fertileStart)} au {formatDateShort(agendaData.fertileEnd)}
+                      </p>
+                      <p className="text-xs text-slate-500">Période la plus favorable à la conception</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Prochaines règles */}
+                <div className="bg-gradient-to-r from-pink-50 to-rose-50 rounded-2xl p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-400 rounded-xl flex items-center justify-center">
+                      <Droplets className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-slate-500 font-semibold">Prochaines règles</p>
+                      <p className="text-lg font-bold text-pink-600">{formatDateFull(agendaData.nextPeriod)}</p>
+                      {agendaData.daysToNextPeriod > 0 && (
+                        <p className="text-xs text-slate-500">Dans {agendaData.daysToNextPeriod} jour(s)</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Info cycle */}
+                <div className="text-center pt-2">
+                  <p className="text-xs text-slate-400">
+                    Cycle de {agendaData.cycleLength} jours • Dernières règles : {formatDateShort(lastPeriodDate)}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-6">
+                <CalendarDays className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <p className="text-slate-500 mb-3">Renseignez la date de vos dernières règles pour voir vos prévisions</p>
+                <Button
+                  onClick={() => setShowAgendaForm(true)}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full px-6 py-2"
+                >
+                  Configurer mon cycle
+                </Button>
+              </div>
+            )}
+          </Card>
+
+          {/* ========== GROSSESSE EN COURS ========== */}
+          {hasPregnancyProfile && pregnancyProfile.current_week && (
+            <Card className="bg-gradient-to-br from-pink-100 to-sky-100 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-0" data-testid="pregnancy-status-card">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-500">Vous êtes à la</p>
+                  <p className="text-2xl font-bold text-sky-600">Semaine {pregnancyProfile.current_week}</p>
+                  <p className="text-sm text-slate-500">Trimestre {pregnancyProfile.trimester || Math.ceil(pregnancyProfile.current_week / 13)}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-slate-500">Accouchement prévu</p>
+                  <p className="text-xl font-bold text-pink-600">
+                    {new Date(pregnancyProfile.estimated_due_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Prochains rendez-vous */}
+              {upcomingAppointments.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-white/50">
+                  <p className="text-sm font-semibold text-slate-600 mb-2">Prochains rendez-vous</p>
                   <div className="space-y-2">
-                    <p className="text-sm font-semibold text-slate-600">Prochains rendez-vous</p>
                     {upcomingAppointments.slice(0, 2).map((apt) => (
                       <div 
                         key={apt.id}
-                        className="flex items-center gap-3 bg-slate-50 rounded-xl p-3 cursor-pointer hover:bg-slate-100 transition-all"
+                        className="flex items-center gap-3 bg-white/60 rounded-xl p-3 cursor-pointer hover:bg-white/80 transition-all"
                         onClick={() => navigate('/medical')}
                       >
                         <div className="w-8 h-8 bg-sky-100 rounded-lg flex items-center justify-center text-sky-600">
@@ -212,47 +471,10 @@ function HomePage() {
                       </div>
                     ))}
                   </div>
-                )}
-
-                {/* Fertilité si applicable */}
-                {fertilityStatus && fertilityStatus.in_fertile_window && (
-                  <div 
-                    className="bg-gradient-to-r from-rose-100 to-pink-100 rounded-2xl p-4 cursor-pointer hover:shadow-md transition-all"
-                    onClick={() => navigate('/calculator')}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-rose-400 rounded-xl flex items-center justify-center">
-                        <Heart className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-bold text-rose-700">
-                            {fertilityStatus.is_ovulation_day ? "Jour d'ovulation !" : "Période fertile"}
-                          </p>
-                          <span className="animate-pulse w-2 h-2 bg-rose-500 rounded-full"></span>
-                        </div>
-                        <p className="text-sm text-rose-600">
-                          {fertilityStatus.is_ovulation_day 
-                            ? "Moment idéal pour concevoir"
-                            : `Ovulation dans ${fertilityStatus.days_to_ovulation} jour(s)`}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="text-center py-4">
-                <p className="text-slate-500 mb-3">Renseignez vos informations pour personnaliser votre agenda</p>
-                <Button
-                  onClick={() => navigate('/calculator')}
-                  className="bg-gradient-to-r from-sky-400 to-pink-400 text-white rounded-full px-6 py-2"
-                >
-                  Configurer mon cycle
-                </Button>
-              </div>
-            )}
-          </Card>
+                </div>
+              )}
+            </Card>
+          )}
 
           {/* ========== CATÉGORIE 1: EN ROUTE VERS LA GROSSESSE ========== */}
           <div>
