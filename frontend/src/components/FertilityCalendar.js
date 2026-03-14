@@ -6,30 +6,57 @@ import {
   MapPin, Calendar as CalendarIcon, Plus
 } from 'lucide-react';
 
-// Vacances scolaires françaises 2025-2026 par zone
+// Vacances scolaires françaises 2025-2026 par zone (dates officielles)
 const SCHOOL_HOLIDAYS_2025_2026 = {
-  A: [
-    { name: 'Toussaint', start: '2025-10-18', end: '2025-11-03' },
-    { name: 'Noël', start: '2025-12-20', end: '2026-01-05' },
-    { name: 'Hiver', start: '2026-02-07', end: '2026-02-23' },
-    { name: 'Printemps', start: '2026-04-11', end: '2026-04-27' },
-    { name: 'Été', start: '2026-07-04', end: '2026-09-01' },
-  ],
-  B: [
-    { name: 'Toussaint', start: '2025-10-18', end: '2025-11-03' },
-    { name: 'Noël', start: '2025-12-20', end: '2026-01-05' },
-    { name: 'Hiver', start: '2026-02-21', end: '2026-03-09' },
-    { name: 'Printemps', start: '2026-04-25', end: '2026-05-11' },
-    { name: 'Été', start: '2026-07-04', end: '2026-09-01' },
-  ],
-  C: [
+  A: [ // Besançon, Bordeaux, Clermont-Ferrand, Dijon, Grenoble, Limoges, Lyon, Poitiers
     { name: 'Toussaint', start: '2025-10-18', end: '2025-11-03' },
     { name: 'Noël', start: '2025-12-20', end: '2026-01-05' },
     { name: 'Hiver', start: '2026-02-14', end: '2026-03-02' },
+    { name: 'Printemps', start: '2026-04-11', end: '2026-04-27' },
+    { name: 'Été', start: '2026-07-04', end: '2026-08-31' },
+  ],
+  B: [ // Aix-Marseille, Amiens, Caen, Lille, Nancy-Metz, Nantes, Nice, Orléans-Tours, Reims, Rennes, Rouen, Strasbourg
+    { name: 'Toussaint', start: '2025-10-18', end: '2025-11-03' },
+    { name: 'Noël', start: '2025-12-20', end: '2026-01-05' },
+    { name: 'Hiver', start: '2026-02-07', end: '2026-02-23' },
+    { name: 'Printemps', start: '2026-04-04', end: '2026-04-20' },
+    { name: 'Été', start: '2026-07-04', end: '2026-08-31' },
+  ],
+  C: [ // Créteil, Montpellier, Paris, Toulouse, Versailles
+    { name: 'Toussaint', start: '2025-10-18', end: '2025-11-03' },
+    { name: 'Noël', start: '2025-12-20', end: '2026-01-05' },
+    { name: 'Hiver', start: '2026-02-21', end: '2026-03-09' },
     { name: 'Printemps', start: '2026-04-18', end: '2026-05-04' },
-    { name: 'Été', start: '2026-07-04', end: '2026-09-01' },
+    { name: 'Été', start: '2026-07-04', end: '2026-08-31' },
   ],
 };
+
+// Jours fériés français 2025-2026
+const PUBLIC_HOLIDAYS = [
+  { date: '2025-01-01', name: 'Jour de l\'An' },
+  { date: '2025-04-21', name: 'Lundi de Pâques' },
+  { date: '2025-05-01', name: 'Fête du Travail' },
+  { date: '2025-05-08', name: 'Victoire 1945' },
+  { date: '2025-05-29', name: 'Ascension' },
+  { date: '2025-06-09', name: 'Lundi de Pentecôte' },
+  { date: '2025-07-14', name: 'Fête Nationale' },
+  { date: '2025-08-15', name: 'Assomption' },
+  { date: '2025-11-01', name: 'Toussaint' },
+  { date: '2025-11-11', name: 'Armistice' },
+  { date: '2025-12-25', name: 'Noël' },
+  // 2026
+  { date: '2026-01-01', name: 'Jour de l\'An' },
+  { date: '2026-04-06', name: 'Lundi de Pâques' },
+  { date: '2026-05-01', name: 'Fête du Travail' },
+  { date: '2026-05-08', name: 'Victoire 1945' },
+  { date: '2026-05-14', name: 'Ascension' },
+  { date: '2026-05-25', name: 'Lundi de Pentecôte' },
+  { date: '2026-07-14', name: 'Fête Nationale' },
+  { date: '2026-08-15', name: 'Assomption' },
+  { date: '2026-11-01', name: 'Toussaint' },
+  { date: '2026-11-11', name: 'Armistice' },
+  { date: '2026-12-25', name: 'Noël' },
+];
 
 // Obtenir le numéro de semaine ISO
 const getWeekNumber = (date) => {
@@ -51,6 +78,13 @@ const isSchoolHoliday = (date, zone) => {
     }
   }
   return null;
+};
+
+// Vérifier si une date est un jour férié
+const isPublicHoliday = (date) => {
+  const dateStr = date.toISOString().split('T')[0];
+  const holiday = PUBLIC_HOLIDAYS.find(h => h.date === dateStr);
+  return holiday ? holiday.name : null;
 };
 
 // Jours de la semaine en français
@@ -221,10 +255,10 @@ export default function FertilityCalendar({
         </div>
 
         {/* Zone scolaire */}
-        <div className="px-4 py-2 border-b">
-          <div className="flex items-center gap-2">
+        <div className="px-4 py-3 border-b bg-slate-50">
+          <div className="flex items-center gap-2 mb-2">
             <MapPin className="w-4 h-4 text-slate-500" />
-            <span className="text-sm text-slate-600">Zone scolaire :</span>
+            <span className="text-sm font-semibold text-slate-600">Zone scolaire :</span>
             <div className="flex gap-1">
               {['A', 'B', 'C'].map(zone => (
                 <button
@@ -233,7 +267,7 @@ export default function FertilityCalendar({
                   className={`px-3 py-1 rounded-full text-sm font-semibold transition-all ${
                     selectedZone === zone 
                       ? 'bg-purple-500 text-white' 
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      : 'bg-white text-slate-600 hover:bg-slate-200 border border-slate-200'
                   }`}
                 >
                   {zone}
@@ -241,6 +275,11 @@ export default function FertilityCalendar({
               ))}
             </div>
           </div>
+          <p className="text-xs text-slate-500">
+            {selectedZone === 'A' && 'Besançon, Bordeaux, Clermont-Ferrand, Dijon, Grenoble, Limoges, Lyon, Poitiers'}
+            {selectedZone === 'B' && 'Aix-Marseille, Amiens, Caen, Lille, Nancy-Metz, Nantes, Nice, Orléans-Tours, Reims, Rennes, Rouen, Strasbourg'}
+            {selectedZone === 'C' && 'Créteil, Montpellier, Paris, Toulouse, Versailles'}
+          </p>
         </div>
 
         {/* Navigation mois */}
@@ -279,6 +318,7 @@ export default function FertilityCalendar({
               {/* Jours */}
               {week.map((day, dayIndex) => {
                 const holiday = isSchoolHoliday(day.date, selectedZone);
+                const publicHoliday = isPublicHoliday(day.date);
                 const fertile = isFertileDay(day.date);
                 const ovulation = isOvulationDay(day.date);
                 const period = isPeriodDay(day.date);
@@ -290,15 +330,17 @@ export default function FertilityCalendar({
                   <button
                     key={dayIndex}
                     onClick={() => handleDayClick(day.date)}
+                    title={publicHoliday || holiday || ''}
                     className={`
                       relative w-9 h-9 rounded-full flex items-center justify-center text-sm transition-all
                       ${!day.isCurrentMonth ? 'text-slate-300' : 'text-slate-700'}
                       ${today ? 'ring-2 ring-purple-500 font-bold' : ''}
-                      ${holiday && day.isCurrentMonth ? 'bg-blue-100' : ''}
-                      ${fertile && day.isCurrentMonth ? 'bg-emerald-100' : ''}
+                      ${publicHoliday && day.isCurrentMonth ? 'bg-red-100 text-red-700 font-semibold' : ''}
+                      ${holiday && !publicHoliday && day.isCurrentMonth ? 'bg-blue-100' : ''}
+                      ${fertile && day.isCurrentMonth && !publicHoliday ? 'bg-emerald-100' : ''}
                       ${ovulation && day.isCurrentMonth ? 'bg-sky-400 text-white font-bold' : ''}
-                      ${period && day.isCurrentMonth ? 'bg-pink-200' : ''}
-                      ${implantation && day.isCurrentMonth ? 'bg-amber-200' : ''}
+                      ${period && day.isCurrentMonth && !publicHoliday ? 'bg-pink-200' : ''}
+                      ${implantation && day.isCurrentMonth && !publicHoliday ? 'bg-amber-200' : ''}
                       ${rapport ? 'ring-2 ring-rose-500' : ''}
                       hover:bg-slate-100
                     `}
@@ -306,6 +348,9 @@ export default function FertilityCalendar({
                     {day.date.getDate()}
                     {rapport && (
                       <Heart className="absolute -top-1 -right-1 w-3 h-3 text-rose-500 fill-rose-500" />
+                    )}
+                    {publicHoliday && !rapport && (
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                     )}
                   </button>
                 );
@@ -337,6 +382,12 @@ export default function FertilityCalendar({
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full bg-blue-100 border border-blue-300"></div>
               <span className="text-slate-600">Vacances scolaires</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full bg-red-100 border border-red-300 relative">
+                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+              </div>
+              <span className="text-slate-600">Jour férié</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full border-2 border-rose-500 flex items-center justify-center">
