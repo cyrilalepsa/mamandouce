@@ -311,3 +311,325 @@ async def get_postpartum_content(current_user: User = Depends(get_current_user))
 async def get_postpartum_appointments(current_user: User = Depends(get_current_user)):
     """Récupérer les rendez-vous post-partum sur 6 mois"""
     return {"appointments": POSTPARTUM_CONTENT["appointments"]}
+
+
+# ==================== BIRTH DATE & POSTPARTUM START ====================
+
+class BirthDateInput(BaseModel):
+    birth_date: str  # ISO format date
+    baby_name: Optional[str] = None
+
+class RefundRequest(BaseModel):
+    reason: str  # "miscarriage" or other
+    details: Optional[str] = None
+
+@router.post("/postpartum/set-birth-date")
+async def set_birth_date(data: BirthDateInput, current_user: User = Depends(get_current_user)):
+    """Définir la date d'accouchement réelle (à saisir au 7ème mois)"""
+    from routes.push_notifications import send_admin_notification
+    
+    birth_date = datetime.fromisoformat(data.birth_date)
+    
+    # Mettre à jour le profil utilisateur
+    await db.users.update_one(
+        {"id": current_user.id},
+        {"$set": {
+            "actual_birth_date": data.birth_date,
+            "baby_name": data.baby_name,
+            "birth_date_set_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    # Calculer la date de début du post-partum
+    postpartum_start = birth_date
+    
+    # Planifier les rappels de RDV post-partum
+    await schedule_postpartum_reminders(current_user.id, current_user.email, birth_date)
+    
+    # Notifier l'admin
+    try:
+        await send_admin_notification(
+            title="Date d'accouchement enregistrée",
+            body=f"{current_user.email} a renseigné sa date d'accouchement: {data.birth_date}",
+            url="/admin",
+            category="Post-partum"
+        )
+    except:
+        pass
+    
+    return {
+        "success": True,
+        "message": "Date d'accouchement enregistrée",
+        "postpartum_start": postpartum_start.isoformat(),
+        "reminders_scheduled": True
+    }
+
+@router.get("/postpartum/status")
+async def get_postpartum_status(current_user: User = Depends(get_current_user)):
+    """Vérifier le statut du suivi post-partum"""
+    user = await db.users.find_one({"id": current_user.id}, {"_id": 0})
+    
+    postpartum_unlocked = user.get("postpartum_purchased", False) or user.get("postpartum_free_via_referral", False)
+    actual_birth_date = user.get("actual_birth_date")
+    
+    # Vérifier si l'utilisatrice est au 7ème mois ou plus
+    profile = await db.pregnancy_profiles.find_one({"user_id": current_user.id}, {"_id": 0})
+    can_set_birth_date = False
+    weeks_pregnant = 0
+    
+    if profile and profile.get("current_week"):
+        weeks_pregnant = profile.get("current_week", 0)
+        can_set_birth_date = weeks_pregnant >= 28  # 7ème mois = semaine 28+
+    
+    # Vérifier si le post-partum a démarré
+    postpartum_started = False
+    days_since_birth = 0
+    current_postpartum_week = 0
+    
+    if actual_birth_date:
+        birth = datetime.fromisoformat(actual_birth_date)
+        today = datetime.now(timezone.utc).replace(tzinfo=None)
+        days_since_birth = (today - birth).days
+        postpartum_started = days_since_birth >= 0
+        current_postpartum_week = max(0, days_since_birth // 7)
+    
+    return {
+        "postpartum_unlocked": postpartum_unlocked,
+        "actual_birth_date": actual_birth_date,
+        "baby_name": user.get("baby_name"),
+        "can_set_birth_date": can_set_birth_date,
+        "weeks_pregnant": weeks_pregnant,
+        "postpartum_started": postpartum_started,
+        "days_since_birth": days_since_birth,
+        "current_postpartum_week": current_postpartum_week
+    }
+
+async def schedule_postpartum_reminders(user_id: str, user_email: str, birth_date: datetime):
+    """Planifier les rappels pour les RDV post-partum (7j et 3j avant)"""
+    
+    appointments = POSTPARTUM_CONTENT["appointments"]
+    
+    for apt in appointments:
+        apt_week = apt["week"]
+        apt_date = birth_date + timedelta(weeks=apt_week)
+        
+        # Créer les rappels 7 jours et 3 jours avant
+        reminder_7d = apt_date - timedelta(days=7)
+        reminder_3d = apt_date - timedelta(days=3)
+        
+        # Stocker les rappels dans la BDD
+        for reminder_date, days_before in [(reminder_7d, 7), (reminder_3d, 3)]:
+            await db.postpartum_reminders.update_one(
+                {
+                    "user_id": user_id,
+                    "appointment_title": apt["title"],
+                    "days_before": days_before
+                },
+                {"$set": {
+                    "user_id": user_id,
+                    "user_email": user_email,
+                    "appointment_title": apt["title"],
+                    "appointment_type": apt["type"],
+                    "appointment_week": apt_week,
+                    "appointment_date": apt_date.isoformat(),
+                    "reminder_date": reminder_date.isoformat(),
+                    "days_before": days_before,
+                    "sent": False,
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }},
+                upsert=True
+            )
+
+@router.get("/postpartum/pending-reminders")
+async def get_pending_reminders(current_user: User = Depends(get_current_user)):
+    """Récupérer les rappels en attente pour l'utilisateur"""
+    today = datetime.now(timezone.utc).replace(tzinfo=None).isoformat()[:10]
+    
+    reminders = await db.postpartum_reminders.find(
+        {
+            "user_id": current_user.id,
+            "sent": False,
+            "reminder_date": {"$lte": today + "T23:59:59"}
+        },
+        {"_id": 0}
+    ).to_list(50)
+    
+    return {"reminders": reminders}
+
+@router.post("/postpartum/send-due-reminders")
+async def send_due_reminders(current_user: User = Depends(get_current_user)):
+    """Envoyer les rappels dus (à appeler périodiquement ou au login)"""
+    from routes.push_notifications import send_push_notification
+    
+    today = datetime.now(timezone.utc).replace(tzinfo=None)
+    today_str = today.isoformat()[:10]
+    
+    # Trouver les rappels à envoyer
+    reminders = await db.postpartum_reminders.find(
+        {
+            "user_id": current_user.id,
+            "sent": False,
+            "reminder_date": {"$lte": today_str + "T23:59:59"}
+        }
+    ).to_list(50)
+    
+    sent_count = 0
+    for reminder in reminders:
+        try:
+            days_before = reminder["days_before"]
+            title = f"Rappel RDV dans {days_before} jours"
+            body = f"{reminder['appointment_title']} - {reminder['appointment_type']}"
+            
+            await send_push_notification(
+                user_email=reminder["user_email"],
+                title=title,
+                body=body,
+                url="/postpartum"
+            )
+            
+            # Marquer comme envoyé
+            await db.postpartum_reminders.update_one(
+                {"_id": reminder["_id"]},
+                {"$set": {"sent": True, "sent_at": datetime.now(timezone.utc).isoformat()}}
+            )
+            sent_count += 1
+        except Exception as e:
+            print(f"Erreur envoi rappel: {e}")
+    
+    return {"sent_count": sent_count}
+
+
+# ==================== REFUND SYSTEM (Fausse couche) ====================
+
+@router.post("/postpartum/request-refund")
+async def request_refund(data: RefundRequest, current_user: User = Depends(get_current_user)):
+    """Demander un remboursement (fausse couche ou autre raison médicale)"""
+    from routes.push_notifications import send_admin_notification
+    
+    # Récupérer les infos d'abonnement
+    user = await db.users.find_one({"id": current_user.id}, {"_id": 0})
+    subscription_start = user.get("subscription_start_date")
+    
+    if not subscription_start:
+        return {"success": False, "message": "Aucun abonnement actif trouvé"}
+    
+    # Calculer le montant au prorata
+    start_date = datetime.fromisoformat(subscription_start.replace('Z', '+00:00'))
+    today = datetime.now(timezone.utc)
+    days_used = (today - start_date).days
+    total_days = 270  # 9 mois
+    days_remaining = max(0, total_days - days_used)
+    
+    # Calcul du remboursement (27€ pour 9 mois)
+    daily_rate = 27.0 / total_days
+    refund_amount = round(days_remaining * daily_rate, 2)
+    
+    # Créer la demande de remboursement
+    refund_request = {
+        "user_id": current_user.id,
+        "user_email": current_user.email,
+        "user_name": current_user.name,
+        "reason": data.reason,
+        "details": data.details,
+        "subscription_start": subscription_start,
+        "days_used": days_used,
+        "days_remaining": days_remaining,
+        "refund_amount": refund_amount,
+        "status": "pending",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.refund_requests.insert_one(refund_request)
+    
+    # Notifier l'admin
+    try:
+        reason_text = "Fausse couche" if data.reason == "miscarriage" else data.reason
+        await send_admin_notification(
+            title="Demande de remboursement",
+            body=f"{current_user.email} demande un remboursement ({reason_text}) - {refund_amount}€",
+            url="/admin",
+            category="Remboursement"
+        )
+    except:
+        pass
+    
+    return {
+        "success": True,
+        "message": "Votre demande a été envoyée. Vous recevrez une notification une fois traitée.",
+        "refund_amount_estimated": refund_amount,
+        "days_remaining": days_remaining
+    }
+
+@router.get("/admin/refund-requests")
+async def get_refund_requests(current_user: User = Depends(get_current_user)):
+    """Récupérer les demandes de remboursement (admin)"""
+    if current_user.role != "admin":
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    requests = await db.refund_requests.find(
+        {},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return {"requests": requests}
+
+@router.post("/admin/refund-requests/{user_id}/approve")
+async def approve_refund(user_id: str, approved: bool, current_user: User = Depends(get_current_user)):
+    """Approuver ou rejeter une demande de remboursement (admin)"""
+    from routes.push_notifications import send_push_notification
+    
+    if current_user.role != "admin":
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    # Trouver la demande
+    request = await db.refund_requests.find_one({"user_id": user_id, "status": "pending"})
+    if not request:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Demande non trouvée")
+    
+    status = "approved" if approved else "rejected"
+    
+    # Mettre à jour le statut
+    await db.refund_requests.update_one(
+        {"user_id": user_id, "status": "pending"},
+        {"$set": {
+            "status": status,
+            "processed_at": datetime.now(timezone.utc).isoformat(),
+            "processed_by": current_user.email
+        }}
+    )
+    
+    # Si approuvé, désactiver l'abonnement
+    if approved:
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": {
+                "subscription_status": "refunded",
+                "refund_date": datetime.now(timezone.utc).isoformat(),
+                "refund_amount": request["refund_amount"]
+            }}
+        )
+    
+    # Notifier l'utilisateur
+    user = await db.users.find_one({"id": user_id}, {"_id": 0, "email": 1})
+    if user:
+        if approved:
+            title = "Remboursement approuvé"
+            body = f"Votre demande de remboursement a été approuvée. Montant: {request['refund_amount']}€"
+        else:
+            title = "Demande de remboursement"
+            body = "Votre demande n'a pas pu être acceptée. Contactez-nous pour plus d'informations."
+        
+        try:
+            await send_push_notification(
+                user_email=user["email"],
+                title=title,
+                body=body,
+                url="/settings"
+            )
+        except:
+            pass
+    
+    return {"success": True, "status": status}

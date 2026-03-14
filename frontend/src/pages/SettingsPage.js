@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Label } from '../components/ui/label';
 import { Input } from '../components/ui/input';
-import { Bell, Mail, BookOpen, Calendar, Check, Gift, Crown, Sparkles, Users, Send, Lock, Baby } from 'lucide-react';
+import { Bell, Mail, BookOpen, Calendar, Check, Gift, Crown, Sparkles, Users, Send, Lock, Baby, Heart } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
@@ -134,6 +134,15 @@ function SettingsPage() {
       toast.error(error.response?.data?.detail || 'Erreur lors de l\'envoi');
     } finally {
       setSubmittingReferral(false);
+    }
+  };
+  
+  const handleRefundRequest = async () => {
+    try {
+      const response = await api.postpartum.requestRefund('miscarriage', 'Demande de remboursement suite à une fausse couche');
+      toast.success(response.data.message);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erreur lors de la demande');
     }
   };
 
@@ -412,6 +421,42 @@ function SettingsPage() {
                     </p>
                   </div>
                 )}
+              </Card>
+            )}
+            
+            {/* Section Remboursement - Fausse couche */}
+            {subscriptionStatus === 'premium' && (
+              <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-slate-400 to-slate-300 rounded-2xl flex items-center justify-center">
+                    <Heart className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                      Situation difficile ?
+                    </h2>
+                    <p className="text-slate-500 text-sm">
+                      En cas de fausse couche, vous pouvez demander un remboursement
+                    </p>
+                  </div>
+                </div>
+                
+                <p className="text-sm text-slate-600 mb-4">
+                  Si vous traversez une épreuve difficile (fausse couche), sachez que nous sommes là pour vous. 
+                  Vous pouvez demander un remboursement au prorata des mois restants sur attestation.
+                </p>
+                
+                <Button
+                  onClick={() => {
+                    if (window.confirm('Êtes-vous sûre de vouloir demander un remboursement ? Cette demande sera examinée par notre équipe.')) {
+                      handleRefundRequest();
+                    }
+                  }}
+                  data-testid="request-refund-button"
+                  className="w-full bg-slate-100 text-slate-700 rounded-full py-3 hover:bg-slate-200"
+                >
+                  Demander un remboursement
+                </Button>
               </Card>
             )}
 

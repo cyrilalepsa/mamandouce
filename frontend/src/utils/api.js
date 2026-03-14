@@ -11,6 +11,21 @@ const getAuthHeaders = () => ({
   },
 });
 
+// Intercepteur global pour gérer les erreurs d'authentification
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      // Token expiré ou invalide - déconnecter l'utilisateur
+      localStorage.removeItem('token');
+      if (window.location.pathname !== '/auth' && window.location.pathname !== '/pricing') {
+        window.location.href = '/auth';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const api = {
   auth: {
     register: (data) => axios.post(`${API}/auth/register`, data),
@@ -48,21 +63,6 @@ export const api = {
     toggleReserved: (itemId) => axios.post(`${API}/birth-list/items/${itemId}/toggle`, {}, getAuthHeaders()),
     getShared: (shareId) => axios.get(`${API}/birth-list/shared/${shareId}`),
     toggleReservedShared: (shareId, itemId) => axios.post(`${API}/birth-list/shared/${shareId}/items/${itemId}/toggle`),
-  },
-  subscription: {
-    getStatus: () => axios.get(`${API}/subscription-status`, getAuthHeaders()),
-    redeemCode: (code) => axios.post(`${API}/redeem-code`, { code }, getAuthHeaders()),
-  },
-  admin: {
-    generateCodes: (count, note) => axios.post(`${API}/admin/generate-codes?count=${count}&note=${encodeURIComponent(note)}`, {}, getAuthHeaders()),
-    getCodes: () => axios.get(`${API}/admin/promo-codes`, getAuthHeaders()),
-    getUsers: () => axios.get(`${API}/admin/users`, getAuthHeaders()),
-    getStats: () => axios.get(`${API}/admin/stats`, getAuthHeaders()),
-    getPendingFoods: () => axios.get(`${API}/admin/pending-foods`, getAuthHeaders()),
-    updateFoodStatus: (foodId, status) => axios.post(`${API}/admin/food-status/${foodId}?status=${status}`, {}, getAuthHeaders()),
-    getMessages: () => axios.get(`${API}/admin/messages`, getAuthHeaders()),
-    markMessageRead: (messageId) => axios.post(`${API}/admin/messages/${messageId}/read`, {}, getAuthHeaders()),
-    replyToMessage: (messageId, reply) => axios.post(`${API}/admin/messages/${messageId}/reply`, { reply }, getAuthHeaders()),
   },
   contact: {
     sendMessage: (data) => axios.post(`${API}/contact/send`, data, getAuthHeaders()),
@@ -140,6 +140,27 @@ export const api = {
       axios.post(`${API}/maternity-bag/check?item_index=${index}&checked=${checked}&is_custom=${isCustom}`, {}, getAuthHeaders()),
     suggestMaternityItem: (category, item) => 
       axios.post(`${API}/maternity-bag/suggest`, { category, item }, getAuthHeaders()),
+    // New endpoints
+    getStatus: () => axios.get(`${API}/postpartum/status`, getAuthHeaders()),
+    setBirthDate: (birthDate, babyName) => 
+      axios.post(`${API}/postpartum/set-birth-date`, { birth_date: birthDate, baby_name: babyName }, getAuthHeaders()),
+    getPendingReminders: () => axios.get(`${API}/postpartum/pending-reminders`, getAuthHeaders()),
+    sendDueReminders: () => axios.post(`${API}/postpartum/send-due-reminders`, {}, getAuthHeaders()),
+    requestRefund: (reason, details) => 
+      axios.post(`${API}/postpartum/request-refund`, { reason, details }, getAuthHeaders()),
+  },
+  admin: {
+    generateCodes: (count, note) => axios.post(`${API}/admin/generate-codes?count=${count}&note=${encodeURIComponent(note)}`, {}, getAuthHeaders()),
+    getCodes: () => axios.get(`${API}/admin/promo-codes`, getAuthHeaders()),
+    getUsers: () => axios.get(`${API}/admin/users`, getAuthHeaders()),
+    getStats: () => axios.get(`${API}/admin/stats`, getAuthHeaders()),
+    getPendingFoods: () => axios.get(`${API}/admin/pending-foods`, getAuthHeaders()),
+    updateFoodStatus: (foodId, status) => axios.post(`${API}/admin/food-status/${foodId}?status=${status}`, {}, getAuthHeaders()),
+    getMessages: () => axios.get(`${API}/admin/messages`, getAuthHeaders()),
+    markMessageRead: (messageId) => axios.post(`${API}/admin/messages/${messageId}/read`, {}, getAuthHeaders()),
+    replyToMessage: (messageId, reply) => axios.post(`${API}/admin/messages/${messageId}/reply`, { reply }, getAuthHeaders()),
+    getRefundRequests: () => axios.get(`${API}/admin/refund-requests`, getAuthHeaders()),
+    approveRefund: (userId, approved) => axios.post(`${API}/admin/refund-requests/${userId}/approve?approved=${approved}`, {}, getAuthHeaders()),
   },
 };
 

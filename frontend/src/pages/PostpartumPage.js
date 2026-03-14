@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
+import { Input } from '../components/ui/input';
 import { 
   ArrowLeft, Calendar, Heart, AlertTriangle, Baby, Droplets, 
-  Shield, ChevronDown, ChevronUp, Stethoscope, Clock, Info
+  Shield, ChevronDown, ChevronUp, Stethoscope, Clock, Info, CalendarDays, Check, Lock
 } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
@@ -15,9 +16,18 @@ export default function PostpartumPage() {
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('appointments');
   const [expandedDifficulty, setExpandedDifficulty] = useState(null);
+  
+  // Postpartum status
+  const [postpartumStatus, setPostpartumStatus] = useState(null);
+  const [birthDate, setBirthDate] = useState('');
+  const [babyName, setBabyName] = useState('');
+  const [savingBirthDate, setSavingBirthDate] = useState(false);
 
   useEffect(() => {
     loadContent();
+    loadPostpartumStatus();
+    // Envoyer les rappels dus au chargement de la page
+    sendDueReminders();
   }, []);
 
   const loadContent = async () => {
@@ -29,6 +39,47 @@ export default function PostpartumPage() {
       toast.error('Erreur lors du chargement');
     } finally {
       setLoading(false);
+    }
+  };
+  
+  const loadPostpartumStatus = async () => {
+    try {
+      const response = await api.postpartum.getStatus();
+      setPostpartumStatus(response.data);
+      if (response.data.actual_birth_date) {
+        setBirthDate(response.data.actual_birth_date.split('T')[0]);
+      }
+      if (response.data.baby_name) {
+        setBabyName(response.data.baby_name);
+      }
+    } catch (error) {
+      console.error('Erreur chargement statut:', error);
+    }
+  };
+  
+  const sendDueReminders = async () => {
+    try {
+      await api.postpartum.sendDueReminders();
+    } catch (error) {
+      // Silently fail
+    }
+  };
+  
+  const handleSaveBirthDate = async () => {
+    if (!birthDate) {
+      toast.error('Veuillez entrer la date d\'accouchement');
+      return;
+    }
+    
+    setSavingBirthDate(true);
+    try {
+      await api.postpartum.setBirthDate(birthDate, babyName);
+      toast.success('Date d\'accouchement enregistrée ! Les rappels de RDV sont programmés.');
+      loadPostpartumStatus();
+    } catch (error) {
+      toast.error('Erreur lors de l\'enregistrement');
+    } finally {
+      setSavingBirthDate(false);
     }
   };
 
@@ -67,6 +118,96 @@ export default function PostpartumPage() {
             <p className="text-sm text-slate-500">Les 6 premiers mois avec bébé</p>
           </div>
         </div>
+        
+        {/* Birth Date Section - Show at 7th month or later */}
+        {postpartumStatus && (
+          <Card className={`rounded-2xl p-5 ${
+            postpartumStatus.actual_birth_date 
+              ? 'bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200'
+              : postpartumStatus.can_set_birth_date
+                ? 'bg-gradient-to-br from-rose-50 to-pink-50 border border-rose-200'
+                : 'bg-slate-50 border border-slate-200'
+          }`}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                postpartumStatus.actual_birth_date
+                  ? 'bg-green-500'
+                  : postpartumStatus.can_set_birth_date
+                    ? 'bg-rose-500'
+                    : 'bg-slate-400'
+              }`}>
+                {postpartumStatus.actual_birth_date ? (
+                  <Check className="w-6 h-6 text-white" />
+                ) : postpartumStatus.can_set_birth_date ? (
+                  <CalendarDays className="w-6 h-6 text-white" />
+                ) : (
+                  <Lock className="w-6 h-6 text-white" />
+                )}
+              </div>
+              <div>
+                <h3 className="font-bold text-slate-700">
+                  {postpartumStatus.actual_birth_date 
+                    ? `Bébé${postpartumStatus.baby_name ? ` ${postpartumStatus.baby_name}` : ''} est né(e) !`
+                    : postpartumStatus.can_set_birth_date
+                      ? 'Date d\'accouchement'
+                      : 'Date d\'accouchement (à saisir au 7ème mois)'}
+                </h3>
+                <p className="text-sm text-slate-500">
+                  {postpartumStatus.actual_birth_date 
+                    ? `Semaine ${postpartumStatus.current_postpartum_week} du post-partum`
+                    : postpartumStatus.can_set_birth_date
+                      ? 'Renseignez votre date d\'accouchement prévue ou réelle'
+                      : `Actuellement à ${postpartumStatus.weeks_pregnant} SA`}
+                </p>
+              </div>
+            </div>
+            
+            {!postpartumStatus.actual_birth_date && postpartumStatus.can_set_birth_date && (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-600 mb-1 block">Date d'accouchement</label>
+                    <Input
+                      type="date"
+                      value={birthDate}
+                      onChange={(e) => setBirthDate(e.target.value)}
+                      className="rounded-xl border-rose-200"
+                      data-testid="birth-date-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-600 mb-1 block">Prénom de bébé (optionnel)</label>
+                    <Input
+                      value={babyName}
+                      onChange={(e) => setBabyName(e.target.value)}
+                      placeholder="Prénom"
+                      className="rounded-xl border-rose-200"
+                      data-testid="baby-name-input"
+                    />
+                  </div>
+                </div>
+                <Button
+                  onClick={handleSaveBirthDate}
+                  disabled={savingBirthDate}
+                  data-testid="save-birth-date-button"
+                  className="w-full bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full py-2"
+                >
+                  {savingBirthDate ? 'Enregistrement...' : 'Enregistrer et programmer les rappels'}
+                </Button>
+                <p className="text-xs text-center text-slate-500">
+                  Vous recevrez des rappels 7 jours et 3 jours avant chaque RDV post-partum
+                </p>
+              </div>
+            )}
+            
+            {postpartumStatus.actual_birth_date && (
+              <div className="text-sm text-slate-600">
+                <p>Date de naissance : <strong>{new Date(postpartumStatus.actual_birth_date).toLocaleDateString('fr-FR')}</strong></p>
+                <p className="mt-1">Les rappels de RDV sont programmés automatiquement.</p>
+              </div>
+            )}
+          </Card>
+        )}
 
         {/* Disclaimer */}
         <Card className="bg-amber-50 border border-amber-200 rounded-2xl p-4">

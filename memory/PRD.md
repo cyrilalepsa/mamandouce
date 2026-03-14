@@ -19,34 +19,6 @@ Application pour les femmes enceintes avec :
 - **Email**: Resend
 - **Push Notifications**: Web Push API + pywebpush
 
-## Backend Architecture
-
-```
-/app/backend/
-├── server.py              # Point d'entrée
-├── core/
-│   ├── config.py          # Configuration
-│   ├── database.py        # MongoDB connection
-│   └── security.py        # Auth, JWT
-├── models/
-│   └── schemas.py         # Modèles Pydantic
-├── routes/
-│   ├── auth.py            # Register, Login, Me
-│   ├── pregnancy.py       # Calculate, Profile
-│   ├── food.py            # Scan, Search, Library
-│   ├── medical.py         # Appointments, Notes
-│   ├── birth_list.py      # Birth list, Sharing
-│   ├── admin.py           # Users, Codes, Foods, Messages
-│   ├── contact.py         # User messages
-│   ├── push_notifications.py  # VAPID, Subscribe
-│   ├── payments.py        # Stripe
-│   ├── tips.py            # Weekly tips
-│   ├── postpartum.py      # Maternity bag & Postpartum content
-│   └── referral.py        # Referral system (NEW)
-└── data/
-    └── food_database.py   # 192 aliments
-```
-
 ## Completed Features
 
 ### Core Features
@@ -59,24 +31,23 @@ Application pour les femmes enceintes avec :
 - [x] Calendrier de fertilité avancé (5 ans vacances/fériés, 6 mois prédictions)
 - [x] Système de paiement Stripe
 
-### New Features (14 Mars 2026)
+### Features Ajoutées (14 Mars 2026)
 - [x] **Check-list Sac de maternité**
   - 32 articles par défaut (Pour maman, Pour bébé, Pour le retour)
   - Cases à cocher interactives avec persistence
   - Barre de progression
-  - Système de suggestions (soumis à validation admin)
-  - Notification admin avec catégorie "[Sac maternité]"
+  - Système de suggestions avec notification admin catégorisée "[Sac maternité]"
 
 - [x] **Suivi Post-partum**
   - 6 onglets de contenu (Rendez-vous, Difficultés, Allaitement, Lait infantile, Couches, Précautions)
   - 9 rendez-vous sur 6 mois (obligatoires + recommandés)
-  - Conseils détaillés sur baby blues, dépression, allaitement, lait infantile
-  - Guide des tailles de couches
   - Avertissement médical
+  - **Date d'accouchement** à saisir au 7ème mois (semaine 28+)
+  - **Rappels automatiques** 7 jours et 3 jours avant chaque RDV post-partum
+  - Le suivi démarre après les 9 mois d'abonnement (fin de grossesse)
 
 - [x] **Système de parrainage**
-  - Section dans les paramètres
-  - 2 champs pour filleules (nom + email)
+  - Section dans les paramètres avec formulaire 2 filleules
   - Barre de progression 0/2
   - Post-partum offert si 2 filleuls inscrits
   - Notifications admin avec catégorie "[Parrainage]"
@@ -86,20 +57,15 @@ Application pour les femmes enceintes avec :
   - Post-partum: 8€ (accessible après 6 mois d'abonnement)
   - Alternative: parrainage 2 amies = post-partum gratuit
 
-### Interface & Design
-- [x] Logo "MamanDouce" en Dancing Script
-- [x] Réorganisation page d'accueil en 5 catégories:
-  1. En route vers la grossesse
-  2. Grossesse
-  3. Préparer l'arrivée de bébé (avec Sac de maternité)
-  4. Suivi post-partum (NOUVEAU)
-  5. Services et ressources
+- [x] **Système de remboursement (fausse couche)**
+  - Demande de remboursement au prorata sur attestation
+  - Notification admin avec catégorie "[Remboursement]"
+  - Validation par l'admin avec notification utilisateur
+  - Calcul automatique du montant au prorata des jours restants
 
-### Administration
-- [x] Dashboard avec compteurs
-- [x] Notifications push admin (avec catégories)
-- [x] Gestion utilisateurs, messages, aliments
-- [x] Codes promo
+- [x] **Correction pages blanches**
+  - Intercepteur axios global pour détecter les tokens expirés
+  - Redirection automatique vers /auth si token invalide (401/403)
 
 ## API Endpoints
 
@@ -109,15 +75,18 @@ Application pour les femmes enceintes avec :
 - `GET /api/maternity-bag` - Liste du sac de maternité
 - `POST /api/maternity-bag/check` - Cocher/décocher un item
 - `POST /api/maternity-bag/suggest` - Suggérer un article
-- `GET /api/maternity-bag/suggestions` - Liste suggestions (admin)
-- `POST /api/maternity-bag/approve` - Approuver/rejeter (admin)
 - `GET /api/postpartum/content` - Contenu post-partum
-- `GET /api/postpartum/appointments` - Rendez-vous post-partum
+- `GET /api/postpartum/status` - Statut post-partum (date accouchement, semaine)
+- `POST /api/postpartum/set-birth-date` - Définir la date d'accouchement réelle
+- `GET /api/postpartum/pending-reminders` - Rappels en attente
+- `POST /api/postpartum/send-due-reminders` - Envoyer les rappels dus
+- `POST /api/postpartum/request-refund` - Demander un remboursement
+- `GET /api/admin/refund-requests` - Liste des demandes (admin)
+- `POST /api/admin/refund-requests/{user_id}/approve` - Approuver/rejeter (admin)
 
 #### referral.py
 - `GET /api/referral/status` - Statut des parrainages
 - `POST /api/referral/submit` - Soumettre des parrainages
-- `GET /api/referral/check-completion` - Vérifier si 2 complétés
 - `GET /api/subscription/full-status` - Statut complet (premium + post-partum)
 - `POST /api/subscription/purchase-postpartum` - Acheter post-partum
 
@@ -128,14 +97,29 @@ Application pour les femmes enceintes avec :
 - `user_added_foods`, `birth_lists`
 - `promo_codes`, `admin_messages`
 - `push_subscriptions`
-- `maternity_bags` (NEW) - Listes de sac par utilisateur
-- `maternity_bag_suggestions` (NEW) - Suggestions en attente
-- `referrals` (NEW) - Parrainages
+- `maternity_bags` - Listes de sac par utilisateur
+- `maternity_bag_suggestions` - Suggestions en attente
+- `referrals` - Parrainages
+- `postpartum_reminders` - Rappels RDV post-partum programmés
+- `refund_requests` - Demandes de remboursement
 
 ## Credentials Admin
 - **Email**: cyrilalepsa@gmail.com
 - **Password**: Cyc@dmin9630
 - **Role in DB**: `admin`
+
+## Logique Post-partum
+1. **Achat** : Accessible après 6 mois d'abonnement premium OU gratuit avec 2 parrainages
+2. **Démarrage** : Le suivi démarre après les 9 mois d'abonnement (date accouchement)
+3. **Date accouchement** : L'utilisatrice peut saisir sa date d'accouchement prévue/réelle à partir du 7ème mois (semaine 28+)
+4. **Rappels** : 7 jours + 3 jours avant chaque RDV post-partum
+
+## Logique Remboursement (Fausse couche)
+1. L'utilisatrice demande un remboursement depuis les paramètres
+2. Calcul automatique au prorata : (jours restants / 270) × 27€
+3. L'admin reçoit une notification "[Remboursement]"
+4. L'admin approuve ou rejette depuis l'interface admin
+5. L'utilisatrice reçoit une notification du résultat
 
 ## Future Tasks (Backlog)
 - **(P2)** Gestion multi-admins depuis l'interface
@@ -144,8 +128,8 @@ Application pour les femmes enceintes avec :
 - **(P3)** Déploiement Google Play Store
 
 ## Testing Status
-- Backend: 100% (19/19 tests passés)
-- Frontend: 100% (toutes les pages et interactions fonctionnelles)
+- Backend: 100% fonctionnel
+- Frontend: 100% fonctionnel
 - Dernière exécution: 14 Mars 2026
 
 ## 3rd Party Integrations
