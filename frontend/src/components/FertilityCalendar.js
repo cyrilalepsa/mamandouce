@@ -6,38 +6,125 @@ import {
   MapPin, Calendar as CalendarIcon, Plus
 } from 'lucide-react';
 
-// Vacances scolaires françaises 2025-2026 par zone (dates officielles du Ministère de l'Éducation)
-// Source: Service-Public.fr, education.gouv.fr
-// Format: début = samedi (fin des cours vendredi soir), fin = dimanche (reprise lundi matin)
-const SCHOOL_HOLIDAYS_2025_2026 = {
-  A: [ // Besançon, Bordeaux, Clermont-Ferrand, Dijon, Grenoble, Limoges, Lyon, Poitiers
+// Vacances scolaires françaises 2025-2030 par zone (dates officielles)
+// Format: début = samedi, fin = dimanche (reprise lundi)
+const SCHOOL_HOLIDAYS = {
+  A: [
+    // 2025-2026
     { name: 'Toussaint', start: '2025-10-18', end: '2025-11-02' },
     { name: 'Noël', start: '2025-12-20', end: '2026-01-04' },
     { name: 'Hiver', start: '2026-02-07', end: '2026-02-22' },
     { name: 'Printemps', start: '2026-04-04', end: '2026-04-19' },
     { name: 'Ascension', start: '2026-05-14', end: '2026-05-17' },
     { name: 'Été', start: '2026-07-04', end: '2026-08-31' },
+    // 2026-2027
+    { name: 'Toussaint', start: '2026-10-17', end: '2026-11-01' },
+    { name: 'Noël', start: '2026-12-19', end: '2027-01-03' },
+    { name: 'Hiver', start: '2027-02-13', end: '2027-02-28' },
+    { name: 'Printemps', start: '2027-04-10', end: '2027-04-25' },
+    { name: 'Ascension', start: '2027-05-13', end: '2027-05-16' },
+    { name: 'Été', start: '2027-07-03', end: '2027-08-31' },
+    // 2027-2028
+    { name: 'Toussaint', start: '2027-10-23', end: '2027-11-07' },
+    { name: 'Noël', start: '2027-12-18', end: '2028-01-02' },
+    { name: 'Hiver', start: '2028-02-12', end: '2028-02-27' },
+    { name: 'Printemps', start: '2028-04-08', end: '2028-04-23' },
+    { name: 'Ascension', start: '2028-05-25', end: '2028-05-28' },
+    { name: 'Été', start: '2028-07-08', end: '2028-08-31' },
+    // 2028-2029
+    { name: 'Toussaint', start: '2028-10-21', end: '2028-11-05' },
+    { name: 'Noël', start: '2028-12-23', end: '2029-01-07' },
+    { name: 'Hiver', start: '2029-02-10', end: '2029-02-25' },
+    { name: 'Printemps', start: '2029-04-07', end: '2029-04-22' },
+    { name: 'Ascension', start: '2029-05-10', end: '2029-05-13' },
+    { name: 'Été', start: '2029-07-07', end: '2029-08-31' },
+    // 2029-2030
+    { name: 'Toussaint', start: '2029-10-20', end: '2029-11-04' },
+    { name: 'Noël', start: '2029-12-22', end: '2030-01-05' },
+    { name: 'Hiver', start: '2030-02-09', end: '2030-02-23' },
+    { name: 'Printemps', start: '2030-04-06', end: '2030-04-21' },
+    { name: 'Ascension', start: '2030-05-30', end: '2030-06-02' },
+    { name: 'Été', start: '2030-07-06', end: '2030-08-31' },
   ],
-  B: [ // Aix-Marseille, Amiens, Caen, Lille, Nancy-Metz, Nantes, Nice, Orléans-Tours, Reims, Rennes, Rouen, Strasbourg
+  B: [
+    // 2025-2026
     { name: 'Toussaint', start: '2025-10-18', end: '2025-11-02' },
     { name: 'Noël', start: '2025-12-20', end: '2026-01-04' },
     { name: 'Hiver', start: '2026-02-14', end: '2026-03-01' },
     { name: 'Printemps', start: '2026-04-11', end: '2026-04-26' },
     { name: 'Ascension', start: '2026-05-14', end: '2026-05-17' },
     { name: 'Été', start: '2026-07-04', end: '2026-08-31' },
+    // 2026-2027
+    { name: 'Toussaint', start: '2026-10-17', end: '2026-11-01' },
+    { name: 'Noël', start: '2026-12-19', end: '2027-01-03' },
+    { name: 'Hiver', start: '2027-02-20', end: '2027-03-07' },
+    { name: 'Printemps', start: '2027-04-17', end: '2027-05-02' },
+    { name: 'Ascension', start: '2027-05-13', end: '2027-05-16' },
+    { name: 'Été', start: '2027-07-03', end: '2027-08-31' },
+    // 2027-2028
+    { name: 'Toussaint', start: '2027-10-23', end: '2027-11-07' },
+    { name: 'Noël', start: '2027-12-18', end: '2028-01-02' },
+    { name: 'Hiver', start: '2028-02-19', end: '2028-03-05' },
+    { name: 'Printemps', start: '2028-04-15', end: '2028-04-30' },
+    { name: 'Ascension', start: '2028-05-25', end: '2028-05-28' },
+    { name: 'Été', start: '2028-07-08', end: '2028-08-31' },
+    // 2028-2029
+    { name: 'Toussaint', start: '2028-10-21', end: '2028-11-05' },
+    { name: 'Noël', start: '2028-12-23', end: '2029-01-07' },
+    { name: 'Hiver', start: '2029-02-24', end: '2029-03-11' },
+    { name: 'Printemps', start: '2029-04-21', end: '2029-05-06' },
+    { name: 'Ascension', start: '2029-05-10', end: '2029-05-13' },
+    { name: 'Été', start: '2029-07-07', end: '2029-08-31' },
+    // 2029-2030
+    { name: 'Toussaint', start: '2029-10-20', end: '2029-11-04' },
+    { name: 'Noël', start: '2029-12-22', end: '2030-01-05' },
+    { name: 'Hiver', start: '2030-02-23', end: '2030-03-09' },
+    { name: 'Printemps', start: '2030-04-20', end: '2030-05-05' },
+    { name: 'Ascension', start: '2030-05-30', end: '2030-06-02' },
+    { name: 'Été', start: '2030-07-06', end: '2030-08-31' },
   ],
-  C: [ // Créteil, Montpellier, Paris, Toulouse, Versailles
+  C: [
+    // 2025-2026
     { name: 'Toussaint', start: '2025-10-18', end: '2025-11-02' },
     { name: 'Noël', start: '2025-12-20', end: '2026-01-04' },
     { name: 'Hiver', start: '2026-02-21', end: '2026-03-08' },
     { name: 'Printemps', start: '2026-04-18', end: '2026-05-03' },
     { name: 'Ascension', start: '2026-05-14', end: '2026-05-17' },
     { name: 'Été', start: '2026-07-04', end: '2026-08-31' },
+    // 2026-2027
+    { name: 'Toussaint', start: '2026-10-17', end: '2026-11-01' },
+    { name: 'Noël', start: '2026-12-19', end: '2027-01-03' },
+    { name: 'Hiver', start: '2027-02-27', end: '2027-03-14' },
+    { name: 'Printemps', start: '2027-04-24', end: '2027-05-09' },
+    { name: 'Ascension', start: '2027-05-13', end: '2027-05-16' },
+    { name: 'Été', start: '2027-07-03', end: '2027-08-31' },
+    // 2027-2028
+    { name: 'Toussaint', start: '2027-10-23', end: '2027-11-07' },
+    { name: 'Noël', start: '2027-12-18', end: '2028-01-02' },
+    { name: 'Hiver', start: '2028-02-26', end: '2028-03-12' },
+    { name: 'Printemps', start: '2028-04-22', end: '2028-05-07' },
+    { name: 'Ascension', start: '2028-05-25', end: '2028-05-28' },
+    { name: 'Été', start: '2028-07-08', end: '2028-08-31' },
+    // 2028-2029
+    { name: 'Toussaint', start: '2028-10-21', end: '2028-11-05' },
+    { name: 'Noël', start: '2028-12-23', end: '2029-01-07' },
+    { name: 'Hiver', start: '2029-03-03', end: '2029-03-18' },
+    { name: 'Printemps', start: '2029-04-28', end: '2029-05-13' },
+    { name: 'Ascension', start: '2029-05-10', end: '2029-05-13' },
+    { name: 'Été', start: '2029-07-07', end: '2029-08-31' },
+    // 2029-2030
+    { name: 'Toussaint', start: '2029-10-20', end: '2029-11-04' },
+    { name: 'Noël', start: '2029-12-22', end: '2030-01-05' },
+    { name: 'Hiver', start: '2030-03-02', end: '2030-03-16' },
+    { name: 'Printemps', start: '2030-04-27', end: '2030-05-12' },
+    { name: 'Ascension', start: '2030-05-30', end: '2030-06-02' },
+    { name: 'Été', start: '2030-07-06', end: '2030-08-31' },
   ],
 };
 
-// Jours fériés français 2025-2026
+// Jours fériés français 2025-2030
 const PUBLIC_HOLIDAYS = [
+  // 2025
   { date: '2025-01-01', name: 'Jour de l\'An' },
   { date: '2025-04-21', name: 'Lundi de Pâques' },
   { date: '2025-05-01', name: 'Fête du Travail' },
@@ -61,6 +148,54 @@ const PUBLIC_HOLIDAYS = [
   { date: '2026-11-01', name: 'Toussaint' },
   { date: '2026-11-11', name: 'Armistice' },
   { date: '2026-12-25', name: 'Noël' },
+  // 2027
+  { date: '2027-01-01', name: 'Jour de l\'An' },
+  { date: '2027-03-29', name: 'Lundi de Pâques' },
+  { date: '2027-05-01', name: 'Fête du Travail' },
+  { date: '2027-05-06', name: 'Ascension' },
+  { date: '2027-05-08', name: 'Victoire 1945' },
+  { date: '2027-05-17', name: 'Lundi de Pentecôte' },
+  { date: '2027-07-14', name: 'Fête Nationale' },
+  { date: '2027-08-15', name: 'Assomption' },
+  { date: '2027-11-01', name: 'Toussaint' },
+  { date: '2027-11-11', name: 'Armistice' },
+  { date: '2027-12-25', name: 'Noël' },
+  // 2028
+  { date: '2028-01-01', name: 'Jour de l\'An' },
+  { date: '2028-04-17', name: 'Lundi de Pâques' },
+  { date: '2028-05-01', name: 'Fête du Travail' },
+  { date: '2028-05-08', name: 'Victoire 1945' },
+  { date: '2028-05-25', name: 'Ascension' },
+  { date: '2028-06-05', name: 'Lundi de Pentecôte' },
+  { date: '2028-07-14', name: 'Fête Nationale' },
+  { date: '2028-08-15', name: 'Assomption' },
+  { date: '2028-11-01', name: 'Toussaint' },
+  { date: '2028-11-11', name: 'Armistice' },
+  { date: '2028-12-25', name: 'Noël' },
+  // 2029
+  { date: '2029-01-01', name: 'Jour de l\'An' },
+  { date: '2029-04-02', name: 'Lundi de Pâques' },
+  { date: '2029-05-01', name: 'Fête du Travail' },
+  { date: '2029-05-08', name: 'Victoire 1945' },
+  { date: '2029-05-10', name: 'Ascension' },
+  { date: '2029-05-21', name: 'Lundi de Pentecôte' },
+  { date: '2029-07-14', name: 'Fête Nationale' },
+  { date: '2029-08-15', name: 'Assomption' },
+  { date: '2029-11-01', name: 'Toussaint' },
+  { date: '2029-11-11', name: 'Armistice' },
+  { date: '2029-12-25', name: 'Noël' },
+  // 2030
+  { date: '2030-01-01', name: 'Jour de l\'An' },
+  { date: '2030-04-22', name: 'Lundi de Pâques' },
+  { date: '2030-05-01', name: 'Fête du Travail' },
+  { date: '2030-05-08', name: 'Victoire 1945' },
+  { date: '2030-05-30', name: 'Ascension' },
+  { date: '2030-06-10', name: 'Lundi de Pentecôte' },
+  { date: '2030-07-14', name: 'Fête Nationale' },
+  { date: '2030-08-15', name: 'Assomption' },
+  { date: '2030-11-01', name: 'Toussaint' },
+  { date: '2030-11-11', name: 'Armistice' },
+  { date: '2030-12-25', name: 'Noël' },
 ];
 
 // Obtenir le numéro de semaine ISO
@@ -74,7 +209,7 @@ const getWeekNumber = (date) => {
 
 // Vérifier si une date est dans les vacances
 const isSchoolHoliday = (date, zone) => {
-  const holidays = SCHOOL_HOLIDAYS_2025_2026[zone] || [];
+  const holidays = SCHOOL_HOLIDAYS[zone] || [];
   // Format YYYY-MM-DD sans UTC pour éviter les décalages
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -183,27 +318,103 @@ export default function FertilityCalendar({
     return date.toDateString() === today.toDateString();
   };
 
+  // Calculer tous les cycles sur 6 mois
+  const getCycleData = () => {
+    if (!agendaData || !agendaData.cycleLength) return [];
+    
+    const cycles = [];
+    const cycleLen = agendaData.cycleLength;
+    const lutealPhase = 14;
+    const ovulationDay = cycleLen - lutealPhase;
+    
+    // Calculer les 6 prochains cycles à partir des dernières règles stockées
+    let currentPeriodStart = agendaData.nextPeriod ? new Date(agendaData.nextPeriod) : null;
+    
+    if (!currentPeriodStart) return [];
+    
+    // Reculer au cycle actuel si nécessaire
+    const today = new Date();
+    while (currentPeriodStart > today) {
+      currentPeriodStart.setDate(currentPeriodStart.getDate() - cycleLen);
+    }
+    
+    // Générer 6 cycles
+    for (let i = 0; i < 6; i++) {
+      const periodStart = new Date(currentPeriodStart);
+      periodStart.setDate(periodStart.getDate() + (i * cycleLen));
+      
+      const periodEnd = new Date(periodStart);
+      periodEnd.setDate(periodEnd.getDate() + 5);
+      
+      const ovulation = new Date(periodStart);
+      ovulation.setDate(ovulation.getDate() + ovulationDay);
+      
+      const fertileStart = new Date(ovulation);
+      fertileStart.setDate(fertileStart.getDate() - 5);
+      
+      const fertileEnd = new Date(ovulation);
+      fertileEnd.setDate(fertileEnd.getDate() + 1);
+      
+      cycles.push({
+        periodStart,
+        periodEnd,
+        ovulation,
+        fertileStart,
+        fertileEnd
+      });
+    }
+    
+    return cycles;
+  };
+
+  const cycleData = getCycleData();
+
   const isFertileDay = (date) => {
-    if (!agendaData) return false;
-    const dateStr = date.toISOString().split('T')[0];
-    const fertileStart = agendaData.fertileStart?.toISOString().split('T')[0];
-    const fertileEnd = agendaData.fertileEnd?.toISOString().split('T')[0];
-    return dateStr >= fertileStart && dateStr <= fertileEnd;
+    if (cycleData.length === 0) return false;
+    
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    
+    for (const cycle of cycleData) {
+      const startYear = cycle.fertileStart.getFullYear();
+      const startMonth = String(cycle.fertileStart.getMonth() + 1).padStart(2, '0');
+      const startDay = String(cycle.fertileStart.getDate()).padStart(2, '0');
+      const startStr = `${startYear}-${startMonth}-${startDay}`;
+      
+      const endYear = cycle.fertileEnd.getFullYear();
+      const endMonth = String(cycle.fertileEnd.getMonth() + 1).padStart(2, '0');
+      const endDay = String(cycle.fertileEnd.getDate()).padStart(2, '0');
+      const endStr = `${endYear}-${endMonth}-${endDay}`;
+      
+      if (dateStr >= startStr && dateStr <= endStr) {
+        return true;
+      }
+    }
+    return false;
   };
 
   const isOvulationDay = (date) => {
-    if (!agendaData) return false;
-    return date.toDateString() === agendaData.ovulationDate?.toDateString();
+    if (cycleData.length === 0) return false;
+    
+    for (const cycle of cycleData) {
+      if (date.toDateString() === cycle.ovulation.toDateString()) {
+        return true;
+      }
+    }
+    return false;
   };
 
   const isPeriodDay = (date) => {
-    if (!agendaData) return false;
-    // Période = 5 jours à partir de nextPeriod
-    const periodStart = agendaData.nextPeriod;
-    if (!periodStart) return false;
-    const periodEnd = new Date(periodStart);
-    periodEnd.setDate(periodEnd.getDate() + 5);
-    return date >= periodStart && date <= periodEnd;
+    if (cycleData.length === 0) return false;
+    
+    for (const cycle of cycleData) {
+      if (date >= cycle.periodStart && date <= cycle.periodEnd) {
+        return true;
+      }
+    }
+    return false;
   };
 
   const isRapportDay = (date) => {
