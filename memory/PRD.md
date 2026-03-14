@@ -121,10 +121,13 @@ Application pour les femmes enceintes avec :
 4. L'admin approuve ou rejette depuis l'interface admin
 5. L'utilisatrice reçoit une notification du résultat
 
-- [x] **Section admin pour les remandes de remboursement**
+- [x] **Section admin pour les demandes de remboursement**
   - Onglet "Remboursements" dans l'interface admin
   - Compteurs : En attente / Approuvés / Rejetés
   - Liste des demandes avec détails complets
+  - **Upload de document** : L'utilisatrice peut joindre une attestation médicale (PDF, JPG, PNG max 5Mo)
+  - **Visualisation du document** : Bouton "Télécharger" dans l'interface admin
+  - Alerte si aucun document n'est joint
   - Boutons Approuver/Rejeter pour chaque demande
   - Notification automatique à l'utilisatrice après traitement
 

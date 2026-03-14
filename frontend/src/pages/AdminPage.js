@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { Shield, Plus, Copy, Check, Users, Gift, AlertTriangle, Apple, Mail, MessageSquare, CheckCircle, XCircle, Clock, ChevronDown, ChevronUp, Star, Sparkles, Send, Reply, LayoutDashboard, Eye, TrendingUp, UserPlus, Crown, RefreshCw } from 'lucide-react';
+import { Shield, Plus, Copy, Check, Users, Gift, AlertTriangle, Apple, Mail, MessageSquare, CheckCircle, XCircle, Clock, ChevronDown, ChevronUp, Star, Sparkles, Send, Reply, LayoutDashboard, Eye, TrendingUp, UserPlus, Crown, RefreshCw, FileText, Download } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
@@ -872,6 +872,39 @@ function AdminPage() {
                         <p className="text-sm text-slate-600 mb-3 bg-white/60 rounded-lg p-2">
                           <strong>Détails:</strong> {request.details}
                         </p>
+                      )}
+                      
+                      {/* Document section */}
+                      {request.document_filename && (
+                        <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <FileText className="w-5 h-5 text-blue-600" />
+                              <div>
+                                <p className="text-sm font-semibold text-blue-700">Document justificatif</p>
+                                <p className="text-xs text-blue-500">{request.document_filename}</p>
+                              </div>
+                            </div>
+                            <a
+                              href={api.admin.getRefundDocument(request.user_id)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1 bg-blue-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-blue-600"
+                            >
+                              <Download className="w-4 h-4" />
+                              Télécharger
+                            </a>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {!request.document_filename && (
+                        <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className="w-5 h-5 text-amber-600" />
+                            <p className="text-sm text-amber-700">Aucun document joint à cette demande</p>
+                          </div>
+                        </div>
                       )}
                       
                       <p className="text-xs text-slate-400 mb-3">

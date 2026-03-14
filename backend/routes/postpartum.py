@@ -501,6 +501,136 @@ async def send_due_reminders(current_user: User = Depends(get_current_user)):
 
 # ==================== REFUND SYSTEM (Fausse couche) ====================
 
+@router.post("/postpartum/upload-attestation")
+async def upload_attestation(current_user: User = Depends(get_current_user)):
+    """Upload an attestation document for refund request"""
+    from fastapi import UploadFile, File, Form
+    # This will be handled by a separate endpoint with file upload
+    pass
+
+from fastapi import UploadFile, File, Form
+
+@router.post("/postpartum/request-refund-with-doc")
+async def request_refund_with_document(
+    reason: str = Form(...),
+    details: str = Form(None),
+    document: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
+    """Demander un remboursement avec document justificatif"""
+    from routes.push_notifications import send_admin_notification
+    import os
+    import uuid
+    
+    # Récupérer les infos d'abonnement
+    user = await db.users.find_one({"id": current_user.id}, {"_id": 0})
+    subscription_start = user.get("subscription_start_date")
+    
+    if not subscription_start:
+        return {"success": False, "message": "Aucun abonnement actif trouvé"}
+    
+    # Vérifier le type de fichier
+    allowed_types = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg']
+    if document.content_type not in allowed_types:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=400, detail="Format de fichier non supporté. Utilisez PDF, JPG ou PNG.")
+    
+    # Limiter la taille à 5MB
+    contents = await document.read()
+    if len(contents) > 5 * 1024 * 1024:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=400, detail="Fichier trop volumineux (max 5MB)")
+    
+    # Créer le dossier uploads si nécessaire
+    upload_dir = "/app/backend/uploads/attestations"
+    os.makedirs(upload_dir, exist_ok=True)
+    
+    # Générer un nom de fichier unique
+    file_extension = document.filename.split('.')[-1] if '.' in document.filename else 'pdf'
+    unique_filename = f"{current_user.id}_{uuid.uuid4().hex[:8]}.{file_extension}"
+    file_path = os.path.join(upload_dir, unique_filename)
+    
+    # Sauvegarder le fichier
+    with open(file_path, "wb") as f:
+        f.write(contents)
+    
+    # Calculer le montant au prorata
+    start_date = datetime.fromisoformat(subscription_start.replace('Z', '+00:00'))
+    today = datetime.now(timezone.utc)
+    days_used = (today - start_date).days
+    total_days = 270  # 9 mois
+    days_remaining = max(0, total_days - days_used)
+    
+    # Calcul du remboursement (27€ pour 9 mois)
+    daily_rate = 27.0 / total_days
+    refund_amount = round(days_remaining * daily_rate, 2)
+    
+    # Créer la demande de remboursement avec le document
+    refund_request = {
+        "user_id": current_user.id,
+        "user_email": current_user.email,
+        "user_name": current_user.name,
+        "reason": reason,
+        "details": details,
+        "document_path": file_path,
+        "document_filename": document.filename,
+        "subscription_start": subscription_start,
+        "days_used": days_used,
+        "days_remaining": days_remaining,
+        "refund_amount": refund_amount,
+        "status": "pending",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.refund_requests.insert_one(refund_request)
+    
+    # Notifier l'admin
+    try:
+        reason_text = "Fausse couche" if reason == "miscarriage" else reason
+        await send_admin_notification(
+            title="Demande de remboursement + Document",
+            body=f"{current_user.email} demande un remboursement ({reason_text}) - {refund_amount}€ - Document joint",
+            url="/admin",
+            category="Remboursement"
+        )
+    except:
+        pass
+    
+    return {
+        "success": True,
+        "message": "Votre demande et votre document ont été envoyés. Vous recevrez une notification une fois traitée.",
+        "refund_amount_estimated": refund_amount,
+        "days_remaining": days_remaining
+    }
+
+@router.get("/admin/refund-document/{user_id}")
+async def get_refund_document(user_id: str, current_user: User = Depends(get_current_user)):
+    """Télécharger le document d'attestation (admin uniquement)"""
+    from fastapi.responses import FileResponse
+    from fastapi import HTTPException
+    
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    # Trouver la demande de remboursement
+    request = await db.refund_requests.find_one({"user_id": user_id})
+    if not request:
+        raise HTTPException(status_code=404, detail="Demande non trouvée")
+    
+    document_path = request.get("document_path")
+    if not document_path:
+        raise HTTPException(status_code=404, detail="Aucun document joint")
+    
+    import os
+    if not os.path.exists(document_path):
+        raise HTTPException(status_code=404, detail="Document non trouvé sur le serveur")
+    
+    return FileResponse(
+        document_path, 
+        filename=request.get("document_filename", "attestation"),
+        media_type="application/octet-stream"
+    )
+
 @router.post("/postpartum/request-refund")
 async def request_refund(data: RefundRequest, current_user: User = Depends(get_current_user)):
     """Demander un remboursement (fausse couche ou autre raison médicale)"""

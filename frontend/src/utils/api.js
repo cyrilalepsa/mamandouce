@@ -148,6 +148,13 @@ export const api = {
     sendDueReminders: () => axios.post(`${API}/postpartum/send-due-reminders`, {}, getAuthHeaders()),
     requestRefund: (reason, details) => 
       axios.post(`${API}/postpartum/request-refund`, { reason, details }, getAuthHeaders()),
+    requestRefundWithDoc: (formData) => 
+      axios.post(`${API}/postpartum/request-refund-with-doc`, formData, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      }),
   },
   admin: {
     generateCodes: (count, note) => axios.post(`${API}/admin/generate-codes?count=${count}&note=${encodeURIComponent(note)}`, {}, getAuthHeaders()),
@@ -161,6 +168,7 @@ export const api = {
     replyToMessage: (messageId, reply) => axios.post(`${API}/admin/messages/${messageId}/reply`, { reply }, getAuthHeaders()),
     getRefundRequests: () => axios.get(`${API}/admin/refund-requests`, getAuthHeaders()),
     approveRefund: (userId, approved) => axios.post(`${API}/admin/refund-requests/${userId}/approve?approved=${approved}`, {}, getAuthHeaders()),
+    getRefundDocument: (userId) => `${API}/admin/refund-document/${userId}`,
   },
 };
 
