@@ -67,6 +67,12 @@ Application pour les femmes enceintes avec :
 ### Calculateur de grossesse
 - [x] Toutes les dates clés
 - [x] Conseils médicaux par trimestre
+- [x] **Calculs précis basés sur la durée du cycle** (14 Mars 2026):
+  - Fenêtre de fertilité (plage de 6 jours)
+  - Fenêtre de nidation (6-12 jours après ovulation)
+  - Plage d'accouchement (±2 semaines)
+  - Âge gestationnel (SA + jours)
+  - Explications médicales détaillées
 
 ### Scanner d'aliments
 - [x] Scan caméra + recherche + saisie manuelle
@@ -213,5 +219,14 @@ Application pour les femmes enceintes avec :
    - Compatibilité arrière maintenue (fallback sur email)
 
 ## Future Tasks (Backlog)
+- **(P1)** Fallback pour connexion biométrique (PIN rapide pour appareils non compatibles)
+- **(P2)** Gestion multi-admins depuis l'interface
 - **(P2)** Graphiques de suivi grossesse
 - **(P2)** Mode hors-ligne complet
+- **(P3)** Déploiement Google Play Store
+
+## Session Update (14 Mars 2026)
+1. **Calculateur de grossesse amélioré** :
+   - Backend réécrit avec des calculs médicaux précis (règle de Naegele ajustée, phase lutéale)
+   - Frontend mis à jour pour afficher les fenêtres de dates (fertilité, nidation, accouchement)
+   - Explications médicales intégrées dans les résultats

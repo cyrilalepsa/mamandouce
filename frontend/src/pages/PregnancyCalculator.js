@@ -84,7 +84,7 @@ function PregnancyCalculator() {
     try {
       const response = await api.pregnancy.calculate({ 
         last_period_date: lastPeriodDate,
-        cycle_duration: cycleDuration
+        cycle_length: cycleDuration
       });
       setResults(response.data);
       toast.success('Calcul effectué avec succès!');
@@ -175,36 +175,80 @@ function PregnancyCalculator() {
             <h3 className="text-2xl font-bold text-slate-700 mb-6" style={{ fontFamily: 'Nunito, sans-serif' }}>Résultats</h3>
             
             <div className="space-y-4">
-              <div className="bg-white rounded-2xl p-4">
-                <p className="text-sm text-slate-500 font-semibold">Date des prochaines règles</p>
-                <p className="text-lg font-bold text-purple-600">{formatDate(results.next_period_date)}</p>
+              {/* Âge gestationnel */}
+              <div className="bg-gradient-to-br from-sky-100 to-pink-100 rounded-2xl p-4">
+                <p className="text-sm text-slate-600 font-semibold">Âge gestationnel</p>
+                <p className="text-3xl font-bold text-slate-700">{results.gestational_age || `${results.weeks_pregnant} SA`}</p>
+                <p className="text-sm text-slate-500 mt-1">Trimestre {results.trimester}</p>
               </div>
 
+              {/* Ovulation */}
               <div className="bg-white rounded-2xl p-4">
-                <p className="text-sm text-slate-500 font-semibold">Date d'ovulation estimée</p>
+                <p className="text-sm text-slate-500 font-semibold">Date d'ovulation</p>
                 <p className="text-lg font-bold text-sky-600">{formatDate(results.ovulation_date)}</p>
+                <p className="text-xs text-slate-400 mt-1">
+                  {results.explanations?.ovulation || `Jour ${results.days_to_ovulation} du cycle`}
+                </p>
               </div>
 
+              {/* Fenêtre de fertilité */}
+              <div className="bg-white rounded-2xl p-4 border-l-4 border-emerald-400">
+                <p className="text-sm text-slate-500 font-semibold">Fenêtre de fertilité</p>
+                <p className="text-lg font-bold text-emerald-600">
+                  Du {formatDate(results.fertile_window_start)} au {formatDate(results.fertile_window_end)}
+                </p>
+                <p className="text-xs text-slate-400 mt-1">
+                  {results.fertile_days} jours les plus fertiles
+                </p>
+              </div>
+
+              {/* Conception */}
               <div className="bg-white rounded-2xl p-4">
                 <p className="text-sm text-slate-500 font-semibold">Date de conception estimée</p>
                 <p className="text-lg font-bold text-pink-600">{formatDate(results.conception_date)}</p>
               </div>
 
-              <div className="bg-white rounded-2xl p-4">
-                <p className="text-sm text-slate-500 font-semibold">Date de nidation estimée</p>
-                <p className="text-lg font-bold text-amber-600">{formatDate(results.implantation_date)}</p>
-                <p className="text-xs text-slate-400 mt-1">Environ 9 jours après l'ovulation</p>
+              {/* Nidation avec plage */}
+              <div className="bg-white rounded-2xl p-4 border-l-4 border-amber-400">
+                <p className="text-sm text-slate-500 font-semibold">Fenêtre de nidation</p>
+                <p className="text-lg font-bold text-amber-600">
+                  Du {formatDate(results.implantation_window_start)} au {formatDate(results.implantation_window_end)}
+                </p>
+                <p className="text-xs text-slate-400 mt-1">
+                  Date la plus probable : {formatDate(results.implantation_date)}
+                </p>
               </div>
 
+              {/* Prochaines règles */}
               <div className="bg-white rounded-2xl p-4">
+                <p className="text-sm text-slate-500 font-semibold">Prochaines règles (si non enceinte)</p>
+                <p className="text-lg font-bold text-purple-600">{formatDate(results.next_period_date)}</p>
+              </div>
+
+              {/* Date d'accouchement avec plage */}
+              <div className="bg-gradient-to-br from-rose-50 to-pink-100 rounded-2xl p-4 border-2 border-rose-200">
                 <p className="text-sm text-slate-500 font-semibold">Date prévue d'accouchement</p>
-                <p className="text-lg font-bold text-rose-600">{formatDate(results.due_date)}</p>
+                <p className="text-2xl font-bold text-rose-600">{formatDate(results.due_date)}</p>
+                <p className="text-sm text-slate-500 mt-2">
+                  Période probable : du {formatDate(results.due_date_earliest)} au {formatDate(results.due_date_latest)}
+                </p>
+                {results.days_until_due > 0 && (
+                  <p className="text-xs text-rose-500 font-semibold mt-2">
+                    Dans {results.days_until_due} jours
+                  </p>
+                )}
               </div>
 
-              <div className="bg-gradient-to-br from-sky-100 to-pink-100 rounded-2xl p-4">
-                <p className="text-sm text-slate-600 font-semibold">Semaines de grossesse</p>
-                <p className="text-3xl font-bold text-slate-700">{results.weeks_pregnant} semaines</p>
-              </div>
+              {/* Explications */}
+              {results.explanations && (
+                <div className="bg-slate-50 rounded-2xl p-4 mt-4">
+                  <p className="text-sm font-semibold text-slate-600 mb-2">Comprendre ces calculs</p>
+                  <div className="space-y-2 text-xs text-slate-500">
+                    <p>{results.explanations.due_date}</p>
+                    <p>{results.explanations.implantation}</p>
+                  </div>
+                </div>
+              )}
             </div>
           </Card>
         )}
