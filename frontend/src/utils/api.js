@@ -169,6 +169,8 @@ export const api = {
     getRefundRequests: () => axios.get(`${API}/admin/refund-requests`, getAuthHeaders()),
     approveRefund: (userId, approved) => axios.post(`${API}/admin/refund-requests/${userId}/approve?approved=${approved}`, {}, getAuthHeaders()),
     getRefundDocument: (userId) => `${API}/admin/refund-document/${userId}`,
+    setUserPremium: (userId, premium) => axios.post(`${API}/admin/user/${userId}/set-premium?premium=${premium}`, {}, getAuthHeaders()),
+    setUserPostpartum: (userId, enabled) => axios.post(`${API}/admin/user/${userId}/set-postpartum?enabled=${enabled}`, {}, getAuthHeaders()),
   },
 };
 

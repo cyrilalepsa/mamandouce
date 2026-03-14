@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { Shield, Plus, Copy, Check, Users, Gift, AlertTriangle, Apple, Mail, MessageSquare, CheckCircle, XCircle, Clock, ChevronDown, ChevronUp, Star, Sparkles, Send, Reply, LayoutDashboard, Eye, TrendingUp, UserPlus, Crown, RefreshCw, FileText, Download } from 'lucide-react';
+import { Shield, Plus, Copy, Check, Users, Gift, AlertTriangle, Apple, Mail, MessageSquare, CheckCircle, XCircle, Clock, ChevronDown, ChevronUp, Star, Sparkles, Send, Reply, LayoutDashboard, Eye, TrendingUp, UserPlus, Crown, RefreshCw, FileText, Download, Baby } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
@@ -569,38 +569,122 @@ function AdminPage() {
                   <p className="text-slate-500">Aucun utilisateur inscrit</p>
                 </div>
               ) : (
-                <div className="space-y-2 max-h-96 overflow-y-auto">
+                <div className="space-y-3 max-h-[500px] overflow-y-auto">
                   {users.map((user, index) => {
                     const statusBadge = getStatusBadge(user.display_status);
                     const StatusIcon = statusBadge.icon;
+                    const isPremium = user.display_status === 'premium' || user.display_status === 'beta_tester';
+                    const hasPostpartum = user.postpartum_purchased || user.postpartum_free_via_referral;
+                    
                     return (
-                      <div key={index} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            user.display_status === 'beta_tester' 
-                              ? 'bg-gradient-to-br from-purple-400 to-purple-500' 
-                              : user.display_status === 'premium'
-                              ? 'bg-gradient-to-br from-amber-400 to-amber-500'
-                              : 'bg-slate-300'
-                          }`}>
-                            <span className="text-white font-bold text-sm">
-                              {(user.name || user.email || '?')[0].toUpperCase()}
-                            </span>
+                      <div key={index} className="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                              user.display_status === 'beta_tester' 
+                                ? 'bg-gradient-to-br from-purple-400 to-purple-500' 
+                                : user.display_status === 'premium'
+                                ? 'bg-gradient-to-br from-amber-400 to-amber-500'
+                                : 'bg-slate-300'
+                            }`}>
+                              <span className="text-white font-bold text-sm">
+                                {(user.name || user.email || '?')[0].toUpperCase()}
+                              </span>
+                            </div>
+                            <div>
+                              <p className="font-semibold text-slate-700">{user.name || 'Sans nom'}</p>
+                              <p className="text-sm text-slate-500">{user.email}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-semibold text-slate-700">{user.name || 'Sans nom'}</p>
-                            <p className="text-sm text-slate-500">{user.email}</p>
+                          <div className="text-right">
+                            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${statusBadge.bg} ${statusBadge.text}`}>
+                              <StatusIcon className="w-3 h-3" />
+                              {statusBadge.label}
+                            </span>
+                            {user.created_at && (
+                              <p className="text-xs text-slate-400 mt-1">
+                                {new Date(user.created_at).toLocaleDateString('fr-FR')}
+                              </p>
+                            )}
                           </div>
                         </div>
-                        <div className="text-right">
-                          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${statusBadge.bg} ${statusBadge.text}`}>
-                            <StatusIcon className="w-3 h-3" />
-                            {statusBadge.label}
-                          </span>
-                          {user.created_at && (
-                            <p className="text-xs text-slate-400 mt-1">
-                              {new Date(user.created_at).toLocaleDateString('fr-FR')}
-                            </p>
+                        
+                        {/* Action buttons */}
+                        <div className="flex flex-wrap gap-2 pt-3 border-t border-slate-200">
+                          {isPremium ? (
+                            <Button
+                              onClick={async () => {
+                                if (window.confirm(`Retirer le premium à ${user.email} ?`)) {
+                                  try {
+                                    await api.admin.setUserPremium(user.id, false);
+                                    toast.success('Premium retiré');
+                                    loadUsers();
+                                  } catch (e) {
+                                    toast.error('Erreur');
+                                  }
+                                }
+                              }}
+                              data-testid={`remove-premium-${index}`}
+                              className="bg-amber-100 text-amber-700 hover:bg-amber-200 rounded-lg px-3 py-1.5 text-xs font-semibold"
+                            >
+                              <Crown className="w-3 h-3 mr-1 inline" />
+                              Retirer Premium
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={async () => {
+                                try {
+                                  await api.admin.setUserPremium(user.id, true);
+                                  toast.success('Premium activé !');
+                                  loadUsers();
+                                } catch (e) {
+                                  toast.error('Erreur');
+                                }
+                              }}
+                              data-testid={`grant-premium-${index}`}
+                              className="bg-gradient-to-r from-amber-400 to-amber-500 text-white hover:from-amber-500 hover:to-amber-600 rounded-lg px-3 py-1.5 text-xs font-semibold"
+                            >
+                              <Crown className="w-3 h-3 mr-1 inline" />
+                              Donner Premium
+                            </Button>
+                          )}
+                          
+                          {hasPostpartum ? (
+                            <Button
+                              onClick={async () => {
+                                if (window.confirm(`Retirer le post-partum à ${user.email} ?`)) {
+                                  try {
+                                    await api.admin.setUserPostpartum(user.id, false);
+                                    toast.success('Post-partum retiré');
+                                    loadUsers();
+                                  } catch (e) {
+                                    toast.error('Erreur');
+                                  }
+                                }
+                              }}
+                              data-testid={`remove-postpartum-${index}`}
+                              className="bg-rose-100 text-rose-700 hover:bg-rose-200 rounded-lg px-3 py-1.5 text-xs font-semibold"
+                            >
+                              <Baby className="w-3 h-3 mr-1 inline" />
+                              Retirer Post-partum
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={async () => {
+                                try {
+                                  await api.admin.setUserPostpartum(user.id, true);
+                                  toast.success('Post-partum activé !');
+                                  loadUsers();
+                                } catch (e) {
+                                  toast.error('Erreur');
+                                }
+                              }}
+                              data-testid={`grant-postpartum-${index}`}
+                              className="bg-gradient-to-r from-rose-400 to-pink-500 text-white hover:from-rose-500 hover:to-pink-600 rounded-lg px-3 py-1.5 text-xs font-semibold"
+                            >
+                              <Baby className="w-3 h-3 mr-1 inline" />
+                              Donner Post-partum
+                            </Button>
                           )}
                         </div>
                       </div>

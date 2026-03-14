@@ -131,6 +131,103 @@ async def get_admin_stats(admin: User = Depends(get_admin_user)):
         "pending_foods": pending_foods
     }
 
+# ==================== USER MANAGEMENT ====================
+
+@router.post("/admin/user/{user_id}/set-premium")
+async def set_user_premium(user_id: str, premium: bool = True, admin: User = Depends(get_admin_user)):
+    """Passer une utilisatrice en premium ou retirer le premium (admin only)"""
+    from routes.push_notifications import send_push_notification
+    
+    # Trouver l'utilisateur
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="Utilisatrice non trouvée")
+    
+    if premium:
+        # Passer en premium
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": {
+                "subscription_status": "premium",
+                "premium_source": "admin_granted",
+                "subscription_start_date": datetime.now(timezone.utc).isoformat(),
+                "premium_granted_by": admin.email,
+                "premium_granted_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        # Notifier l'utilisatrice
+        try:
+            await send_push_notification(
+                user_email=user["email"],
+                title="Accès Premium activé !",
+                body="Félicitations ! Vous avez maintenant accès à toutes les fonctionnalités premium.",
+                url="/"
+            )
+        except:
+            pass
+        
+        return {
+            "success": True,
+            "message": f"Premium activé pour {user['email']}",
+            "user_email": user["email"]
+        }
+    else:
+        # Retirer le premium
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": {
+                "subscription_status": "free",
+                "premium_removed_by": admin.email,
+                "premium_removed_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        return {
+            "success": True,
+            "message": f"Premium retiré pour {user['email']}",
+            "user_email": user["email"]
+        }
+
+@router.post("/admin/user/{user_id}/set-postpartum")
+async def set_user_postpartum(user_id: str, enabled: bool = True, admin: User = Depends(get_admin_user)):
+    """Activer ou désactiver l'accès post-partum pour une utilisatrice (admin only)"""
+    from routes.push_notifications import send_push_notification
+    
+    # Trouver l'utilisateur
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="Utilisatrice non trouvée")
+    
+    if enabled:
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": {
+                "postpartum_purchased": True,
+                "postpartum_source": "admin_granted",
+                "postpartum_granted_by": admin.email,
+                "postpartum_granted_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        try:
+            await send_push_notification(
+                user_email=user["email"],
+                title="Suivi Post-partum activé !",
+                body="Vous avez maintenant accès au suivi post-partum.",
+                url="/postpartum"
+            )
+        except:
+            pass
+        
+        return {"success": True, "message": f"Post-partum activé pour {user['email']}"}
+    else:
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": {"postpartum_purchased": False}}
+        )
+        return {"success": True, "message": f"Post-partum désactivé pour {user['email']}"}
+
 # ==================== FOODS ====================
 
 @router.get("/admin/pending-foods")
