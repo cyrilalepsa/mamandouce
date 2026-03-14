@@ -6,20 +6,23 @@ import {
   MapPin, Calendar as CalendarIcon, Plus
 } from 'lucide-react';
 
-// Vacances scolaires françaises 2025-2026 par zone (dates officielles)
+// Vacances scolaires françaises 2025-2026 par zone (dates officielles du Ministère de l'Éducation)
+// Source: Service-Public.fr - Les vacances commencent après les cours du jour indiqué et reprennent le matin du jour de fin
 const SCHOOL_HOLIDAYS_2025_2026 = {
   A: [ // Besançon, Bordeaux, Clermont-Ferrand, Dijon, Grenoble, Limoges, Lyon, Poitiers
     { name: 'Toussaint', start: '2025-10-18', end: '2025-11-03' },
     { name: 'Noël', start: '2025-12-20', end: '2026-01-05' },
-    { name: 'Hiver', start: '2026-02-14', end: '2026-03-02' },
-    { name: 'Printemps', start: '2026-04-11', end: '2026-04-27' },
-    { name: 'Été', start: '2026-07-04', end: '2026-08-31' },
-  ],
-  B: [ // Aix-Marseille, Amiens, Caen, Lille, Nancy-Metz, Nantes, Nice, Orléans-Tours, Reims, Rennes, Rouen, Strasbourg
-    { name: 'Toussaint', start: '2025-10-18', end: '2025-11-03' },
-    { name: 'Noël', start: '2025-12-20', end: '2026-01-05' },
     { name: 'Hiver', start: '2026-02-07', end: '2026-02-23' },
     { name: 'Printemps', start: '2026-04-04', end: '2026-04-20' },
+    { name: 'Pont Ascension', start: '2026-05-14', end: '2026-05-17' },
+    { name: 'Été', start: '2026-07-04', end: '2026-08-31' },
+  ],
+  B: [ // Aix-Marseille, Amiens, Caen, Lille, Nancy-Metz, Nantes, Nice, Normandie, Orléans-Tours, Reims, Rennes, Strasbourg
+    { name: 'Toussaint', start: '2025-10-18', end: '2025-11-03' },
+    { name: 'Noël', start: '2025-12-20', end: '2026-01-05' },
+    { name: 'Hiver', start: '2026-02-14', end: '2026-03-02' },
+    { name: 'Printemps', start: '2026-04-11', end: '2026-04-27' },
+    { name: 'Pont Ascension', start: '2026-05-14', end: '2026-05-17' },
     { name: 'Été', start: '2026-07-04', end: '2026-08-31' },
   ],
   C: [ // Créteil, Montpellier, Paris, Toulouse, Versailles
@@ -27,6 +30,7 @@ const SCHOOL_HOLIDAYS_2025_2026 = {
     { name: 'Noël', start: '2025-12-20', end: '2026-01-05' },
     { name: 'Hiver', start: '2026-02-21', end: '2026-03-09' },
     { name: 'Printemps', start: '2026-04-18', end: '2026-05-04' },
+    { name: 'Pont Ascension', start: '2026-05-14', end: '2026-05-17' },
     { name: 'Été', start: '2026-07-04', end: '2026-08-31' },
   ],
 };
@@ -277,7 +281,7 @@ export default function FertilityCalendar({
           </div>
           <p className="text-xs text-slate-500">
             {selectedZone === 'A' && 'Besançon, Bordeaux, Clermont-Ferrand, Dijon, Grenoble, Limoges, Lyon, Poitiers'}
-            {selectedZone === 'B' && 'Aix-Marseille, Amiens, Caen, Lille, Nancy-Metz, Nantes, Nice, Orléans-Tours, Reims, Rennes, Rouen, Strasbourg'}
+            {selectedZone === 'B' && 'Aix-Marseille, Amiens, Caen, Lille, Nancy-Metz, Nantes, Nice, Normandie, Orléans-Tours, Reims, Rennes, Strasbourg'}
             {selectedZone === 'C' && 'Créteil, Montpellier, Paris, Toulouse, Versailles'}
           </p>
         </div>
