@@ -245,5 +245,11 @@ Application pour les femmes enceintes avec :
 
 4. **Amélioration UX** (NOUVEAU) :
    - Icône Paramètres déplacée à côté du bouton déconnexion (barre du haut)
-   - Carte "Profil" ajoutée à la place de "Paramètres" dans la section Grossesse
    - Widget fertilité cliquable (redirige vers le calculateur)
+
+5. **Réorganisation complète de la page d'accueil** (14 Mars 2026) :
+   - **Agenda en haut** : affiche la semaine de grossesse, date d'accouchement, prochains RDV
+   - **Catégorie 1 "En route vers la grossesse"** : Calculateur + Conseils + avertissement médical
+   - **Catégorie 2 "Grossesse"** : Carte évolution bébé, Scanner/Bibliothèque/Favoris/Historique (aliments), Évolution & démarches, Rendez-vous, Rappels
+   - **Catégorie 3 "Préparer l'arrivée de bébé"** : Liste de naissance, Vidéos préparation accouchement, Les Maternelles (YouTube), Livres
+   - **Catégorie 4 "Services et ressources"** : CAF, Ameli, Mairies proches
