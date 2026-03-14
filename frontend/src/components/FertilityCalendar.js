@@ -7,30 +7,31 @@ import {
 } from 'lucide-react';
 
 // Vacances scolaires françaises 2025-2026 par zone (dates officielles du Ministère de l'Éducation)
-// Source: Service-Public.fr - Les vacances commencent après les cours du jour indiqué et reprennent le matin du jour de fin
+// Source: Service-Public.fr, education.gouv.fr
+// Format: début = samedi (fin des cours vendredi soir), fin = dimanche (reprise lundi matin)
 const SCHOOL_HOLIDAYS_2025_2026 = {
   A: [ // Besançon, Bordeaux, Clermont-Ferrand, Dijon, Grenoble, Limoges, Lyon, Poitiers
-    { name: 'Toussaint', start: '2025-10-18', end: '2025-11-03' },
-    { name: 'Noël', start: '2025-12-20', end: '2026-01-05' },
-    { name: 'Hiver', start: '2026-02-07', end: '2026-02-23' },
-    { name: 'Printemps', start: '2026-04-04', end: '2026-04-20' },
-    { name: 'Pont Ascension', start: '2026-05-14', end: '2026-05-17' },
+    { name: 'Toussaint', start: '2025-10-18', end: '2025-11-02' },
+    { name: 'Noël', start: '2025-12-20', end: '2026-01-04' },
+    { name: 'Hiver', start: '2026-02-07', end: '2026-02-22' },
+    { name: 'Printemps', start: '2026-04-04', end: '2026-04-19' },
+    { name: 'Ascension', start: '2026-05-14', end: '2026-05-17' },
     { name: 'Été', start: '2026-07-04', end: '2026-08-31' },
   ],
-  B: [ // Aix-Marseille, Amiens, Caen, Lille, Nancy-Metz, Nantes, Nice, Normandie, Orléans-Tours, Reims, Rennes, Strasbourg
-    { name: 'Toussaint', start: '2025-10-18', end: '2025-11-03' },
-    { name: 'Noël', start: '2025-12-20', end: '2026-01-05' },
-    { name: 'Hiver', start: '2026-02-14', end: '2026-03-02' },
-    { name: 'Printemps', start: '2026-04-11', end: '2026-04-27' },
-    { name: 'Pont Ascension', start: '2026-05-14', end: '2026-05-17' },
+  B: [ // Aix-Marseille, Amiens, Caen, Lille, Nancy-Metz, Nantes, Nice, Orléans-Tours, Reims, Rennes, Rouen, Strasbourg
+    { name: 'Toussaint', start: '2025-10-18', end: '2025-11-02' },
+    { name: 'Noël', start: '2025-12-20', end: '2026-01-04' },
+    { name: 'Hiver', start: '2026-02-14', end: '2026-03-01' },
+    { name: 'Printemps', start: '2026-04-11', end: '2026-04-26' },
+    { name: 'Ascension', start: '2026-05-14', end: '2026-05-17' },
     { name: 'Été', start: '2026-07-04', end: '2026-08-31' },
   ],
   C: [ // Créteil, Montpellier, Paris, Toulouse, Versailles
-    { name: 'Toussaint', start: '2025-10-18', end: '2025-11-03' },
-    { name: 'Noël', start: '2025-12-20', end: '2026-01-05' },
-    { name: 'Hiver', start: '2026-02-21', end: '2026-03-09' },
-    { name: 'Printemps', start: '2026-04-18', end: '2026-05-04' },
-    { name: 'Pont Ascension', start: '2026-05-14', end: '2026-05-17' },
+    { name: 'Toussaint', start: '2025-10-18', end: '2025-11-02' },
+    { name: 'Noël', start: '2025-12-20', end: '2026-01-04' },
+    { name: 'Hiver', start: '2026-02-21', end: '2026-03-08' },
+    { name: 'Printemps', start: '2026-04-18', end: '2026-05-03' },
+    { name: 'Ascension', start: '2026-05-14', end: '2026-05-17' },
     { name: 'Été', start: '2026-07-04', end: '2026-08-31' },
   ],
 };
@@ -74,7 +75,11 @@ const getWeekNumber = (date) => {
 // Vérifier si une date est dans les vacances
 const isSchoolHoliday = (date, zone) => {
   const holidays = SCHOOL_HOLIDAYS_2025_2026[zone] || [];
-  const dateStr = date.toISOString().split('T')[0];
+  // Format YYYY-MM-DD sans UTC pour éviter les décalages
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const dateStr = `${year}-${month}-${day}`;
   
   for (const holiday of holidays) {
     if (dateStr >= holiday.start && dateStr <= holiday.end) {
@@ -86,7 +91,12 @@ const isSchoolHoliday = (date, zone) => {
 
 // Vérifier si une date est un jour férié
 const isPublicHoliday = (date) => {
-  const dateStr = date.toISOString().split('T')[0];
+  // Format YYYY-MM-DD sans UTC
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const dateStr = `${year}-${month}-${day}`;
+  
   const holiday = PUBLIC_HOLIDAYS.find(h => h.date === dateStr);
   return holiday ? holiday.name : null;
 };
@@ -281,7 +291,7 @@ export default function FertilityCalendar({
           </div>
           <p className="text-xs text-slate-500">
             {selectedZone === 'A' && 'Besançon, Bordeaux, Clermont-Ferrand, Dijon, Grenoble, Limoges, Lyon, Poitiers'}
-            {selectedZone === 'B' && 'Aix-Marseille, Amiens, Caen, Lille, Nancy-Metz, Nantes, Nice, Normandie, Orléans-Tours, Reims, Rennes, Strasbourg'}
+            {selectedZone === 'B' && 'Aix-Marseille, Amiens, Caen, Lille, Nancy-Metz, Nantes, Nice, Orléans-Tours, Reims, Rennes, Rouen, Strasbourg'}
             {selectedZone === 'C' && 'Créteil, Montpellier, Paris, Toulouse, Versailles'}
           </p>
         </div>
@@ -336,25 +346,32 @@ export default function FertilityCalendar({
                     onClick={() => handleDayClick(day.date)}
                     title={publicHoliday || holiday || ''}
                     className={`
-                      relative w-9 h-9 rounded-full flex items-center justify-center text-sm transition-all
+                      relative w-9 h-9 rounded-lg flex flex-col items-center justify-center text-sm transition-all overflow-visible
                       ${!day.isCurrentMonth ? 'text-slate-300' : 'text-slate-700'}
                       ${today ? 'ring-2 ring-purple-500 font-bold' : ''}
-                      ${publicHoliday && day.isCurrentMonth ? 'bg-red-100 text-red-700 font-semibold' : ''}
-                      ${holiday && !publicHoliday && day.isCurrentMonth ? 'bg-blue-100' : ''}
-                      ${fertile && day.isCurrentMonth && !publicHoliday ? 'bg-emerald-100' : ''}
+                      ${fertile && day.isCurrentMonth && !ovulation ? 'bg-emerald-50' : ''}
                       ${ovulation && day.isCurrentMonth ? 'bg-sky-400 text-white font-bold' : ''}
-                      ${period && day.isCurrentMonth && !publicHoliday ? 'bg-pink-200' : ''}
-                      ${implantation && day.isCurrentMonth && !publicHoliday ? 'bg-amber-200' : ''}
+                      ${period && day.isCurrentMonth ? 'bg-pink-100' : ''}
+                      ${implantation && day.isCurrentMonth && !ovulation && !period ? 'bg-amber-50' : ''}
                       ${rapport ? 'ring-2 ring-rose-500' : ''}
                       hover:bg-slate-100
                     `}
                   >
-                    {day.date.getDate()}
+                    <span>{day.date.getDate()}</span>
+                    {/* Barres en bas */}
+                    <div className="absolute -bottom-0.5 left-0 right-0 flex justify-center gap-0.5">
+                      {/* Barre bleue pour vacances scolaires */}
+                      {holiday && day.isCurrentMonth && (
+                        <span className="w-2 h-1 bg-blue-500 rounded-sm"></span>
+                      )}
+                      {/* Barre rouge pour jour férié */}
+                      {publicHoliday && day.isCurrentMonth && (
+                        <span className="w-2 h-1 bg-red-500 rounded-sm"></span>
+                      )}
+                    </div>
+                    {/* Coeur pour rapport */}
                     {rapport && (
                       <Heart className="absolute -top-1 -right-1 w-3 h-3 text-rose-500 fill-rose-500" />
-                    )}
-                    {publicHoliday && !rapport && (
-                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                     )}
                   </button>
                 );
@@ -372,24 +389,26 @@ export default function FertilityCalendar({
               <span className="text-slate-600">Pic d'ovulation</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-emerald-100 border border-emerald-300"></div>
+              <div className="w-4 h-4 rounded-full bg-emerald-50 border border-emerald-200"></div>
               <span className="text-slate-600">Fenêtre fertile</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-pink-200"></div>
+              <div className="w-4 h-4 rounded-full bg-pink-100 border border-pink-200"></div>
               <span className="text-slate-600">Règles prévues</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-amber-200"></div>
+              <div className="w-4 h-4 rounded-full bg-amber-50 border border-amber-200"></div>
               <span className="text-slate-600">Nidation estimée</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-blue-100 border border-blue-300"></div>
+              <div className="w-6 h-4 rounded flex items-end justify-center pb-0.5">
+                <span className="w-4 h-0.5 bg-blue-400 rounded-full"></span>
+              </div>
               <span className="text-slate-600">Vacances scolaires</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-red-100 border border-red-300 relative">
-                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+              <div className="w-6 h-4 rounded flex items-end justify-center pb-0.5">
+                <span className="w-4 h-0.5 bg-red-500 rounded-full"></span>
               </div>
               <span className="text-slate-600">Jour férié</span>
             </div>
