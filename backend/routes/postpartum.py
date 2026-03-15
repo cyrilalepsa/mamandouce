@@ -588,8 +588,8 @@ async def set_birth_date(data: BirthDateInput, current_user: User = Depends(get_
             url="/admin",
             category="Post-partum"
         )
-    except:
-        pass
+    except Exception as e:
+        print(f"Erreur notification admin: {e}")
     
     return {
         "success": True,
@@ -827,8 +827,8 @@ async def request_refund_with_document(
             url="/admin",
             category="Remboursement"
         )
-    except:
-        pass
+    except Exception as e:
+        print(f"Erreur notification admin: {e}")
     
     return {
         "success": True,
@@ -914,8 +914,8 @@ async def request_refund(data: RefundRequest, current_user: User = Depends(get_c
             url="/admin",
             category="Remboursement"
         )
-    except:
-        pass
+    except Exception as e:
+        print(f"Erreur notification admin: {e}")
     
     return {
         "success": True,
@@ -1027,8 +1027,8 @@ async def approve_refund(user_id: str, approved: bool, current_user: User = Depe
                 body=f"Votre remboursement de {request['refund_amount']}€ a été effectué {refund_method}.",
                 url="/settings"
             )
-        except:
-            pass
+        except Exception as e:
+            print(f"Erreur notification utilisateur: {e}")
         
         return {"success": True, "status": "approved", "refund_amount": request["refund_amount"]}
     
@@ -1051,8 +1051,8 @@ async def approve_refund(user_id: str, approved: bool, current_user: User = Depe
                 body="Votre demande n'a pas pu être acceptée. Contactez-nous pour plus d'informations.",
                 url="/settings"
             )
-        except:
-            pass
+        except Exception as e:
+            print(f"Erreur notification utilisateur: {e}")
         
         return {"success": True, "status": "rejected"}
 
@@ -1202,8 +1202,8 @@ async def archive_account(current_user: User = Depends(get_current_user)):
             url="/admin",
             category="Compte"
         )
-    except:
-        pass
+    except Exception as e:
+        print(f"Erreur notification admin: {e}")
     
     return {"success": True, "message": "Votre compte a été archivé. Merci d'avoir utilisé MamanDouce !"}
 
@@ -1236,7 +1236,7 @@ async def request_early_archive(current_user: User = Depends(get_current_user)):
             url="/admin",
             category="Compte"
         )
-    except:
-        pass
+    except Exception as e:
+        print(f"Erreur notification admin: {e}")
     
     return {"success": True, "message": "Votre compte a été archivé. Merci d'avoir utilisé MamanDouce !"}
