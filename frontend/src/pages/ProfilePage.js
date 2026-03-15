@@ -318,72 +318,95 @@ function ProfilePage() {
               </div>
             </Card>
 
-            {/* Carte Informations de grossesse (fusionnée avec statuts) */}
-            {pregnancyProfile && (
-              <Card className="bg-gradient-to-br from-pink-50 to-sky-50 rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100" data-testid="pregnancy-info-card">
-                <h3 className="text-2xl font-bold text-slate-700 mb-6" style={{ fontFamily: 'Nunito, sans-serif' }}>Informations de grossesse</h3>
-                
-                <div className="space-y-4">
-                  {/* Statuts Premium et Post-partum */}
-                  <div className="grid grid-cols-2 gap-3 mb-2">
-                    <div className={`rounded-2xl p-4 ${
-                      subscriptionStatus === 'premium' 
-                        ? 'bg-gradient-to-br from-amber-100 to-yellow-100' 
-                        : 'bg-white'
-                    }`}>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Crown className={`w-5 h-5 ${subscriptionStatus === 'premium' ? 'text-amber-500' : 'text-slate-400'}`} />
-                        <p className="text-sm font-semibold text-slate-700">Premium</p>
-                      </div>
-                      <p className={`text-xs font-semibold ${subscriptionStatus === 'premium' ? 'text-amber-600' : 'text-slate-500'}`}>
-                        {subscriptionStatus === 'premium' ? '✓ Activé' : 'Non activé'}
-                      </p>
-                    </div>
-                    
-                    <div className={`rounded-2xl p-4 ${
-                      fullStatus?.postpartum_unlocked 
-                        ? 'bg-gradient-to-br from-rose-100 to-pink-100' 
-                        : 'bg-white'
-                    }`}>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Baby className={`w-5 h-5 ${fullStatus?.postpartum_unlocked ? 'text-rose-500' : 'text-slate-400'}`} />
-                        <p className="text-sm font-semibold text-slate-700">Post-partum</p>
-                      </div>
-                      <p className={`text-xs font-semibold ${fullStatus?.postpartum_unlocked ? 'text-rose-600' : 'text-slate-500'}`}>
-                        {fullStatus?.postpartum_unlocked ? '✓ Activé' : 'Non activé'}
-                      </p>
-                    </div>
+            {/* Statuts Premium et Post-partum */}
+            <div className="grid grid-cols-2 gap-4">
+              <Card className={`rounded-2xl p-4 shadow-sm ${
+                subscriptionStatus === 'premium' 
+                  ? 'bg-gradient-to-br from-amber-100 to-yellow-100 border border-amber-200' 
+                  : 'bg-white border border-slate-100'
+              }`} data-testid="premium-status-card">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                    subscriptionStatus === 'premium' 
+                      ? 'bg-gradient-to-br from-amber-400 to-yellow-400' 
+                      : 'bg-slate-200'
+                  }`}>
+                    <Crown className="w-5 h-5 text-white" />
                   </div>
-                  
-                  <div className="bg-white rounded-2xl p-4">
-                    <p className="text-sm text-slate-500 font-semibold">Date des dernières règles</p>
-                    <p className="text-lg font-bold text-slate-700">{formatDate(pregnancyProfile.last_period_date)}</p>
-                  </div>
-
-                  <div className="bg-white rounded-2xl p-4">
-                    <p className="text-sm text-slate-500 font-semibold">Date de conception estimée</p>
-                    <p className="text-lg font-bold text-pink-600">{formatDate(pregnancyProfile.estimated_conception_date)}</p>
-                  </div>
-
-                  <div className="bg-white rounded-2xl p-4">
-                    <p className="text-sm text-slate-500 font-semibold">Date prévue d'accouchement</p>
-                    <p className="text-lg font-bold text-rose-600">{formatDate(pregnancyProfile.estimated_due_date)}</p>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-sky-100 to-pink-100 rounded-2xl p-4">
-                    <p className="text-sm text-slate-600 font-semibold">Semaine actuelle</p>
-                    <p className="text-3xl font-bold text-slate-700">{pregnancyProfile.current_week} semaines</p>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-700">Premium</p>
+                    <p className={`text-xs font-semibold ${subscriptionStatus === 'premium' ? 'text-amber-600' : 'text-slate-500'}`}>
+                      {subscriptionStatus === 'premium' ? '✓ Activé' : 'Non activé'}
+                    </p>
                   </div>
                 </div>
               </Card>
-            )}
+              
+              <Card className={`rounded-2xl p-4 shadow-sm ${
+                fullStatus?.postpartum_unlocked 
+                  ? 'bg-gradient-to-br from-rose-100 to-pink-100 border border-rose-200' 
+                  : 'bg-white border border-slate-100'
+              }`} data-testid="postpartum-status-card">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                    fullStatus?.postpartum_unlocked 
+                      ? 'bg-gradient-to-br from-rose-400 to-pink-400' 
+                      : 'bg-slate-200'
+                  }`}>
+                    <Baby className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-700">Post-partum</p>
+                    <p className={`text-xs font-semibold ${fullStatus?.postpartum_unlocked ? 'text-rose-600' : 'text-slate-500'}`}>
+                      {fullStatus?.postpartum_unlocked ? '✓ Activé' : 'Non activé'}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </div>
 
-            {/* Section J'ai accouché (pour les premium) */}
-            <PregnancyInfoSection
-              subscriptionStatus={subscriptionStatus}
-              setSubscriptionStatus={setSubscriptionStatus}
-              onLoadFullStatus={loadSubscriptionStatus}
-            />
+            {/* Carte Informations de grossesse FUSIONNÉE */}
+            {pregnancyProfile && (
+              <Card className="bg-gradient-to-br from-pink-50 to-sky-50 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100" data-testid="pregnancy-info-card">
+                <h3 className="text-xl font-bold text-slate-700 mb-4" style={{ fontFamily: 'Nunito, sans-serif' }}>Informations de grossesse</h3>
+                
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-white rounded-2xl p-3">
+                      <p className="text-xs text-slate-500 font-semibold">Dernières règles</p>
+                      <p className="text-sm font-bold text-slate-700">{formatDate(pregnancyProfile.last_period_date)}</p>
+                    </div>
+                    <div className="bg-white rounded-2xl p-3">
+                      <p className="text-xs text-slate-500 font-semibold">Conception estimée</p>
+                      <p className="text-sm font-bold text-pink-600">{formatDate(pregnancyProfile.estimated_conception_date)}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-white rounded-2xl p-3">
+                      <p className="text-xs text-slate-500 font-semibold">Accouchement prévu</p>
+                      <p className="text-sm font-bold text-rose-600">{formatDate(pregnancyProfile.estimated_due_date)}</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-sky-100 to-pink-100 rounded-2xl p-3">
+                      <p className="text-xs text-slate-600 font-semibold">Semaine actuelle</p>
+                      <p className="text-lg font-bold text-slate-700">{pregnancyProfile.current_week} sem.</p>
+                    </div>
+                  </div>
+                  
+                  {/* Section J'ai accouché intégrée */}
+                  {subscriptionStatus === 'premium' && (
+                    <div className="mt-4 pt-4 border-t border-slate-200">
+                      <PregnancyInfoSection
+                        subscriptionStatus={subscriptionStatus}
+                        setSubscriptionStatus={setSubscriptionStatus}
+                        onLoadFullStatus={loadFullSubscriptionStatus}
+                        embedded={true}
+                      />
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
 
             {/* Notifications Card */}
             {notificationsSupported && (

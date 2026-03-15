@@ -9,7 +9,8 @@ import { toast } from 'sonner';
 export function PregnancyInfoSection({ 
   subscriptionStatus, 
   setSubscriptionStatus,
-  onLoadFullStatus 
+  onLoadFullStatus,
+  embedded = false
 }) {
   const [showBirthConfirm, setShowBirthConfirm] = useState(false);
   const [showFinalWarning, setShowFinalWarning] = useState(false);
@@ -42,9 +43,176 @@ export function PregnancyInfoSection({
     }
   };
 
+  const resetForm = () => {
+    setShowBirthConfirm(false);
+    setShowFinalWarning(false);
+    setBirthDate('');
+    setBabyName('');
+  };
+
   // Ne pas afficher si pas premium
   if (subscriptionStatus !== 'premium') return null;
 
+  // Contenu principal
+  const mainContent = (
+    <>
+      {!showBirthConfirm ? (
+        <div className="space-y-3">
+          <p className="text-slate-600 text-sm">
+            Après votre accouchement, cliquez ci-dessous pour débloquer le contenu Post-partum.
+          </p>
+          
+          <Button
+            onClick={() => setShowBirthConfirm(true)}
+            data-testid="birth-button"
+            className="w-full bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full py-3 font-semibold hover:opacity-90 transition-opacity"
+          >
+            <Baby className="w-5 h-5 mr-2" />
+            J'ai accouché
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-slate-700">Déclarer mon accouchement</h3>
+            <button
+              onClick={resetForm}
+              className="p-1.5 hover:bg-slate-100 rounded-full"
+            >
+              <X className="w-4 h-4 text-slate-400" />
+            </button>
+          </div>
+          
+          <div>
+            <label className="text-sm font-semibold text-slate-600 mb-1 block">
+              Date d'accouchement *
+            </label>
+            <Input
+              type="date"
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+              max={new Date().toISOString().split('T')[0]}
+              className="rounded-xl border-rose-200"
+              data-testid="birth-date-input"
+            />
+          </div>
+          
+          <div>
+            <label className="text-sm font-semibold text-slate-600 mb-1 block">
+              Prénom du bébé (optionnel)
+            </label>
+            <Input
+              type="text"
+              value={babyName}
+              onChange={(e) => setBabyName(e.target.value)}
+              placeholder="Entrez le prénom"
+              className="rounded-xl border-rose-200"
+              data-testid="baby-name-input"
+            />
+          </div>
+          
+          <div className="flex gap-2">
+            <Button
+              onClick={resetForm}
+              className="flex-1 bg-slate-100 text-slate-600 rounded-full py-2"
+            >
+              Annuler
+            </Button>
+            <Button
+              onClick={handleShowFinalWarning}
+              className="flex-1 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full py-2"
+            >
+              Continuer
+            </Button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+
+  // Modal de confirmation finale
+  const confirmationModal = showFinalWarning && (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl animate-fade-in">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-bold text-slate-700">Confirmation finale</h3>
+          <button
+            onClick={() => setShowFinalWarning(false)}
+            className="p-2 hover:bg-slate-100 rounded-full"
+          >
+            <X className="w-5 h-5 text-slate-400" />
+          </button>
+        </div>
+
+        {/* Warning */}
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0" />
+            <div>
+              <h4 className="font-bold text-red-800">Action irréversible</h4>
+              <ul className="text-red-700 text-sm mt-2 space-y-1">
+                <li>• Votre abonnement Premium sera terminé</li>
+                <li>• Aucun remboursement ne sera possible</li>
+                <li>• Cette action ne peut pas être annulée</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* What you get */}
+        <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-4">
+          <h4 className="font-bold text-green-800 mb-2">✨ Ce que vous obtiendrez</h4>
+          <ul className="text-green-700 text-sm space-y-1">
+            <li className="flex items-start gap-2">
+              <span className="text-green-500 mt-0.5">✓</span>
+              <span>Accès au suivi post-partum (si acheté)</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-green-500 mt-0.5">✓</span>
+              <span>6 mois d'accompagnement après-naissance</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* Buttons */}
+        <div className="flex gap-3">
+          <Button
+            onClick={() => setShowFinalWarning(false)}
+            className="flex-1 bg-slate-100 text-slate-600 rounded-full py-3"
+          >
+            Annuler
+          </Button>
+          <Button
+            onClick={handleBirthConfirmation}
+            disabled={confirmingBirth}
+            data-testid="final-confirm-button"
+            className="flex-1 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full py-3 disabled:opacity-50"
+          >
+            {confirmingBirth ? (
+              'Confirmation...'
+            ) : (
+              <>
+                <Heart className="w-4 h-4 mr-2" />
+                Confirmer
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Mode embedded (intégré dans une autre carte)
+  if (embedded) {
+    return (
+      <>
+        {mainContent}
+        {confirmationModal}
+      </>
+    );
+  }
+
+  // Mode standalone (avec sa propre carte)
   return (
     <>
       <Card className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-rose-200">
@@ -57,174 +225,13 @@ export function PregnancyInfoSection({
               Informations de grossesse
             </h2>
             <p className="text-slate-500 text-sm">
-              Gérez votre suivi et déclarez votre accouchement
+              Déclarez votre accouchement
             </p>
           </div>
         </div>
-
-        {!showBirthConfirm ? (
-          <div className="space-y-4">
-            <p className="text-slate-600 text-sm">
-              Après votre accouchement, cliquez sur le bouton ci-dessous pour :
-            </p>
-            <ul className="text-sm text-slate-500 space-y-1 ml-4">
-              <li>• Mettre fin à votre abonnement Premium</li>
-              <li>• Débloquer le contenu Post-partum (si acheté)</li>
-              <li>• Commencer votre suivi après-naissance</li>
-            </ul>
-            
-            <Button
-              onClick={() => setShowBirthConfirm(true)}
-              data-testid="birth-button"
-              className="w-full bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full py-4 font-semibold text-lg hover:opacity-90 transition-opacity"
-            >
-              <Baby className="w-6 h-6 mr-3" />
-              J'ai accouché
-            </Button>
-          </div>
-        ) : (
-          <div className="bg-white border border-rose-200 rounded-2xl p-4 space-y-4">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="w-6 h-6 text-amber-500 flex-shrink-0" />
-              <div>
-                <h4 className="font-bold text-slate-700">Félicitations pour votre bébé !</h4>
-                <p className="text-sm text-slate-600 mt-1">
-                  En confirmant, votre abonnement premium prendra fin. 
-                  Si vous avez acheté le post-partum, il sera automatiquement débloqué.
-                </p>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs font-semibold text-slate-600 mb-1 block">Date d'accouchement *</label>
-                <Input
-                  type="date"
-                  value={birthDate}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                  className="rounded-xl border-rose-200"
-                  data-testid="birth-date-input"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-slate-600 mb-1 block">Prénom de bébé</label>
-                <Input
-                  value={babyName}
-                  onChange={(e) => setBabyName(e.target.value)}
-                  placeholder="Prénom"
-                  className="rounded-xl border-rose-200"
-                  data-testid="baby-name-input"
-                />
-              </div>
-            </div>
-            
-            <div className="flex gap-3">
-              <Button
-                onClick={() => setShowBirthConfirm(false)}
-                className="flex-1 bg-slate-100 text-slate-600 rounded-full py-2"
-              >
-                Annuler
-              </Button>
-              <Button
-                onClick={handleShowFinalWarning}
-                data-testid="next-confirm-button"
-                className="flex-1 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full py-2"
-              >
-                Continuer
-              </Button>
-            </div>
-          </div>
-        )}
+        {mainContent}
       </Card>
-
-      {/* Modale de confirmation finale */}
-      {showFinalWarning && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 animate-scale-in">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                  <AlertCircle className="w-6 h-6 text-red-600" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-800">Êtes-vous sûre ?</h3>
-              </div>
-              <button
-                onClick={() => {
-                  setShowFinalWarning(false);
-                }}
-                className="p-2 hover:bg-slate-100 rounded-full"
-              >
-                <X className="w-5 h-5 text-slate-400" />
-              </button>
-            </div>
-
-            {/* Warning content */}
-            <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-4">
-              <h4 className="font-bold text-red-800 mb-2">⚠️ Action irréversible</h4>
-              <p className="text-red-700 text-sm mb-3">
-                En mettant fin à votre abonnement Premium :
-              </p>
-              <ul className="text-red-700 text-sm space-y-2">
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 mt-0.5">✗</span>
-                  <span><strong>Aucun remboursement</strong> ne sera possible, même partiel</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 mt-0.5">✗</span>
-                  <span>Vous perdrez l'accès aux fonctionnalités Premium</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 mt-0.5">✗</span>
-                  <span>Cette action est <strong>définitive</strong></span>
-                </li>
-              </ul>
-            </div>
-
-            {/* What you get */}
-            <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-4">
-              <h4 className="font-bold text-green-800 mb-2">✨ Ce que vous obtiendrez</h4>
-              <ul className="text-green-700 text-sm space-y-1">
-                <li className="flex items-start gap-2">
-                  <span className="text-green-500 mt-0.5">✓</span>
-                  <span>Accès au suivi post-partum (si acheté)</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-500 mt-0.5">✓</span>
-                  <span>6 mois d'accompagnement après-naissance</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Buttons */}
-            <div className="flex gap-3">
-              <Button
-                onClick={() => {
-                  setShowFinalWarning(false);
-                }}
-                className="flex-1 bg-slate-100 text-slate-600 rounded-full py-3"
-              >
-                Annuler
-              </Button>
-              <Button
-                onClick={handleBirthConfirmation}
-                disabled={confirmingBirth}
-                data-testid="final-confirm-button"
-                className="flex-1 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full py-3 disabled:opacity-50"
-              >
-                {confirmingBirth ? (
-                  'Confirmation...'
-                ) : (
-                  <>
-                    <Heart className="w-4 h-4 mr-2" />
-                    Confirmer
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {confirmationModal}
     </>
   );
 }
