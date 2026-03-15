@@ -41,6 +41,13 @@ function AuthPage({ setIsAuthenticated }) {
   const [isPinSetup, setIsPinSetup] = useState(false);
   const [showPinLogin, setShowPinLogin] = useState(false);
   const [quickLoginType, setQuickLoginType] = useState(null);
+  
+  // 2FA state
+  const [show2FAInput, setShow2FAInput] = useState(false);
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [pending2FAEmail, setPending2FAEmail] = useState('');
+  const [pending2FAPassword, setPending2FAPassword] = useState('');
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -136,11 +143,28 @@ function AuthPage({ setIsAuthenticated }) {
     setLoading(true);
 
     try {
-      const response = isLogin
-        ? await api.auth.login({ email: formData.email, password: formData.password })
-        : await api.auth.register(formData);
-
-      localStorage.setItem('token', response.data.access_token);
+      if (isLogin) {
+        // First check if 2FA is required
+        const check2FA = await api.auth.request2FACode(formData.email);
+        
+        if (check2FA.data.two_factor_required) {
+          // Store credentials and show 2FA input
+          setPending2FAEmail(formData.email);
+          setPending2FAPassword(formData.password);
+          setShow2FAInput(true);
+          setLoading(false);
+          toast.success('Code de vérification envoyé par email');
+          return;
+        }
+        
+        // No 2FA, proceed with normal login
+        const response = await api.auth.login({ email: formData.email, password: formData.password });
+        localStorage.setItem('token', response.data.access_token);
+      } else {
+        // Registration
+        const response = await api.auth.register(formData);
+        localStorage.setItem('token', response.data.access_token);
+      }
       
       // After successful login, check if we should offer quick login
       if (isLogin && !isQuickLoginAvailable()) {
@@ -171,6 +195,46 @@ function AuthPage({ setIsAuthenticated }) {
       } else {
         toast.error(detail || 'Une erreur est survenue');
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handle2FAVerify = async () => {
+    if (twoFactorCode.length !== 6) {
+      toast.error('Veuillez entrer le code à 6 chiffres');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const response = await api.auth.verify2FACode(pending2FAEmail, twoFactorCode, pending2FAPassword);
+      localStorage.setItem('token', response.data.access_token);
+      
+      // Check if we should offer quick login
+      if (!isQuickLoginAvailable()) {
+        const canUseBiometric = await isBiometricAvailable();
+        if (canUseBiometric) {
+          setFormData({ ...formData, email: pending2FAEmail, password: pending2FAPassword });
+          setShow2FAInput(false);
+          setShowEnableBiometric(true);
+          setLoading(false);
+          return;
+        } else {
+          setFormData({ ...formData, email: pending2FAEmail, password: pending2FAPassword });
+          setShow2FAInput(false);
+          setShowEnablePin(true);
+          setLoading(false);
+          return;
+        }
+      }
+      
+      setIsAuthenticated(true);
+      toast.success('Connexion réussie !');
+      navigate('/');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Code invalide');
+      setTwoFactorCode('');
     } finally {
       setLoading(false);
     }
@@ -246,6 +310,10 @@ function AuthPage({ setIsAuthenticated }) {
     setShowPinLogin(false);
     setPinValue('');
     setConfirmPinValue('');
+    setShow2FAInput(false);
+    setTwoFactorCode('');
+    setPending2FAEmail('');
+    setPending2FAPassword('');
     setFormData({ email: '', password: '', name: '' });
   };
 
@@ -262,7 +330,71 @@ function AuthPage({ setIsAuthenticated }) {
         </div>
 
         {/* Enable Biometric Prompt */}
-        {showEnableBiometric ? (
+        {show2FAInput ? (
+          <div className="text-center py-4" data-testid="2fa-input-section">
+            <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Mail className="w-10 h-10 text-green-500" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-700 mb-2">Vérification en 2 étapes</h2>
+            <p className="text-slate-500 text-sm mb-6">
+              Un code à 6 chiffres a été envoyé à<br/>
+              <span className="font-semibold text-slate-700">{pending2FAEmail}</span>
+            </p>
+            
+            <div className="flex justify-center mb-6">
+              <InputOTP
+                value={twoFactorCode}
+                onChange={setTwoFactorCode}
+                maxLength={6}
+                data-testid="2fa-code-input"
+              >
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} className="w-12 h-14 text-xl" />
+                  <InputOTPSlot index={1} className="w-12 h-14 text-xl" />
+                  <InputOTPSlot index={2} className="w-12 h-14 text-xl" />
+                  <InputOTPSlot index={3} className="w-12 h-14 text-xl" />
+                  <InputOTPSlot index={4} className="w-12 h-14 text-xl" />
+                  <InputOTPSlot index={5} className="w-12 h-14 text-xl" />
+                </InputOTPGroup>
+              </InputOTP>
+            </div>
+            
+            <div className="space-y-3">
+              <Button
+                onClick={handle2FAVerify}
+                disabled={loading || twoFactorCode.length !== 6}
+                data-testid="2fa-verify-button"
+                className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full py-3 font-semibold"
+              >
+                {loading ? 'Vérification...' : 'Vérifier le code'}
+              </Button>
+              <Button
+                onClick={async () => {
+                  try {
+                    await api.auth.request2FACode(pending2FAEmail);
+                    toast.success('Nouveau code envoyé !');
+                    setTwoFactorCode('');
+                  } catch (error) {
+                    toast.error('Erreur lors de l\'envoi');
+                  }
+                }}
+                className="w-full bg-slate-100 text-slate-600 rounded-full py-2"
+              >
+                Renvoyer le code
+              </Button>
+              <Button
+                onClick={resetForm}
+                className="w-full text-slate-400 text-sm"
+              >
+                Annuler
+              </Button>
+            </div>
+            
+            <p className="text-xs text-slate-400 mt-4">
+              Le code expire dans 10 minutes
+            </p>
+          </div>
+        ) : showEnableBiometric ? (
           <div className="text-center py-4">
             <div className="w-20 h-20 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Fingerprint className="w-10 h-10 text-pink-500" />

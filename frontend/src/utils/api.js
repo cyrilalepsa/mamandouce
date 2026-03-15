@@ -38,6 +38,11 @@ export const api = {
     updateEmail: (newEmail) => axios.post(`${API}/auth/update-email`, { new_email: newEmail }, getAuthHeaders()),
     updatePassword: (currentPassword, newPassword) => axios.post(`${API}/auth/update-password`, { current_password: currentPassword, new_password: newPassword }, getAuthHeaders()),
     endPremium: () => axios.post(`${API}/auth/end-premium`, {}, getAuthHeaders()),
+    // 2FA
+    get2FAStatus: () => axios.get(`${API}/auth/2fa/status`, getAuthHeaders()),
+    toggle2FA: (enable) => axios.post(`${API}/auth/2fa/toggle`, { enable }, getAuthHeaders()),
+    request2FACode: (email) => axios.post(`${API}/auth/2fa/request-code?email=${encodeURIComponent(email)}`),
+    verify2FACode: (email, code, password) => axios.post(`${API}/auth/2fa/verify`, { email, code, password }),
   },
   pregnancy: {
     calculate: (data) => axios.post(`${API}/pregnancy/calculate`, data, getAuthHeaders()),
@@ -174,6 +179,7 @@ export const api = {
     getRefundDocument: (userId) => `${API}/admin/refund-document/${userId}`,
     setUserPremium: (userId, premium) => axios.post(`${API}/admin/user/${userId}/set-premium?premium=${premium}`, {}, getAuthHeaders()),
     setUserPostpartum: (userId, enabled) => axios.post(`${API}/admin/user/${userId}/set-postpartum?enabled=${enabled}`, {}, getAuthHeaders()),
+    setUserRole: (userId, role) => axios.post(`${API}/admin/user/${userId}/set-role?role=${role}`, {}, getAuthHeaders()),
   },
 };
 

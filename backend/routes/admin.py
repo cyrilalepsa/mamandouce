@@ -228,6 +228,62 @@ async def set_user_postpartum(user_id: str, enabled: bool = True, admin: User = 
         )
         return {"success": True, "message": f"Post-partum désactivé pour {user['email']}"}
 
+# ==================== ADMIN ROLE MANAGEMENT ====================
+
+@router.post("/admin/user/{user_id}/set-role")
+async def set_user_role(user_id: str, role: str = "user", admin: User = Depends(get_admin_user)):
+    """Promouvoir ou révoquer un administrateur (admin only)"""
+    from routes.push_notifications import send_push_notification
+    
+    if role not in ["admin", "user"]:
+        raise HTTPException(status_code=400, detail="Role invalide (admin ou user)")
+    
+    # Trouver l'utilisateur
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="Utilisatrice non trouvée")
+    
+    # Empêcher de se retirer ses propres droits admin
+    if user.get("email") == admin.email and role == "user":
+        raise HTTPException(status_code=400, detail="Vous ne pouvez pas vous retirer vos propres droits admin")
+    
+    # Mettre à jour le rôle
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {
+            "role": role,
+            "role_changed_by": admin.email,
+            "role_changed_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    # Notifier l'utilisateur
+    try:
+        if role == "admin":
+            await send_push_notification(
+                user_email=user["email"],
+                title="Droits administrateur accordés !",
+                body="Vous avez maintenant accès au panneau d'administration.",
+                url="/admin"
+            )
+        else:
+            await send_push_notification(
+                user_email=user["email"],
+                title="Droits administrateur retirés",
+                body="Vos droits d'administration ont été révoqués.",
+                url="/"
+            )
+    except:
+        pass
+    
+    action = "promu administrateur" if role == "admin" else "rétrogradé en utilisateur"
+    return {
+        "success": True,
+        "message": f"{user['email']} a été {action}",
+        "user_email": user["email"],
+        "new_role": role
+    }
+
 # ==================== FOODS ====================
 
 @router.get("/admin/pending-foods")

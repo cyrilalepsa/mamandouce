@@ -10,7 +10,8 @@ import {
   ReferralSection,
   RefundSection,
   PostpartumStatusSection,
-  NotificationsSection
+  NotificationsSection,
+  TwoFactorSection
 } from '../components/settings';
 
 function SettingsPage() {
@@ -121,6 +122,9 @@ function SettingsPage() {
             
             {/* Section Mot de passe */}
             <PasswordSection />
+            
+            {/* Section 2FA */}
+            <TwoFactorSection />
             
             {/* Section Parrainage */}
             <ReferralSection 
