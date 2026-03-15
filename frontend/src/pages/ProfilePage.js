@@ -318,99 +318,43 @@ function ProfilePage() {
               </div>
             </Card>
 
-            {/* Carte Statut Abonnement */}
-            <Card className={`rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border ${
-              subscriptionStatus === 'premium' 
-                ? 'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200' 
-                : 'bg-white border-slate-100'
-            }`} data-testid="subscription-status-card">
-              <div className="flex items-center gap-4 mb-4">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
-                  subscriptionStatus === 'premium'
-                    ? 'bg-gradient-to-br from-amber-400 to-yellow-400'
-                    : 'bg-gradient-to-br from-slate-300 to-slate-200'
-                }`}>
-                  <Crown className="w-7 h-7 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                    Statut Premium
-                  </h3>
-                  <p className={`text-sm font-semibold ${
-                    subscriptionStatus === 'premium' ? 'text-amber-600' : 'text-slate-500'
-                  }`}>
-                    {subscriptionStatus === 'premium' ? '✓ Activé' : 'Non activé'}
-                  </p>
-                </div>
-                {subscriptionStatus !== 'premium' && (
-                  <Button
-                    onClick={() => navigate('/pricing')}
-                    className="bg-gradient-to-r from-amber-400 to-yellow-400 text-white rounded-full px-4 py-2 text-sm font-semibold"
-                  >
-                    Activer
-                  </Button>
-                )}
-              </div>
-              
-              {/* Statut Post-partum */}
-              <div className={`rounded-2xl p-4 ${
-                fullStatus?.postpartum_unlocked 
-                  ? 'bg-gradient-to-r from-rose-100 to-pink-100 border border-rose-200' 
-                  : fullStatus?.has_postpartum
-                    ? 'bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200'
-                    : 'bg-slate-50'
-              }`}>
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                    fullStatus?.postpartum_unlocked
-                      ? 'bg-gradient-to-br from-rose-500 to-pink-500'
-                      : fullStatus?.has_postpartum
-                        ? 'bg-gradient-to-br from-purple-400 to-pink-400'
-                        : 'bg-slate-300'
-                  }`}>
-                    <Baby className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-slate-700">Suivi Post-partum</p>
-                    <p className={`text-xs ${
-                      fullStatus?.postpartum_unlocked 
-                        ? 'text-rose-600' 
-                        : fullStatus?.has_postpartum
-                          ? 'text-purple-600'
-                          : 'text-slate-500'
-                    }`}>
-                      {fullStatus?.postpartum_unlocked 
-                        ? '✓ Débloqué - Accès activé !' 
-                        : fullStatus?.has_postpartum
-                          ? '⏳ Acheté - En attente de déblocage'
-                          : 'Non acheté'}
-                    </p>
-                  </div>
-                  {fullStatus?.postpartum_unlocked && (
-                    <Button
-                      onClick={() => navigate('/postpartum')}
-                      className="bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full px-3 py-1.5 text-xs font-semibold"
-                    >
-                      Accéder
-                    </Button>
-                  )}
-                  {!fullStatus?.has_postpartum && (
-                    <Button
-                      onClick={() => navigate('/pricing')}
-                      className="bg-gradient-to-r from-rose-400 to-pink-400 text-white rounded-full px-3 py-1.5 text-xs font-semibold"
-                    >
-                      Acheter 8€
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </Card>
-
+            {/* Carte Informations de grossesse (fusionnée avec statuts) */}
             {pregnancyProfile && (
               <Card className="bg-gradient-to-br from-pink-50 to-sky-50 rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100" data-testid="pregnancy-info-card">
                 <h3 className="text-2xl font-bold text-slate-700 mb-6" style={{ fontFamily: 'Nunito, sans-serif' }}>Informations de grossesse</h3>
                 
                 <div className="space-y-4">
+                  {/* Statuts Premium et Post-partum */}
+                  <div className="grid grid-cols-2 gap-3 mb-2">
+                    <div className={`rounded-2xl p-4 ${
+                      subscriptionStatus === 'premium' 
+                        ? 'bg-gradient-to-br from-amber-100 to-yellow-100' 
+                        : 'bg-white'
+                    }`}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Crown className={`w-5 h-5 ${subscriptionStatus === 'premium' ? 'text-amber-500' : 'text-slate-400'}`} />
+                        <p className="text-sm font-semibold text-slate-700">Premium</p>
+                      </div>
+                      <p className={`text-xs font-semibold ${subscriptionStatus === 'premium' ? 'text-amber-600' : 'text-slate-500'}`}>
+                        {subscriptionStatus === 'premium' ? '✓ Activé' : 'Non activé'}
+                      </p>
+                    </div>
+                    
+                    <div className={`rounded-2xl p-4 ${
+                      fullStatus?.postpartum_unlocked 
+                        ? 'bg-gradient-to-br from-rose-100 to-pink-100' 
+                        : 'bg-white'
+                    }`}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Baby className={`w-5 h-5 ${fullStatus?.postpartum_unlocked ? 'text-rose-500' : 'text-slate-400'}`} />
+                        <p className="text-sm font-semibold text-slate-700">Post-partum</p>
+                      </div>
+                      <p className={`text-xs font-semibold ${fullStatus?.postpartum_unlocked ? 'text-rose-600' : 'text-slate-500'}`}>
+                        {fullStatus?.postpartum_unlocked ? '✓ Activé' : 'Non activé'}
+                      </p>
+                    </div>
+                  </div>
+                  
                   <div className="bg-white rounded-2xl p-4">
                     <p className="text-sm text-slate-500 font-semibold">Date des dernières règles</p>
                     <p className="text-lg font-bold text-slate-700">{formatDate(pregnancyProfile.last_period_date)}</p>

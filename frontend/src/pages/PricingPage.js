@@ -148,15 +148,9 @@ function PricingPage() {
               </p>
               
               <div className="bg-white rounded-2xl p-4 mb-4">
-                <div className="flex flex-wrap items-center gap-4 mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-3xl font-bold text-rose-600">8€</span>
-                    <span className="text-slate-500">paiement unique</span>
-                  </div>
-                  <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
-                    <Check className="w-4 h-4" />
-                    Achat possible à tout moment
-                  </span>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-3xl font-bold text-rose-600">8€</span>
+                  <span className="text-slate-500">paiement unique</span>
                 </div>
                 
                 <Button
