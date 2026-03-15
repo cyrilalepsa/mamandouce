@@ -80,10 +80,15 @@ function AuthPage({ setIsAuthenticated }) {
       }
     } catch (error) {
       console.error('Biometric login error:', error);
+      const status = error.response?.status;
+      const detail = error.response?.data?.detail;
+      
       if (error.message === 'Authentification annulée') {
         toast.info('Authentification annulée');
+      } else if (status === 423) {
+        toast.error(detail || 'Compte temporairement bloqué', { duration: 6000 });
       } else {
-        toast.error(error.message || 'Échec de la connexion biométrique');
+        toast.error(detail || error.message || 'Échec de la connexion biométrique');
       }
     } finally {
       setLoading(false);
@@ -112,7 +117,14 @@ function AuthPage({ setIsAuthenticated }) {
       }
     } catch (error) {
       console.error('PIN login error:', error);
-      toast.error(error.message || 'Code PIN incorrect');
+      const status = error.response?.status;
+      const detail = error.response?.data?.detail;
+      
+      if (status === 423) {
+        toast.error(detail || 'Compte temporairement bloqué', { duration: 6000 });
+      } else {
+        toast.error(detail || error.message || 'Code PIN incorrect');
+      }
       setPinValue('');
     } finally {
       setLoading(false);
@@ -150,7 +162,15 @@ function AuthPage({ setIsAuthenticated }) {
       toast.success(isLogin ? 'Connexion réussie!' : 'Inscription réussie!');
       navigate('/');
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Une erreur est survenue');
+      const status = error.response?.status;
+      const detail = error.response?.data?.detail;
+      
+      if (status === 423) {
+        // Compte bloqué
+        toast.error(detail || 'Compte temporairement bloqué', { duration: 6000 });
+      } else {
+        toast.error(detail || 'Une erreur est survenue');
+      }
     } finally {
       setLoading(false);
     }

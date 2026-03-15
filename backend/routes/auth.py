@@ -79,6 +79,10 @@ async def register(user_data: UserCreate):
     )
     return Token(access_token=access_token, token_type="bearer")
 
+# Configuration blocage de compte
+MAX_LOGIN_ATTEMPTS = 4
+LOCKOUT_DURATION_MINUTES = 30
+
 @router.post("/auth/login", response_model=Token)
 async def login(user_data: UserLogin):
     """Login user and return JWT token"""
@@ -86,8 +90,51 @@ async def login(user_data: UserLogin):
     if not user:
         raise HTTPException(status_code=400, detail="Email ou mot de passe incorrect")
     
+    # Vérifier si le compte est bloqué
+    if user.get("locked_until"):
+        locked_until = datetime.fromisoformat(user["locked_until"].replace('Z', '+00:00'))
+        if datetime.now(timezone.utc) < locked_until:
+            remaining_minutes = int((locked_until - datetime.now(timezone.utc)).total_seconds() / 60)
+            raise HTTPException(
+                status_code=423,
+                detail=f"Compte temporairement bloqué. Réessayez dans {remaining_minutes} minute(s)."
+            )
+        else:
+            # Débloquer le compte et réinitialiser les tentatives
+            await db.users.update_one(
+                {"email": user_data.email},
+                {"$unset": {"locked_until": ""}, "$set": {"failed_login_attempts": 0}}
+            )
+            user["failed_login_attempts"] = 0
+    
+    # Vérifier le mot de passe
     if not pwd_context.verify(user_data.password, user["hashed_password"]):
-        raise HTTPException(status_code=400, detail="Email ou mot de passe incorrect")
+        # Incrémenter le compteur de tentatives
+        failed_attempts = user.get("failed_login_attempts", 0) + 1
+        update_data = {"failed_login_attempts": failed_attempts}
+        
+        if failed_attempts >= MAX_LOGIN_ATTEMPTS:
+            # Bloquer le compte
+            locked_until = datetime.now(timezone.utc) + timedelta(minutes=LOCKOUT_DURATION_MINUTES)
+            update_data["locked_until"] = locked_until.isoformat()
+            await db.users.update_one({"email": user_data.email}, {"$set": update_data})
+            raise HTTPException(
+                status_code=423,
+                detail=f"Compte bloqué après {MAX_LOGIN_ATTEMPTS} tentatives échouées. Réessayez dans {LOCKOUT_DURATION_MINUTES} minutes."
+            )
+        
+        await db.users.update_one({"email": user_data.email}, {"$set": update_data})
+        remaining = MAX_LOGIN_ATTEMPTS - failed_attempts
+        raise HTTPException(
+            status_code=400,
+            detail=f"Email ou mot de passe incorrect. {remaining} tentative(s) restante(s)."
+        )
+    
+    # Connexion réussie - réinitialiser le compteur
+    await db.users.update_one(
+        {"email": user_data.email},
+        {"$set": {"failed_login_attempts": 0}, "$unset": {"locked_until": ""}}
+    )
     
     # Track login/visit
     await db.site_stats.update_one(
@@ -221,6 +268,41 @@ async def reset_password(request: ResetPasswordRequest):
     await db.password_resets.delete_one({"token": request.token})
     
     return {"success": True, "message": "Votre mot de passe a été réinitialisé avec succès."}
+
+# ==================== PASSWORD UPDATE ====================
+
+class UpdatePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+@router.post("/auth/update-password")
+async def update_password(request: UpdatePasswordRequest, current_user: User = Depends(get_current_user)):
+    """Update user password - requires current password verification"""
+    # Récupérer l'utilisateur depuis la base de données
+    user = await db.users.find_one({"id": current_user.id}, {"_id": 0})
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    
+    # Vérifier le mot de passe actuel
+    if not pwd_context.verify(request.current_password, user["hashed_password"]):
+        raise HTTPException(status_code=400, detail="Mot de passe actuel incorrect")
+    
+    # Valider le nouveau mot de passe
+    if len(request.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Le nouveau mot de passe doit contenir au moins 6 caractères")
+    
+    # Mettre à jour le mot de passe
+    hashed_password = pwd_context.hash(request.new_password)
+    await db.users.update_one(
+        {"id": current_user.id},
+        {"$set": {
+            "hashed_password": hashed_password,
+            "password_updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {"success": True, "message": "Mot de passe mis à jour avec succès"}
 
 # ==================== EMAIL UPDATE ====================
 

@@ -1,0 +1,143 @@
+import { Button } from '../ui/button';
+import { Card } from '../ui/card';
+import { Label } from '../ui/label';
+import { Input } from '../ui/input';
+import { Bell, Mail, BookOpen, Calendar } from 'lucide-react';
+
+export function NotificationsSection({ preferences, setPreferences, saving, onSave }) {
+  const handleToggle = (key) => {
+    setPreferences({ ...preferences, [key]: !preferences[key] });
+  };
+
+  return (
+    <>
+      <Card className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 bg-gradient-to-br from-sky-400 to-sky-300 rounded-2xl flex items-center justify-center">
+            <Mail className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Notifications par email</h2>
+            <p className="text-slate-500">Gérez vos préférences de notifications</p>
+          </div>
+        </div>
+
+        <div className="space-y-5">
+          <div>
+            <Label htmlFor="email" className="text-slate-600 font-semibold">Adresse email</Label>
+            <Input
+              id="email"
+              data-testid="email-address-input"
+              type="email"
+              value={preferences.email_address}
+              onChange={(e) => setPreferences({ ...preferences, email_address: e.target.value })}
+              className="w-full rounded-2xl border-slate-200 bg-white px-4 py-3 text-slate-600 focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
+            />
+          </div>
+
+          <div className="pt-4 space-y-4">
+            {/* Notifications générales */}
+            <div
+              onClick={() => handleToggle('email_notifications')}
+              data-testid="toggle-email-notifications"
+              className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl cursor-pointer hover:bg-slate-100"
+            >
+              <div className="flex items-center gap-3">
+                <Bell className="w-5 h-5 text-sky-500" />
+                <div>
+                  <p className="font-semibold text-slate-700">Notifications par email</p>
+                  <p className="text-sm text-slate-500">Recevoir des emails de rappel</p>
+                </div>
+              </div>
+              <div
+                className={`w-14 h-8 rounded-full flex items-center transition-colors ${
+                  preferences.email_notifications ? 'bg-sky-400' : 'bg-slate-300'
+                }`}
+              >
+                <div
+                  className={`w-6 h-6 bg-white rounded-full shadow-md transition-transform ${
+                    preferences.email_notifications ? 'translate-x-7' : 'translate-x-1'
+                  }`}
+                />
+              </div>
+            </div>
+
+            {/* Conseils hebdomadaires */}
+            <div
+              onClick={() => handleToggle('weekly_tips')}
+              data-testid="toggle-weekly-tips"
+              className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl cursor-pointer hover:bg-slate-100"
+            >
+              <div className="flex items-center gap-3">
+                <BookOpen className="w-5 h-5 text-teal-500" />
+                <div>
+                  <p className="font-semibold text-slate-700">Conseils hebdomadaires</p>
+                  <p className="text-sm text-slate-500">Recevoir les conseils chaque semaine</p>
+                </div>
+              </div>
+              <div
+                className={`w-14 h-8 rounded-full flex items-center transition-colors ${
+                  preferences.weekly_tips ? 'bg-teal-400' : 'bg-slate-300'
+                }`}
+              >
+                <div
+                  className={`w-6 h-6 bg-white rounded-full shadow-md transition-transform ${
+                    preferences.weekly_tips ? 'translate-x-7' : 'translate-x-1'
+                  }`}
+                />
+              </div>
+            </div>
+
+            {/* Rappels rendez-vous */}
+            <div
+              onClick={() => handleToggle('appointment_reminders')}
+              data-testid="toggle-appointment-reminders"
+              className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl cursor-pointer hover:bg-slate-100"
+            >
+              <div className="flex items-center gap-3">
+                <Calendar className="w-5 h-5 text-amber-500" />
+                <div>
+                  <p className="font-semibold text-slate-700">Rappels de rendez-vous</p>
+                  <p className="text-sm text-slate-500">Rappels pour vos rdv médicaux</p>
+                </div>
+              </div>
+              <div
+                className={`w-14 h-8 rounded-full flex items-center transition-colors ${
+                  preferences.appointment_reminders ? 'bg-amber-400' : 'bg-slate-300'
+                }`}
+              >
+                <div
+                  className={`w-6 h-6 bg-white rounded-full shadow-md transition-transform ${
+                    preferences.appointment_reminders ? 'translate-x-7' : 'translate-x-1'
+                  }`}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <Button
+          onClick={onSave}
+          data-testid="save-preferences-button"
+          disabled={saving}
+          className="w-full mt-6 bg-gradient-to-r from-sky-400 to-sky-300 text-white rounded-full px-8 py-3 font-bold shadow-lg hover:shadow-sky-200/50 hover:-translate-y-0.5"
+        >
+          {saving ? 'Enregistrement...' : 'Enregistrer les préférences'}
+        </Button>
+      </Card>
+
+      <Card className="bg-gradient-to-br from-sky-50 to-teal-50 rounded-3xl p-6 border-0">
+        <h4 className="font-bold text-slate-700 mb-3" style={{ fontFamily: 'Nunito, sans-serif' }}>
+          <Mail className="inline w-5 h-5 mr-2" />
+          À propos des notifications email
+        </h4>
+        <ul className="text-sm text-slate-600 space-y-2">
+          <li>• Les emails sont envoyés automatiquement selon vos préférences</li>
+          <li>• Vous recevrez un conseil hebdomadaire adapté à votre semaine de grossesse</li>
+          <li>• Les rappels de rendez-vous sont envoyés la veille</li>
+          <li>• Vous pouvez désactiver les notifications à tout moment</li>
+        </ul>
+      </Card>
+    </>
+  );
+}
