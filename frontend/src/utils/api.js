@@ -35,6 +35,8 @@ export const api = {
     forgotPassword: (email) => axios.post(`${API}/auth/forgot-password`, { email }),
     verifyResetToken: (token) => axios.post(`${API}/auth/verify-reset-token`, { token }),
     resetPassword: (token, new_password) => axios.post(`${API}/auth/reset-password`, { token, new_password }),
+    updateEmail: (newEmail) => axios.post(`${API}/auth/update-email`, { new_email: newEmail }, getAuthHeaders()),
+    endPremium: () => axios.post(`${API}/auth/end-premium`, {}, getAuthHeaders()),
   },
   pregnancy: {
     calculate: (data) => axios.post(`${API}/pregnancy/calculate`, data, getAuthHeaders()),

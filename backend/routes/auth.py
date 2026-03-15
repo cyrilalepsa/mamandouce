@@ -221,3 +221,65 @@ async def reset_password(request: ResetPasswordRequest):
     await db.password_resets.delete_one({"token": request.token})
     
     return {"success": True, "message": "Votre mot de passe a été réinitialisé avec succès."}
+
+# ==================== EMAIL UPDATE ====================
+
+class UpdateEmailRequest(BaseModel):
+    new_email: EmailStr
+
+@router.post("/auth/update-email")
+async def update_email(request: UpdateEmailRequest, current_user: User = Depends(get_current_user)):
+    """Update user email address"""
+    new_email = request.new_email.lower()
+    
+    # Vérifier si le nouvel email n'est pas déjà utilisé
+    existing = await db.users.find_one({"email": new_email})
+    if existing and existing.get("id") != current_user.id:
+        raise HTTPException(status_code=400, detail="Cette adresse email est déjà utilisée")
+    
+    # Mettre à jour l'email
+    await db.users.update_one(
+        {"id": current_user.id},
+        {"$set": {
+            "email": new_email,
+            "email_updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {"success": True, "message": "Adresse email mise à jour", "new_email": new_email}
+
+# ==================== END PREMIUM (AFTER BIRTH) ====================
+
+@router.post("/auth/end-premium")
+async def end_premium(current_user: User = Depends(get_current_user)):
+    """End premium subscription after birth confirmation"""
+    from routes.push_notifications import send_admin_notification
+    
+    user = await db.users.find_one({"id": current_user.id}, {"_id": 0})
+    
+    if user.get("subscription_status") != "premium":
+        raise HTTPException(status_code=400, detail="Aucun abonnement premium actif")
+    
+    # Mettre fin au premium
+    await db.users.update_one(
+        {"id": current_user.id},
+        {"$set": {
+            "subscription_status": "free",
+            "premium_ended_at": datetime.now(timezone.utc).isoformat(),
+            "premium_ended_reason": "birth_confirmed"
+        }}
+    )
+    
+    # Notifier l'admin
+    try:
+        await send_admin_notification(
+            title="Fin d'abonnement - Accouchement",
+            body=f"{current_user.email} a confirmé son accouchement et mis fin à son abonnement premium",
+            url="/admin",
+            category="Abonnement"
+        )
+    except:
+        pass
+    
+    return {"success": True, "message": "Votre abonnement premium a été terminé. Vous avez maintenant accès au suivi post-partum."}
+
