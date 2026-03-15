@@ -79,6 +79,19 @@ Application pour les femmes enceintes avec :
   - Nouvelle route: `/tracking`
   - Nouvelle carte "Graphiques" dans la section Grossesse de la page d'accueil
 
+- [x] **Logique de fin de vie du compte post-partum**
+  - Après 6 mois d'accouchement, le compte peut être archivé
+  - Export des données utilisateur (JSON complet avec profil, notes médicales, favoris, etc.)
+  - Option d'archivage anticipé
+  - Endpoints: `/api/postpartum/account-status`, `/api/postpartum/export-data`, `/api/postpartum/archive-account`, `/api/postpartum/request-early-archive`
+
+- [x] **UI - Réorganisation page Profil**
+  - Statuts Premium et Post-partum en première position (juste après le titre "Mon profil")
+  - Carte d'informations utilisateur déplacée après les statuts
+
+- [x] **Corrections qualité code Python**
+  - Remplacement des `bare except` par des exceptions spécifiques dans `/app/backend/routes/postpartum.py`
+
 ### Features Ajoutées (15 Mars 2026 - Matin)
 - [x] **Modification du mot de passe**
 - [x] **Blocage du compte après 4 tentatives**
