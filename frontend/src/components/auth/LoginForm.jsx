@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import { Eye, EyeOff } from 'lucide-react';
 
 export function LoginForm({ 
   formData, 
@@ -11,6 +12,8 @@ export function LoginForm({
   onForgotPassword,
   onToggleMode 
 }) {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <>
       <form onSubmit={onSubmit} className="space-y-5">
@@ -28,15 +31,25 @@ export function LoginForm({
         </div>
         <div>
           <Label htmlFor="password" className="text-slate-600 font-semibold">Mot de passe</Label>
-          <Input
-            id="password"
-            data-testid="password-input"
-            type="password"
-            value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            className="w-full rounded-2xl border-slate-200 bg-white/80 px-4 py-3 text-slate-600 focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
-            required
-          />
+          <div className="relative">
+            <Input
+              id="password"
+              data-testid="password-input"
+              type={showPassword ? "text" : "password"}
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              className="w-full rounded-2xl border-slate-200 bg-white/80 px-4 py-3 pr-12 text-slate-600 focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              data-testid="toggle-password-visibility"
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
         
         <div className="text-right">
