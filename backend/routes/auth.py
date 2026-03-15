@@ -48,6 +48,76 @@ async def notify_admin_new_user(user_name: str, user_email: str):
     except Exception as e:
         logger.error(f"Error notifying admin: {e}")
 
+async def send_welcome_notification(user_name: str, user_email: str):
+    """Send welcome push notification and email to new user"""
+    from routes.push_notifications import send_push_notification
+    
+    # Envoyer la notification push
+    try:
+        await send_push_notification(
+            user_email=user_email,
+            title=f"Bienvenue {user_name} ! 💕",
+            body="Découvrez comment MamanDouce vous accompagne tout au long de votre grossesse.",
+            url="/guide"
+        )
+    except Exception as e:
+        logger.error(f"Error sending welcome push: {e}")
+    
+    # Envoyer l'email de bienvenue
+    if resend and RESEND_API_KEY:
+        try:
+            resend.Emails.send({
+                "from": SENDER_EMAIL,
+                "to": user_email,
+                "subject": f"Bienvenue sur MamanDouce, {user_name} ! 💕",
+                "html": f"""
+                <div style="font-family: 'Nunito', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #ec4899; font-size: 32px; margin: 0;">MamanDouce</h1>
+                        <p style="color: #64748b; font-size: 14px;">Votre compagnon de grossesse</p>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #fce7f3, #f0f9ff); border-radius: 20px; padding: 30px; margin-bottom: 20px;">
+                        <h2 style="color: #334155; margin-top: 0;">Bienvenue {user_name} ! 🎉</h2>
+                        <p style="color: #475569; line-height: 1.6;">
+                            Nous sommes ravis de vous accompagner dans cette belle aventure qu'est la maternité.
+                        </p>
+                    </div>
+                    
+                    <div style="background: white; border-radius: 16px; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                        <h3 style="color: #ec4899; margin-top: 0;">Pour bien démarrer :</h3>
+                        <ul style="color: #475569; line-height: 1.8; padding-left: 20px;">
+                            <li><strong>Calculez vos dates clés</strong> - DPA, trimestres, rendez-vous</li>
+                            <li><strong>Scannez vos aliments</strong> - Vérifiez ce que vous pouvez manger</li>
+                            <li><strong>Suivez vos rendez-vous</strong> - Ne manquez aucun RDV médical</li>
+                            <li><strong>Créez votre liste de naissance</strong> - Partagez-la avec vos proches</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="https://femme-enceinte-app.preview.emergentagent.com" 
+                           style="background: linear-gradient(135deg, #ec4899, #8b5cf6); 
+                                  color: white; 
+                                  text-decoration: none; 
+                                  padding: 14px 32px; 
+                                  border-radius: 50px; 
+                                  font-weight: bold;
+                                  display: inline-block;">
+                            Commencer l'aventure
+                        </a>
+                    </div>
+                    
+                    <p style="color: #94a3b8; font-size: 12px; text-align: center; margin-top: 30px;">
+                        Des questions ? Contactez-nous directement depuis l'application.<br>
+                        À très bientôt ! 💕
+                    </p>
+                </div>
+                """
+            })
+            logger.info(f"Welcome email sent to {user_email}")
+        except Exception as e:
+            logger.error(f"Error sending welcome email: {e}")
+
 @router.post("/auth/register", response_model=Token)
 async def register(user_data: UserCreate):
     """Register a new user"""
@@ -72,6 +142,9 @@ async def register(user_data: UserCreate):
     
     # Notify admin
     await notify_admin_new_user(user_data.name, user_data.email)
+    
+    # Send welcome notification and email to new user
+    await send_welcome_notification(user_data.name, user_data.email)
     
     access_token = create_access_token(
         data={"sub": user.email},
