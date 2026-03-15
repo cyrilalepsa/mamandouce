@@ -31,6 +31,31 @@ Application pour les femmes enceintes avec :
 - [x] Calendrier de fertilité avancé (5 ans vacances/fériés, 6 mois prédictions)
 - [x] Système de paiement Stripe
 
+### Features Ajoutées (15 Mars 2026)
+- [x] **Modification du mot de passe**
+  - Section dédiée dans les paramètres
+  - Vérification du mot de passe actuel obligatoire
+  - Validation : minimum 6 caractères
+  - Confirmation du nouveau mot de passe
+  - Endpoint: `POST /api/auth/update-password`
+
+- [x] **Blocage du compte après 4 tentatives**
+  - Compteur de tentatives échouées par compte
+  - Message indiquant le nombre de tentatives restantes
+  - Blocage de 30 minutes après 4 échecs (code HTTP 423)
+  - Message de durée de blocage affiché
+  - Réinitialisation automatique après connexion réussie
+
+- [x] **Modification de l'adresse email**
+  - Section "Mon compte" dans les paramètres
+  - Vérification que l'email n'est pas déjà utilisé
+  - Endpoint: `POST /api/auth/update-email`
+
+- [x] **Refactoring SettingsPage.js**
+  - Code réduit de 1050 lignes à 154 lignes
+  - Sous-composants extraits dans `/app/frontend/src/components/settings/`
+  - Composants: PromoCodeSection, AccountSection, PasswordSection, ReferralSection, RefundSection, PostpartumStatusSection, NotificationsSection
+
 ### Features Ajoutées (14 Mars 2026)
 - [x] **Check-list Sac de maternité**
   - 32 articles par défaut (Pour maman, Pour bébé, Pour le retour)
@@ -70,6 +95,11 @@ Application pour les femmes enceintes avec :
 ## API Endpoints
 
 ### New Endpoints (14 Mars 2026)
+
+#### auth.py (15 Mars 2026)
+- `POST /api/auth/update-password` - Modifier le mot de passe (avec vérification de l'actuel)
+- `POST /api/auth/update-email` - Modifier l'adresse email
+- `POST /api/auth/end-premium` - Terminer l'abonnement premium (après accouchement)
 
 #### postpartum.py
 - `GET /api/maternity-bag` - Liste du sac de maternité
@@ -132,15 +162,16 @@ Application pour les femmes enceintes avec :
   - Notification automatique à l'utilisatrice après traitement
 
 ## Future Tasks (Backlog)
+- **(P1)** Graphiques de suivi grossesse (poids, croissance)
 - **(P2)** Gestion multi-admins depuis l'interface
-- **(P2)** Graphiques de suivi grossesse (poids, croissance)
+- **(P2)** Refactoring AdminPage.js (actuellement 1050 lignes)
 - **(P2)** Mode hors-ligne complet
 - **(P3)** Déploiement Google Play Store
 
 ## Testing Status
-- Backend: 100% fonctionnel
+- Backend: 100% fonctionnel (15/15 tests passés)
 - Frontend: 100% fonctionnel
-- Dernière exécution: 14 Mars 2026
+- Dernière exécution: 15 Mars 2026
 
 ## 3rd Party Integrations
 - **Stripe** (Paiements)
