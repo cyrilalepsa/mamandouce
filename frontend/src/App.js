@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import '@/App.css';
 import ErrorBoundary from './components/ErrorBoundary';
+import { SubscriptionGate } from './components/SubscriptionGate';
 import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import PregnancyCalculator from './pages/PregnancyCalculator';
@@ -48,9 +49,16 @@ function App() {
     setLoading(false);
   }, []);
 
-  const ProtectedRoute = ({ children }) => {
+  const ProtectedRoute = ({ children, requireSubscription = true }) => {
     if (loading) return <div>Chargement...</div>;
-    return isAuthenticated ? children : <Navigate to="/auth" />;
+    if (!isAuthenticated) return <Navigate to="/auth" />;
+    
+    // Si l'abonnement est requis, encapsuler avec SubscriptionGate
+    if (requireSubscription) {
+      return <SubscriptionGate>{children}</SubscriptionGate>;
+    }
+    
+    return children;
   };
 
   return (
@@ -75,12 +83,12 @@ function App() {
             <Route path="/medical" element={<ProtectedRoute><MedicalAppointmentsPage /></ProtectedRoute>} />
             <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
             <Route path="/tips" element={<ProtectedRoute><WeeklyTipsPage /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-            <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-            <Route path="/subscription/checkout" element={<ProtectedRoute><SubscriptionCheckout /></ProtectedRoute>} />
-            <Route path="/subscription/success" element={<ProtectedRoute><SubscriptionSuccess /></ProtectedRoute>} />
-            <Route path="/subscription/cancel" element={<ProtectedRoute><SubscriptionCancel /></ProtectedRoute>} />
-            <Route path="/subscription/manage" element={<ProtectedRoute><SubscriptionManage /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute requireSubscription={false}><ProfilePage /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute requireSubscription={false}><SettingsPage /></ProtectedRoute>} />
+            <Route path="/subscription/checkout" element={<ProtectedRoute requireSubscription={false}><SubscriptionCheckout /></ProtectedRoute>} />
+            <Route path="/subscription/success" element={<ProtectedRoute requireSubscription={false}><SubscriptionSuccess /></ProtectedRoute>} />
+            <Route path="/subscription/cancel" element={<ProtectedRoute requireSubscription={false}><SubscriptionCancel /></ProtectedRoute>} />
+            <Route path="/subscription/manage" element={<ProtectedRoute requireSubscription={false}><SubscriptionManage /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
             <Route path="/maternity-bag" element={<ProtectedRoute><MaternityBagPage /></ProtectedRoute>} />
             <Route path="/postpartum" element={<ProtectedRoute><PostpartumPage /></ProtectedRoute>} />

@@ -124,7 +124,32 @@ function AuthPage({ setIsAuthenticated }) {
     }
   };
 
-  const completeLogin = async () => {
+  const completeLogin = async (isNewUser = false) => {
+    // Pour les nouveaux utilisateurs, rediriger vers la page d'abonnement
+    if (isNewUser) {
+      setIsAuthenticated(true);
+      toast.success('Inscription réussie ! Choisissez votre formule.');
+      navigate('/subscription/checkout?onboarding=true');
+      return;
+    }
+    
+    // Pour les utilisateurs existants, vérifier s'ils ont un abonnement
+    try {
+      const subResponse = await api.subscription.getFullStatus();
+      const status = subResponse.data;
+      const hasActiveSubscription = status.is_premium || status.postpartum_purchased;
+      
+      if (!hasActiveSubscription) {
+        // Pas d'abonnement, rediriger vers choix
+        setIsAuthenticated(true);
+        toast.success('Connexion réussie !');
+        navigate('/subscription/checkout?onboarding=true');
+        return;
+      }
+    } catch (error) {
+      // En cas d'erreur, continuer normalement
+    }
+    
     if (!isQuickLoginAvailable()) {
       const canUseBiometric = await isBiometricAvailable();
       if (canUseBiometric) {
@@ -139,7 +164,7 @@ function AuthPage({ setIsAuthenticated }) {
     }
     
     setIsAuthenticated(true);
-    toast.success(isLogin ? 'Connexion réussie!' : 'Inscription réussie!');
+    toast.success('Connexion réussie!');
     navigate('/');
   };
 
@@ -163,12 +188,12 @@ function AuthPage({ setIsAuthenticated }) {
           }
           throw loginError;
         }
+        await completeLogin(false);
       } else {
         const response = await api.auth.register(formData);
         localStorage.setItem('token', response.data.access_token);
+        await completeLogin(true); // Nouveau utilisateur
       }
-      
-      await completeLogin();
     } catch (error) {
       const status = error.response?.status;
       const detail = error.response?.data?.detail;

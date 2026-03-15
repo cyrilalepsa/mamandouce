@@ -96,6 +96,26 @@ Application pour les femmes enceintes avec :
   - 8 sous-composants créés dans `/app/frontend/src/components/profile/`
   - Composants: SubscriptionStatusCards, UserInfoCard, PregnancyCard, NotificationsCard, QuickLoginCard, FertilityRemindersCard, ContactCard, MessageHistoryCard
 
+### Features Ajoutées (15 Mars 2026 - Session 6)
+
+- [x] **Flux d'onboarding avec paywall**
+  - Nouveau visiteur → Page de connexion/inscription
+  - Après inscription → Redirection automatique vers page de choix d'abonnement
+  - Sans abonnement → Pas d'accès au contenu (redirection vers choix)
+  - Options: Gratuit (limité), Premium (27€), Post-partum (8€)
+  - Utilisateurs avec abonnement → Accès direct à l'app
+  - SubscriptionGate vérifie l'abonnement sur chaque page protégée
+
+- [x] **Correction majuscules jours de la semaine**
+  - "dimanche" → "Dimanche" quand le jour est en début de ligne
+  - Appliqué dans AgendaCard et FertilityCalendar
+
+- [x] **Service Worker v2.0.3 - Mise à jour automatique du cache**
+  - Stratégie "Network First" pour toujours récupérer la dernière version
+  - Suppression automatique des anciens caches
+  - Rechargement automatique quand nouvelle version détectée
+  - Plus besoin de vider le cache manuellement
+
 ### Features Ajoutées (15 Mars 2026 - Session 5)
 
 - [x] **Fonction Favoris pour recettes**
