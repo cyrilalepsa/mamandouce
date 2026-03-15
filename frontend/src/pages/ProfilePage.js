@@ -7,7 +7,7 @@ import { ArrowLeft, User, Mail, Calendar, MessageSquare, Send, CheckCircle, Cloc
 import api from '../utils/api';
 import { toast } from 'sonner';
 import { isBiometricEnabled, disableBiometricLogin, checkBiometricSupport, isPinEnabled, disablePinLogin, disableAllQuickLogin } from '../utils/biometricAuth';
-import { PregnancyInfoSection } from '../components/settings';
+import { PregnancyInfoSection, AccountStatusSection } from '../components/settings';
 
 // Helper function to convert base64 to Uint8Array for VAPID key
 function urlBase64ToUint8Array(base64String) {
@@ -407,6 +407,9 @@ function ProfilePage() {
                 </div>
               </Card>
             )}
+
+            {/* Section Statut du compte Post-partum */}
+            <AccountStatusSection />
 
             {/* Notifications Card */}
             {notificationsSupported && (

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from core.database import db
 from core.security import get_current_user
 from models.schemas import User
@@ -1055,3 +1055,188 @@ async def approve_refund(user_id: str, approved: bool, current_user: User = Depe
             pass
         
         return {"success": True, "status": "rejected"}
+
+
+
+# ==================== ACCOUNT EXPIRATION & DATA EXPORT ====================
+
+POSTPARTUM_DURATION_DAYS = 180  # 6 mois
+
+@router.get("/postpartum/account-status")
+async def get_account_status(current_user: User = Depends(get_current_user)):
+    """Vérifier le statut du compte et la date d'expiration post-partum"""
+    user = await db.users.find_one({"id": current_user.id}, {"_id": 0})
+    
+    actual_birth_date = user.get("actual_birth_date")
+    postpartum_unlocked = user.get("postpartum_purchased", False) or user.get("postpartum_free_via_referral", False)
+    account_archived = user.get("account_archived", False)
+    
+    if not actual_birth_date or not postpartum_unlocked:
+        return {
+            "has_postpartum": postpartum_unlocked,
+            "postpartum_active": False,
+            "expiration_date": None,
+            "days_remaining": None,
+            "account_archived": account_archived
+        }
+    
+    birth = datetime.fromisoformat(actual_birth_date)
+    expiration_date = birth + timedelta(days=POSTPARTUM_DURATION_DAYS)
+    today = datetime.now(timezone.utc).replace(tzinfo=None)
+    days_remaining = (expiration_date - today).days
+    
+    # Vérifier si le compte devrait être archivé
+    postpartum_active = days_remaining > 0 and not account_archived
+    
+    return {
+        "has_postpartum": True,
+        "postpartum_active": postpartum_active,
+        "expiration_date": expiration_date.isoformat(),
+        "days_remaining": max(0, days_remaining),
+        "account_archived": account_archived,
+        "birth_date": actual_birth_date,
+        "baby_name": user.get("baby_name")
+    }
+
+@router.get("/postpartum/export-data")
+async def export_user_data(current_user: User = Depends(get_current_user)):
+    """Exporter toutes les données de l'utilisateur avant archivage"""
+    
+    # Récupérer les données utilisateur
+    user = await db.users.find_one({"id": current_user.id}, {"_id": 0, "password": 0})
+    
+    # Récupérer le profil de grossesse
+    pregnancy_profile = await db.pregnancy_profiles.find_one(
+        {"user_id": current_user.id}, {"_id": 0}
+    )
+    
+    # Récupérer l'historique médical
+    medical_notes = []
+    async for note in db.medical_notes.find({"user_id": current_user.id}, {"_id": 0}):
+        medical_notes.append(note)
+    
+    # Récupérer les notifications/rappels
+    notifications = []
+    async for notif in db.notifications.find({"user_id": current_user.id}, {"_id": 0}):
+        notifications.append(notif)
+    
+    # Récupérer le sac de maternité
+    maternity_bag = await db.maternity_bags.find_one(
+        {"user_id": current_user.id}, {"_id": 0}
+    )
+    
+    # Récupérer les favoris
+    favorites = []
+    async for fav in db.favorites.find({"user_id": current_user.id}, {"_id": 0}):
+        favorites.append(fav)
+    
+    # Récupérer l'historique de recherche
+    search_history = []
+    async for search in db.search_history.find({"user_id": current_user.id}, {"_id": 0}):
+        search_history.append(search)
+    
+    # Récupérer l'historique du chat
+    chat_history = await db.chat_history.find_one(
+        {"user_id": current_user.id}, {"_id": 0}
+    )
+    
+    export_data = {
+        "export_date": datetime.now(timezone.utc).isoformat(),
+        "user_info": {
+            "name": user.get("name"),
+            "email": user.get("email"),
+            "created_at": user.get("created_at"),
+            "baby_name": user.get("baby_name"),
+            "actual_birth_date": user.get("actual_birth_date")
+        },
+        "pregnancy_profile": pregnancy_profile,
+        "medical_notes": medical_notes,
+        "notifications": notifications,
+        "maternity_bag": maternity_bag,
+        "favorites": favorites,
+        "search_history": search_history,
+        "chat_history": chat_history.get("messages", []) if chat_history else []
+    }
+    
+    return export_data
+
+@router.post("/postpartum/archive-account")
+async def archive_account(current_user: User = Depends(get_current_user)):
+    """Archiver le compte après les 6 mois de post-partum"""
+    from routes.push_notifications import send_admin_notification
+    
+    user = await db.users.find_one({"id": current_user.id}, {"_id": 0})
+    
+    if user.get("account_archived"):
+        raise HTTPException(status_code=400, detail="Le compte est déjà archivé")
+    
+    # Vérifier que le post-partum est terminé
+    actual_birth_date = user.get("actual_birth_date")
+    if actual_birth_date:
+        birth = datetime.fromisoformat(actual_birth_date)
+        expiration_date = birth + timedelta(days=POSTPARTUM_DURATION_DAYS)
+        today = datetime.now(timezone.utc).replace(tzinfo=None)
+        
+        if today < expiration_date:
+            days_remaining = (expiration_date - today).days
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Vous pouvez archiver votre compte dans {days_remaining} jours"
+            )
+    
+    # Archiver le compte
+    await db.users.update_one(
+        {"id": current_user.id},
+        {"$set": {
+            "account_archived": True,
+            "archived_at": datetime.now(timezone.utc).isoformat(),
+            "subscription_status": "archived"
+        }}
+    )
+    
+    # Notifier l'admin
+    try:
+        await send_admin_notification(
+            title="Compte archivé",
+            body=f"{current_user.email} a archivé son compte après les 6 mois de post-partum",
+            url="/admin",
+            category="Compte"
+        )
+    except:
+        pass
+    
+    return {"success": True, "message": "Votre compte a été archivé. Merci d'avoir utilisé MamanDouce !"}
+
+@router.post("/postpartum/request-early-archive")
+async def request_early_archive(current_user: User = Depends(get_current_user)):
+    """Demander un archivage anticipé du compte"""
+    from routes.push_notifications import send_admin_notification
+    
+    user = await db.users.find_one({"id": current_user.id}, {"_id": 0})
+    
+    if user.get("account_archived"):
+        raise HTTPException(status_code=400, detail="Le compte est déjà archivé")
+    
+    # Archiver immédiatement
+    await db.users.update_one(
+        {"id": current_user.id},
+        {"$set": {
+            "account_archived": True,
+            "archived_at": datetime.now(timezone.utc).isoformat(),
+            "subscription_status": "archived",
+            "early_archive": True
+        }}
+    )
+    
+    # Notifier l'admin
+    try:
+        await send_admin_notification(
+            title="Archivage anticipé demandé",
+            body=f"{current_user.email} a demandé l'archivage anticipé de son compte",
+            url="/admin",
+            category="Compte"
+        )
+    except:
+        pass
+    
+    return {"success": True, "message": "Votre compte a été archivé. Merci d'avoir utilisé MamanDouce !"}

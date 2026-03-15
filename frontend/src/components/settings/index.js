@@ -5,3 +5,4 @@ export { RefundSection } from './RefundSection';
 export { NotificationsSection } from './NotificationsSection';
 export { TwoFactorSection } from './TwoFactorSection';
 export { PregnancyInfoSection } from './PregnancyInfoSection';
+export { AccountStatusSection } from './AccountStatusSection';

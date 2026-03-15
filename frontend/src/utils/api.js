@@ -163,6 +163,11 @@ export const api = {
           'Content-Type': 'multipart/form-data'
         }
       }),
+    // Account status & export
+    getAccountStatus: () => axios.get(`${API}/postpartum/account-status`, getAuthHeaders()),
+    exportData: () => axios.get(`${API}/postpartum/export-data`, getAuthHeaders()),
+    archiveAccount: () => axios.post(`${API}/postpartum/archive-account`, {}, getAuthHeaders()),
+    requestEarlyArchive: () => axios.post(`${API}/postpartum/request-early-archive`, {}, getAuthHeaders()),
   },
   admin: {
     generateCodes: (count, note) => axios.post(`${API}/admin/generate-codes?count=${count}&note=${encodeURIComponent(note)}`, {}, getAuthHeaders()),
