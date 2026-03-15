@@ -8,7 +8,7 @@ import {
   User, LogOut, Cloud, Feather, Settings, Heart, Stethoscope, Calendar, 
   Scan, TestTube, Crown, MapPin, Apple, Baby, Library, Youtube, Gift, Shield,
   Sparkles, BookHeart, Video, Book, TrendingUp, ClipboardList, ChevronRight,
-  CalendarDays, Droplets, Egg, Save, CalendarRange, Briefcase
+  CalendarDays, Droplets, Egg, Save, CalendarRange, Briefcase, MessageCircle, Bot
 } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
@@ -721,6 +721,28 @@ function HomePage() {
                 <p className="text-xs text-slate-500">Notifications</p>
               </Card>
             </div>
+            
+            {/* Chatbot AI */}
+            <Card
+              onClick={() => navigate('/chatbot')}
+              data-testid="chatbot-nav"
+              className="bg-gradient-to-r from-pink-500 to-purple-500 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-0 hover:shadow-[0_8px_40px_rgba(236,72,153,0.3)] cursor-pointer card-hover"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
+                  <Bot className="w-8 h-8 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                    MamanDouce AI
+                  </h3>
+                  <p className="text-white/80 text-sm">
+                    Posez vos questions sur la grossesse, l'alimentation, les démarches...
+                  </p>
+                </div>
+                <MessageCircle className="w-6 h-6 text-white/60" />
+              </div>
+            </Card>
           </div>
 
           {/* ========== CATÉGORIE 3: PRÉPARER L'ARRIVÉE DE BÉBÉ ========== */}

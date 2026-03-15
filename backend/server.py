@@ -50,6 +50,7 @@ from routes.tips import router as tips_router
 from routes.postpartum import router as postpartum_router
 from routes.referral import router as referral_router
 from routes.preferences import router as preferences_router
+from routes.chatbot import router as chatbot_router
 
 # Include all routers
 api_router.include_router(auth_router)
@@ -65,6 +66,7 @@ api_router.include_router(tips_router)
 api_router.include_router(postpartum_router)
 api_router.include_router(referral_router)
 api_router.include_router(preferences_router)
+api_router.include_router(chatbot_router)
 
 # Include main router
 app.include_router(api_router)

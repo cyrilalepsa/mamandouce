@@ -28,6 +28,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import MaternityBagPage from './pages/MaternityBagPage';
 import PostpartumPage from './pages/PostpartumPage';
 import GuidePage from './pages/GuidePage';
+import ChatbotPage from './pages/ChatbotPage';
 import { Toaster } from './components/ui/sonner';
 
 function App() {
@@ -78,6 +79,7 @@ function App() {
           <Route path="/maternity-bag" element={<ProtectedRoute><MaternityBagPage /></ProtectedRoute>} />
           <Route path="/postpartum" element={<ProtectedRoute><PostpartumPage /></ProtectedRoute>} />
           <Route path="/guide" element={<ProtectedRoute><GuidePage /></ProtectedRoute>} />
+          <Route path="/chatbot" element={<ProtectedRoute><ChatbotPage /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
       <Toaster />

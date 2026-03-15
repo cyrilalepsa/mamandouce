@@ -149,6 +149,21 @@ Application pour les femmes enceintes avec :
 - [x] **Liens GuidePage corrigés** - Routes mises à jour (/calculator, /scanner, /medical)
 - [x] **Flow 2FA amélioré** - Validation mot de passe avant envoi du code 2FA
 
+## Chatbot IA (15 Mars 2026 - soir)
+- [x] **MamanDouce AI** - Chatbot intelligent alimenté par GPT-4o-mini
+  - Questions sur l'alimentation, symptômes, démarches administratives
+  - Historique des conversations avec sessions
+  - 6 suggestions de questions prédéfinies
+  - Ton chaleureux et bienveillant
+  - Disclaimer médical
+  - Carte d'accès rapide sur la page d'accueil
+
+### API Endpoints Chatbot
+- `POST /api/chatbot/message` - Envoyer un message et recevoir une réponse
+- `GET /api/chatbot/history` - Historique des conversations
+- `DELETE /api/chatbot/session/{id}` - Supprimer une conversation
+- `GET /api/chatbot/suggestions` - Questions suggérées
+
 ## 3rd Party Integrations
 - **Stripe** (Paiements)
 - **Resend** (Emails)
