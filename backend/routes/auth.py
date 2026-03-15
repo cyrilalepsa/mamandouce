@@ -606,8 +606,8 @@ async def end_premium(current_user: User = Depends(get_current_user)):
             url="/admin",
             category="Abonnement"
         )
-    except:
-        pass
+    except Exception as e:
+        print(f"Erreur notification admin: {e}")
     
     return {"success": True, "message": "Votre abonnement premium a été terminé. Vous avez maintenant accès au suivi post-partum."}
 

@@ -96,6 +96,19 @@ Application pour les femmes enceintes avec :
   - 8 sous-composants créés dans `/app/frontend/src/components/profile/`
   - Composants: SubscriptionStatusCards, UserInfoCard, PregnancyCard, NotificationsCard, QuickLoginCard, FertilityRemindersCard, ContactCard, MessageHistoryCard
 
+### Features Ajoutées (15 Mars 2026 - Session 3)
+- [x] **Nouvelle icône PWA** avec logo et texte "MamanDouce"
+- [x] **Bannière installation PWA** pour faciliter l'ajout sur l'écran d'accueil
+- [x] **Contenu Post-partum enrichi**
+  - Section Portage bébé (5 types de porte-bébé avec vidéos YouTube)
+  - Section Diversification alimentaire (3 étapes, aliments interdits, premiers légumes/fruits)
+  - Section Recettes bébé (8 recettes de purées avec vidéos)
+  - Tous avec liens vidéo YouTube
+- [x] **Admin - Bouton "Tout débloquer"** pour donner Premium + Post-partum en un clic
+- [x] **Admin - Bouton "Voir comme utilisateur"** pour basculer vers l'interface utilisateur
+- [x] **Error Boundary global** pour éviter les écrans d'erreur avec du code
+- [x] **Amélioration gestion erreur "J'ai accouché"** - Meilleure gestion si l'utilisateur n'a pas de premium
+
 ### Features Ajoutées (15 Mars 2026 - Matin)
 - [x] **Modification du mot de passe**
 - [x] **Blocage du compte après 4 tentatives**

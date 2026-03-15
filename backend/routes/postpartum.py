@@ -533,7 +533,200 @@ POSTPARTUM_CONTENT = {
             "title": "Récupération maman",
             "tips": ["Pas de port de charges lourdes 6 semaines", "Reprise progressive des activités", "Écouter son corps", "Pas de bain (douche uniquement) tant que saignements"]
         }
-    ]
+    ],
+    "babywearing": {
+        "title": "Portage bébé",
+        "description": "Le portage permet de garder bébé près de vous tout en ayant les mains libres. C'est bénéfique pour le lien parent-enfant et le développement de bébé.",
+        "benefits": [
+            "Renforce le lien d'attachement",
+            "Apaise bébé (retrouve les sensations in utero)",
+            "Favorise la digestion et réduit les coliques",
+            "Libère les mains des parents",
+            "Stimule le développement moteur et sensoriel",
+            "Facilite l'allaitement"
+        ],
+        "types": [
+            {
+                "name": "Écharpe tissée",
+                "age": "Dès la naissance",
+                "description": "Polyvalente, plusieurs nouages possibles. Courbe d'apprentissage plus longue.",
+                "video_url": "https://www.youtube.com/watch?v=HYJfDBiCk8c"
+            },
+            {
+                "name": "Écharpe extensible (jersey)",
+                "age": "0-6 mois (jusqu'à 7-8 kg)",
+                "description": "Facile à nouer, très douce. Idéale pour débuter.",
+                "video_url": "https://www.youtube.com/watch?v=KY_UP2j-DPo"
+            },
+            {
+                "name": "Porte-bébé préformé",
+                "age": "Selon modèle (souvent dès 3-4 mois)",
+                "description": "Pratique et rapide à installer. Vérifier qu'il soit physiologique.",
+                "video_url": "https://www.youtube.com/watch?v=bGBNiC7JlYk"
+            },
+            {
+                "name": "Mei-Tai",
+                "age": "Dès la naissance (avec réducteur)",
+                "description": "Hybride entre écharpe et préformé. Bon compromis.",
+                "video_url": "https://www.youtube.com/watch?v=8TA3G-FGmAY"
+            },
+            {
+                "name": "Sling (écharpe à anneaux)",
+                "age": "Dès la naissance",
+                "description": "Installation rapide, idéal pour allaiter. Portage asymétrique.",
+                "video_url": "https://www.youtube.com/watch?v=g_W9lQxFNBU"
+            }
+        ],
+        "safety_rules": [
+            "Voies aériennes toujours dégagées (menton décollé de la poitrine)",
+            "Visage visible en permanence",
+            "Position physiologique : genoux plus hauts que les fesses",
+            "Dos arrondi naturellement",
+            "Bébé assez haut pour l'embrasser sur la tête",
+            "Tissu bien serré, pas de jeu"
+        ],
+        "tips": [
+            "Commencez à la maison, au calme",
+            "Entraînez-vous avec une poupée ou un coussin d'abord",
+            "Faites-vous accompagner par une monitrice de portage si besoin",
+            "Portez des vêtements confortables",
+            "En été, habillez bébé légèrement (le portage réchauffe)"
+        ],
+        "video_general": "https://www.youtube.com/watch?v=XINKGY0zBWM"
+    },
+    "diversification": {
+        "title": "Diversification alimentaire",
+        "description": "La diversification commence entre 4 et 6 mois. Elle doit être progressive et adaptée au développement de bébé.",
+        "when_to_start": {
+            "signs": [
+                "Bébé tient sa tête droite",
+                "Il s'intéresse à ce que vous mangez",
+                "Il sait porter des objets à sa bouche",
+                "Il a perdu le réflexe d'extrusion (repousse la cuillère)",
+                "Il double son poids de naissance (environ)"
+            ],
+            "age": "Entre 4 et 6 mois, jamais avant 4 mois"
+        },
+        "stages": [
+            {
+                "age": "4-6 mois",
+                "title": "Les débuts",
+                "foods": ["Légumes en purée lisse", "Fruits en compote"],
+                "texture": "Très lisse, presque liquide",
+                "quantity": "Quelques cuillères",
+                "tips": "Un nouvel aliment à la fois, attendez 2-3 jours avant d'en introduire un autre",
+                "video_url": "https://www.youtube.com/watch?v=tKVwqUPLBRk"
+            },
+            {
+                "age": "6-8 mois",
+                "title": "Élargissement",
+                "foods": ["Viandes/poissons mixés", "Féculents", "Légumineuses", "Fromages"],
+                "texture": "Moulinée puis écrasée",
+                "quantity": "120-150g de purée + 10g de viande/poisson",
+                "tips": "Introduisez les protéines animales (10g/jour)",
+                "video_url": "https://www.youtube.com/watch?v=f3yJrFK9qow"
+            },
+            {
+                "age": "8-12 mois",
+                "title": "Vers l'autonomie",
+                "foods": ["Morceaux fondants", "Finger foods", "Œufs"],
+                "texture": "Morceaux mous, petits dés",
+                "quantity": "Repas structurés (entrée/plat/dessert)",
+                "tips": "Laissez bébé toucher et manger seul",
+                "video_url": "https://www.youtube.com/watch?v=4Ae94DvgJGk"
+            }
+        ],
+        "forbidden_foods": [
+            {"food": "Miel", "until": "1 an", "reason": "Risque de botulisme"},
+            {"food": "Sel", "until": "1 an", "reason": "Reins immatures"},
+            {"food": "Sucre ajouté", "until": "Le plus tard possible", "reason": "Mauvaises habitudes"},
+            {"food": "Lait de vache", "until": "1 an (en boisson)", "reason": "Non adapté"},
+            {"food": "Fruits à coque entiers", "until": "4-5 ans", "reason": "Risque d'étouffement"},
+            {"food": "Charcuterie", "until": "3 ans", "reason": "Trop salée et grasse"},
+            {"food": "Sodas/jus industriels", "until": "Le plus tard possible", "reason": "Sucre"}
+        ],
+        "first_vegetables": ["Carotte", "Courgette", "Haricots verts", "Patate douce", "Potiron", "Épinards", "Brocoli"],
+        "first_fruits": ["Pomme", "Poire", "Banane", "Pêche", "Abricot", "Mangue", "Compote de pruneaux"],
+        "video_general": "https://www.youtube.com/watch?v=PDVhx-ZpfV8"
+    },
+    "baby_recipes": {
+        "title": "Recettes purées pour bébé",
+        "description": "Des recettes simples et nutritives pour commencer la diversification.",
+        "tips_cooking": [
+            "Privilégiez la cuisson vapeur (préserve les nutriments)",
+            "Ne salez pas, n'ajoutez pas de sucre",
+            "Utilisez des légumes frais ou surgelés nature",
+            "Conservez les purées 48h au frigo ou 2 mois au congélateur",
+            "Réchauffez au bain-marie ou micro-ondes (bien mélanger)"
+        ],
+        "recipes": [
+            {
+                "name": "Purée de carottes",
+                "age": "4-6 mois",
+                "ingredients": ["200g de carottes", "Un peu d'eau de cuisson ou lait infantile"],
+                "steps": ["Épluchez et coupez les carottes en rondelles", "Faites cuire à la vapeur 15-20 min", "Mixez finement en ajoutant du liquide pour la texture"],
+                "tips": "Première purée idéale, naturellement sucrée",
+                "video_url": "https://www.youtube.com/watch?v=HVvPpqb6K7A"
+            },
+            {
+                "name": "Purée de courgettes",
+                "age": "4-6 mois",
+                "ingredients": ["200g de courgettes", "1 pomme de terre (optionnel pour épaissir)"],
+                "steps": ["Lavez et coupez les courgettes (gardez la peau si bio)", "Cuisez à la vapeur 10-12 min", "Mixez avec un peu d'eau de cuisson"],
+                "tips": "Légère et digeste, parfaite pour débuter",
+                "video_url": "https://www.youtube.com/watch?v=nQAC9EYxmE4"
+            },
+            {
+                "name": "Compote pomme-poire",
+                "age": "4-6 mois",
+                "ingredients": ["1 pomme", "1 poire"],
+                "steps": ["Épluchez et coupez les fruits", "Cuisez à la vapeur ou à l'étouffée 10 min", "Mixez ou écrasez selon la texture souhaitée"],
+                "tips": "Ne pas ajouter de sucre, les fruits sont naturellement sucrés",
+                "video_url": "https://www.youtube.com/watch?v=xJR8W0GDLKM"
+            },
+            {
+                "name": "Purée patate douce - carotte",
+                "age": "5-6 mois",
+                "ingredients": ["100g de patate douce", "100g de carottes"],
+                "steps": ["Épluchez et coupez les légumes", "Cuisez à la vapeur 15-20 min", "Mixez avec un filet d'huile d'olive"],
+                "tips": "Riche en vitamines A, couleur attractive pour bébé",
+                "video_url": "https://www.youtube.com/watch?v=5dGJVPYxnCM"
+            },
+            {
+                "name": "Purée brocoli - pomme de terre",
+                "age": "6 mois",
+                "ingredients": ["100g de brocoli", "1 petite pomme de terre", "1 noisette de beurre"],
+                "steps": ["Lavez le brocoli, épluchez la pomme de terre", "Cuisez à la vapeur 15 min", "Mixez avec le beurre"],
+                "tips": "Le brocoli est riche en fer et vitamines",
+                "video_url": "https://www.youtube.com/watch?v=n1TJjLZYxhY"
+            },
+            {
+                "name": "Purée poulet - légumes",
+                "age": "6-7 mois",
+                "ingredients": ["10g de blanc de poulet", "100g de légumes au choix", "1 c.à.c d'huile de colza"],
+                "steps": ["Cuisez le poulet et les légumes à la vapeur", "Mixez finement le tout", "Ajoutez l'huile et mélangez"],
+                "tips": "Première introduction de viande, commencez par 10g",
+                "video_url": "https://www.youtube.com/watch?v=W5HmWAHLV0M"
+            },
+            {
+                "name": "Compote banane - mangue",
+                "age": "6 mois",
+                "ingredients": ["1/2 banane bien mûre", "1/4 de mangue"],
+                "steps": ["Épluchez les fruits", "Écrasez simplement à la fourchette (pas besoin de cuire)"],
+                "tips": "Fruits exotiques riches en vitamines, texture onctueuse",
+                "video_url": "https://www.youtube.com/watch?v=7XNdWX-X-iU"
+            },
+            {
+                "name": "Purée poisson blanc - fenouil",
+                "age": "7-8 mois",
+                "ingredients": ["10-15g de cabillaud", "100g de fenouil", "1 pomme de terre"],
+                "steps": ["Cuisez le poisson et les légumes à la vapeur", "Vérifiez l'absence d'arêtes", "Mixez le tout"],
+                "tips": "Le fenouil aide à la digestion et donne un goût anisé doux",
+                "video_url": "https://www.youtube.com/watch?v=Xr7lGf8Uo9Q"
+            }
+        ],
+        "video_general": "https://www.youtube.com/watch?v=sMqG1Xfq3oY"
+    }
 }
 
 @router.get("/postpartum/content")

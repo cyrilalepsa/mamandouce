@@ -30,14 +30,20 @@ export function PregnancyInfoSection({
     setConfirmingBirth(true);
     try {
       await api.postpartum.setBirthDate(birthDate, babyName);
-      await api.auth.endPremium();
+      try {
+        await api.auth.endPremium();
+      } catch (endPremiumError) {
+        // L'utilisateur peut ne pas avoir de premium actif, ce n'est pas grave
+        console.log('Note: endPremium error (normal si pas premium):', endPremiumError?.response?.data?.detail);
+      }
       toast.success('Félicitations pour votre bébé ! Votre suivi post-partum est maintenant accessible.');
       setShowBirthConfirm(false);
       setShowFinalWarning(false);
       setSubscriptionStatus('free');
       onLoadFullStatus?.();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Erreur lors de la confirmation');
+      console.error('Erreur confirmation naissance:', error);
+      toast.error(error.response?.data?.detail || 'Erreur lors de la confirmation. Veuillez réessayer.');
     } finally {
       setConfirmingBirth(false);
     }

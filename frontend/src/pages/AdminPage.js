@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, RefreshCw } from 'lucide-react';
+import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, RefreshCw, Eye, EyeOff } from 'lucide-react';
 import api from '../utils/api';
 import PageHeader from '../components/PageHeader';
 import {
@@ -189,7 +189,17 @@ function AdminPage() {
   return (
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
-        <PageHeader title="Administration" />
+        <div className="flex items-center justify-between">
+          <PageHeader title="Administration" />
+          <Button
+            onClick={() => navigate('/')}
+            data-testid="view-as-user-btn"
+            className="bg-gradient-to-r from-sky-500 to-purple-500 text-white rounded-full px-4 py-2 hover:opacity-90 flex items-center gap-2"
+          >
+            <Eye className="w-4 h-4" />
+            Voir comme utilisateur
+          </Button>
+        </div>
 
         {/* Tabs */}
         <div className="flex gap-2 bg-white rounded-2xl p-2 shadow-sm overflow-x-auto">

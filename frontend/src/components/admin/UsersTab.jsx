@@ -107,6 +107,31 @@ export function UsersTab({ users, userStats, loadUsers }) {
                   
                   {/* Action buttons */}
                   <div className="flex flex-wrap gap-2 pt-3 border-t border-slate-200">
+                    {/* Bouton combiné Premium + Post-partum */}
+                    {(!isPremium || !hasPostpartum) && (
+                      <Button
+                        onClick={async () => {
+                          try {
+                            if (!isPremium) {
+                              await api.admin.setUserPremium(user.id, true);
+                            }
+                            if (!hasPostpartum) {
+                              await api.admin.setUserPostpartum(user.id, true);
+                            }
+                            toast.success('Premium + Post-partum activés !');
+                            loadUsers();
+                          } catch (e) {
+                            toast.error('Erreur');
+                          }
+                        }}
+                        data-testid={`grant-full-${index}`}
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 rounded-lg px-3 py-1.5 text-xs font-semibold"
+                      >
+                        <Sparkles className="w-3 h-3 mr-1 inline" />
+                        Tout débloquer
+                      </Button>
+                    )}
+                    
                     {isPremium ? (
                       <Button
                         onClick={async () => {
