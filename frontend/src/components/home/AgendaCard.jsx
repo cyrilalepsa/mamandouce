@@ -18,13 +18,20 @@ export function AgendaCard({
 }) {
   const [showForm, setShowForm] = useState(false);
 
+  // Capitalize first letter
+  const capitalize = (str) => {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   const formatDateFull = (date) => {
     if (!date) return '';
-    return new Date(date).toLocaleDateString('fr-FR', {
+    const formatted = new Date(date).toLocaleDateString('fr-FR', {
       weekday: 'long',
       day: 'numeric',
       month: 'long'
     });
+    return capitalize(formatted);
   };
 
   const formatDateShort = (date) => {

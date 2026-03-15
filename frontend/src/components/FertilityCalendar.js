@@ -6,6 +6,15 @@ import {
   MapPin, Calendar as CalendarIcon, Plus
 } from 'lucide-react';
 
+// Capitalize first letter of a string
+const capitalize = (str) => str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+
+// Format date with capitalized weekday
+const formatDateWithWeekday = (date) => {
+  const formatted = date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+  return capitalize(formatted);
+};
+
 // Vacances scolaires françaises 2025-2030 par zone (dates officielles)
 // Format: début = samedi, fin = dimanche (reprise lundi)
 const SCHOOL_HOLIDAYS = {
@@ -673,7 +682,7 @@ export default function FertilityCalendar({
           <div className="fixed inset-0 bg-black/30 z-60 flex items-center justify-center p-4">
             <Card className="bg-white rounded-2xl p-5 w-full max-w-xs">
               <h4 className="text-lg font-bold text-slate-700 mb-2">
-                {selectedDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                {formatDateWithWeekday(selectedDate)}
               </h4>
               
               {isRapportDay(selectedDate) ? (
