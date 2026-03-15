@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { 
-  ArrowLeft, Calendar, Heart, AlertTriangle, Baby, Droplets, 
+  ArrowLeft, Calendar, Heart, AlertTriangle, Baby, 
   Shield, ChevronDown, ChevronUp, Stethoscope, Clock, Info, CalendarDays, Check, Lock, Gift, Crown, Sparkles,
   Play, ExternalLink, Utensils, HandHeart
 } from 'lucide-react';
@@ -113,7 +113,6 @@ export default function PostpartumPage() {
     { id: 'difficulties', label: 'Difficultés', icon: AlertTriangle },
     { id: 'breastfeeding', label: 'Allaitement', icon: Heart },
     { id: 'formula', label: 'Biberon', icon: Baby },
-    { id: 'diapers', label: 'Couches', icon: Droplets },
     { id: 'babywearing', label: 'Portage', icon: HandHeart },
     { id: 'diversification', label: 'Diversification', icon: Utensils },
     { id: 'recipes', label: 'Recettes', icon: Utensils },
@@ -667,23 +666,6 @@ export default function PostpartumPage() {
               <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
                 <h3 className="font-bold text-slate-700 mb-2">{section.title}</h3>
                 <p className="text-sm text-slate-600">{section.content}</p>
-              </Card>
-            ))}
-          </div>
-        )}
-
-        {activeSection === 'diapers' && content?.diapers && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-700">Guide des couches</h2>
-            {content.diapers.sizes?.map((size, index) => (
-              <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-bold text-slate-700">{size.name}</h3>
-                  <span className="bg-sky-100 text-sky-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    {size.weight}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-600">{size.age}</p>
               </Card>
             ))}
           </div>
