@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { ArrowLeft, User, Mail, Calendar, MessageSquare, Send, CheckCircle, Clock, ChevronDown, ChevronUp, Inbox, Bell, BellOff, Fingerprint, KeyRound, Heart } from 'lucide-react';
+import { ArrowLeft, User, Mail, Calendar, MessageSquare, Send, CheckCircle, Clock, ChevronDown, ChevronUp, Inbox, Bell, BellOff, Fingerprint, KeyRound, Heart, Crown, Baby, Check } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import { isBiometricEnabled, disableBiometricLogin, checkBiometricSupport, isPinEnabled, disablePinLogin, disableAllQuickLogin } from '../utils/biometricAuth';
@@ -57,6 +57,7 @@ function ProfilePage() {
   
   // Subscription status (for pregnancy info section)
   const [subscriptionStatus, setSubscriptionStatus] = useState('free');
+  const [fullStatus, setFullStatus] = useState(null);
 
   useEffect(() => {
     loadUserData();
@@ -65,6 +66,7 @@ function ProfilePage() {
     setPinEnabled(isPinEnabled());
     loadFertilityRemindersStatus();
     loadSubscriptionStatus();
+    loadFullSubscriptionStatus();
     
     // Check biometric support
     const checkSupport = async () => {
@@ -98,6 +100,15 @@ function ProfilePage() {
       setSubscriptionStatus(response.data.subscription_status || 'free');
     } catch (error) {
       console.error('Erreur chargement statut:', error);
+    }
+  };
+  
+  const loadFullSubscriptionStatus = async () => {
+    try {
+      const response = await api.subscription.getFullStatus();
+      setFullStatus(response.data);
+    } catch (error) {
+      console.error('Erreur chargement statut complet:', error);
     }
   };
 
@@ -303,6 +314,94 @@ function ProfilePage() {
                     <p className="text-xs text-slate-500">Membre depuis</p>
                     <p className="font-semibold text-slate-700">{formatDate(user?.created_at)}</p>
                   </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Carte Statut Abonnement */}
+            <Card className={`rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border ${
+              subscriptionStatus === 'premium' 
+                ? 'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200' 
+                : 'bg-white border-slate-100'
+            }`} data-testid="subscription-status-card">
+              <div className="flex items-center gap-4 mb-4">
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
+                  subscriptionStatus === 'premium'
+                    ? 'bg-gradient-to-br from-amber-400 to-yellow-400'
+                    : 'bg-gradient-to-br from-slate-300 to-slate-200'
+                }`}>
+                  <Crown className="w-7 h-7 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                    Statut Premium
+                  </h3>
+                  <p className={`text-sm font-semibold ${
+                    subscriptionStatus === 'premium' ? 'text-amber-600' : 'text-slate-500'
+                  }`}>
+                    {subscriptionStatus === 'premium' ? '✓ Activé' : 'Non activé'}
+                  </p>
+                </div>
+                {subscriptionStatus !== 'premium' && (
+                  <Button
+                    onClick={() => navigate('/pricing')}
+                    className="bg-gradient-to-r from-amber-400 to-yellow-400 text-white rounded-full px-4 py-2 text-sm font-semibold"
+                  >
+                    Activer
+                  </Button>
+                )}
+              </div>
+              
+              {/* Statut Post-partum */}
+              <div className={`rounded-2xl p-4 ${
+                fullStatus?.postpartum_unlocked 
+                  ? 'bg-gradient-to-r from-rose-100 to-pink-100 border border-rose-200' 
+                  : fullStatus?.has_postpartum
+                    ? 'bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200'
+                    : 'bg-slate-50'
+              }`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                    fullStatus?.postpartum_unlocked
+                      ? 'bg-gradient-to-br from-rose-500 to-pink-500'
+                      : fullStatus?.has_postpartum
+                        ? 'bg-gradient-to-br from-purple-400 to-pink-400'
+                        : 'bg-slate-300'
+                  }`}>
+                    <Baby className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-slate-700">Suivi Post-partum</p>
+                    <p className={`text-xs ${
+                      fullStatus?.postpartum_unlocked 
+                        ? 'text-rose-600' 
+                        : fullStatus?.has_postpartum
+                          ? 'text-purple-600'
+                          : 'text-slate-500'
+                    }`}>
+                      {fullStatus?.postpartum_unlocked 
+                        ? '✓ Débloqué - Accès activé !' 
+                        : fullStatus?.has_postpartum
+                          ? '⏳ Acheté - En attente de déblocage'
+                          : 'Non acheté'}
+                    </p>
+                  </div>
+                  {fullStatus?.postpartum_unlocked && (
+                    <Button
+                      onClick={() => navigate('/postpartum')}
+                      className="bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full px-3 py-1.5 text-xs font-semibold"
+                    >
+                      Accéder
+                    </Button>
+                  )}
+                  {!fullStatus?.has_postpartum && (
+                    <Button
+                      onClick={() => navigate('/pricing')}
+                      className="bg-gradient-to-r from-rose-400 to-pink-400 text-white rounded-full px-3 py-1.5 text-xs font-semibold"
+                    >
+                      Acheter 8€
+                    </Button>
+                  )}
                 </div>
               </div>
             </Card>

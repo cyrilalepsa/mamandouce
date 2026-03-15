@@ -159,6 +159,15 @@ function PricingPage() {
                   </span>
                 </div>
                 
+                <Button
+                  onClick={() => navigate('/subscription/checkout?product=postpartum')}
+                  data-testid="buy-postpartum-button"
+                  className="w-full bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full py-3 font-bold mb-4 hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                >
+                  <Baby className="w-5 h-5 mr-2" />
+                  Acheter le suivi post-partum (8€)
+                </Button>
+                
                 <div className="space-y-2 text-sm">
                   <p className="text-slate-600 font-semibold">
                     Comment débloquer le contenu ?

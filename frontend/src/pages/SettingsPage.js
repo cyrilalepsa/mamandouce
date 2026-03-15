@@ -6,10 +6,8 @@ import PageHeader from '../components/PageHeader';
 import {
   PromoCodeSection,
   AccountSection,
-  PasswordSection,
   ReferralSection,
   RefundSection,
-  PostpartumStatusSection,
   NotificationsSection,
   TwoFactorSection
 } from '../components/settings';
@@ -113,15 +111,12 @@ function SettingsPage() {
               onLoadFullStatus={loadFullSubscriptionStatus}
             />
             
-            {/* Section Compte - Email */}
+            {/* Section Compte - Email et Mot de passe */}
             <AccountSection 
               userInfo={userInfo}
               emailAddress={preferences?.email_address}
               onReloadUserInfo={loadUserInfo}
             />
-            
-            {/* Section Mot de passe */}
-            <PasswordSection />
             
             {/* Section 2FA */}
             <TwoFactorSection />
@@ -130,12 +125,6 @@ function SettingsPage() {
             <ReferralSection 
               referralStatus={referralStatus}
               onReloadStatus={loadReferralStatus}
-            />
-            
-            {/* Section Post-partum (si éligible) */}
-            <PostpartumStatusSection 
-              fullStatus={fullStatus}
-              subscriptionStatus={subscriptionStatus}
             />
             
             {/* Section Remboursement - Fausse couche */}
