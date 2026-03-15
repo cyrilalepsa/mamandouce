@@ -29,6 +29,7 @@ import MaternityBagPage from './pages/MaternityBagPage';
 import PostpartumPage from './pages/PostpartumPage';
 import GuidePage from './pages/GuidePage';
 import ChatbotPage from './pages/ChatbotPage';
+import ChatBubble from './components/ChatBubble';
 import { Toaster } from './components/ui/sonner';
 
 function App() {
@@ -83,6 +84,7 @@ function App() {
         </Routes>
       </BrowserRouter>
       <Toaster />
+      <ChatBubble />
     </div>
   );
 }

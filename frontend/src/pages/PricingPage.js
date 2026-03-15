@@ -153,14 +153,23 @@ function PricingPage() {
                     <span className="text-3xl font-bold text-rose-600">8€</span>
                     <span className="text-slate-500">paiement unique</span>
                   </div>
-                  <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
-                    <Lock className="w-4 h-4" />
-                    Accessible après 6 mois d'abonnement Premium
+                  <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
+                    <Check className="w-4 h-4" />
+                    Achat possible à tout moment
                   </span>
                 </div>
-                <p className="text-sm text-slate-500">
-                  Le suivi post-partum démarre automatiquement après votre accouchement (fin des 9 mois de grossesse).
-                </p>
+                
+                <div className="space-y-2 text-sm">
+                  <p className="text-slate-600 font-semibold">
+                    Comment débloquer le contenu ?
+                  </p>
+                  <ol className="list-decimal list-inside space-y-1 text-slate-500 ml-2">
+                    <li>Achetez l'option post-partum quand vous le souhaitez</li>
+                    <li>Après l'accouchement, allez dans <strong>Profil → Informations de grossesse</strong></li>
+                    <li>Cliquez sur l'icône bébé pour confirmer votre accouchement</li>
+                    <li>Votre abonnement Premium prend fin et le contenu se débloque !</li>
+                  </ol>
+                </div>
               </div>
               
               {/* Parrainage */}
@@ -233,8 +242,9 @@ function PricingPage() {
             <div>
               <h4 className="font-bold text-slate-700 mb-2">Comment accéder au suivi post-partum ?</h4>
               <p className="text-slate-600">
-                L'option devient achetable (8€) après 6 mois d'abonnement Premium. 
-                Vous pouvez aussi l'obtenir gratuitement en parrainant 2 amies qui s'inscrivent !
+                Vous pouvez acheter l'option (8€) à tout moment. Le contenu sera débloqué après avoir confirmé votre accouchement 
+                via l'icône bébé dans Profil → Informations de grossesse. Votre abonnement Premium prend alors fin.
+                Vous pouvez aussi l'obtenir gratuitement en parrainant 2 amies !
               </p>
             </div>
             <div>

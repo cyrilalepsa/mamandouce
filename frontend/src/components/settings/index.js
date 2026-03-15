@@ -6,3 +6,4 @@ export { RefundSection } from './RefundSection';
 export { PostpartumStatusSection } from './PostpartumStatusSection';
 export { NotificationsSection } from './NotificationsSection';
 export { TwoFactorSection } from './TwoFactorSection';
+export { PregnancyInfoSection } from './PregnancyInfoSection';

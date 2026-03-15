@@ -156,7 +156,19 @@ Application pour les femmes enceintes avec :
   - 6 suggestions de questions prédéfinies
   - Ton chaleureux et bienveillant
   - Disclaimer médical
-  - Carte d'accès rapide sur la page d'accueil
+  - **Bulle flottante discrète** en bas à droite (au lieu d'une page dédiée)
+  - Fenêtre de chat compacte avec minimisation
+
+## Modifications UX (15 Mars 2026 - soir)
+- [x] **Section "Informations de grossesse"** dans Paramètres (pour premium)
+  - Bouton "J'ai accouché" avec icône bébé
+  - Confirmation de la date d'accouchement
+  - Fin du premium et déblocage du post-partum
+
+- [x] **Offre Post-partum (8€) clarifiée**
+  - Badge "Achat possible à tout moment"
+  - 4 étapes pour débloquer le contenu expliquées
+  - Référence à Profil → Informations de grossesse
 
 ### API Endpoints Chatbot
 - `POST /api/chatbot/message` - Envoyer un message et recevoir une réponse

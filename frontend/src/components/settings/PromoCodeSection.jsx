@@ -2,22 +2,16 @@ import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
-import { Gift, Crown, Sparkles, Baby, AlertTriangle } from 'lucide-react';
+import { Gift, Crown, Sparkles } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'sonner';
 
 export function PromoCodeSection({ 
   subscriptionStatus, 
-  setSubscriptionStatus,
-  onLoadFullStatus,
-  onNavigate 
+  setSubscriptionStatus
 }) {
   const [promoCode, setPromoCode] = useState('');
   const [redeemingCode, setRedeemingCode] = useState(false);
-  const [showBirthConfirm, setShowBirthConfirm] = useState(false);
-  const [birthDate, setBirthDate] = useState('');
-  const [babyName, setBabyName] = useState('');
-  const [confirmingBirth, setConfirmingBirth] = useState(false);
 
   const handleRedeemCode = async () => {
     if (!promoCode.trim()) {
@@ -35,38 +29,6 @@ export function PromoCodeSection({
       toast.error(error.response?.data?.detail || 'Code invalide');
     } finally {
       setRedeemingCode(false);
-    }
-  };
-
-  const handleBirthConfirmation = async () => {
-    if (!birthDate) {
-      toast.error('Veuillez entrer la date d\'accouchement');
-      return;
-    }
-    
-    const confirmed = window.confirm(
-      '⚠️ ATTENTION ⚠️\n\n' +
-      'En confirmant votre accouchement :\n\n' +
-      '• Votre abonnement Premium prendra fin\n' +
-      '• Aucun remboursement ne pourra être demandé\n' +
-      '• Vous accéderez au suivi post-partum (si acheté)\n\n' +
-      'Êtes-vous sûre de vouloir continuer ?'
-    );
-    
-    if (!confirmed) return;
-    
-    setConfirmingBirth(true);
-    try {
-      await api.postpartum.setBirthDate(birthDate, babyName);
-      await api.auth.endPremium();
-      toast.success('Félicitations pour votre bébé ! Votre suivi post-partum est maintenant accessible.');
-      setShowBirthConfirm(false);
-      setSubscriptionStatus('free');
-      onLoadFullStatus?.();
-    } catch (error) {
-      toast.error(error.response?.data?.detail || 'Erreur lors de la confirmation');
-    } finally {
-      setConfirmingBirth(false);
     }
   };
 
@@ -101,75 +63,9 @@ export function PromoCodeSection({
       </div>
 
       {subscriptionStatus === 'premium' ? (
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 p-4 bg-amber-100 rounded-2xl">
-            <Sparkles className="w-5 h-5 text-amber-600" />
-            <p className="text-amber-800 font-semibold">Merci d'être abonnée !</p>
-          </div>
-          
-          {!showBirthConfirm ? (
-            <Button
-              onClick={() => setShowBirthConfirm(true)}
-              data-testid="show-birth-confirm-button"
-              className="w-full bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full py-3 font-semibold"
-            >
-              <Baby className="w-5 h-5 mr-2" />
-              J'ai accouché
-            </Button>
-          ) : (
-            <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 space-y-4">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="w-6 h-6 text-amber-500 flex-shrink-0" />
-                <div>
-                  <h4 className="font-bold text-slate-700">Confirmation d'accouchement</h4>
-                  <p className="text-sm text-slate-600 mt-1">
-                    En confirmant, votre abonnement premium prendra fin et aucun remboursement ne sera possible.
-                    Si vous avez acheté le post-partum, il sera activé.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-semibold text-slate-600 mb-1 block">Date d'accouchement *</label>
-                  <Input
-                    type="date"
-                    value={birthDate}
-                    onChange={(e) => setBirthDate(e.target.value)}
-                    className="rounded-xl border-rose-200"
-                    data-testid="birth-date-confirm-input"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-slate-600 mb-1 block">Prénom de bébé</label>
-                  <Input
-                    value={babyName}
-                    onChange={(e) => setBabyName(e.target.value)}
-                    placeholder="Prénom"
-                    className="rounded-xl border-rose-200"
-                    data-testid="baby-name-confirm-input"
-                  />
-                </div>
-              </div>
-              
-              <div className="flex gap-3">
-                <Button
-                  onClick={() => setShowBirthConfirm(false)}
-                  className="flex-1 bg-slate-100 text-slate-600 rounded-full py-2"
-                >
-                  Annuler
-                </Button>
-                <Button
-                  onClick={handleBirthConfirmation}
-                  disabled={confirmingBirth}
-                  data-testid="confirm-birth-button"
-                  className="flex-1 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full py-2"
-                >
-                  {confirmingBirth ? 'Confirmation...' : 'Confirmer l\'accouchement'}
-                </Button>
-              </div>
-            </div>
-          )}
+        <div className="flex items-center gap-2 p-4 bg-amber-100 rounded-2xl">
+          <Sparkles className="w-5 h-5 text-amber-600" />
+          <p className="text-amber-800 font-semibold">Merci d'être abonnée !</p>
         </div>
       ) : (
         <div className="flex gap-3">

@@ -11,7 +11,8 @@ import {
   RefundSection,
   PostpartumStatusSection,
   NotificationsSection,
-  TwoFactorSection
+  TwoFactorSection,
+  PregnancyInfoSection
 } from '../components/settings';
 
 function SettingsPage() {
@@ -108,6 +109,13 @@ function SettingsPage() {
           <>
             {/* Section Code Promo / Premium */}
             <PromoCodeSection 
+              subscriptionStatus={subscriptionStatus}
+              setSubscriptionStatus={setSubscriptionStatus}
+              onLoadFullStatus={loadFullSubscriptionStatus}
+            />
+            
+            {/* Section Informations de grossesse (pour les premium) */}
+            <PregnancyInfoSection
               subscriptionStatus={subscriptionStatus}
               setSubscriptionStatus={setSubscriptionStatus}
               onLoadFullStatus={loadFullSubscriptionStatus}
