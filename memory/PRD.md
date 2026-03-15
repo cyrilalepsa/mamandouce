@@ -96,6 +96,38 @@ Application pour les femmes enceintes avec :
   - 8 sous-composants créés dans `/app/frontend/src/components/profile/`
   - Composants: SubscriptionStatusCards, UserInfoCard, PregnancyCard, NotificationsCard, QuickLoginCard, FertilityRemindersCard, ContactCard, MessageHistoryCard
 
+### Features Ajoutées (15 Mars 2026 - Session 5)
+
+- [x] **Fonction Favoris pour recettes**
+  - Coeur cliquable sur chaque recette (rouge si favori, transparent sinon)
+  - Filtre "Favoris" pour afficher uniquement les recettes sélectionnées
+  - Persistance des favoris en base de données par utilisateur
+  - API: `GET /api/postpartum/favorites`, `POST /api/postpartum/favorites/toggle`
+  - Toast de confirmation "Recette ajoutée/retirée des favoris"
+
+- [x] **Refactoring COMPLET de PostpartumPage.js**
+  - Code réduit de 1261 lignes à 533 lignes (-58%)
+  - 9 sous-composants créés dans `/app/frontend/src/components/postpartum/`:
+    - AppointmentsSection.jsx (121 lignes)
+    - DifficultiesSection.jsx (124 lignes)
+    - BreastfeedingSection.jsx (108 lignes)
+    - FormulaSection.jsx (115 lignes)
+    - DiapersSection.jsx (93 lignes)
+    - BabywearingSection.jsx (81 lignes)
+    - DiversificationSection.jsx (114 lignes)
+    - RecipesSection.jsx (273 lignes) - inclut fonction favoris
+    - PrecautionsSection.jsx (75 lignes)
+  - Code plus maintenable et testable
+
+- [x] **Correction bug hydratation React**
+  - Résolu le problème de boutons imbriqués dans RecipesSection
+  - Remplacement `<button>` par `<div>` pour le conteneur de recette
+
+- [x] **Tests automatisés**
+  - 100% backend tests passés (11/11)
+  - 95% frontend tests passés
+  - Fichier de test: `/app/backend/tests/test_postpartum_favorites.py`
+
 ### Features Ajoutées (15 Mars 2026 - Session 4)
 - [x] **Section Difficultés améliorée**
   - Affichage des conseils pratiques pour chaque difficulté

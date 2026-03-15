@@ -218,11 +218,11 @@ export function RecipesSection({ babyRecipes, favorites, onFavoritesChange }) {
                   </h4>
                   <div className="grid grid-cols-1 gap-1">
                     {categoryRecipes.map((recipe, idx) => (
-                      <button
+                      <div
                         key={idx}
                         onClick={() => setSelectedRecipe(recipe)}
                         data-testid={`recipe-${recipe.name.replace(/\s+/g, '-').toLowerCase()}`}
-                        className="flex items-center justify-between w-full px-3 py-2 text-left rounded-lg hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 group"
+                        className="flex items-center justify-between w-full px-3 py-2 text-left rounded-lg hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 group cursor-pointer"
                       >
                         <span className="text-sm text-slate-700">{recipe.name}</span>
                         <div className="flex items-center gap-2">
@@ -245,7 +245,7 @@ export function RecipesSection({ babyRecipes, favorites, onFavoritesChange }) {
                           )}
                           <ChevronDown className="w-4 h-4 text-slate-400" />
                         </div>
-                      </button>
+                      </div>
                     ))}
                   </div>
                 </div>
