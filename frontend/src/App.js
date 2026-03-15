@@ -31,6 +31,7 @@ import GuidePage from './pages/GuidePage';
 import ChatbotPage from './pages/ChatbotPage';
 import TrackingPage from './pages/TrackingPage';
 import ChatBubble from './components/ChatBubble';
+import { PWAInstallBanner } from './components/PWAInstallBanner';
 import { Toaster } from './components/ui/sonner';
 
 function App() {
@@ -87,6 +88,7 @@ function App() {
       </BrowserRouter>
       <Toaster />
       <ChatBubble />
+      <PWAInstallBanner />
     </div>
   );
 }
