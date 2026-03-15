@@ -641,52 +641,299 @@ export default function PostpartumPage() {
 
         {activeSection === 'breastfeeding' && content?.breastfeeding && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-700">Guide de l'allaitement</h2>
-            {content.breastfeeding.sections?.map((section, index) => (
-              <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
-                <h3 className="font-bold text-slate-700 mb-2">{section.title}</h3>
-                <p className="text-sm text-slate-600 mb-3">{section.content}</p>
-                {section.tips && (
-                  <ul className="text-xs text-slate-600 space-y-1">
-                    {section.tips.map((tip, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <span className="text-pink-500">💡</span>
-                        <span>{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+            <h2 className="text-lg font-bold text-slate-700">{content.breastfeeding.title || "Guide de l'allaitement"}</h2>
+            <p className="text-sm text-slate-600">{content.breastfeeding.description}</p>
+            
+            {/* Bénéfices */}
+            <Card className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl p-4 shadow-sm">
+              <h3 className="font-bold text-slate-700 mb-3">Les bienfaits de l'allaitement</h3>
+              <div className="grid grid-cols-1 gap-2">
+                {content.breastfeeding.benefits?.map((benefit, i) => (
+                  <div key={i} className="flex items-start gap-2 text-sm">
+                    <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-slate-600">{benefit}</span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+            
+            {/* Positions */}
+            {content.breastfeeding.positions && Array.isArray(content.breastfeeding.positions) && content.breastfeeding.positions[0]?.name && (
+              <>
+                <h3 className="font-bold text-slate-700">Les positions d'allaitement</h3>
+                {content.breastfeeding.positions.map((pos, index) => (
+                  <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
+                    <h4 className="font-bold text-slate-700 mb-2">{pos.name}</h4>
+                    <p className="text-sm text-slate-600 mb-3">{pos.description}</p>
+                    {pos.video_url && (
+                      <a href={pos.video_url} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-sm font-semibold hover:bg-red-200">
+                        <Play className="w-4 h-4" />Voir en vidéo<ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
+                  </Card>
+                ))}
+              </>
+            )}
+            
+            {/* Conseils */}
+            <Card className="bg-amber-50 rounded-2xl p-4 border border-amber-200">
+              <h3 className="font-bold text-amber-800 mb-3">Conseils pratiques</h3>
+              <ul className="space-y-2">
+                {content.breastfeeding.tips?.map((tip, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-amber-900">
+                    <span>💡</span><span>{tip}</span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+            
+            {/* Problèmes et solutions */}
+            {content.breastfeeding.problems_solutions && (
+              <>
+                <h3 className="font-bold text-slate-700">Problèmes fréquents et solutions</h3>
+                {content.breastfeeding.problems_solutions.map((item, index) => (
+                  <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm border-l-4 border-pink-400">
+                    <h4 className="font-bold text-slate-700 mb-2">{item.problem}</h4>
+                    <ul className="text-sm text-slate-600 space-y-1 mb-3">
+                      {item.solutions?.map((sol, i) => (
+                        <li key={i}>• {sol}</li>
+                      ))}
+                    </ul>
+                    {item.video_url && (
+                      <a href={item.video_url} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-xs font-semibold hover:bg-red-200">
+                        <Play className="w-3 h-3" />Vidéo explicative
+                      </a>
+                    )}
+                  </Card>
+                ))}
+              </>
+            )}
+            
+            {/* Ressources */}
+            {content.breastfeeding.resources && (
+              <Card className="bg-sky-50 rounded-2xl p-4 border border-sky-200">
+                <h3 className="font-bold text-sky-800 mb-2">Ressources utiles</h3>
+                <ul className="text-sm text-sky-700 space-y-1">
+                  {content.breastfeeding.resources.map((res, i) => (
+                    <li key={i}>📞 {res}</li>
+                  ))}
+                </ul>
               </Card>
-            ))}
+            )}
+            
+            {/* Vidéo générale */}
+            {content.breastfeeding.video_general && (
+              <a href={content.breastfeeding.video_general} target="_blank" rel="noopener noreferrer"
+                className="block bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-2xl p-4 text-center hover:opacity-90">
+                <Play className="w-8 h-8 mx-auto mb-2" />
+                <p className="font-bold">Guide complet de l'allaitement en vidéo</p>
+              </a>
+            )}
+            
+            {/* Alerte */}
+            {content.breastfeeding.alert && (
+              <div className="bg-amber-100 border-l-4 border-amber-500 p-3 rounded-r-xl">
+                <p className="text-sm text-amber-800"><AlertTriangle className="w-4 h-4 inline mr-2" />{content.breastfeeding.alert}</p>
+              </div>
+            )}
           </div>
         )}
 
         {activeSection === 'formula' && content?.formula && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-700">Lait infantile</h2>
-            {content.formula.sections?.map((section, index) => (
+            <h2 className="text-lg font-bold text-slate-700">{content.formula.title || "Guide du biberon"}</h2>
+            <p className="text-sm text-slate-600">{content.formula.description || content.formula.info}</p>
+            
+            {/* Préparation */}
+            {content.formula.preparation && (
+              <Card className="bg-gradient-to-r from-sky-50 to-cyan-50 rounded-2xl p-4 shadow-sm">
+                <h3 className="font-bold text-slate-700 mb-3">Préparation du biberon</h3>
+                <ol className="text-sm text-slate-600 space-y-2">
+                  {content.formula.preparation.steps?.map((step, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="bg-sky-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0">{i+1}</span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+                {content.formula.preparation.video_url && (
+                  <a href={content.formula.preparation.video_url} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-sm font-semibold hover:bg-red-200 mt-3">
+                    <Play className="w-4 h-4" />Voir en vidéo
+                  </a>
+                )}
+              </Card>
+            )}
+            
+            {/* Types de lait */}
+            <h3 className="font-bold text-slate-700">Types de lait infantile</h3>
+            {content.formula.types?.map((type, index) => (
               <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
-                <h3 className="font-bold text-slate-700 mb-2">{section.title}</h3>
-                <p className="text-sm text-slate-600">{section.content}</p>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">{type.icon || '🍼'}</span>
+                    <h4 className="font-bold text-slate-700">{type.name}</h4>
+                  </div>
+                  <span className="bg-sky-100 text-sky-700 px-2 py-1 rounded-full text-xs font-semibold">{type.age}</span>
+                </div>
+                <p className="text-sm text-slate-600">{type.description}</p>
               </Card>
             ))}
+            
+            {/* Quantités par âge */}
+            {content.formula.quantities && (
+              <Card className="bg-green-50 rounded-2xl p-4 border border-green-200">
+                <h3 className="font-bold text-green-800 mb-3">Quantités selon l'âge</h3>
+                <div className="space-y-2">
+                  {content.formula.quantities.map((q, i) => (
+                    <div key={i} className="flex justify-between items-center text-sm bg-white rounded-lg p-2">
+                      <span className="font-semibold text-slate-700">{q.age}</span>
+                      <span className="text-slate-600">{q.quantity} × {q.frequency}</span>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
+            
+            {/* Conseils */}
+            <Card className="bg-amber-50 rounded-2xl p-4 border border-amber-200">
+              <h3 className="font-bold text-amber-800 mb-3">Conseils pratiques</h3>
+              <ul className="space-y-2">
+                {content.formula.tips?.map((tip, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-amber-900">
+                    <span>💡</span><span>{tip}</span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+            
+            {/* Problèmes et solutions */}
+            {content.formula.problems_solutions && (
+              <>
+                <h3 className="font-bold text-slate-700">Problèmes fréquents</h3>
+                {content.formula.problems_solutions.map((item, index) => (
+                  <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm border-l-4 border-sky-400">
+                    <h4 className="font-bold text-slate-700 mb-2">{item.problem}</h4>
+                    <ul className="text-sm text-slate-600 space-y-1 mb-3">
+                      {item.solutions?.map((sol, i) => (
+                        <li key={i}>• {sol}</li>
+                      ))}
+                    </ul>
+                    {item.video_url && (
+                      <a href={item.video_url} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-xs font-semibold hover:bg-red-200">
+                        <Play className="w-3 h-3" />Vidéo explicative
+                      </a>
+                    )}
+                  </Card>
+                ))}
+              </>
+            )}
+            
+            {/* Vidéo générale */}
+            {content.formula.video_general && (
+              <a href={content.formula.video_general} target="_blank" rel="noopener noreferrer"
+                className="block bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-2xl p-4 text-center hover:opacity-90">
+                <Play className="w-8 h-8 mx-auto mb-2" />
+                <p className="font-bold">Guide complet du biberon en vidéo</p>
+              </a>
+            )}
+            
+            {/* Alerte */}
+            {content.formula.alert && (
+              <div className="bg-amber-100 border-l-4 border-amber-500 p-3 rounded-r-xl">
+                <p className="text-sm text-amber-800"><AlertTriangle className="w-4 h-4 inline mr-2" />{content.formula.alert}</p>
+              </div>
+            )}
           </div>
         )}
 
         {activeSection === 'diapers' && content?.diapers && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-700">Guide des couches</h2>
-            {content.diapers.sizes?.map((size, index) => (
-              <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-bold text-slate-700">{size.name}</h3>
-                  <span className="bg-sky-100 text-sky-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    {size.weight}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-600">{size.age}</p>
+            <h2 className="text-lg font-bold text-slate-700">{content.diapers.title || "Guide des couches"}</h2>
+            <p className="text-sm text-slate-600">{content.diapers.description}</p>
+            <p className="text-sm text-pink-600 bg-pink-50 p-3 rounded-xl">📊 Fréquence : {content.diapers.frequency}</p>
+            
+            {/* Tailles */}
+            <h3 className="font-bold text-slate-700">Tailles par âge et poids</h3>
+            <div className="grid grid-cols-2 gap-3">
+              {content.diapers.sizes?.map((size, index) => (
+                <Card key={index} className="bg-white rounded-2xl p-3 shadow-sm text-center">
+                  <div className="text-3xl mb-1">{size.icon || '👶'}</div>
+                  <div className="bg-sky-500 text-white rounded-full px-3 py-1 text-lg font-bold inline-block mb-2">T{size.size}</div>
+                  <p className="text-sm font-semibold text-slate-700">{size.weight}</p>
+                  <p className="text-xs text-slate-500">{size.age}</p>
+                  {size.per_day && <p className="text-xs text-pink-600 mt-1">{size.per_day}/jour</p>}
+                </Card>
+              ))}
+            </div>
+            
+            {/* Astuces économies */}
+            {content.diapers.money_saving_tips && (
+              <>
+                <h3 className="font-bold text-slate-700">💰 Astuces pour économiser</h3>
+                {content.diapers.money_saving_tips.map((tip, index) => (
+                  <Card key={index} className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-4 shadow-sm border border-green-200">
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl">{tip.icon}</span>
+                      <div className="flex-1">
+                        <h4 className="font-bold text-green-800">{tip.tip}</h4>
+                        <p className="text-sm text-green-700">{tip.description}</p>
+                        {tip.url && (
+                          <a href={tip.url} target="_blank" rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-green-600 text-sm mt-2 hover:underline">
+                            Voir le site <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </>
+            )}
+            
+            {/* Conseils */}
+            <Card className="bg-amber-50 rounded-2xl p-4 border border-amber-200">
+              <h3 className="font-bold text-amber-800 mb-3">Conseils pour le change</h3>
+              <ul className="space-y-2">
+                {content.diapers.tips?.map((tip, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-amber-900">
+                    <Check className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <span>{tip}</span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+            
+            {/* Tutoriel change */}
+            {content.diapers.change_tutorial && (
+              <Card className="bg-sky-50 rounded-2xl p-4 border border-sky-200">
+                <h3 className="font-bold text-sky-800 mb-3">Comment changer bébé</h3>
+                <ol className="text-sm text-sky-700 space-y-2">
+                  {content.diapers.change_tutorial.steps?.map((step, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="bg-sky-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0">{i+1}</span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+                {content.diapers.change_tutorial.video_url && (
+                  <a href={content.diapers.change_tutorial.video_url} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-sm font-semibold hover:bg-red-200 mt-3">
+                    <Play className="w-4 h-4" />Voir en vidéo
+                  </a>
+                )}
               </Card>
-            ))}
+            )}
+            
+            {/* Alerte */}
+            {content.diapers.alert && (
+              <div className="bg-amber-100 border-l-4 border-amber-500 p-3 rounded-r-xl">
+                <p className="text-sm text-amber-800"><AlertTriangle className="w-4 h-4 inline mr-2" />{content.diapers.alert}</p>
+              </div>
+            )}
           </div>
         )}
 

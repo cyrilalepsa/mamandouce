@@ -436,85 +436,321 @@ POSTPARTUM_CONTENT = {
     "difficulties": [
         {
             "title": "Baby blues",
-            "description": "Période de tristesse passagère (3-10 jours après l'accouchement). C'est normal et temporaire.",
-            "symptoms": ["Pleurs inexpliqués", "Sautes d'humeur", "Fatigue intense", "Anxiété légère"],
-            "advice": "Reposez-vous, acceptez l'aide de vos proches, parlez de vos émotions.",
-            "alert": "Si les symptômes persistent au-delà de 2 semaines, consultez votre médecin."
+            "description": "Période de tristesse passagère (3-10 jours après l'accouchement). C'est normal et temporaire, touchant 50 à 80% des mamans.",
+            "symptoms": ["Pleurs inexpliqués", "Sautes d'humeur", "Fatigue intense", "Anxiété légère", "Sentiment de vide"],
+            "advice": [
+                "Reposez-vous autant que possible",
+                "Acceptez l'aide de vos proches sans culpabiliser",
+                "Parlez de vos émotions à votre partenaire ou une amie",
+                "Sortez prendre l'air quotidiennement, même 10 minutes",
+                "Ne restez pas seule, entourez-vous"
+            ],
+            "alert": "Si les symptômes persistent au-delà de 2 semaines, consultez votre médecin.",
+            "video_url": "https://www.youtube.com/watch?v=LCZ7xNPCCos",
+            "resources": ["Numéro vert Parentalité : 0 800 00 34 56 (gratuit)"]
         },
         {
             "title": "Dépression post-partum",
-            "description": "Trouble plus profond qui nécessite une prise en charge médicale.",
-            "symptoms": ["Tristesse profonde persistante", "Difficultés à créer un lien avec bébé", "Pensées négatives", "Troubles du sommeil importants"],
-            "advice": "N'hésitez pas à consulter rapidement. Ce n'est pas un échec, c'est une maladie qui se soigne.",
-            "alert": "Contactez votre médecin ou appelez le 3114 (numéro national de prévention du suicide)."
+            "description": "Trouble plus profond qui touche 10 à 20% des mamans et nécessite une prise en charge médicale. Ce n'est pas un échec, c'est une maladie qui se soigne très bien.",
+            "symptoms": ["Tristesse profonde persistante", "Difficultés à créer un lien avec bébé", "Pensées négatives récurrentes", "Troubles du sommeil importants", "Perte d'appétit", "Sentiment de ne pas être à la hauteur"],
+            "advice": [
+                "Consultez rapidement un professionnel de santé",
+                "Ne culpabilisez pas, ce n'est pas de votre faute",
+                "Parlez-en à votre entourage",
+                "Un traitement adapté permet une guérison complète",
+                "Des groupes de parole existent et aident beaucoup"
+            ],
+            "alert": "Contactez votre médecin ou appelez le 3114 (numéro national de prévention du suicide).",
+            "video_url": "https://www.youtube.com/watch?v=SxS6U-lz8nE",
+            "resources": ["3114 - Numéro national de prévention du suicide", "Association Maman Blues : www.maman-blues.fr"]
         },
         {
             "title": "Difficultés d'allaitement",
-            "description": "Crevasses, engorgement, mastite sont fréquents mais se traitent bien.",
-            "symptoms": ["Douleurs lors des tétées", "Seins durs et douloureux", "Fièvre (mastite)"],
-            "advice": "Consultez une conseillère en lactation ou votre sage-femme rapidement.",
-            "alert": "En cas de fièvre avec douleur au sein, consultez dans les 24h."
+            "description": "Crevasses, engorgement, mastite sont fréquents mais se traitent bien avec un accompagnement adapté.",
+            "symptoms": ["Douleurs lors des tétées", "Seins durs et douloureux", "Fièvre (mastite)", "Crevasses douloureuses", "Bébé qui ne prend pas bien le sein"],
+            "advice": [
+                "Consultez une conseillère en lactation IBCLC rapidement",
+                "Vérifiez la position et la prise du sein",
+                "Appliquez du lait maternel sur les crevasses",
+                "En cas d'engorgement : tétées fréquentes + froid entre les tétées",
+                "Utilisez des coquillages d'allaitement ou des coussinets en argent"
+            ],
+            "alert": "En cas de fièvre avec douleur au sein, consultez dans les 24h (risque de mastite).",
+            "video_url": "https://www.youtube.com/watch?v=5_V7V4Xwlno",
+            "resources": ["Trouver une consultante IBCLC : www.consultants-lactation.org"]
         },
         {
             "title": "Fatigue extrême",
-            "description": "Les nuits hachées et les soins constants épuisent.",
-            "symptoms": ["Épuisement permanent", "Difficultés de concentration", "Irritabilité"],
-            "advice": "Dormez quand bébé dort, acceptez toute l'aide proposée, ne culpabilisez pas.",
-            "alert": "Si la fatigue s'accompagne de signes dépressifs, parlez-en à votre médecin."
+            "description": "Les nuits hachées et les soins constants épuisent. C'est normal mais il faut prévenir l'épuisement maternel.",
+            "symptoms": ["Épuisement permanent", "Difficultés de concentration", "Irritabilité", "Pleurs faciles", "Sentiment d'être débordée"],
+            "advice": [
+                "Dormez quand bébé dort, même en journée",
+                "Acceptez TOUTE l'aide proposée sans culpabiliser",
+                "Faites des siestes flash de 20 minutes",
+                "Relais avec le co-parent pour les nuits",
+                "Simplifiez : repas simples, ménage minimum"
+            ],
+            "alert": "Si la fatigue s'accompagne de signes dépressifs, parlez-en à votre médecin.",
+            "video_url": "https://www.youtube.com/watch?v=h9h3r3p8Kzg"
+        },
+        {
+            "title": "Coliques du nourrisson",
+            "description": "Pleurs intenses et prolongés, souvent en fin de journée. Pic vers 6 semaines, disparaissent vers 3-4 mois.",
+            "symptoms": ["Pleurs inconsolables en fin de journée", "Bébé qui se tortille", "Ventre tendu", "Poings serrés", "Visage rouge"],
+            "advice": [
+                "Portez bébé en position tigre (sur l'avant-bras)",
+                "Massez le ventre dans le sens des aiguilles d'une montre",
+                "Essayez le bruit blanc (aspirateur, sèche-cheveux)",
+                "Balancez doucement bébé",
+                "Gardez votre calme, bébé ressent votre stress"
+            ],
+            "alert": "Consultez si les pleurs sont accompagnés de fièvre, vomissements ou refus de manger.",
+            "video_url": "https://www.youtube.com/watch?v=o9uHOZmqKSc"
+        },
+        {
+            "title": "Problèmes de sommeil de bébé",
+            "description": "Un nouveau-né ne fait pas ses nuits, c'est physiologique. Le sommeil se met en place progressivement.",
+            "symptoms": ["Réveils très fréquents", "Difficultés d'endormissement", "Confusion jour/nuit", "Bébé qui ne dort que dans les bras"],
+            "advice": [
+                "Différenciez le jour et la nuit (lumière, bruit le jour / calme, obscurité la nuit)",
+                "Instaurez un rituel du coucher dès les premières semaines",
+                "Couchez bébé somnolent mais éveillé",
+                "Ne le stimulez pas lors des réveils nocturnes",
+                "Patience : les nuits complètes arrivent entre 3 et 6 mois en général"
+            ],
+            "alert": "Si bébé dort énormément et est difficile à réveiller, consultez.",
+            "video_url": "https://www.youtube.com/watch?v=hPJZ6ZYXY3A"
         }
     ],
     "breastfeeding": {
+        "title": "Guide de l'allaitement",
+        "description": "L'allaitement maternel est recommandé par l'OMS jusqu'à 6 mois exclusif. C'est un apprentissage pour vous et bébé.",
         "benefits": [
-            "Protection immunitaire optimale pour bébé",
-            "Digestion facilitée",
-            "Lien mère-enfant renforcé",
+            "Protection immunitaire optimale pour bébé (anticorps)",
+            "Digestion facilitée (lait parfaitement adapté)",
+            "Lien mère-enfant renforcé (ocytocine)",
             "Récupération post-partum accélérée pour maman",
-            "Économique et écologique"
+            "Réduction du risque de cancer du sein",
+            "Économique et écologique",
+            "Toujours à bonne température et disponible"
+        ],
+        "positions": [
+            {
+                "name": "Position Madone (classique)",
+                "description": "Bébé face à vous, sa tête dans le creux de votre coude, son corps contre le vôtre.",
+                "video_url": "https://www.youtube.com/watch?v=y0lL3V4bDOk"
+            },
+            {
+                "name": "Position Ballon de rugby",
+                "description": "Bébé sous votre bras, ses pieds vers l'arrière. Idéale après césarienne.",
+                "video_url": "https://www.youtube.com/watch?v=2D5c6IHvqQo"
+            },
+            {
+                "name": "Position Allongée",
+                "description": "Vous et bébé allongés face à face. Parfaite pour les tétées de nuit.",
+                "video_url": "https://www.youtube.com/watch?v=u6Nc-smCQRo"
+            },
+            {
+                "name": "Biological nurturing (BN)",
+                "description": "Maman semi-allongée, bébé sur le ventre. Position instinctive qui facilite la prise du sein.",
+                "video_url": "https://www.youtube.com/watch?v=vDJST3Xpvs8"
+            }
         ],
         "tips": [
-            "Mettez bébé au sein dès la première heure si possible",
-            "Allaitez à la demande, sans regarder l'heure",
-            "Vérifiez la bonne prise du sein (bouche grande ouverte)",
-            "Alternez les positions d'allaitement",
-            "Hydratez-vous abondamment",
-            "En cas de douleur, consultez rapidement"
+            "Mettez bébé au sein dès la première heure si possible (peau à peau)",
+            "Allaitez à la demande, sans regarder l'heure (8 à 12 fois/24h au début)",
+            "Vérifiez la bonne prise : bouche grande ouverte, lèvres retroussées, menton contre le sein",
+            "On doit entendre bébé déglutir après 2-3 succions",
+            "Alternez les seins à chaque tétée",
+            "Hydratez-vous abondamment (2L d'eau/jour minimum)",
+            "Alimentation variée et équilibrée",
+            "En cas de douleur persistante, consultez rapidement"
         ],
-        "positions": ["Madone", "Ballon de rugby", "Allongée", "Biological nurturing"],
-        "alert": "L'allaitement ne doit pas être douloureux. Une douleur persistante nécessite un avis professionnel."
+        "problems_solutions": [
+            {
+                "problem": "Crevasses",
+                "solutions": ["Vérifiez la prise du sein", "Appliquez du lait maternel et laissez sécher", "Utilisez des coquillages d'allaitement", "Lanoline purifiée entre les tétées"],
+                "video_url": "https://www.youtube.com/watch?v=n3lRBn4Pz2M"
+            },
+            {
+                "problem": "Engorgement",
+                "solutions": ["Tétées très fréquentes", "Massez le sein pendant la tétée", "Appliquez du froid entre les tétées", "Exprimez un peu de lait sous la douche chaude"],
+                "video_url": "https://www.youtube.com/watch?v=jLTVf7nLkWA"
+            },
+            {
+                "problem": "Mastite",
+                "solutions": ["Continuez d'allaiter (important !)", "Repos au lit", "Consultez rapidement si fièvre", "Antibiotiques parfois nécessaires"],
+                "video_url": "https://www.youtube.com/watch?v=GCHaX8L7ewo"
+            },
+            {
+                "problem": "Manque de lait (impression)",
+                "solutions": ["Allaitez plus souvent (stimule la production)", "Peau à peau fréquent", "Repos et hydratation", "La plupart du temps, c'est une fausse impression"],
+                "video_url": "https://www.youtube.com/watch?v=xB-iahwbYsk"
+            }
+        ],
+        "alert": "L'allaitement ne doit pas être douloureux au-delà des premières secondes. Une douleur persistante nécessite un avis professionnel.",
+        "resources": [
+            "La Leche League France : www.lllfrance.org",
+            "Consultants IBCLC : www.consultants-lactation.org",
+            "SOS Allaitement : 0 800 800 669 (gratuit)"
+        ],
+        "video_general": "https://www.youtube.com/watch?v=wjt-Ashodw8"
     },
     "formula": {
-        "info": "Le lait infantile est une alternative parfaitement adaptée aux besoins de bébé.",
+        "title": "Guide du biberon",
+        "description": "Le lait infantile est une alternative parfaitement adaptée aux besoins de bébé. Que ce soit par choix ou par nécessité, donner le biberon est aussi un moment de tendresse.",
+        "info": "Les laits infantiles sont très réglementés et couvrent tous les besoins nutritionnels de bébé.",
+        "preparation": {
+            "steps": [
+                "Lavez-vous les mains",
+                "Versez l'eau (température ambiante ou tiède) dans le biberon",
+                "Ajoutez le nombre de mesurettes adapté (1 mesurette arasée pour 30ml)",
+                "Fermez et secouez énergiquement",
+                "Vérifiez la température sur l'intérieur de votre poignet",
+                "Donnez le biberon dans les 30 minutes ou jetez"
+            ],
+            "video_url": "https://www.youtube.com/watch?v=eZnLgP1zMno"
+        },
         "tips": [
-            "Suivez les dosages indiqués sur la boîte",
-            "Utilisez de l'eau faiblement minéralisée",
-            "Préparez le biberon juste avant le repas",
-            "Température idéale : 37°C (tiède)",
-            "Ne réchauffez jamais un biberon entamé",
-            "Stérilisez les biberons les premiers mois"
+            "Utilisez de l'eau faiblement minéralisée (< 500mg/L de résidu sec)",
+            "1 mesurette arasée pour 30ml d'eau (ne pas tasser)",
+            "Température idéale : 37°C (tiède, pas chaud)",
+            "Ne réchauffez JAMAIS un biberon entamé",
+            "Jetez le reste de lait après 1h maximum",
+            "Stérilisez les biberons les 4 premiers mois",
+            "Gardez bébé semi-assis pendant le biberon",
+            "Faites des pauses et des rots pendant la tétée"
         ],
         "types": [
-            {"name": "Lait 1er âge", "age": "0-6 mois", "description": "Adapté aux besoins du nouveau-né"},
-            {"name": "Lait 2ème âge", "age": "6-12 mois", "description": "Accompagne la diversification"},
-            {"name": "Lait de croissance", "age": "1-3 ans", "description": "Complète l'alimentation diversifiée"}
+            {"name": "Lait 1er âge", "age": "0-6 mois", "description": "Adapté aux besoins spécifiques du nouveau-né", "icon": "🍼"},
+            {"name": "Lait 2ème âge", "age": "6-12 mois", "description": "Accompagne la diversification alimentaire", "icon": "🍼"},
+            {"name": "Lait de croissance", "age": "1-3 ans", "description": "Complète l'alimentation diversifiée, enrichi en fer", "icon": "🥛"},
+            {"name": "Lait AR (anti-régurgitations)", "age": "Sur avis médical", "description": "Épaissi pour limiter les reflux", "icon": "💊"},
+            {"name": "Lait HA (hypoallergénique)", "age": "Sur avis médical", "description": "Pour les bébés à risque allergique", "icon": "🛡️"}
         ],
-        "alert": "Ne changez pas de lait sans avis médical. En cas de régurgitations importantes, coliques ou allergies, consultez."
+        "quantities": [
+            {"age": "0-1 mois", "quantity": "60-90ml", "frequency": "7-8 biberons/jour"},
+            {"age": "1-2 mois", "quantity": "90-120ml", "frequency": "6-7 biberons/jour"},
+            {"age": "2-3 mois", "quantity": "120-150ml", "frequency": "5-6 biberons/jour"},
+            {"age": "3-4 mois", "quantity": "150-180ml", "frequency": "5 biberons/jour"},
+            {"age": "4-6 mois", "quantity": "180-210ml", "frequency": "4-5 biberons/jour"}
+        ],
+        "equipment": [
+            {"item": "Biberons (verre ou plastique sans BPA)", "quantity": "6-8"},
+            {"item": "Tétines adaptées à l'âge", "quantity": "6-8"},
+            {"item": "Goupillon de nettoyage", "quantity": "1"},
+            {"item": "Stérilisateur (optionnel)", "quantity": "1"},
+            {"item": "Chauffe-biberon (optionnel)", "quantity": "1"}
+        ],
+        "problems_solutions": [
+            {
+                "problem": "Bébé refuse le biberon",
+                "solutions": ["Essayez une autre forme de tétine", "Changez la position", "Faites donner le biberon par quelqu'un d'autre", "Vérifiez la température du lait"],
+                "video_url": "https://www.youtube.com/watch?v=bXpH_dyaJbs"
+            },
+            {
+                "problem": "Régurgitations fréquentes",
+                "solutions": ["Faites des pauses pendant le biberon", "Gardez bébé vertical 20 min après", "Ne le couchez pas juste après", "Consultez si très fréquentes"],
+                "video_url": "https://www.youtube.com/watch?v=_v3qmDGXLfY"
+            },
+            {
+                "problem": "Coliques",
+                "solutions": ["Utilisez une tétine anti-colique", "Faites des rots réguliers", "Massez le ventre de bébé", "Consultez si ça persiste"],
+                "video_url": "https://www.youtube.com/watch?v=o9uHOZmqKSc"
+            }
+        ],
+        "alert": "Ne changez pas de lait sans avis médical. En cas de régurgitations importantes, coliques persistantes ou signes d'allergie (eczéma, diarrhée), consultez votre pédiatre.",
+        "video_general": "https://www.youtube.com/watch?v=RNLnF0BJ8Es"
     },
     "diapers": {
+        "title": "Guide des couches",
+        "description": "Changer bébé régulièrement est essentiel pour son confort et éviter les irritations.",
         "frequency": "8 à 12 changes par jour les premières semaines, puis 6-8 par jour",
         "tips": [
             "Changez bébé dès que la couche est souillée",
-            "Nettoyez toujours de l'avant vers l'arrière",
+            "Nettoyez toujours de l'avant vers l'arrière (surtout pour les filles)",
             "Séchez bien les plis avant de mettre une couche propre",
-            "Utilisez du liniment ou une crème protectrice",
-            "Laissez les fesses à l'air quelques minutes par jour"
+            "Utilisez du liniment oléo-calcaire ou une crème protectrice",
+            "Laissez les fesses à l'air quelques minutes par jour",
+            "La couche ne doit pas être trop serrée (2 doigts doivent passer)"
         ],
         "sizes": [
-            {"size": "1", "weight": "2-5 kg", "age": "Naissance"},
-            {"size": "2", "weight": "3-6 kg", "age": "1-3 mois"},
-            {"size": "3", "weight": "4-9 kg", "age": "3-6 mois"},
-            {"size": "4", "weight": "7-18 kg", "age": "6-18 mois"}
+            {"size": "1", "weight": "2-5 kg", "age": "Naissance - 2 mois", "icon": "👶", "per_day": "10-12"},
+            {"size": "2", "weight": "3-6 kg", "age": "1-3 mois", "icon": "👶", "per_day": "8-10"},
+            {"size": "3", "weight": "4-9 kg", "age": "3-6 mois", "icon": "🧒", "per_day": "6-8"},
+            {"size": "4", "weight": "7-18 kg", "age": "6-18 mois", "icon": "🧒", "per_day": "5-7"},
+            {"size": "5", "weight": "11-25 kg", "age": "18 mois - 3 ans", "icon": "👧", "per_day": "4-6"},
+            {"size": "6", "weight": "15+ kg", "age": "+ de 3 ans", "icon": "👧", "per_day": "4-5"}
         ],
-        "alert": "Rougeurs persistantes = consulter. Ça peut être une allergie ou une mycose."
+        "brands": [
+            {
+                "name": "Pampers",
+                "description": "Marque premium avec programme fidélité avantageux",
+                "loyalty_url": "https://www.pampers.fr/rewards",
+                "loyalty_info": "Scannez les codes sur les paquets pour cumuler des points et obtenir des cadeaux gratuits !"
+            },
+            {
+                "name": "Lotus Baby",
+                "description": "Bon rapport qualité-prix, sans parfum"
+            },
+            {
+                "name": "Carryboo",
+                "description": "Couches écologiques françaises"
+            },
+            {
+                "name": "Marques distributeurs",
+                "description": "Carrefour, Leclerc, Auchan - souvent très bien notées"
+            }
+        ],
+        "money_saving_tips": [
+            {
+                "tip": "Carte fidélité Carrefour",
+                "description": "Les couches sont régulièrement en promotion avec remboursement jusqu'à 50% en cagnotte ! Surveillez les catalogues.",
+                "icon": "💰"
+            },
+            {
+                "tip": "Programme Pampers Rewards",
+                "description": "Inscrivez-vous sur pampers.fr et scannez les codes pour cumuler des points échangeables contre des cadeaux.",
+                "icon": "🎁",
+                "url": "https://www.pampers.fr/rewards"
+            },
+            {
+                "tip": "Achats en gros",
+                "description": "Les mega-packs sont plus économiques. Stockez la taille actuelle + la suivante.",
+                "icon": "📦"
+            },
+            {
+                "tip": "Comparateurs en ligne",
+                "description": "Utilisez des sites comme couches.org pour comparer les prix au centime près.",
+                "icon": "🔍"
+            }
+        ],
+        "eco_alternatives": [
+            {
+                "name": "Couches lavables",
+                "description": "Économiques sur le long terme (environ 500€ vs 1500€ en jetables), écologiques",
+                "video_url": "https://www.youtube.com/watch?v=MK8bR4a_uZg"
+            },
+            {
+                "name": "Couches écologiques jetables",
+                "description": "Sans chlore ni parfum, plus respectueuses de la peau. Marques : Joone, Lillydoo, Carryboo"
+            }
+        ],
+        "change_tutorial": {
+            "steps": [
+                "Rassemblez tout le matériel à portée de main",
+                "Allongez bébé sur le dos sur une surface propre",
+                "Ouvrez la couche sale et repliez-la sous les fesses",
+                "Nettoyez de l'avant vers l'arrière avec du coton et liniment",
+                "Soulevez les fesses en tenant les chevilles",
+                "Retirez la couche sale et placez la propre",
+                "Fermez les scratchs à hauteur du nombril",
+                "Vérifiez que la couche n'est pas trop serrée"
+            ],
+            "video_url": "https://www.youtube.com/watch?v=aZCPM-Vq0zM"
+        },
+        "alert": "Rougeurs persistantes = consultez. Ça peut être une allergie aux composants de la couche, une mycose ou un érythème fessier nécessitant un traitement.",
+        "video_general": "https://www.youtube.com/watch?v=aZCPM-Vq0zM"
     },
     "precautions": [
         {
