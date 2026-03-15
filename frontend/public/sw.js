@@ -1,14 +1,13 @@
 /* eslint-disable no-restricted-globals */
 
-const CACHE_NAME = 'mamandouce-v1';
-const STATIC_CACHE = 'mamandouce-static-v1';
-const DYNAMIC_CACHE = 'mamandouce-dynamic-v1';
+// VERSION - Increment this to force cache update
+const APP_VERSION = '2.0.3';
+const CACHE_NAME = `mamandouce-v${APP_VERSION}`;
+const STATIC_CACHE = `mamandouce-static-v${APP_VERSION}`;
+const DYNAMIC_CACHE = `mamandouce-dynamic-v${APP_VERSION}`;
 
-// Assets to cache on install
+// Assets to cache on install (minimal - we'll cache on demand)
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
   '/offline.html'
 ];
 
@@ -21,42 +20,59 @@ const CACHEABLE_API_PATTERNS = [
   '/api/embryo/week/'
 ];
 
-// Install event - cache static assets
+// Install event - cache minimal static assets and skip waiting
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing Service Worker');
+  console.log(`[SW] Installing Service Worker v${APP_VERSION}`);
   event.waitUntil(
     caches.open(STATIC_CACHE).then((cache) => {
       console.log('[SW] Caching static assets');
       return cache.addAll(STATIC_ASSETS);
     })
   );
+  // Force immediate activation
   self.skipWaiting();
 });
 
-// Activate event - clean old caches
+// Activate event - DELETE ALL old caches to force fresh content
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating Service Worker');
+  console.log(`[SW] Activating Service Worker v${APP_VERSION}`);
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames
-          .filter((name) => name !== STATIC_CACHE && name !== DYNAMIC_CACHE)
+          .filter((name) => {
+            // Delete ANY cache that doesn't match current version
+            return !name.includes(APP_VERSION);
+          })
           .map((name) => {
             console.log('[SW] Deleting old cache:', name);
             return caches.delete(name);
           })
       );
+    }).then(() => {
+      console.log('[SW] All old caches cleared');
+      // Immediately claim all clients
+      return self.clients.claim();
+    }).then(() => {
+      // Notify all clients to refresh
+      return self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({
+            type: 'SW_UPDATED',
+            version: APP_VERSION
+          });
+        });
+      });
     })
   );
-  self.clients.claim();
 });
 
-// Check if request should be cached
+// Check if request should be cached (API data)
 const shouldCacheApi = (url) => {
   return CACHEABLE_API_PATTERNS.some(pattern => url.includes(pattern));
 };
 
-// Network first strategy with cache fallback
+// Network first strategy - ALWAYS try network first
 const networkFirst = async (request) => {
   try {
     const networkResponse = await fetch(request);
@@ -72,7 +88,7 @@ const networkFirst = async (request) => {
     // If network fails, try cache
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
-      console.log('[SW] Serving from cache:', request.url);
+      console.log('[SW] Serving from cache (offline):', request.url);
       return cachedResponse;
     }
     
@@ -85,25 +101,7 @@ const networkFirst = async (request) => {
   }
 };
 
-// Cache first strategy for static assets
-const cacheFirst = async (request) => {
-  const cachedResponse = await caches.match(request);
-  if (cachedResponse) {
-    return cachedResponse;
-  }
-  
-  try {
-    const networkResponse = await fetch(request);
-    const cache = await caches.open(STATIC_CACHE);
-    cache.put(request, networkResponse.clone());
-    return networkResponse;
-  } catch (error) {
-    console.error('[SW] Cache first failed:', error);
-    throw error;
-  }
-};
-
-// Fetch event - handle requests
+// Fetch event - ALWAYS network first for HTML/JS/CSS
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -118,30 +116,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // API requests - network first
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(networkFirst(request));
-    return;
-  }
-  
-  // Static assets - cache first
-  if (
-    request.destination === 'style' ||
-    request.destination === 'script' ||
-    request.destination === 'image' ||
-    request.destination === 'font'
-  ) {
-    event.respondWith(cacheFirst(request));
-    return;
-  }
-  
-  // Navigation - network first
-  if (request.mode === 'navigate') {
-    event.respondWith(networkFirst(request));
-    return;
-  }
-  
-  // Default - network first
+  // ALWAYS use network first for everything important
+  // This ensures users always get the latest version
   event.respondWith(networkFirst(request));
 });
 
@@ -157,7 +133,6 @@ self.addEventListener('sync', (event) => {
 // Sync offline data when back online
 const syncOfflineData = async () => {
   try {
-    // Get pending actions from IndexedDB
     const pendingActions = await getPendingActions();
     
     for (const action of pendingActions) {
@@ -167,8 +142,6 @@ const syncOfflineData = async () => {
           headers: action.headers,
           body: action.body
         });
-        
-        // Remove synced action
         await removePendingAction(action.id);
       } catch (error) {
         console.error('[SW] Failed to sync action:', error);
@@ -229,8 +202,8 @@ self.addEventListener('push', (event) => {
   
   const options = {
     body: data.body || 'Nouvelle notification',
-    icon: '/logo192.png',
-    badge: '/logo192.png',
+    icon: '/app-icon-512.png',
+    badge: '/app-icon-512.png',
     vibrate: [100, 50, 100],
     data: {
       url: data.url || '/'
@@ -258,14 +231,11 @@ self.addEventListener('notificationclick', (event) => {
   
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-      // Focus existing window if available
       for (const client of windowClients) {
         if (client.url === url && 'focus' in client) {
           return client.focus();
         }
       }
-      
-      // Open new window
       if (clients.openWindow) {
         return clients.openWindow(url);
       }
@@ -273,4 +243,19 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-console.log('[SW] Service Worker loaded');
+// Message handler for manual cache clear
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    caches.keys().then((names) => {
+      return Promise.all(names.map((name) => caches.delete(name)));
+    }).then(() => {
+      event.source.postMessage({ type: 'CACHE_CLEARED' });
+    });
+  }
+});
+
+console.log(`[SW] Service Worker v${APP_VERSION} loaded`);

@@ -2,21 +2,33 @@
 export function register() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+      // Use sw.js directly
+      const swUrl = `${process.env.PUBLIC_URL}/sw.js`;
 
       navigator.serviceWorker
         .register(swUrl)
         .then((registration) => {
           console.log('✓ Service Worker enregistré:', registration.scope);
           
-          // Vérifier les mises à jour
+          // Vérifier les mises à jour immédiatement
+          registration.update();
+          
+          // Vérifier les mises à jour régulièrement (toutes les 5 minutes)
+          setInterval(() => {
+            registration.update();
+          }, 5 * 60 * 1000);
+          
+          // Écouter les mises à jour
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  console.log('✓ Nouvelle version disponible');
-                  // Optionnel: afficher un message pour recharger
+                if (newWorker.state === 'installed') {
+                  if (navigator.serviceWorker.controller) {
+                    // Nouvelle version disponible - forcer la mise à jour
+                    console.log('✓ Nouvelle version disponible - mise à jour automatique');
+                    newWorker.postMessage({ type: 'SKIP_WAITING' });
+                  }
                 }
               });
             }
@@ -25,6 +37,28 @@ export function register() {
         .catch((error) => {
           console.error('✗ Erreur Service Worker:', error);
         });
+
+      // Écouter les messages du Service Worker
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'SW_UPDATED') {
+          console.log('✓ Service Worker mis à jour vers v' + event.data.version);
+          // Recharger automatiquement pour obtenir la nouvelle version
+          window.location.reload();
+        }
+        if (event.data && event.data.type === 'CACHE_CLEARED') {
+          console.log('✓ Cache vidé');
+          window.location.reload();
+        }
+      });
+
+      // Quand le service worker contrôle change, recharger
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        console.log('✓ Nouveau Service Worker actif - rechargement');
+        window.location.reload();
+      });
     });
   }
 }
@@ -39,6 +73,24 @@ export function unregister() {
         console.error(error.message);
       });
   }
+}
+
+// Force le vidage du cache et le rechargement
+export async function forceUpdate() {
+  if ('serviceWorker' in navigator) {
+    const registration = await navigator.serviceWorker.ready;
+    
+    // Demander au SW de vider le cache
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_CACHE' });
+    }
+    
+    // Mettre à jour le service worker
+    await registration.update();
+    
+    return true;
+  }
+  return false;
 }
 
 // Gestion de l'installation PWA
