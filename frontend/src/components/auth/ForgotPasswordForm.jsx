@@ -18,12 +18,18 @@ export function ForgotPasswordForm({
           <Mail className="w-10 h-10 text-green-500" />
         </div>
         <h2 className="text-xl font-bold text-slate-700 mb-2">Email envoyé !</h2>
-        <p className="text-slate-500 text-sm mb-6">
+        <p className="text-slate-500 text-sm mb-4">
           Si un compte existe avec l'adresse <strong>{email}</strong>, vous recevrez un email avec les instructions.
         </p>
-        <p className="text-slate-400 text-xs mb-6">
-          N'oubliez pas de vérifier vos spams.
-        </p>
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-left">
+          <p className="text-amber-800 text-sm font-semibold mb-2">Vous ne recevez pas l'email ?</p>
+          <ul className="text-amber-700 text-xs space-y-1">
+            <li>• Vérifiez votre dossier <strong>Spam/Courrier indésirable</strong></li>
+            <li>• L'email peut prendre quelques minutes à arriver</li>
+            <li>• Vérifiez que l'adresse email est correcte</li>
+            <li>• Si le problème persiste, contactez le support</li>
+          </ul>
+        </div>
         <Button
           onClick={onBack}
           className="bg-slate-100 text-slate-600 rounded-full px-6 py-2 font-semibold hover:bg-slate-200"

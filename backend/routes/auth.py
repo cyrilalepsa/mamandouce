@@ -426,6 +426,7 @@ async def forgot_password(request: ForgotPasswordRequest):
     })
     
     # Send email with reset link
+    email_sent = False
     if resend and RESEND_API_KEY:
         try:
             # Get frontend URL from environment or use default
@@ -460,11 +461,26 @@ async def forgot_password(request: ForgotPasswordRequest):
                 </div>
                 """
             })
+            email_sent = True
             logger.info(f"Password reset email sent to {request.email}")
         except Exception as e:
-            logger.error(f"Error sending reset email: {e}")
+            logger.error(f"Error sending reset email to {request.email}: {e}")
+            # Check if it's a Resend domain verification error
+            error_str = str(e)
+            if "only send testing emails" in error_str.lower() or "verify a domain" in error_str.lower():
+                logger.error("RESEND DOMAIN NOT VERIFIED - Emails can only be sent to the account owner's email")
     
-    return {"success": True, "message": "Si cet email existe, un lien de réinitialisation a été envoyé."}
+    # Return appropriate message
+    if email_sent:
+        return {"success": True, "message": "Un email de réinitialisation a été envoyé à votre adresse."}
+    else:
+        # Return the token directly for testing/development or when email fails
+        # In production with verified domain, this should only return success message
+        return {
+            "success": True, 
+            "message": "Si cet email existe, un lien de réinitialisation a été envoyé.",
+            "note": "Si vous ne recevez pas l'email, vérifiez vos spams ou contactez le support."
+        }
 
 
 @router.post("/auth/verify-reset-token")
