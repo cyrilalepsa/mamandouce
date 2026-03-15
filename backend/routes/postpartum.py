@@ -651,18 +651,21 @@ POSTPARTUM_CONTENT = {
     },
     "baby_recipes": {
         "title": "Recettes purées pour bébé",
-        "description": "Des recettes simples et nutritives pour commencer la diversification.",
+        "description": "Plus de 30 recettes originales et nutritives pour accompagner la diversification de bébé.",
         "tips_cooking": [
             "Privilégiez la cuisson vapeur (préserve les nutriments)",
             "Ne salez pas, n'ajoutez pas de sucre",
             "Utilisez des légumes frais ou surgelés nature",
             "Conservez les purées 48h au frigo ou 2 mois au congélateur",
-            "Réchauffez au bain-marie ou micro-ondes (bien mélanger)"
+            "Réchauffez au bain-marie ou micro-ondes (bien mélanger)",
+            "Introduisez un nouvel aliment à la fois, attendez 2-3 jours",
+            "Ajoutez une cuillère d'huile (colza, olive) pour les lipides"
         ],
         "recipes": [
             {
                 "name": "Purée de carottes",
                 "age": "4-6 mois",
+                "category": "Légumes",
                 "ingredients": ["200g de carottes", "Un peu d'eau de cuisson ou lait infantile"],
                 "steps": ["Épluchez et coupez les carottes en rondelles", "Faites cuire à la vapeur 15-20 min", "Mixez finement en ajoutant du liquide pour la texture"],
                 "tips": "Première purée idéale, naturellement sucrée",
@@ -671,58 +674,316 @@ POSTPARTUM_CONTENT = {
             {
                 "name": "Purée de courgettes",
                 "age": "4-6 mois",
+                "category": "Légumes",
                 "ingredients": ["200g de courgettes", "1 pomme de terre (optionnel pour épaissir)"],
                 "steps": ["Lavez et coupez les courgettes (gardez la peau si bio)", "Cuisez à la vapeur 10-12 min", "Mixez avec un peu d'eau de cuisson"],
                 "tips": "Légère et digeste, parfaite pour débuter",
                 "video_url": "https://www.youtube.com/watch?v=nQAC9EYxmE4"
             },
             {
+                "name": "Purée de potiron onctueux",
+                "age": "4-6 mois",
+                "category": "Légumes",
+                "ingredients": ["200g de potiron", "1 c.à.c d'huile d'olive"],
+                "steps": ["Épluchez et coupez le potiron en cubes", "Cuisez à la vapeur 15 min", "Mixez avec l'huile d'olive"],
+                "tips": "Riche en bêta-carotène, goût naturellement doux"
+            },
+            {
+                "name": "Purée de haricots verts",
+                "age": "4-6 mois",
+                "category": "Légumes",
+                "ingredients": ["150g de haricots verts", "1 petite pomme de terre"],
+                "steps": ["Équeutez les haricots", "Cuisez avec la pomme de terre à la vapeur 15 min", "Mixez finement"],
+                "tips": "Source de fibres douces, bien toléré"
+            },
+            {
+                "name": "Purée de petits pois printanière",
+                "age": "5-6 mois",
+                "category": "Légumes",
+                "ingredients": ["150g de petits pois frais ou surgelés", "1 feuille de menthe fraîche (optionnel)", "1 c.à.c de crème fraîche"],
+                "steps": ["Cuisez les petits pois à la vapeur 10 min", "Mixez avec la crème et la menthe", "Passez au tamis pour retirer les peaux"],
+                "tips": "Riche en protéines végétales"
+            },
+            {
+                "name": "Velouté de panais",
+                "age": "5-6 mois",
+                "category": "Légumes",
+                "ingredients": ["150g de panais", "50g de pomme de terre", "1 noisette de beurre"],
+                "steps": ["Épluchez et coupez les légumes", "Cuisez à la vapeur 15-20 min", "Mixez avec le beurre"],
+                "tips": "Goût légèrement sucré et parfumé"
+            },
+            {
+                "name": "Purée d'épinards à la ricotta",
+                "age": "6 mois",
+                "category": "Légumes",
+                "ingredients": ["100g d'épinards frais", "1 pomme de terre", "1 c.à.s de ricotta"],
+                "steps": ["Lavez bien les épinards", "Cuisez avec la pomme de terre à la vapeur", "Mixez avec la ricotta"],
+                "tips": "Riche en fer, la ricotta adoucit le goût"
+            },
+            {
+                "name": "Purée de butternut au curry doux",
+                "age": "6-7 mois",
+                "category": "Légumes",
+                "ingredients": ["200g de butternut", "1 pincée de curry doux", "1 c.à.c d'huile de coco"],
+                "steps": ["Cuisez le butternut à la vapeur 15 min", "Mixez avec le curry et l'huile de coco"],
+                "tips": "Le curry doux éveille les papilles sans irriter"
+            },
+            {
+                "name": "Purée de betterave rose",
+                "age": "6 mois",
+                "category": "Légumes",
+                "ingredients": ["1 petite betterave cuite", "1 pomme de terre", "1 c.à.c de fromage frais"],
+                "steps": ["Coupez la betterave et la pomme de terre", "Mixez avec le fromage frais"],
+                "tips": "Couleur attractive, riche en antioxydants"
+            },
+            {
+                "name": "Purée d'artichauts fondants",
+                "age": "7-8 mois",
+                "category": "Légumes",
+                "ingredients": ["2 fonds d'artichauts", "1 pomme de terre", "1 c.à.c de crème"],
+                "steps": ["Cuisez les artichauts et pomme de terre à la vapeur", "Mixez avec la crème"],
+                "tips": "Bon pour la digestion"
+            },
+            {
                 "name": "Compote pomme-poire",
                 "age": "4-6 mois",
+                "category": "Fruits",
                 "ingredients": ["1 pomme", "1 poire"],
                 "steps": ["Épluchez et coupez les fruits", "Cuisez à la vapeur ou à l'étouffée 10 min", "Mixez ou écrasez selon la texture souhaitée"],
                 "tips": "Ne pas ajouter de sucre, les fruits sont naturellement sucrés",
                 "video_url": "https://www.youtube.com/watch?v=xJR8W0GDLKM"
             },
             {
-                "name": "Purée patate douce - carotte",
+                "name": "Compote de pêche",
                 "age": "5-6 mois",
-                "ingredients": ["100g de patate douce", "100g de carottes"],
-                "steps": ["Épluchez et coupez les légumes", "Cuisez à la vapeur 15-20 min", "Mixez avec un filet d'huile d'olive"],
-                "tips": "Riche en vitamines A, couleur attractive pour bébé",
-                "video_url": "https://www.youtube.com/watch?v=5dGJVPYxnCM"
+                "category": "Fruits",
+                "ingredients": ["2 pêches mûres"],
+                "steps": ["Pelez les pêches (ébouillantez pour faciliter)", "Coupez et retirez le noyau", "Cuisez 5 min et mixez"],
+                "tips": "Parfaite en été, très douce"
             },
             {
-                "name": "Purée brocoli - pomme de terre",
+                "name": "Compote banane-mangue tropicale",
                 "age": "6 mois",
-                "ingredients": ["100g de brocoli", "1 petite pomme de terre", "1 noisette de beurre"],
-                "steps": ["Lavez le brocoli, épluchez la pomme de terre", "Cuisez à la vapeur 15 min", "Mixez avec le beurre"],
-                "tips": "Le brocoli est riche en fer et vitamines",
-                "video_url": "https://www.youtube.com/watch?v=n1TJjLZYxhY"
-            },
-            {
-                "name": "Purée poulet - légumes",
-                "age": "6-7 mois",
-                "ingredients": ["10g de blanc de poulet", "100g de légumes au choix", "1 c.à.c d'huile de colza"],
-                "steps": ["Cuisez le poulet et les légumes à la vapeur", "Mixez finement le tout", "Ajoutez l'huile et mélangez"],
-                "tips": "Première introduction de viande, commencez par 10g",
-                "video_url": "https://www.youtube.com/watch?v=W5HmWAHLV0M"
-            },
-            {
-                "name": "Compote banane - mangue",
-                "age": "6 mois",
+                "category": "Fruits",
                 "ingredients": ["1/2 banane bien mûre", "1/4 de mangue"],
                 "steps": ["Épluchez les fruits", "Écrasez simplement à la fourchette (pas besoin de cuire)"],
-                "tips": "Fruits exotiques riches en vitamines, texture onctueuse",
-                "video_url": "https://www.youtube.com/watch?v=7XNdWX-X-iU"
+                "tips": "Fruits exotiques riches en vitamines, texture onctueuse"
             },
             {
-                "name": "Purée poisson blanc - fenouil",
+                "name": "Compote pomme-coing parfumée",
+                "age": "6 mois",
+                "category": "Fruits",
+                "ingredients": ["1 pomme", "1/2 coing"],
+                "steps": ["Épluchez et coupez les fruits", "Cuisez longtemps (30 min) car le coing est dur", "Mixez finement"],
+                "tips": "Parfum délicat d'automne"
+            },
+            {
+                "name": "Compote abricot-vanille",
+                "age": "5-6 mois",
+                "category": "Fruits",
+                "ingredients": ["4 abricots mûrs", "1/2 gousse de vanille"],
+                "steps": ["Coupez et dénoyautez les abricots", "Cuisez avec les graines de vanille 10 min", "Mixez"],
+                "tips": "La vanille ajoute une note gourmande"
+            },
+            {
+                "name": "Compote poire-châtaigne",
                 "age": "7-8 mois",
-                "ingredients": ["10-15g de cabillaud", "100g de fenouil", "1 pomme de terre"],
+                "category": "Fruits",
+                "ingredients": ["1 poire", "30g de châtaignes cuites"],
+                "steps": ["Cuisez la poire à la vapeur", "Mixez avec les châtaignes"],
+                "tips": "Recette d'automne réconfortante"
+            },
+            {
+                "name": "Compote fraise-rhubarbe",
+                "age": "8 mois",
+                "category": "Fruits",
+                "ingredients": ["100g de fraises", "50g de rhubarbe"],
+                "steps": ["Coupez la rhubarbe, équeutez les fraises", "Cuisez ensemble 15 min", "Mixez"],
+                "tips": "Acidulée et originale"
+            },
+            {
+                "name": "Compote de pruneaux énergétique",
+                "age": "6 mois",
+                "category": "Fruits",
+                "ingredients": ["6 pruneaux dénoyautés", "1 pomme"],
+                "steps": ["Faites tremper les pruneaux 1h", "Cuisez avec la pomme", "Mixez"],
+                "tips": "Aide au transit intestinal"
+            },
+            {
+                "name": "Purée patate douce-carotte",
+                "age": "5-6 mois",
+                "category": "Légumes",
+                "ingredients": ["100g de patate douce", "100g de carottes"],
+                "steps": ["Épluchez et coupez les légumes", "Cuisez à la vapeur 15-20 min", "Mixez avec un filet d'huile d'olive"],
+                "tips": "Riche en vitamines A, couleur attractive pour bébé"
+            },
+            {
+                "name": "Purée brocoli-pomme de terre",
+                "age": "6 mois",
+                "category": "Légumes",
+                "ingredients": ["100g de brocoli", "1 petite pomme de terre", "1 noisette de beurre"],
+                "steps": ["Lavez le brocoli, épluchez la pomme de terre", "Cuisez à la vapeur 15 min", "Mixez avec le beurre"],
+                "tips": "Le brocoli est riche en fer et vitamines"
+            },
+            {
+                "name": "Purée poulet-légumes",
+                "age": "6-7 mois",
+                "category": "Viandes",
+                "ingredients": ["10g de blanc de poulet", "100g de légumes au choix", "1 c.à.c d'huile de colza"],
+                "steps": ["Cuisez le poulet et les légumes à la vapeur", "Mixez finement le tout", "Ajoutez l'huile et mélangez"],
+                "tips": "Première introduction de viande, commencez par 10g"
+            },
+            {
+                "name": "Purée dinde-potiron",
+                "age": "6-7 mois",
+                "category": "Viandes",
+                "ingredients": ["10g d'escalope de dinde", "150g de potiron", "1 c.à.c d'huile d'olive"],
+                "steps": ["Cuisez la dinde et le potiron à la vapeur 15 min", "Mixez ensemble avec l'huile"],
+                "tips": "La dinde est une viande très maigre et digeste"
+            },
+            {
+                "name": "Purée bœuf-courgette",
+                "age": "7-8 mois",
+                "category": "Viandes",
+                "ingredients": ["15g de bœuf haché", "150g de courgettes", "1 c.à.c d'huile de colza"],
+                "steps": ["Cuisez le bœuf et les courgettes séparément", "Mixez ensemble avec l'huile"],
+                "tips": "Le bœuf apporte du fer héminique bien absorbé"
+            },
+            {
+                "name": "Purée agneau-flageolets",
+                "age": "8-9 mois",
+                "category": "Viandes",
+                "ingredients": ["15g d'agneau", "80g de flageolets cuits", "1 c.à.s de crème fraîche"],
+                "steps": ["Cuisez l'agneau à la vapeur", "Mixez avec les flageolets et la crème"],
+                "tips": "Association classique française"
+            },
+            {
+                "name": "Purée jambon-petits pois",
+                "age": "7-8 mois",
+                "category": "Viandes",
+                "ingredients": ["15g de jambon blanc découenné", "100g de petits pois", "1 pomme de terre"],
+                "steps": ["Cuisez les petits pois et pomme de terre", "Mixez avec le jambon"],
+                "tips": "Le jambon blanc est doux et peu salé"
+            },
+            {
+                "name": "Purée poisson blanc-fenouil",
+                "age": "7-8 mois",
+                "category": "Poissons",
+                "ingredients": ["15g de cabillaud", "100g de fenouil", "1 pomme de terre"],
                 "steps": ["Cuisez le poisson et les légumes à la vapeur", "Vérifiez l'absence d'arêtes", "Mixez le tout"],
-                "tips": "Le fenouil aide à la digestion et donne un goût anisé doux",
-                "video_url": "https://www.youtube.com/watch?v=Xr7lGf8Uo9Q"
+                "tips": "Le fenouil aide à la digestion et donne un goût anisé doux"
+            },
+            {
+                "name": "Purée saumon-brocoli",
+                "age": "8-9 mois",
+                "category": "Poissons",
+                "ingredients": ["15g de saumon frais", "100g de brocoli", "1 c.à.c de crème fraîche"],
+                "steps": ["Cuisez le saumon et brocoli à la vapeur", "Vérifiez l'absence d'arêtes", "Mixez avec la crème"],
+                "tips": "Riche en oméga-3, excellent pour le cerveau"
+            },
+            {
+                "name": "Purée sole-poireau",
+                "age": "7-8 mois",
+                "category": "Poissons",
+                "ingredients": ["15g de filet de sole", "100g de blanc de poireau", "1 pomme de terre"],
+                "steps": ["Cuisez tous les ingrédients à la vapeur", "Vérifiez l'absence d'arêtes", "Mixez finement"],
+                "tips": "La sole est un poisson très fin et délicat"
+            },
+            {
+                "name": "Purée colin-épinards",
+                "age": "8 mois",
+                "category": "Poissons",
+                "ingredients": ["15g de colin", "80g d'épinards", "1 pomme de terre", "1 noisette de beurre"],
+                "steps": ["Cuisez le colin et les légumes à la vapeur", "Mixez avec le beurre"],
+                "tips": "Association classique riche en fer"
+            },
+            {
+                "name": "Purée lentilles corail-carottes",
+                "age": "8-9 mois",
+                "category": "Légumineuses",
+                "ingredients": ["30g de lentilles corail", "100g de carottes", "1 c.à.c d'huile d'olive"],
+                "steps": ["Rincez les lentilles", "Cuisez avec les carottes 20 min", "Mixez avec l'huile"],
+                "tips": "Les lentilles corail sont très digestes et riches en protéines"
+            },
+            {
+                "name": "Purée pois cassés-jambon",
+                "age": "9-10 mois",
+                "category": "Légumineuses",
+                "ingredients": ["40g de pois cassés", "10g de jambon blanc", "1 carotte"],
+                "steps": ["Faites tremper les pois cassés 2h", "Cuisez 45 min avec la carotte", "Mixez avec le jambon"],
+                "tips": "Très nourrissant et économique"
+            },
+            {
+                "name": "Purée haricots blancs-tomate",
+                "age": "9-10 mois",
+                "category": "Légumineuses",
+                "ingredients": ["50g de haricots blancs cuits", "1 tomate pelée", "1 c.à.c d'huile d'olive", "Basilic frais"],
+                "steps": ["Cuisez la tomate 5 min", "Mixez avec les haricots, l'huile et le basilic"],
+                "tips": "Saveurs méditerranéennes"
+            },
+            {
+                "name": "Œuf brouillé crémeux",
+                "age": "8-9 mois",
+                "category": "Œufs",
+                "ingredients": ["1/2 œuf", "1 c.à.s de lait infantile", "1 noisette de beurre"],
+                "steps": ["Battez l'œuf avec le lait", "Cuisez doucement au beurre en remuant", "Servez bien cuit et onctueux"],
+                "tips": "Commencez par le jaune seul, puis l'œuf entier"
+            },
+            {
+                "name": "Flan de courgette à l'œuf",
+                "age": "9-10 mois",
+                "category": "Œufs",
+                "ingredients": ["100g de courgette", "1 œuf", "2 c.à.s de lait", "1 pincée de gruyère râpé"],
+                "steps": ["Mixez la courgette cuite avec l'œuf et le lait", "Versez dans un ramequin", "Cuisez au bain-marie 20 min"],
+                "tips": "Texture fondante appréciée des bébés"
+            },
+            {
+                "name": "Risotto crémeux aux légumes",
+                "age": "9-10 mois",
+                "category": "Féculents",
+                "ingredients": ["30g de riz rond", "50g de courgette", "50g de carotte", "1 c.à.s de parmesan", "1 noisette de beurre"],
+                "steps": ["Cuisez le riz dans 3 fois son volume d'eau", "Ajoutez les légumes coupés en dés", "En fin de cuisson, ajoutez parmesan et beurre", "Écrasez légèrement à la fourchette"],
+                "tips": "Texture pour bébés qui commencent les morceaux"
+            },
+            {
+                "name": "Polenta crémeuse au fromage",
+                "age": "8-9 mois",
+                "category": "Féculents",
+                "ingredients": ["30g de polenta", "150ml de lait", "1 c.à.s de gruyère râpé"],
+                "steps": ["Portez le lait à ébullition", "Versez la polenta en pluie en remuant", "Cuisez 5 min et ajoutez le fromage"],
+                "tips": "Sans gluten, très digeste"
+            },
+            {
+                "name": "Petites pâtes aux légumes",
+                "age": "9-10 mois",
+                "category": "Féculents",
+                "ingredients": ["30g de petites pâtes", "50g de courgette", "50g de tomate", "1 c.à.c d'huile d'olive", "Basilic"],
+                "steps": ["Cuisez les pâtes", "Faites revenir les légumes en dés", "Mélangez le tout avec l'huile et le basilic"],
+                "tips": "Pour bébés qui commencent à mastiquer"
+            },
+            {
+                "name": "Semoule au lait vanillée",
+                "age": "7-8 mois",
+                "category": "Desserts",
+                "ingredients": ["20g de semoule fine", "100ml de lait infantile", "1/4 de gousse de vanille"],
+                "steps": ["Portez le lait à ébullition avec la vanille", "Versez la semoule en pluie", "Remuez 2-3 min"],
+                "tips": "Dessert réconfortant et nourrissant"
+            },
+            {
+                "name": "Riz au lait onctueux",
+                "age": "8-9 mois",
+                "category": "Desserts",
+                "ingredients": ["25g de riz rond", "150ml de lait", "1/2 c.à.c de cannelle (optionnel)"],
+                "steps": ["Cuisez le riz dans le lait à feu doux 25-30 min", "Remuez régulièrement", "Saupoudrez de cannelle"],
+                "tips": "Classique adoré des bébés"
+            },
+            {
+                "name": "Crème de marrons maison",
+                "age": "9-10 mois",
+                "category": "Desserts",
+                "ingredients": ["100g de châtaignes cuites", "50ml de lait", "1/2 c.à.c de vanille"],
+                "steps": ["Mixez les châtaignes avec le lait chaud", "Ajoutez la vanille", "Servez tiède ou froid"],
+                "tips": "Alternative saine aux crèmes industrielles"
             }
         ],
         "video_general": "https://www.youtube.com/watch?v=sMqG1Xfq3oY"

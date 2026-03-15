@@ -17,6 +17,7 @@ export default function PostpartumPage() {
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('appointments');
   const [expandedDifficulty, setExpandedDifficulty] = useState(null);
+  const [recipeFilter, setRecipeFilter] = useState(null);
   
   // Postpartum status
   const [postpartumStatus, setPostpartumStatus] = useState(null);
@@ -893,12 +894,38 @@ export default function PostpartumPage() {
               </ul>
             </Card>
             
+            {/* Filtres par catégorie */}
+            <div className="flex flex-wrap gap-2">
+              {['Tous', 'Légumes', 'Fruits', 'Viandes', 'Poissons', 'Légumineuses', 'Œufs', 'Féculents', 'Desserts'].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setRecipeFilter && setRecipeFilter(cat === 'Tous' ? null : cat)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                    (recipeFilter === cat || (cat === 'Tous' && !recipeFilter))
+                      ? 'bg-pink-500 text-white'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+            
+            {/* Nombre de recettes */}
+            <p className="text-sm text-slate-500">
+              {content.baby_recipes.recipes?.filter(r => !recipeFilter || r.category === recipeFilter).length} recette(s)
+            </p>
+            
             {/* Recettes */}
-            <h3 className="font-bold text-slate-700">Nos recettes</h3>
-            {content.baby_recipes.recipes?.map((recipe, index) => (
+            {content.baby_recipes.recipes?.filter(r => !recipeFilter || r.category === recipeFilter).map((recipe, index) => (
               <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-bold text-slate-700">{recipe.name}</h4>
+                  <div>
+                    <h4 className="font-bold text-slate-700">{recipe.name}</h4>
+                    {recipe.category && (
+                      <span className="text-xs text-slate-500">{recipe.category}</span>
+                    )}
+                  </div>
                   <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold">
                     {recipe.age}
                   </span>
