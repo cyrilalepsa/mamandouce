@@ -62,6 +62,23 @@ Application pour les femmes enceintes avec :
   - Maximum 3 tentatives de saisie
   - Endpoints: `/api/auth/2fa/status`, `/api/auth/2fa/toggle`, `/api/auth/2fa/request-code`, `/api/auth/2fa/verify`
 
+### Features Ajoutées (15 Mars 2026 - Après-midi)
+- [x] **Refactoring AuthPage.js** (743 → 250 lignes, -66%)
+  - 7 sous-composants créés dans `/app/frontend/src/components/auth/`
+  - Composants: LoginForm, RegisterForm, TwoFactorInput, ForgotPasswordForm, BiometricPrompt, PinSetup, QuickLogin
+  
+- [x] **Refactoring HomePage.js** (892 → 200 lignes, -78%)
+  - 5 sous-composants créés dans `/app/frontend/src/components/home/`
+  - Composants: AgendaCard, PregnancyCards, NavigationSections, TopBar
+
+- [x] **Graphiques de suivi de grossesse** (TrackingPage.js)
+  - Courbe de poids de la mère avec graphique AreaChart (recharts)
+  - Courbe de croissance du bébé (poids + taille) avec graphique LineChart
+  - 4 cartes statistiques: Poids actuel, Prise de poids, Poids bébé, Taille bébé
+  - Boutons pour ajouter des mesures manuellement
+  - Nouvelle route: `/tracking`
+  - Nouvelle carte "Graphiques" dans la section Grossesse de la page d'accueil
+
 ### Features Ajoutées (15 Mars 2026 - Matin)
 - [x] **Modification du mot de passe**
 - [x] **Blocage du compte après 4 tentatives**
@@ -116,6 +133,19 @@ Application pour les femmes enceintes avec :
 │   │   ├── FoodsTab.jsx
 │   │   ├── CodesTab.jsx
 │   │   └── RefundsTab.jsx
+│   ├── auth/            # 7 composants auth (NOUVEAU)
+│   │   ├── LoginForm.jsx
+│   │   ├── RegisterForm.jsx
+│   │   ├── TwoFactorInput.jsx
+│   │   ├── ForgotPasswordForm.jsx
+│   │   ├── BiometricPrompt.jsx
+│   │   ├── PinSetup.jsx
+│   │   └── QuickLogin.jsx
+│   ├── home/            # 5 composants home (NOUVEAU)
+│   │   ├── AgendaCard.jsx
+│   │   ├── PregnancyCards.jsx
+│   │   ├── NavigationSections.jsx
+│   │   └── TopBar.jsx
 │   └── settings/        # 8 composants settings
 │       ├── PromoCodeSection.jsx
 │       ├── AccountSection.jsx
@@ -127,19 +157,21 @@ Application pour les femmes enceintes avec :
 │       └── NotificationsSection.jsx
 ├── pages/
 │   ├── AdminPage.js     # 272 lignes (refactorisé)
-│   └── SettingsPage.js  # 158 lignes (refactorisé)
+│   ├── AuthPage.js      # 250 lignes (refactorisé)
+│   ├── HomePage.js      # 200 lignes (refactorisé)
+│   ├── SettingsPage.js  # 158 lignes (refactorisé)
+│   └── TrackingPage.js  # 538 lignes (NOUVEAU)
 └── public/
     ├── sw.js            # Service Worker
     └── offline.html     # Page hors-ligne
 ```
 
 ## Future Tasks (Backlog)
-- **(P1)** Graphiques de suivi grossesse (poids, croissance)
-- **(P3)** Déploiement Google Play Store
+- **(P2)** Déploiement Google Play Store : Finaliser le build Capacitor et préparer la publication
 
 ## Testing Status
-- Backend: 100% fonctionnel (16/16 tests iteration 5 + corrections)
-- Frontend: 100% fonctionnel (iteration 6 - toutes les pages vérifiées)
+- Backend: 100% fonctionnel (iteration 7)
+- Frontend: 100% fonctionnel (iteration 7 - toutes les pages vérifiées)
 - Dernière exécution: 15 Mars 2026
 
 ## Corrections effectuées (15 Mars 2026 - après-midi)
