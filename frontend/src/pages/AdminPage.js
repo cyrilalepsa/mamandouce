@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, RefreshCw, Eye, EyeOff } from 'lucide-react';
+import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, RefreshCw, Eye, Crown, Baby, ChevronDown } from 'lucide-react';
 import api from '../utils/api';
 import PageHeader from '../components/PageHeader';
+import { toast } from 'sonner';
 import {
   DashboardTab,
   UsersTab,
@@ -48,6 +49,9 @@ function AdminPage() {
   // Refund Requests
   const [refundRequests, setRefundRequests] = useState([]);
   const [refundStats, setRefundStats] = useState({ pending: 0, approved: 0, rejected: 0 });
+  
+  // Menu "Voir comme"
+  const [showViewMenu, setShowViewMenu] = useState(false);
 
   useEffect(() => {
     checkAdmin();
@@ -148,6 +152,31 @@ function AdminPage() {
     }
   };
 
+  const handleViewAs = async (mode) => {
+    setShowViewMenu(false);
+    
+    if (mode === 'premium') {
+      // Activer temporairement premium + postpartum pour l'admin
+      try {
+        const response = await api.auth.getMe();
+        const userId = response.data.id;
+        
+        // Activer premium et postpartum
+        await api.admin.setUserPremium(userId, true);
+        await api.admin.setUserPostpartum(userId, true);
+        
+        toast.success('Mode Premium + Post-partum activé !');
+        navigate('/');
+      } catch (error) {
+        toast.error('Erreur lors de l\'activation');
+        console.error(error);
+      }
+    } else {
+      // Mode utilisateur normal
+      navigate('/');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen gradient-bg p-6">
@@ -191,14 +220,49 @@ function AdminPage() {
       <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
         <div className="flex items-center justify-between">
           <PageHeader title="Administration" />
-          <Button
-            onClick={() => navigate('/')}
-            data-testid="view-as-user-btn"
-            className="bg-gradient-to-r from-sky-500 to-purple-500 text-white rounded-full px-4 py-2 hover:opacity-90 flex items-center gap-2"
-          >
-            <Eye className="w-4 h-4" />
-            Voir comme utilisateur
-          </Button>
+          
+          {/* Menu "Voir comme" */}
+          <div className="relative">
+            <Button
+              onClick={() => setShowViewMenu(!showViewMenu)}
+              data-testid="view-as-menu-btn"
+              className="bg-gradient-to-r from-sky-500 to-purple-500 text-white rounded-full px-4 py-2 hover:opacity-90 flex items-center gap-2"
+            >
+              <Eye className="w-4 h-4" />
+              Voir comme...
+              <ChevronDown className={`w-4 h-4 transition-transform ${showViewMenu ? 'rotate-180' : ''}`} />
+            </Button>
+            
+            {showViewMenu && (
+              <div className="absolute right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50 min-w-[220px] animate-fade-in">
+                <button
+                  onClick={() => handleViewAs('normal')}
+                  className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center gap-3 transition-colors"
+                >
+                  <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center">
+                    <Users className="w-4 h-4 text-slate-600" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-700">Utilisateur gratuit</p>
+                    <p className="text-xs text-slate-500">Interface de base</p>
+                  </div>
+                </button>
+                
+                <button
+                  onClick={() => handleViewAs('premium')}
+                  className="w-full px-4 py-3 text-left hover:bg-amber-50 flex items-center gap-3 transition-colors border-t border-slate-100"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-r from-amber-400 to-pink-400 rounded-full flex items-center justify-center">
+                    <Crown className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-700">Premium complet</p>
+                    <p className="text-xs text-slate-500">Premium + Post-partum activés</p>
+                  </div>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Tabs */}
