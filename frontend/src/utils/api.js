@@ -168,6 +168,9 @@ export const api = {
     exportData: () => axios.get(`${API}/postpartum/export-data`, getAuthHeaders()),
     archiveAccount: () => axios.post(`${API}/postpartum/archive-account`, {}, getAuthHeaders()),
     requestEarlyArchive: () => axios.post(`${API}/postpartum/request-early-archive`, {}, getAuthHeaders()),
+    // Recipe favorites
+    getFavorites: () => axios.get(`${API}/postpartum/favorites`, getAuthHeaders()),
+    toggleFavorite: (recipeName) => axios.post(`${API}/postpartum/favorites/toggle`, { recipe_name: recipeName }, getAuthHeaders()),
   },
   admin: {
     generateCodes: (count, note) => axios.post(`${API}/admin/generate-codes?count=${count}&note=${encodeURIComponent(note)}`, {}, getAuthHeaders()),

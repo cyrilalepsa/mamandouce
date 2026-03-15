@@ -5,26 +5,38 @@ import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { 
   ArrowLeft, Calendar, Heart, AlertTriangle, Baby, Droplets,
-  Shield, ChevronDown, ChevronUp, Stethoscope, Clock, Info, CalendarDays, Check, Lock, Gift, Crown, Sparkles,
-  Play, ExternalLink, Utensils, HandHeart
+  Shield, Stethoscope, Info, CalendarDays, Check, Lock, Gift, Crown, Sparkles, Utensils, HandHeart
 } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
+
+// Import refactored components
+import {
+  AppointmentsSection,
+  DifficultiesSection,
+  BreastfeedingSection,
+  FormulaSection,
+  DiapersSection,
+  BabywearingSection,
+  DiversificationSection,
+  RecipesSection,
+  PrecautionsSection
+} from '../components/postpartum';
 
 export default function PostpartumPage() {
   const navigate = useNavigate();
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('appointments');
-  const [expandedDifficulty, setExpandedDifficulty] = useState(null);
-  const [recipeFilter, setRecipeFilter] = useState(null);
-  const [selectedRecipe, setSelectedRecipe] = useState(null);
   
   // Postpartum status
   const [postpartumStatus, setPostpartumStatus] = useState(null);
   const [birthDate, setBirthDate] = useState('');
   const [babyName, setBabyName] = useState('');
   const [savingBirthDate, setSavingBirthDate] = useState(false);
+  
+  // Favorites
+  const [favorites, setFavorites] = useState([]);
   
   // Full subscription status
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
@@ -33,6 +45,7 @@ export default function PostpartumPage() {
     loadContent();
     loadPostpartumStatus();
     loadSubscriptionStatus();
+    loadFavorites();
     sendDueReminders();
   }, []);
 
@@ -68,6 +81,15 @@ export default function PostpartumPage() {
       setSubscriptionStatus(response.data);
     } catch (error) {
       console.error('Erreur statut abonnement:', error);
+    }
+  };
+
+  const loadFavorites = async () => {
+    try {
+      const response = await api.postpartum.getFavorites();
+      setFavorites(response.data.favorites || []);
+    } catch (error) {
+      console.error('Erreur chargement favoris:', error);
     }
   };
   
@@ -186,7 +208,7 @@ export default function PostpartumPage() {
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Check className="w-4 h-4 text-green-500" />
-                  <span>Rappels automatiques</span>
+                  <span>40+ recettes pour bébé</span>
                 </div>
               </div>
             </div>
@@ -466,972 +488,44 @@ export default function PostpartumPage() {
         </div>
 
         {/* Content Sections */}
-        {activeSection === 'appointments' && content?.appointments && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-700">Rendez-vous sur 6 mois</h2>
-            {content.appointments.map((apt, index) => (
-              <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
-                {/* Header */}
-                <div className="flex items-start gap-3 mb-3">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                    apt.type === 'obligatoire' 
-                      ? 'bg-rose-100 text-rose-600' 
-                      : 'bg-sky-100 text-sky-600'
-                  }`}>
-                    <Stethoscope className="w-6 h-6" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-bold text-slate-700">{apt.title}</h3>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${
-                        apt.type === 'obligatoire'
-                          ? 'bg-rose-100 text-rose-700'
-                          : 'bg-sky-100 text-sky-700'
-                      }`}>
-                        {apt.type}
-                      </span>
-                    </div>
-                    <p className="text-sm text-slate-500 mt-1">{apt.description}</p>
-                    <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-400">
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        Semaine {apt.week}
-                      </span>
-                      {apt.duration && (
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {apt.duration}
-                        </span>
-                      )}
-                      {apt.who && (
-                        <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
-                          {apt.who}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Details */}
-                <div className="border-t border-slate-100 pt-3 space-y-3">
-                  {apt.for_mom && apt.for_mom.length > 0 && (
-                    <div className="bg-pink-50 rounded-xl p-3">
-                      <h4 className="text-sm font-bold text-pink-700 mb-2 flex items-center gap-1">
-                        <Heart className="w-4 h-4" /> Pour maman
-                      </h4>
-                      <ul className="text-xs text-pink-800 space-y-1">
-                        {apt.for_mom.map((item, i) => (
-                          <li key={i} className="flex items-start gap-2">
-                            <span className="text-pink-400 mt-0.5">•</span>
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
-                  {apt.for_baby && apt.for_baby.length > 0 && (
-                    <div className="bg-sky-50 rounded-xl p-3">
-                      <h4 className="text-sm font-bold text-sky-700 mb-2 flex items-center gap-1">
-                        <Baby className="w-4 h-4" /> Pour bébé
-                      </h4>
-                      <ul className="text-xs text-sky-800 space-y-1">
-                        {apt.for_baby.map((item, i) => (
-                          <li key={i} className="flex items-start gap-2">
-                            <span className="text-sky-400 mt-0.5">•</span>
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
-                  {apt.vaccines && apt.vaccines.length > 0 && (
-                    <div className="bg-green-50 rounded-xl p-3">
-                      <h4 className="text-sm font-bold text-green-700 mb-2 flex items-center gap-1">
-                        <Shield className="w-4 h-4" /> Vaccins
-                      </h4>
-                      {apt.vaccines.map((vax, i) => (
-                        <div key={i} className="text-xs mb-1">
-                          <span className="font-semibold text-green-800">{vax.name}</span>
-                          <p className="text-green-600">{vax.protects}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  
-                  {apt.tips && (
-                    <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-3 border border-pink-100">
-                      <p className="text-xs text-slate-700">
-                        <span className="font-bold text-pink-600">💡 Conseil :</span> {apt.tips}
-                      </p>
-                    </div>
-                  )}
-                  
-                  {apt.reimbursement && (
-                    <span className="inline-block bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold">
-                      💰 {apt.reimbursement}
-                    </span>
-                  )}
-                </div>
-              </Card>
-            ))}
-          </div>
+        {activeSection === 'appointments' && (
+          <AppointmentsSection appointments={content?.appointments} />
         )}
 
-        {activeSection === 'difficulties' && content?.difficulties && (
-          <div className="space-y-3">
-            <h2 className="text-lg font-bold text-slate-700">Difficultés post-partum</h2>
-            <p className="text-sm text-slate-500">Cliquez sur chaque difficulté pour découvrir les conseils et solutions.</p>
-            {content.difficulties.map((diff, index) => (
-              <Card key={index} className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                <div
-                  onClick={() => setExpandedDifficulty(expandedDifficulty === index ? null : index)}
-                  className="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50"
-                  data-testid={`difficulty-${index}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 text-amber-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-slate-700">{diff.title}</h3>
-                      {diff.video_url && (
-                        <span className="text-xs text-red-500 flex items-center gap-1">
-                          <Play className="w-3 h-3" /> Vidéo disponible
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  {expandedDifficulty === index ? (
-                    <ChevronUp className="w-5 h-5 text-slate-400" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-slate-400" />
-                  )}
-                </div>
-                {expandedDifficulty === index && (
-                  <div className="px-4 pb-4 space-y-3">
-                    <p className="text-sm text-slate-600">{diff.description}</p>
-                    
-                    {/* Symptômes */}
-                    {diff.symptoms && diff.symptoms.length > 0 && (
-                      <div className="bg-amber-50 rounded-xl p-3">
-                        <h4 className="text-sm font-bold text-amber-700 mb-2">Symptômes à reconnaître</h4>
-                        <ul className="text-xs text-amber-800 space-y-1">
-                          {diff.symptoms.map((s, i) => (
-                            <li key={i} className="flex items-start gap-2">
-                              <span className="text-amber-500">•</span>
-                              <span>{s}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    
-                    {/* Conseils pratiques */}
-                    {diff.advice && diff.advice.length > 0 && (
-                      <div className="bg-green-50 rounded-xl p-3 border border-green-200">
-                        <h4 className="text-sm font-bold text-green-700 mb-2 flex items-center gap-2">
-                          <Heart className="w-4 h-4" />
-                          Conseils pour aller mieux
-                        </h4>
-                        <ul className="text-xs text-green-800 space-y-2">
-                          {diff.advice.map((a, i) => (
-                            <li key={i} className="flex items-start gap-2">
-                              <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                              <span>{a}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    
-                    {/* Ressources utiles */}
-                    {diff.resources && diff.resources.length > 0 && (
-                      <div className="bg-sky-50 rounded-xl p-3 border border-sky-200">
-                        <h4 className="text-sm font-bold text-sky-700 mb-2">Ressources utiles</h4>
-                        <ul className="text-xs text-sky-800 space-y-1">
-                          {diff.resources.map((r, i) => (
-                            <li key={i} className="flex items-start gap-2">
-                              <span>📞</span>
-                              <span>{r}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    
-                    {/* Alerte */}
-                    {diff.alert && (
-                      <div className="bg-red-50 rounded-xl p-3 border-l-4 border-red-500">
-                        <h4 className="text-sm font-bold text-red-700 mb-1 flex items-center gap-2">
-                          <AlertTriangle className="w-4 h-4" />
-                          Quand consulter ?
-                        </h4>
-                        <p className="text-xs text-red-800">{diff.alert}</p>
-                      </div>
-                    )}
-                    
-                    {/* Vidéo explicative */}
-                    {diff.video_url && (
-                      <a 
-                        href={diff.video_url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity"
-                      >
-                        <Play className="w-5 h-5" />
-                        Voir la vidéo explicative
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    )}
-                  </div>
-                )}
-              </Card>
-            ))}
-          </div>
+        {activeSection === 'difficulties' && (
+          <DifficultiesSection difficulties={content?.difficulties} />
         )}
 
-        {activeSection === 'breastfeeding' && content?.breastfeeding && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-700">{content.breastfeeding.title || "Guide de l'allaitement"}</h2>
-            <p className="text-sm text-slate-600">{content.breastfeeding.description}</p>
-            
-            {/* Bénéfices */}
-            <Card className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl p-4 shadow-sm">
-              <h3 className="font-bold text-slate-700 mb-3">Les bienfaits de l'allaitement</h3>
-              <div className="grid grid-cols-1 gap-2">
-                {content.breastfeeding.benefits?.map((benefit, i) => (
-                  <div key={i} className="flex items-start gap-2 text-sm">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-slate-600">{benefit}</span>
-                  </div>
-                ))}
-              </div>
-            </Card>
-            
-            {/* Positions */}
-            {content.breastfeeding.positions && Array.isArray(content.breastfeeding.positions) && content.breastfeeding.positions[0]?.name && (
-              <>
-                <h3 className="font-bold text-slate-700">Les positions d'allaitement</h3>
-                {content.breastfeeding.positions.map((pos, index) => (
-                  <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
-                    <h4 className="font-bold text-slate-700 mb-2">{pos.name}</h4>
-                    <p className="text-sm text-slate-600 mb-3">{pos.description}</p>
-                    {pos.video_url && (
-                      <a href={pos.video_url} target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-sm font-semibold hover:bg-red-200">
-                        <Play className="w-4 h-4" />Voir en vidéo<ExternalLink className="w-3 h-3" />
-                      </a>
-                    )}
-                  </Card>
-                ))}
-              </>
-            )}
-            
-            {/* Conseils */}
-            <Card className="bg-amber-50 rounded-2xl p-4 border border-amber-200">
-              <h3 className="font-bold text-amber-800 mb-3">Conseils pratiques</h3>
-              <ul className="space-y-2">
-                {content.breastfeeding.tips?.map((tip, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-amber-900">
-                    <span>💡</span><span>{tip}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-            
-            {/* Problèmes et solutions */}
-            {content.breastfeeding.problems_solutions && (
-              <>
-                <h3 className="font-bold text-slate-700">Problèmes fréquents et solutions</h3>
-                {content.breastfeeding.problems_solutions.map((item, index) => (
-                  <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm border-l-4 border-pink-400">
-                    <h4 className="font-bold text-slate-700 mb-2">{item.problem}</h4>
-                    <ul className="text-sm text-slate-600 space-y-1 mb-3">
-                      {item.solutions?.map((sol, i) => (
-                        <li key={i}>• {sol}</li>
-                      ))}
-                    </ul>
-                    {item.video_url && (
-                      <a href={item.video_url} target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-xs font-semibold hover:bg-red-200">
-                        <Play className="w-3 h-3" />Vidéo explicative
-                      </a>
-                    )}
-                  </Card>
-                ))}
-              </>
-            )}
-            
-            {/* Ressources */}
-            {content.breastfeeding.resources && (
-              <Card className="bg-sky-50 rounded-2xl p-4 border border-sky-200">
-                <h3 className="font-bold text-sky-800 mb-2">Ressources utiles</h3>
-                <ul className="text-sm text-sky-700 space-y-1">
-                  {content.breastfeeding.resources.map((res, i) => (
-                    <li key={i}>📞 {res}</li>
-                  ))}
-                </ul>
-              </Card>
-            )}
-            
-            {/* Vidéo générale */}
-            {content.breastfeeding.video_general && (
-              <a href={content.breastfeeding.video_general} target="_blank" rel="noopener noreferrer"
-                className="block bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-2xl p-4 text-center hover:opacity-90">
-                <Play className="w-8 h-8 mx-auto mb-2" />
-                <p className="font-bold">Guide complet de l'allaitement en vidéo</p>
-              </a>
-            )}
-            
-            {/* Alerte */}
-            {content.breastfeeding.alert && (
-              <div className="bg-amber-100 border-l-4 border-amber-500 p-3 rounded-r-xl">
-                <p className="text-sm text-amber-800"><AlertTriangle className="w-4 h-4 inline mr-2" />{content.breastfeeding.alert}</p>
-              </div>
-            )}
-          </div>
+        {activeSection === 'breastfeeding' && (
+          <BreastfeedingSection breastfeeding={content?.breastfeeding} />
         )}
 
-        {activeSection === 'formula' && content?.formula && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-700">{content.formula.title || "Guide du biberon"}</h2>
-            <p className="text-sm text-slate-600">{content.formula.description || content.formula.info}</p>
-            
-            {/* Préparation */}
-            {content.formula.preparation && (
-              <Card className="bg-gradient-to-r from-sky-50 to-cyan-50 rounded-2xl p-4 shadow-sm">
-                <h3 className="font-bold text-slate-700 mb-3">Préparation du biberon</h3>
-                <ol className="text-sm text-slate-600 space-y-2">
-                  {content.formula.preparation.steps?.map((step, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <span className="bg-sky-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0">{i+1}</span>
-                      <span>{step}</span>
-                    </li>
-                  ))}
-                </ol>
-                {content.formula.preparation.video_url && (
-                  <a href={content.formula.preparation.video_url} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-sm font-semibold hover:bg-red-200 mt-3">
-                    <Play className="w-4 h-4" />Voir en vidéo
-                  </a>
-                )}
-              </Card>
-            )}
-            
-            {/* Types de lait */}
-            <h3 className="font-bold text-slate-700">Types de lait infantile</h3>
-            {content.formula.types?.map((type, index) => (
-              <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">{type.icon || '🍼'}</span>
-                    <h4 className="font-bold text-slate-700">{type.name}</h4>
-                  </div>
-                  <span className="bg-sky-100 text-sky-700 px-2 py-1 rounded-full text-xs font-semibold">{type.age}</span>
-                </div>
-                <p className="text-sm text-slate-600">{type.description}</p>
-              </Card>
-            ))}
-            
-            {/* Quantités par âge */}
-            {content.formula.quantities && (
-              <Card className="bg-green-50 rounded-2xl p-4 border border-green-200">
-                <h3 className="font-bold text-green-800 mb-3">Quantités selon l'âge</h3>
-                <div className="space-y-2">
-                  {content.formula.quantities.map((q, i) => (
-                    <div key={i} className="flex justify-between items-center text-sm bg-white rounded-lg p-2">
-                      <span className="font-semibold text-slate-700">{q.age}</span>
-                      <span className="text-slate-600">{q.quantity} × {q.frequency}</span>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            )}
-            
-            {/* Conseils */}
-            <Card className="bg-amber-50 rounded-2xl p-4 border border-amber-200">
-              <h3 className="font-bold text-amber-800 mb-3">Conseils pratiques</h3>
-              <ul className="space-y-2">
-                {content.formula.tips?.map((tip, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-amber-900">
-                    <span>💡</span><span>{tip}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-            
-            {/* Problèmes et solutions */}
-            {content.formula.problems_solutions && (
-              <>
-                <h3 className="font-bold text-slate-700">Problèmes fréquents</h3>
-                {content.formula.problems_solutions.map((item, index) => (
-                  <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm border-l-4 border-sky-400">
-                    <h4 className="font-bold text-slate-700 mb-2">{item.problem}</h4>
-                    <ul className="text-sm text-slate-600 space-y-1 mb-3">
-                      {item.solutions?.map((sol, i) => (
-                        <li key={i}>• {sol}</li>
-                      ))}
-                    </ul>
-                    {item.video_url && (
-                      <a href={item.video_url} target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-xs font-semibold hover:bg-red-200">
-                        <Play className="w-3 h-3" />Vidéo explicative
-                      </a>
-                    )}
-                  </Card>
-                ))}
-              </>
-            )}
-            
-            {/* Vidéo générale */}
-            {content.formula.video_general && (
-              <a href={content.formula.video_general} target="_blank" rel="noopener noreferrer"
-                className="block bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-2xl p-4 text-center hover:opacity-90">
-                <Play className="w-8 h-8 mx-auto mb-2" />
-                <p className="font-bold">Guide complet du biberon en vidéo</p>
-              </a>
-            )}
-            
-            {/* Alerte */}
-            {content.formula.alert && (
-              <div className="bg-amber-100 border-l-4 border-amber-500 p-3 rounded-r-xl">
-                <p className="text-sm text-amber-800"><AlertTriangle className="w-4 h-4 inline mr-2" />{content.formula.alert}</p>
-              </div>
-            )}
-          </div>
+        {activeSection === 'formula' && (
+          <FormulaSection formula={content?.formula} />
         )}
 
-        {activeSection === 'diapers' && content?.diapers && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-700">{content.diapers.title || "Guide des couches"}</h2>
-            <p className="text-sm text-slate-600">{content.diapers.description}</p>
-            <p className="text-sm text-pink-600 bg-pink-50 p-3 rounded-xl">📊 Fréquence : {content.diapers.frequency}</p>
-            
-            {/* Tailles */}
-            <h3 className="font-bold text-slate-700">Tailles par âge et poids</h3>
-            <div className="grid grid-cols-2 gap-3">
-              {content.diapers.sizes?.map((size, index) => (
-                <Card key={index} className="bg-white rounded-2xl p-3 shadow-sm text-center">
-                  <div className="text-3xl mb-1">{size.icon || '👶'}</div>
-                  <div className="bg-sky-500 text-white rounded-full px-3 py-1 text-lg font-bold inline-block mb-2">T{size.size}</div>
-                  <p className="text-sm font-semibold text-slate-700">{size.weight}</p>
-                  <p className="text-xs text-slate-500">{size.age}</p>
-                  {size.per_day && <p className="text-xs text-pink-600 mt-1">{size.per_day}/jour</p>}
-                </Card>
-              ))}
-            </div>
-            
-            {/* Astuces économies */}
-            {content.diapers.money_saving_tips && (
-              <>
-                <h3 className="font-bold text-slate-700">💰 Astuces pour économiser</h3>
-                {content.diapers.money_saving_tips.map((tip, index) => (
-                  <Card key={index} className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-4 shadow-sm border border-green-200">
-                    <div className="flex items-start gap-3">
-                      <span className="text-2xl">{tip.icon}</span>
-                      <div className="flex-1">
-                        <h4 className="font-bold text-green-800">{tip.tip}</h4>
-                        <p className="text-sm text-green-700">{tip.description}</p>
-                        {tip.url && (
-                          <a href={tip.url} target="_blank" rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-green-600 text-sm mt-2 hover:underline">
-                            Voir le site <ExternalLink className="w-3 h-3" />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </>
-            )}
-            
-            {/* Conseils */}
-            <Card className="bg-amber-50 rounded-2xl p-4 border border-amber-200">
-              <h3 className="font-bold text-amber-800 mb-3">Conseils pour le change</h3>
-              <ul className="space-y-2">
-                {content.diapers.tips?.map((tip, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-amber-900">
-                    <Check className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                    <span>{tip}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-            
-            {/* Tutoriel change */}
-            {content.diapers.change_tutorial && (
-              <Card className="bg-sky-50 rounded-2xl p-4 border border-sky-200">
-                <h3 className="font-bold text-sky-800 mb-3">Comment changer bébé</h3>
-                <ol className="text-sm text-sky-700 space-y-2">
-                  {content.diapers.change_tutorial.steps?.map((step, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <span className="bg-sky-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0">{i+1}</span>
-                      <span>{step}</span>
-                    </li>
-                  ))}
-                </ol>
-                {content.diapers.change_tutorial.video_url && (
-                  <a href={content.diapers.change_tutorial.video_url} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-sm font-semibold hover:bg-red-200 mt-3">
-                    <Play className="w-4 h-4" />Voir en vidéo
-                  </a>
-                )}
-              </Card>
-            )}
-            
-            {/* Alerte */}
-            {content.diapers.alert && (
-              <div className="bg-amber-100 border-l-4 border-amber-500 p-3 rounded-r-xl">
-                <p className="text-sm text-amber-800"><AlertTriangle className="w-4 h-4 inline mr-2" />{content.diapers.alert}</p>
-              </div>
-            )}
-          </div>
+        {activeSection === 'diapers' && (
+          <DiapersSection diapers={content?.diapers} />
         )}
 
-        {/* SECTION PORTAGE BÉBÉ */}
-        {activeSection === 'babywearing' && content?.babywearing && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-700">{content.babywearing.title}</h2>
-            <p className="text-sm text-slate-600">{content.babywearing.description}</p>
-            
-            {/* Bénéfices */}
-            <Card className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl p-4 shadow-sm">
-              <h3 className="font-bold text-slate-700 mb-3">Bienfaits du portage</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {content.babywearing.benefits?.map((benefit, i) => (
-                  <div key={i} className="flex items-start gap-2 text-sm">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-slate-600">{benefit}</span>
-                  </div>
-                ))}
-              </div>
-            </Card>
-            
-            {/* Types de portage */}
-            <h3 className="font-bold text-slate-700">Types de porte-bébé</h3>
-            {content.babywearing.types?.map((type, index) => (
-              <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-bold text-slate-700">{type.name}</h4>
-                  <span className="bg-rose-100 text-rose-700 px-2 py-1 rounded-full text-xs font-semibold">
-                    {type.age}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-600 mb-3">{type.description}</p>
-                {type.video_url && (
-                  <a 
-                    href={type.video_url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-sm font-semibold hover:bg-red-200 transition-colors"
-                  >
-                    <Play className="w-4 h-4" />
-                    Voir le tutoriel vidéo
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                )}
-              </Card>
-            ))}
-            
-            {/* Règles de sécurité */}
-            <Card className="bg-amber-50 rounded-2xl p-4 border border-amber-200">
-              <h3 className="font-bold text-amber-800 mb-3 flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5" />
-                Règles de sécurité
-              </h3>
-              <ul className="space-y-2">
-                {content.babywearing.safety_rules?.map((rule, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-amber-900">
-                    <Shield className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                    <span>{rule}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-            
-            {/* Vidéo générale */}
-            {content.babywearing.video_general && (
-              <a 
-                href={content.babywearing.video_general} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="block bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-2xl p-4 text-center hover:opacity-90 transition-opacity"
-              >
-                <Play className="w-8 h-8 mx-auto mb-2" />
-                <p className="font-bold">Voir la vidéo complète sur le portage</p>
-              </a>
-            )}
-          </div>
+        {activeSection === 'babywearing' && (
+          <BabywearingSection babywearing={content?.babywearing} />
         )}
 
-        {/* SECTION DIVERSIFICATION */}
-        {activeSection === 'diversification' && content?.diversification && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-700">{content.diversification.title}</h2>
-            <p className="text-sm text-slate-600">{content.diversification.description}</p>
-            
-            {/* Quand commencer */}
-            <Card className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-4 shadow-sm border border-green-200">
-              <h3 className="font-bold text-green-800 mb-3">Quand commencer ?</h3>
-              <p className="text-sm text-green-700 mb-2">{content.diversification.when_to_start?.age}</p>
-              <h4 className="text-sm font-semibold text-green-800 mb-2">Signes que bébé est prêt :</h4>
-              <ul className="space-y-1">
-                {content.diversification.when_to_start?.signs?.map((sign, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-green-700">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                    <span>{sign}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-            
-            {/* Étapes */}
-            <h3 className="font-bold text-slate-700">Les étapes de la diversification</h3>
-            {content.diversification.stages?.map((stage, index) => (
-              <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-bold text-slate-700">{stage.title}</h4>
-                  <span className="bg-sky-100 text-sky-700 px-2 py-1 rounded-full text-xs font-semibold">
-                    {stage.age}
-                  </span>
-                </div>
-                <div className="space-y-2 mb-3">
-                  <p className="text-sm text-slate-600"><strong>Aliments :</strong> {stage.foods?.join(', ')}</p>
-                  <p className="text-sm text-slate-600"><strong>Texture :</strong> {stage.texture}</p>
-                  <p className="text-sm text-slate-600"><strong>Quantité :</strong> {stage.quantity}</p>
-                  <p className="text-sm text-pink-600 bg-pink-50 p-2 rounded-lg">💡 {stage.tips}</p>
-                </div>
-                {stage.video_url && (
-                  <a 
-                    href={stage.video_url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-sm font-semibold hover:bg-red-200 transition-colors"
-                  >
-                    <Play className="w-4 h-4" />
-                    Vidéo explicative
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                )}
-              </Card>
-            ))}
-            
-            {/* Aliments interdits */}
-            <Card className="bg-red-50 rounded-2xl p-4 border border-red-200">
-              <h3 className="font-bold text-red-800 mb-3 flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5" />
-                Aliments à éviter
-              </h3>
-              <div className="space-y-2">
-                {content.diversification.forbidden_foods?.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between bg-white rounded-lg p-2">
-                    <span className="font-semibold text-red-800">{item.food}</span>
-                    <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">
-                      Avant {item.until}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </Card>
-            
-            {/* Premiers aliments */}
-            <div className="grid grid-cols-2 gap-4">
-              <Card className="bg-orange-50 rounded-2xl p-4">
-                <h4 className="font-bold text-orange-800 mb-2">Premiers légumes</h4>
-                <div className="flex flex-wrap gap-1">
-                  {content.diversification.first_vegetables?.map((veg, i) => (
-                    <span key={i} className="bg-white text-orange-700 px-2 py-1 rounded-full text-xs">
-                      {veg}
-                    </span>
-                  ))}
-                </div>
-              </Card>
-              <Card className="bg-pink-50 rounded-2xl p-4">
-                <h4 className="font-bold text-pink-800 mb-2">Premiers fruits</h4>
-                <div className="flex flex-wrap gap-1">
-                  {content.diversification.first_fruits?.map((fruit, i) => (
-                    <span key={i} className="bg-white text-pink-700 px-2 py-1 rounded-full text-xs">
-                      {fruit}
-                    </span>
-                  ))}
-                </div>
-              </Card>
-            </div>
-            
-            {/* Vidéo générale */}
-            {content.diversification.video_general && (
-              <a 
-                href={content.diversification.video_general} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="block bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-2xl p-4 text-center hover:opacity-90 transition-opacity"
-              >
-                <Play className="w-8 h-8 mx-auto mb-2" />
-                <p className="font-bold">Guide complet de la diversification</p>
-              </a>
-            )}
-          </div>
+        {activeSection === 'diversification' && (
+          <DiversificationSection diversification={content?.diversification} />
         )}
 
-        {/* SECTION RECETTES - Sommaire cliquable */}
-        {activeSection === 'recipes' && content?.baby_recipes && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-700">{content.baby_recipes.title}</h2>
-            <p className="text-sm text-slate-600">{content.baby_recipes.description}</p>
-            
-            {/* Conseils cuisine (collapsible) */}
-            <details className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl shadow-sm border border-amber-200">
-              <summary className="p-4 font-bold text-amber-800 cursor-pointer hover:bg-amber-100 rounded-2xl">
-                Conseils pour cuisiner
-              </summary>
-              <ul className="px-4 pb-4 space-y-2">
-                {content.baby_recipes.tips_cooking?.map((tip, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-amber-900">
-                    <Check className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                    <span>{tip}</span>
-                  </li>
-                ))}
-              </ul>
-            </details>
-            
-            {/* Filtres par catégorie */}
-            <div className="flex flex-wrap gap-2">
-              {['Tous', 'Légumes', 'Fruits', 'Viandes', 'Poissons', 'Légumineuses', 'Œufs', 'Féculents', 'Desserts'].map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => {
-                    setRecipeFilter(cat === 'Tous' ? null : cat);
-                    setSelectedRecipe(null);
-                  }}
-                  data-testid={`recipe-filter-${cat.toLowerCase()}`}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                    (recipeFilter === cat || (cat === 'Tous' && !recipeFilter))
-                      ? 'bg-pink-500 text-white'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-            
-            {/* Recette sélectionnée - Affichage détaillé */}
-            {selectedRecipe && (
-              <Card className="bg-white rounded-2xl p-4 shadow-lg border-2 border-pink-300">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <h4 className="font-bold text-slate-700 text-lg">{selectedRecipe.name}</h4>
-                    <span className="text-xs text-slate-500">{selectedRecipe.category}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold">
-                      {selectedRecipe.age}
-                    </span>
-                    <button 
-                      onClick={() => setSelectedRecipe(null)}
-                      className="bg-slate-100 hover:bg-slate-200 rounded-full p-1"
-                      data-testid="close-recipe"
-                    >
-                      <ChevronUp className="w-4 h-4 text-slate-600" />
-                    </button>
-                  </div>
-                </div>
-                
-                {/* Ingrédients */}
-                <div className="bg-slate-50 rounded-xl p-3 mb-3">
-                  <h5 className="text-sm font-semibold text-slate-700 mb-2">Ingrédients</h5>
-                  <ul className="text-sm text-slate-600 space-y-1">
-                    {selectedRecipe.ingredients?.map((ing, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <span className="text-pink-500">•</span>
-                        <span>{ing}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                {/* Étapes */}
-                <div className="bg-green-50 rounded-xl p-3 mb-3">
-                  <h5 className="text-sm font-semibold text-green-800 mb-2">Préparation</h5>
-                  <ol className="text-sm text-green-700 space-y-2">
-                    {selectedRecipe.steps?.map((step, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <span className="bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0">{i + 1}</span>
-                        <span>{step}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-                
-                {/* Conseil */}
-                {selectedRecipe.tips && (
-                  <p className="text-sm text-pink-600 bg-pink-50 p-3 rounded-xl mb-3">
-                    💡 {selectedRecipe.tips}
-                  </p>
-                )}
-                
-                {/* Vidéo */}
-                {selectedRecipe.video_url && (
-                  <a 
-                    href={selectedRecipe.video_url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-3 rounded-xl font-semibold hover:opacity-90 transition-colors"
-                  >
-                    <Play className="w-5 h-5" />
-                    Voir la recette en vidéo
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                )}
-              </Card>
-            )}
-            
-            {/* SOMMAIRE des recettes */}
-            {!selectedRecipe && (
-              <Card className="bg-white rounded-2xl p-4 shadow-sm">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-slate-700">Sommaire des recettes</h3>
-                  <span className="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs font-semibold">
-                    {content.baby_recipes.recipes?.filter(r => !recipeFilter || r.category === recipeFilter).length} recettes
-                  </span>
-                </div>
-                
-                {/* Liste groupée par catégorie et triée alphabétiquement */}
-                {(() => {
-                  const filteredRecipes = content.baby_recipes.recipes?.filter(r => !recipeFilter || r.category === recipeFilter) || [];
-                  const categories = [...new Set(filteredRecipes.map(r => r.category))].sort();
-                  
-                  return categories.map((category) => {
-                    const categoryRecipes = filteredRecipes
-                      .filter(r => r.category === category)
-                      .sort((a, b) => a.name.localeCompare(b.name, 'fr'));
-                    
-                    const categoryColors = {
-                      'Légumes': 'bg-green-100 text-green-700 border-green-200',
-                      'Fruits': 'bg-orange-100 text-orange-700 border-orange-200',
-                      'Viandes': 'bg-red-100 text-red-700 border-red-200',
-                      'Poissons': 'bg-sky-100 text-sky-700 border-sky-200',
-                      'Légumineuses': 'bg-amber-100 text-amber-700 border-amber-200',
-                      'Œufs': 'bg-yellow-100 text-yellow-700 border-yellow-200',
-                      'Féculents': 'bg-purple-100 text-purple-700 border-purple-200',
-                      'Desserts': 'bg-pink-100 text-pink-700 border-pink-200'
-                    };
-                    
-                    return (
-                      <div key={category} className="mb-4">
-                        <h4 className={`text-sm font-bold px-3 py-1.5 rounded-lg mb-2 ${categoryColors[category] || 'bg-slate-100 text-slate-700'}`}>
-                          {category} ({categoryRecipes.length})
-                        </h4>
-                        <div className="grid grid-cols-1 gap-1">
-                          {categoryRecipes.map((recipe, idx) => (
-                            <button
-                              key={idx}
-                              onClick={() => setSelectedRecipe(recipe)}
-                              data-testid={`recipe-${recipe.name.replace(/\s+/g, '-').toLowerCase()}`}
-                              className="flex items-center justify-between w-full px-3 py-2 text-left rounded-lg hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200"
-                            >
-                              <span className="text-sm text-slate-700">{recipe.name}</span>
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs text-slate-400">{recipe.age}</span>
-                                {recipe.video_url && (
-                                  <Play className="w-3 h-3 text-red-500" />
-                                )}
-                                <ChevronDown className="w-4 h-4 text-slate-400" />
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  });
-                })()}
-              </Card>
-            )}
-            
-            {/* Vidéo générale */}
-            {content.baby_recipes.video_general && (
-              <a 
-                href={content.baby_recipes.video_general} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="block bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-2xl p-4 text-center hover:opacity-90 transition-opacity"
-              >
-                <Play className="w-8 h-8 mx-auto mb-2" />
-                <p className="font-bold">Plus de recettes en vidéo</p>
-              </a>
-            )}
-          </div>
+        {activeSection === 'recipes' && (
+          <RecipesSection 
+            babyRecipes={content?.baby_recipes} 
+            favorites={favorites}
+            onFavoritesChange={setFavorites}
+          />
         )}
 
-        {activeSection === 'precautions' && content?.precautions && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-700">Précautions générales</h2>
-            <p className="text-sm text-slate-500">Ces conseils de sécurité sont essentiels pour le bien-être de bébé et votre récupération.</p>
-            {content.precautions.map((precaution, index) => (
-              <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                    index === 0 ? 'bg-purple-100' : 
-                    index === 1 ? 'bg-sky-100' : 
-                    index === 2 ? 'bg-red-100' : 'bg-pink-100'
-                  }`}>
-                    <Shield className={`w-5 h-5 ${
-                      index === 0 ? 'text-purple-600' : 
-                      index === 1 ? 'text-sky-600' : 
-                      index === 2 ? 'text-red-600' : 'text-pink-600'
-                    }`} />
-                  </div>
-                  <h3 className="font-bold text-slate-700">{precaution.title}</h3>
-                </div>
-                
-                {/* Description détaillée */}
-                {precaution.description && (
-                  <p className="text-sm text-slate-600 mb-3 bg-slate-50 p-3 rounded-xl">{precaution.description}</p>
-                )}
-                
-                {/* Points clés (tips) */}
-                <ul className="text-sm text-slate-600 space-y-2 mb-3">
-                  {precaution.tips?.map((tip, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span>{tip}</span>
-                    </li>
-                  ))}
-                </ul>
-                
-                {/* Explications détaillées */}
-                {precaution.details && precaution.details.length > 0 && (
-                  <div className="bg-amber-50 rounded-xl p-3 border border-amber-200">
-                    <h4 className="text-sm font-bold text-amber-800 mb-2">Pourquoi c'est important ?</h4>
-                    <ul className="text-xs text-amber-700 space-y-1">
-                      {precaution.details.map((detail, i) => (
-                        <li key={i} className="flex items-start gap-2">
-                          <Info className="w-3 h-3 text-amber-500 flex-shrink-0 mt-0.5" />
-                          <span>{detail}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                
-                {/* Vidéo si disponible */}
-                {precaution.video_url && (
-                  <a 
-                    href={precaution.video_url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-sm font-semibold hover:bg-red-200 transition-colors mt-3"
-                  >
-                    <Play className="w-4 h-4" />
-                    Voir en vidéo
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                )}
-              </Card>
-            ))}
-          </div>
+        {activeSection === 'precautions' && (
+          <PrecautionsSection precautions={content?.precautions} />
         )}
       </div>
     </div>

@@ -1966,3 +1966,53 @@ async def request_early_archive(current_user: User = Depends(get_current_user)):
         print(f"Erreur notification admin: {e}")
     
     return {"success": True, "message": "Votre compte a été archivé. Merci d'avoir utilisé MamanDouce !"}
+
+
+
+# ==================== RECIPE FAVORITES ====================
+
+class RecipeFavorite(BaseModel):
+    recipe_name: str
+
+@router.get("/postpartum/favorites")
+async def get_recipe_favorites(current_user: User = Depends(get_current_user)):
+    """Récupérer la liste des recettes favorites de l'utilisateur"""
+    user_favorites = await db.recipe_favorites.find_one({"user_id": current_user.id})
+    
+    if user_favorites:
+        return {"favorites": user_favorites.get("recipes", [])}
+    
+    return {"favorites": []}
+
+@router.post("/postpartum/favorites/toggle")
+async def toggle_recipe_favorite(data: RecipeFavorite, current_user: User = Depends(get_current_user)):
+    """Ajouter ou retirer une recette des favoris"""
+    user_favorites = await db.recipe_favorites.find_one({"user_id": current_user.id})
+    
+    if not user_favorites:
+        # Créer le document favoris pour l'utilisateur
+        await db.recipe_favorites.insert_one({
+            "user_id": current_user.id,
+            "recipes": [data.recipe_name],
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        return {"success": True, "is_favorite": True, "message": "Recette ajoutée aux favoris"}
+    
+    current_favorites = user_favorites.get("recipes", [])
+    
+    if data.recipe_name in current_favorites:
+        # Retirer des favoris
+        current_favorites.remove(data.recipe_name)
+        await db.recipe_favorites.update_one(
+            {"user_id": current_user.id},
+            {"$set": {"recipes": current_favorites, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        return {"success": True, "is_favorite": False, "message": "Recette retirée des favoris"}
+    else:
+        # Ajouter aux favoris
+        current_favorites.append(data.recipe_name)
+        await db.recipe_favorites.update_one(
+            {"user_id": current_user.id},
+            {"$set": {"recipes": current_favorites, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        return {"success": True, "is_favorite": True, "message": "Recette ajoutée aux favoris"}
