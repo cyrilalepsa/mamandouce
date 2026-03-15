@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "sk_test_emergent")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 stripe.api_key = STRIPE_API_KEY
 
 SUBSCRIPTION_PACKAGES = {
@@ -106,32 +107,83 @@ async def stripe_webhook(request: Request):
     body = await request.body()
     signature = request.headers.get("Stripe-Signature")
     
-    stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url="")
+    logger.info(f"Webhook received with signature: {signature[:30] if signature else 'None'}...")
     
-    try:
-        webhook_response = await stripe_checkout.handle_webhook(body, signature)
+    # Vérifier la signature du webhook si le secret est configuré
+    event = None
+    if STRIPE_WEBHOOK_SECRET:
+        try:
+            event = stripe.Webhook.construct_event(
+                body, signature, STRIPE_WEBHOOK_SECRET
+            )
+            logger.info(f"Webhook signature verified. Event type: {event['type']}")
+        except stripe.error.SignatureVerificationError as e:
+            logger.error(f"Webhook signature verification failed: {e}")
+            raise HTTPException(status_code=400, detail="Invalid signature")
+        except Exception as e:
+            logger.error(f"Webhook error: {e}")
+            raise HTTPException(status_code=400, detail=str(e))
+    else:
+        # Fallback sans vérification (développement)
+        import json
+        try:
+            event = json.loads(body)
+            logger.warning("Webhook received without signature verification (no secret configured)")
+        except Exception:
+            pass
+    
+    # Traiter les événements Stripe
+    if event:
+        event_type = event.get('type', '')
         
-        # Si paiement réussi, stocker le payment_intent_id
-        if webhook_response and hasattr(webhook_response, 'payment_intent'):
-            payment_intent_id = webhook_response.payment_intent
-            customer_email = webhook_response.customer_email if hasattr(webhook_response, 'customer_email') else None
+        # Paiement réussi
+        if event_type == 'checkout.session.completed':
+            session = event['data']['object']
+            customer_email = session.get('customer_email') or session.get('customer_details', {}).get('email')
+            payment_intent_id = session.get('payment_intent')
+            metadata = session.get('metadata', {})
+            package_id = metadata.get('package_id', 'unknown')
             
-            if customer_email and payment_intent_id:
-                # Mettre à jour l'utilisateur avec le payment_intent_id
-                await db.users.update_one(
+            logger.info(f"Checkout completed for {customer_email}, package: {package_id}")
+            
+            if customer_email:
+                # Déterminer le type d'abonnement basé sur le metadata ou le montant
+                amount_total = session.get('amount_total', 0) / 100  # Convertir centimes en euros
+                
+                update_data = {
+                    "stripe_payment_intent_id": payment_intent_id,
+                    "last_payment_date": datetime.now(timezone.utc).isoformat()
+                }
+                
+                if package_id == 'postpartum' or amount_total == 8:
+                    update_data["postpartum_purchased"] = True
+                    update_data["postpartum_purchase_date"] = datetime.now(timezone.utc).isoformat()
+                    update_data["postpartum_unlocked"] = True
+                    logger.info(f"Activating postpartum access for {customer_email}")
+                else:
+                    update_data["subscription_status"] = "premium"
+                    update_data["subscription_start_date"] = datetime.now(timezone.utc).isoformat()
+                    logger.info(f"Activating premium subscription for {customer_email}")
+                
+                result = await db.users.update_one(
                     {"email": customer_email.lower()},
-                    {"$set": {
-                        "stripe_payment_intent_id": payment_intent_id,
-                        "subscription_status": "premium",
-                        "subscription_start_date": datetime.now(timezone.utc).isoformat()
-                    }}
+                    {"$set": update_data}
                 )
-                logger.info(f"Stored payment_intent_id {payment_intent_id} for {customer_email}")
+                
+                if result.modified_count > 0:
+                    logger.info(f"User {customer_email} updated successfully")
+                    # Notifier l'admin
+                    await notify_admin_new_subscription(customer_email, package_id, amount_total)
+                else:
+                    logger.warning(f"No user found with email {customer_email}")
         
-        return {"status": "success"}
-    except Exception as e:
-        logger.error(f"Webhook error: {e}")
-        raise HTTPException(status_code=400, detail=str(e))
+        # Remboursement effectué
+        elif event_type == 'charge.refunded':
+            charge = event['data']['object']
+            payment_intent_id = charge.get('payment_intent')
+            logger.info(f"Refund processed for payment_intent: {payment_intent_id}")
+    
+    return {"status": "success", "received": True}
 
 # ==================== REFUND ENDPOINT ====================
 
@@ -201,7 +253,7 @@ async def process_refund(user_id: str, current_user: User = Depends(get_current_
                     body=f"Votre remboursement de {refund_request['refund_amount']}€ a été effectué sur votre carte.",
                     url="/settings"
                 )
-            except:
+            except Exception:
                 pass
             
             return {
