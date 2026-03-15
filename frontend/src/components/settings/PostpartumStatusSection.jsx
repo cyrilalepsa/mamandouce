@@ -1,6 +1,6 @@
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import { Baby, Check, Lock } from 'lucide-react';
+import { Baby, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function PostpartumStatusSection({ fullStatus, subscriptionStatus }) {
@@ -29,7 +29,7 @@ export function PostpartumStatusSection({ fullStatus, subscriptionStatus }) {
           <p className="text-slate-500 text-sm">
             {fullStatus.postpartum_unlocked 
               ? 'Accès activé !' 
-              : `Accessible après 6 mois d'abonnement`}
+              : 'Disponible à tout moment'}
           </p>
         </div>
       </div>
@@ -53,37 +53,24 @@ export function PostpartumStatusSection({ fullStatus, subscriptionStatus }) {
         </div>
       ) : (
         <div className="space-y-3">
-          <div className="p-4 bg-slate-50 rounded-2xl">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-slate-600">Mois d'abonnement</span>
-              <span className="font-bold text-slate-700">{fullStatus.months_subscribed}/6</span>
-            </div>
-            <div className="w-full bg-slate-200 rounded-full h-2">
-              <div 
-                className="bg-gradient-to-r from-rose-400 to-pink-400 h-2 rounded-full transition-all"
-                style={{ width: `${Math.min((fullStatus.months_subscribed / 6) * 100, 100)}%` }}
-              />
-            </div>
-          </div>
+          <p className="text-sm text-slate-600">
+            Préparez sereinement les 6 premiers mois avec bébé : conseils, rendez-vous, 
+            allaitement, soins et bien plus encore.
+          </p>
           
-          {fullStatus.postpartum_eligible ? (
-            <Button
-              onClick={() => navigate('/subscription/checkout?product=postpartum')}
-              className="w-full bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full py-3 font-semibold"
-            >
-              Acheter le suivi post-partum (8€)
-            </Button>
-          ) : (
-            <div className="flex items-center gap-2 p-4 bg-amber-50 rounded-2xl text-amber-700">
-              <Lock className="w-5 h-5" />
-              <p className="text-sm">
-                Encore {6 - fullStatus.months_subscribed} mois avant de pouvoir acheter cette option
-              </p>
-            </div>
-          )}
+          <Button
+            onClick={() => navigate('/subscription/checkout?product=postpartum')}
+            className="w-full bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full py-3 font-semibold"
+          >
+            Acheter le suivi post-partum (8€)
+          </Button>
           
           <p className="text-xs text-center text-slate-500">
             Ou parrainez 2 amies pour l'obtenir gratuitement !
+          </p>
+          
+          <p className="text-xs text-center text-slate-400 italic">
+            Le contenu sera débloqué après avoir déclaré votre accouchement.
           </p>
         </div>
       )}

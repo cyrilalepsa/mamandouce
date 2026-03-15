@@ -7,6 +7,7 @@ import { ArrowLeft, User, Mail, Calendar, MessageSquare, Send, CheckCircle, Cloc
 import api from '../utils/api';
 import { toast } from 'sonner';
 import { isBiometricEnabled, disableBiometricLogin, checkBiometricSupport, isPinEnabled, disablePinLogin, disableAllQuickLogin } from '../utils/biometricAuth';
+import { PregnancyInfoSection } from '../components/settings';
 
 // Helper function to convert base64 to Uint8Array for VAPID key
 function urlBase64ToUint8Array(base64String) {
@@ -53,6 +54,9 @@ function ProfilePage() {
   // Fertility reminders
   const [fertilityRemindersEnabled, setFertilityRemindersEnabled] = useState(false);
   const [fertilityRemindersLoading, setFertilityRemindersLoading] = useState(false);
+  
+  // Subscription status (for pregnancy info section)
+  const [subscriptionStatus, setSubscriptionStatus] = useState('free');
 
   useEffect(() => {
     loadUserData();
@@ -60,6 +64,7 @@ function ProfilePage() {
     setBiometricEnabled(isBiometricEnabled());
     setPinEnabled(isPinEnabled());
     loadFertilityRemindersStatus();
+    loadSubscriptionStatus();
     
     // Check biometric support
     const checkSupport = async () => {
@@ -84,6 +89,15 @@ function ProfilePage() {
       console.error('Erreur chargement profil:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadSubscriptionStatus = async () => {
+    try {
+      const response = await api.subscription.getStatus();
+      setSubscriptionStatus(response.data.subscription_status || 'free');
+    } catch (error) {
+      console.error('Erreur chargement statut:', error);
     }
   };
 
@@ -320,6 +334,13 @@ function ProfilePage() {
                 </div>
               </Card>
             )}
+
+            {/* Section J'ai accouché (pour les premium) */}
+            <PregnancyInfoSection
+              subscriptionStatus={subscriptionStatus}
+              setSubscriptionStatus={setSubscriptionStatus}
+              onLoadFullStatus={loadSubscriptionStatus}
+            />
 
             {/* Notifications Card */}
             {notificationsSupported && (

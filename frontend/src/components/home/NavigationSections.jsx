@@ -61,54 +61,51 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
         Grossesse
       </h2>
 
-      {/* Sous-catégorie Alimentation */}
-      <div className="mb-4">
-        <h3 className="text-base font-semibold text-slate-500 mb-3 flex items-center gap-2">
-          <Apple className="w-4 h-4 text-green-500" />
-          Alimentation
-        </h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Card
-            onClick={() => navigate('/scanner')}
-            data-testid="scanner-nav"
-            className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-          >
-            <ScanBarcode className="w-8 h-8 text-green-500 mx-auto mb-2" />
-            <h3 className="text-sm font-bold text-slate-700">Scanner</h3>
-            <p className="text-xs text-slate-500">Aliments</p>
-          </Card>
+      {/* Scanner, Bibliothèque, Favoris, Historique */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        <Card
+          onClick={() => navigate('/scanner')}
+          data-testid="scanner-nav"
+          className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+        >
+          <ScanBarcode className="w-8 h-8 text-green-500 mx-auto mb-2" />
+          <h3 className="text-sm font-bold text-slate-700">Scanner</h3>
+          <p className="text-xs text-slate-500">Aliments</p>
+        </Card>
 
-          <Card
-            onClick={() => navigate('/library')}
-            data-testid="library-nav"
-            className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-          >
-            <Apple className="w-8 h-8 text-red-400 mx-auto mb-2" />
-            <h3 className="text-sm font-bold text-slate-700">Bibliothèque</h3>
-            <p className="text-xs text-slate-500">Aliments</p>
-          </Card>
+        <Card
+          onClick={() => navigate('/library')}
+          data-testid="library-nav"
+          className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+        >
+          <Apple className="w-8 h-8 text-red-400 mx-auto mb-2" />
+          <h3 className="text-sm font-bold text-slate-700">Bibliothèque</h3>
+          <p className="text-xs text-slate-500">Aliments</p>
+        </Card>
 
-          <Card
-            onClick={() => navigate('/favorites')}
-            data-testid="favorites-nav"
-            className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-          >
-            <Heart className="w-8 h-8 text-pink-400 mx-auto mb-2" />
-            <h3 className="text-sm font-bold text-slate-700">Favoris</h3>
-            <p className="text-xs text-slate-500">Sauvegardés</p>
-          </Card>
+        <Card
+          onClick={() => navigate('/favorites')}
+          data-testid="favorites-nav"
+          className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+        >
+          <Heart className="w-8 h-8 text-pink-400 mx-auto mb-2" />
+          <h3 className="text-sm font-bold text-slate-700">Favoris</h3>
+          <p className="text-xs text-slate-500">Sauvegardés</p>
+        </Card>
 
-          <Card
-            onClick={() => navigate('/history')}
-            data-testid="history-nav"
-            className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-          >
-            <History className="w-8 h-8 text-purple-400 mx-auto mb-2" />
-            <h3 className="text-sm font-bold text-slate-700">Historique</h3>
-            <p className="text-xs text-slate-500">Recherches</p>
-          </Card>
-        </div>
+        <Card
+          onClick={() => navigate('/history')}
+          data-testid="history-nav"
+          className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+        >
+          <History className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+          <h3 className="text-sm font-bold text-slate-700">Historique</h3>
+          <p className="text-xs text-slate-500">Recherches</p>
+        </Card>
       </div>
+
+      {/* Séparateur visuel */}
+      <div className="border-t border-slate-100 my-4"></div>
 
       {/* Évolution, RDV, Suivi de grossesse, Rappels */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
