@@ -92,6 +92,10 @@ Application pour les femmes enceintes avec :
 - [x] **Corrections qualité code Python**
   - Remplacement des `bare except` par des exceptions spécifiques dans `/app/backend/routes/postpartum.py`
 
+- [x] **Refactoring ProfilePage.js** (724 → 302 lignes, -58%)
+  - 8 sous-composants créés dans `/app/frontend/src/components/profile/`
+  - Composants: SubscriptionStatusCards, UserInfoCard, PregnancyCard, NotificationsCard, QuickLoginCard, FertilityRemindersCard, ContactCard, MessageHistoryCard
+
 ### Features Ajoutées (15 Mars 2026 - Matin)
 - [x] **Modification du mot de passe**
 - [x] **Blocage du compte après 4 tentatives**
