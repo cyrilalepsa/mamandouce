@@ -138,9 +138,16 @@ Application pour les femmes enceintes avec :
 - **(P3)** Déploiement Google Play Store
 
 ## Testing Status
-- Backend: 100% fonctionnel (16/16 tests iteration 5)
-- Frontend: 100% fonctionnel
+- Backend: 100% fonctionnel (16/16 tests iteration 5 + corrections)
+- Frontend: 100% fonctionnel (iteration 6 - toutes les pages vérifiées)
 - Dernière exécution: 15 Mars 2026
+
+## Corrections effectuées (15 Mars 2026 - après-midi)
+- [x] **Page guide (/guide)** - Nouvelle page de bienvenue avec tutoriel interactif
+- [x] **Notification de bienvenue** - Email + push notification pour les nouveaux utilisateurs
+- [x] **Endpoints CRUD /api/notifications** - Rappels personnalisés (GET, POST, PUT, DELETE)
+- [x] **Liens GuidePage corrigés** - Routes mises à jour (/calculator, /scanner, /medical)
+- [x] **Flow 2FA amélioré** - Validation mot de passe avant envoi du code 2FA
 
 ## 3rd Party Integrations
 - **Stripe** (Paiements)

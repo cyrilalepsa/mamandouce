@@ -144,22 +144,26 @@ function AuthPage({ setIsAuthenticated }) {
 
     try {
       if (isLogin) {
-        // First check if 2FA is required
-        const check2FA = await api.auth.request2FACode(formData.email);
-        
-        if (check2FA.data.two_factor_required) {
-          // Store credentials and show 2FA input
-          setPending2FAEmail(formData.email);
-          setPending2FAPassword(formData.password);
-          setShow2FAInput(true);
-          setLoading(false);
-          toast.success('Code de vérification envoyé par email');
-          return;
+        // First try normal login
+        try {
+          const response = await api.auth.login({ email: formData.email, password: formData.password });
+          localStorage.setItem('token', response.data.access_token);
+          
+          // Login successful, continue flow
+        } catch (loginError) {
+          // Check if 2FA is required (403 error)
+          if (loginError.response?.status === 403) {
+            // 2FA is enabled - need to verify
+            setPending2FAEmail(formData.email);
+            setPending2FAPassword(formData.password);
+            setShow2FAInput(true);
+            setLoading(false);
+            toast.success('Code de vérification envoyé par email');
+            return;
+          }
+          // Other errors, re-throw
+          throw loginError;
         }
-        
-        // No 2FA, proceed with normal login
-        const response = await api.auth.login({ email: formData.email, password: formData.password });
-        localStorage.setItem('token', response.data.access_token);
       } else {
         // Registration
         const response = await api.auth.register(formData);

@@ -356,6 +356,32 @@ async def login(user_data: UserLogin):
         {"$set": {"failed_login_attempts": 0}, "$unset": {"locked_until": ""}}
     )
     
+    # Vérifier si 2FA est activé
+    if user.get("two_factor_enabled", False):
+        # Générer et envoyer le code 2FA
+        code = ''.join([str(secrets.randbelow(10)) for _ in range(6)])
+        
+        await db.two_factor_codes.update_one(
+            {"email": user_data.email},
+            {"$set": {
+                "code": code,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "expires_at": (datetime.now(timezone.utc) + timedelta(minutes=10)).isoformat(),
+                "attempts": 0
+            }},
+            upsert=True
+        )
+        
+        # Envoyer le code par email
+        await send_2fa_code(user_data.email, code)
+        
+        # Retourner une erreur 403 pour indiquer que 2FA est requis
+        raise HTTPException(
+            status_code=403,
+            detail="2FA required",
+            headers={"X-2FA-Required": "true"}
+        )
+    
     # Track login/visit
     await db.site_stats.update_one(
         {"type": "visits"},
