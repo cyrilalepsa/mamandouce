@@ -2016,3 +2016,85 @@ async def toggle_recipe_favorite(data: RecipeFavorite, current_user: User = Depe
             {"$set": {"recipes": current_favorites, "updated_at": datetime.now(timezone.utc).isoformat()}}
         )
         return {"success": True, "is_favorite": True, "message": "Recette ajoutée aux favoris"}
+
+
+# ==================== RECIPE SHARING ====================
+
+import secrets
+import hashlib
+
+class ShareRecipesRequest(BaseModel):
+    recipe_names: List[str]
+
+@router.post("/postpartum/share-recipes")
+async def create_share_link(data: ShareRecipesRequest, current_user: User = Depends(get_current_user)):
+    """Créer un lien de partage pour des recettes"""
+    if not data.recipe_names or len(data.recipe_names) == 0:
+        raise HTTPException(status_code=400, detail="Aucune recette à partager")
+    
+    # Générer un code unique pour le partage
+    share_code = secrets.token_urlsafe(8)
+    
+    # Récupérer le nom de l'utilisateur pour personnaliser
+    user_name = current_user.name or current_user.email.split('@')[0]
+    
+    # Sauvegarder le partage
+    share_data = {
+        "code": share_code,
+        "user_id": current_user.id,
+        "user_name": user_name,
+        "recipes": data.recipe_names,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "views": 0
+    }
+    
+    await db.recipe_shares.insert_one(share_data)
+    
+    return {
+        "success": True,
+        "share_code": share_code,
+        "recipes_count": len(data.recipe_names),
+        "message": f"Lien de partage créé pour {len(data.recipe_names)} recette(s)"
+    }
+
+@router.get("/postpartum/shared/{share_code}")
+async def get_shared_recipes(share_code: str):
+    """Récupérer les recettes partagées (endpoint public)"""
+    share = await db.recipe_shares.find_one({"code": share_code})
+    
+    if not share:
+        raise HTTPException(status_code=404, detail="Lien de partage invalide ou expiré")
+    
+    # Incrémenter le compteur de vues
+    await db.recipe_shares.update_one(
+        {"code": share_code},
+        {"$inc": {"views": 1}}
+    )
+    
+    # Récupérer les détails des recettes depuis le contenu
+    all_recipes = POSTPARTUM_CONTENT.get("baby_recipes", {}).get("recipes", [])
+    shared_recipes = [r for r in all_recipes if r.get("name") in share.get("recipes", [])]
+    
+    return {
+        "shared_by": share.get("user_name", "Une maman"),
+        "recipes": shared_recipes,
+        "recipes_count": len(shared_recipes),
+        "shared_at": share.get("created_at")
+    }
+
+@router.get("/postpartum/my-shares")
+async def get_my_shares(current_user: User = Depends(get_current_user)):
+    """Récupérer mes partages de recettes"""
+    shares = await db.recipe_shares.find({"user_id": current_user.id}).to_list(100)
+    
+    result = []
+    for share in shares:
+        result.append({
+            "code": share.get("code"),
+            "recipes": share.get("recipes", []),
+            "recipes_count": len(share.get("recipes", [])),
+            "views": share.get("views", 0),
+            "created_at": share.get("created_at")
+        })
+    
+    return {"shares": result}

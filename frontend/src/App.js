@@ -28,6 +28,7 @@ import AdminPage from './pages/AdminPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import MaternityBagPage from './pages/MaternityBagPage';
 import PostpartumPage from './pages/PostpartumPage';
+import SharedRecipesPage from './pages/SharedRecipesPage';
 import GuidePage from './pages/GuidePage';
 import ChatbotPage from './pages/ChatbotPage';
 import TrackingPage from './pages/TrackingPage';
@@ -83,6 +84,7 @@ function App() {
             <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
             <Route path="/maternity-bag" element={<ProtectedRoute><MaternityBagPage /></ProtectedRoute>} />
             <Route path="/postpartum" element={<ProtectedRoute><PostpartumPage /></ProtectedRoute>} />
+            <Route path="/recipes/shared/:shareCode" element={<SharedRecipesPage />} />
             <Route path="/guide" element={<ProtectedRoute><GuidePage /></ProtectedRoute>} />
             <Route path="/chatbot" element={<ProtectedRoute><ChatbotPage /></ProtectedRoute>} />
             <Route path="/tracking" element={<ProtectedRoute><TrackingPage /></ProtectedRoute>} />

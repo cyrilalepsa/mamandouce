@@ -105,6 +105,15 @@ Application pour les femmes enceintes avec :
   - API: `GET /api/postpartum/favorites`, `POST /api/postpartum/favorites/toggle`
   - Toast de confirmation "Recette ajoutée/retirée des favoris"
 
+- [x] **Fonction Partage de recettes favorites**
+  - Bouton "Partager" visible quand l'utilisateur a des favoris
+  - Génération d'un lien unique de partage
+  - Modale avec lien copiable et bouton de partage natif (mobile)
+  - Page publique `/recipes/shared/:shareCode` accessible sans authentification
+  - Vue détaillée des recettes partagées (ingrédients, étapes, vidéo)
+  - CTA pour découvrir MamanDouce
+  - API: `POST /api/postpartum/share-recipes`, `GET /api/postpartum/shared/:code`
+
 - [x] **Refactoring COMPLET de PostpartumPage.js**
   - Code réduit de 1261 lignes à 533 lignes (-58%)
   - 9 sous-composants créés dans `/app/frontend/src/components/postpartum/`:

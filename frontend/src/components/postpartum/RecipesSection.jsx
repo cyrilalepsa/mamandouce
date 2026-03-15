@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { Card } from '../ui/card';
-import { Check, Play, ExternalLink, ChevronDown, ChevronUp, Heart } from 'lucide-react';
+import { Check, Play, ExternalLink, ChevronDown, ChevronUp, Heart, Share2, Copy, Link } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'sonner';
 
 export function RecipesSection({ babyRecipes, favorites, onFavoritesChange }) {
   const [recipeFilter, setRecipeFilter] = useState(null);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareLink, setShareLink] = useState(null);
+  const [isSharing, setIsSharing] = useState(false);
 
   if (!babyRecipes) return null;
 
@@ -23,6 +26,52 @@ export function RecipesSection({ babyRecipes, favorites, onFavoritesChange }) {
       }
     } catch (error) {
       toast.error('Erreur lors de la mise à jour des favoris');
+    }
+  };
+
+  const handleShareFavorites = async () => {
+    if (favorites.length === 0) {
+      toast.error('Ajoutez des recettes aux favoris avant de partager');
+      return;
+    }
+    
+    setIsSharing(true);
+    try {
+      const response = await api.postpartum.shareRecipes(favorites);
+      if (response.data.success) {
+        const link = `${window.location.origin}/recipes/shared/${response.data.share_code}`;
+        setShareLink(link);
+        setShowShareModal(true);
+      }
+    } catch (error) {
+      toast.error('Erreur lors de la création du lien de partage');
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
+  const copyShareLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      toast.success('Lien copié dans le presse-papiers !');
+    } catch (error) {
+      toast.error('Impossible de copier le lien');
+    }
+  };
+
+  const shareNative = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Mes recettes favorites pour bébé',
+          text: `Je te partage ${favorites.length} recette(s) pour bébé depuis MamanDouce !`,
+          url: shareLink
+        });
+      } catch (error) {
+        // User cancelled or error
+      }
+    } else {
+      copyShareLink();
     }
   };
 
@@ -60,8 +109,78 @@ export function RecipesSection({ babyRecipes, favorites, onFavoritesChange }) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-bold text-slate-700">{babyRecipes.title}</h2>
-      <p className="text-sm text-slate-600">{babyRecipes.description}</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-bold text-slate-700">{babyRecipes.title}</h2>
+          <p className="text-sm text-slate-600">{babyRecipes.description}</p>
+        </div>
+        {/* Bouton Partager */}
+        {favorites.length > 0 && (
+          <button
+            onClick={handleShareFavorites}
+            disabled={isSharing}
+            data-testid="share-favorites-btn"
+            className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+          >
+            <Share2 className="w-4 h-4" />
+            {isSharing ? 'Création...' : 'Partager'}
+          </button>
+        )}
+      </div>
+
+      {/* Modal de partage */}
+      {showShareModal && (
+        <Card className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-5 border-2 border-purple-200 shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold text-slate-700 flex items-center gap-2">
+              <Share2 className="w-5 h-5 text-purple-600" />
+              Partager mes favoris
+            </h3>
+            <button
+              onClick={() => setShowShareModal(false)}
+              className="text-slate-400 hover:text-slate-600"
+            >
+              ✕
+            </button>
+          </div>
+          
+          <p className="text-sm text-slate-600 mb-4">
+            Partagez vos <span className="font-bold text-purple-600">{favorites.length} recette(s) favorite(s)</span> avec vos amies !
+          </p>
+          
+          <div className="flex items-center gap-2 bg-white rounded-xl p-3 border border-slate-200 mb-4">
+            <Link className="w-4 h-4 text-slate-400 flex-shrink-0" />
+            <input
+              type="text"
+              value={shareLink}
+              readOnly
+              className="flex-1 text-sm text-slate-600 bg-transparent outline-none"
+            />
+            <button
+              onClick={copyShareLink}
+              data-testid="copy-share-link"
+              className="bg-slate-100 hover:bg-slate-200 px-3 py-1 rounded-lg text-sm font-medium text-slate-700 flex items-center gap-1"
+            >
+              <Copy className="w-3 h-3" />
+              Copier
+            </button>
+          </div>
+          
+          <div className="flex gap-2">
+            <button
+              onClick={shareNative}
+              className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-3 rounded-xl font-semibold hover:opacity-90 flex items-center justify-center gap-2"
+            >
+              <Share2 className="w-4 h-4" />
+              Partager
+            </button>
+          </div>
+          
+          <p className="text-xs text-slate-400 text-center mt-3">
+            Le lien est accessible à tous, même sans compte MamanDouce
+          </p>
+        </Card>
+      )}
       
       {/* Conseils cuisine (collapsible) */}
       <details className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl shadow-sm border border-amber-200">
