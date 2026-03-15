@@ -31,145 +31,114 @@ Application pour les femmes enceintes avec :
 - [x] Calendrier de fertilité avancé (5 ans vacances/fériés, 6 mois prédictions)
 - [x] Système de paiement Stripe
 
-### Features Ajoutées (15 Mars 2026)
+### Features Ajoutées (15 Mars 2026 - P2 & Backlog)
+
+- [x] **Refactoring AdminPage.js**
+  - Code réduit de 1053 lignes à 272 lignes (-74%)
+  - 6 sous-composants créés dans `/app/frontend/src/components/admin/`
+  - Composants: DashboardTab, UsersTab, MessagesTab, FoodsTab, CodesTab, RefundsTab
+
+- [x] **Gestion multi-admins**
+  - Tout admin peut promouvoir un utilisateur en admin
+  - Tout admin peut révoquer les droits admin d'un autre utilisateur
+  - Protection: impossible de se retirer ses propres droits admin
+  - Endpoint: `POST /api/admin/user/{user_id}/set-role?role=admin|user`
+
+- [x] **Endpoints manquants corrigés**
+  - `GET /api/notifications/preferences` - Récupérer les préférences de notification
+  - `POST /api/notifications/preferences` - Mettre à jour les préférences
+  - `GET /api/subscription-status` - Statut d'abonnement complet
+
+- [x] **Mode hors-ligne (Service Worker)**
+  - Cache des assets statiques
+  - Cache des données API (tips, foods, appointments)
+  - Page offline.html pour les utilisateurs déconnectés
+  - Background sync pour synchroniser les actions hors-ligne
+
+- [x] **Authentification 2FA par email (optionnelle)**
+  - Activation/désactivation dans les paramètres
+  - Code à 6 chiffres envoyé par email
+  - Expiration du code après 10 minutes
+  - Maximum 3 tentatives de saisie
+  - Endpoints: `/api/auth/2fa/status`, `/api/auth/2fa/toggle`, `/api/auth/2fa/request-code`, `/api/auth/2fa/verify`
+
+### Features Ajoutées (15 Mars 2026 - Matin)
 - [x] **Modification du mot de passe**
-  - Section dédiée dans les paramètres
-  - Vérification du mot de passe actuel obligatoire
-  - Validation : minimum 6 caractères
-  - Confirmation du nouveau mot de passe
-  - Endpoint: `POST /api/auth/update-password`
-
 - [x] **Blocage du compte après 4 tentatives**
-  - Compteur de tentatives échouées par compte
-  - Message indiquant le nombre de tentatives restantes
-  - Blocage de 30 minutes après 4 échecs (code HTTP 423)
-  - Message de durée de blocage affiché
-  - Réinitialisation automatique après connexion réussie
-
 - [x] **Modification de l'adresse email**
-  - Section "Mon compte" dans les paramètres
-  - Vérification que l'email n'est pas déjà utilisé
-  - Endpoint: `POST /api/auth/update-email`
-
-- [x] **Refactoring SettingsPage.js**
-  - Code réduit de 1050 lignes à 154 lignes
-  - Sous-composants extraits dans `/app/frontend/src/components/settings/`
-  - Composants: PromoCodeSection, AccountSection, PasswordSection, ReferralSection, RefundSection, PostpartumStatusSection, NotificationsSection
+- [x] **Refactoring SettingsPage.js** (1050 → 158 lignes, -85%)
 
 ### Features Ajoutées (14 Mars 2026)
 - [x] **Check-list Sac de maternité**
-  - 32 articles par défaut (Pour maman, Pour bébé, Pour le retour)
-  - Cases à cocher interactives avec persistence
-  - Barre de progression
-  - Système de suggestions avec notification admin catégorisée "[Sac maternité]"
-
 - [x] **Suivi Post-partum**
-  - 6 onglets de contenu (Rendez-vous, Difficultés, Allaitement, Lait infantile, Couches, Précautions)
-  - 9 rendez-vous sur 6 mois (obligatoires + recommandés)
-  - Avertissement médical
-  - **Date d'accouchement** à saisir au 7ème mois (semaine 28+)
-  - **Rappels automatiques** 7 jours et 3 jours avant chaque RDV post-partum
-  - Le suivi démarre après les 9 mois d'abonnement (fin de grossesse)
-
 - [x] **Système de parrainage**
-  - Section dans les paramètres avec formulaire 2 filleules
-  - Barre de progression 0/2
-  - Post-partum offert si 2 filleuls inscrits
-  - Notifications admin avec catégorie "[Parrainage]"
-
 - [x] **Nouvelles offres d'abonnement**
-  - Premium: 27€/9 mois (grossesse)
-  - Post-partum: 8€ (accessible après 6 mois d'abonnement)
-  - Alternative: parrainage 2 amies = post-partum gratuit
-
 - [x] **Système de remboursement (fausse couche)**
-  - Demande de remboursement au prorata sur attestation
-  - Notification admin avec catégorie "[Remboursement]"
-  - Validation par l'admin avec notification utilisateur
-  - Calcul automatique du montant au prorata des jours restants
-
 - [x] **Correction pages blanches**
-  - Intercepteur axios global pour détecter les tokens expirés
-  - Redirection automatique vers /auth si token invalide (401/403)
 
 ## API Endpoints
 
-### New Endpoints (14 Mars 2026)
-
-#### auth.py (15 Mars 2026)
-- `POST /api/auth/update-password` - Modifier le mot de passe (avec vérification de l'actuel)
+### Auth (15 Mars 2026)
+- `POST /api/auth/update-password` - Modifier le mot de passe
 - `POST /api/auth/update-email` - Modifier l'adresse email
-- `POST /api/auth/end-premium` - Terminer l'abonnement premium (après accouchement)
+- `POST /api/auth/end-premium` - Terminer l'abonnement premium
+- `GET /api/auth/2fa/status` - Statut 2FA
+- `POST /api/auth/2fa/toggle` - Activer/désactiver 2FA
+- `POST /api/auth/2fa/request-code?email=...` - Demander un code 2FA
+- `POST /api/auth/2fa/verify` - Vérifier un code 2FA
 
-#### postpartum.py
-- `GET /api/maternity-bag` - Liste du sac de maternité
-- `POST /api/maternity-bag/check` - Cocher/décocher un item
-- `POST /api/maternity-bag/suggest` - Suggérer un article
-- `GET /api/postpartum/content` - Contenu post-partum
-- `GET /api/postpartum/status` - Statut post-partum (date accouchement, semaine)
-- `POST /api/postpartum/set-birth-date` - Définir la date d'accouchement réelle
-- `GET /api/postpartum/pending-reminders` - Rappels en attente
-- `POST /api/postpartum/send-due-reminders` - Envoyer les rappels dus
-- `POST /api/postpartum/request-refund` - Demander un remboursement
-- `GET /api/admin/refund-requests` - Liste des demandes (admin)
-- `POST /api/admin/refund-requests/{user_id}/approve` - Approuver/rejeter (admin)
+### Admin (15 Mars 2026)
+- `POST /api/admin/user/{user_id}/set-role?role=admin|user` - Promouvoir/révoquer admin
 
-#### referral.py
-- `GET /api/referral/status` - Statut des parrainages
-- `POST /api/referral/submit` - Soumettre des parrainages
-- `GET /api/subscription/full-status` - Statut complet (premium + post-partum)
-- `POST /api/subscription/purchase-postpartum` - Acheter post-partum
+### Preferences (15 Mars 2026)
+- `GET /api/notifications/preferences` - Préférences de notification
+- `POST /api/notifications/preferences` - Mise à jour préférences
+- `GET /api/subscription-status` - Statut d'abonnement complet
 
 ## Database Collections
-- `users`, `pregnancy_profiles`, `search_history`, `favorites`
-- `notifications`, `notification_preferences`
-- `completed_appointments`, `appointment_notes`
-- `user_added_foods`, `birth_lists`
-- `promo_codes`, `admin_messages`
-- `push_subscriptions`
-- `maternity_bags` - Listes de sac par utilisateur
-- `maternity_bag_suggestions` - Suggestions en attente
-- `referrals` - Parrainages
-- `postpartum_reminders` - Rappels RDV post-partum programmés
-- `refund_requests` - Demandes de remboursement
+- `users` - Ajout: `two_factor_enabled`, `role`, `role_changed_by`, `role_changed_at`
+- `two_factor_codes` - Codes 2FA temporaires
+- `notification_preferences` - Préférences de notification par utilisateur
 
 ## Credentials Admin
 - **Email**: cyrilalepsa@gmail.com
 - **Password**: Cyc@dmin9630
 - **Role in DB**: `admin`
 
-## Logique Post-partum
-1. **Achat** : Accessible après 6 mois d'abonnement premium OU gratuit avec 2 parrainages
-2. **Démarrage** : Le suivi démarre après les 9 mois d'abonnement (date accouchement)
-3. **Date accouchement** : L'utilisatrice peut saisir sa date d'accouchement prévue/réelle à partir du 7ème mois (semaine 28+)
-4. **Rappels** : 7 jours + 3 jours avant chaque RDV post-partum
-
-## Logique Remboursement (Fausse couche)
-1. L'utilisatrice demande un remboursement depuis les paramètres
-2. Calcul automatique au prorata : (jours restants / 270) × 27€
-3. L'admin reçoit une notification "[Remboursement]"
-4. L'admin approuve ou rejette depuis l'interface admin
-5. L'utilisatrice reçoit une notification du résultat
-
-- [x] **Section admin pour les demandes de remboursement**
-  - Onglet "Remboursements" dans l'interface admin
-  - Compteurs : En attente / Approuvés / Rejetés
-  - Liste des demandes avec détails complets
-  - **Upload de document** : L'utilisatrice peut joindre une attestation médicale (PDF, JPG, PNG max 5Mo)
-  - **Visualisation du document** : Bouton "Télécharger" dans l'interface admin
-  - Alerte si aucun document n'est joint
-  - Boutons Approuver/Rejeter pour chaque demande
-  - Notification automatique à l'utilisatrice après traitement
+## Code Architecture
+```
+/app/frontend/src/
+├── components/
+│   ├── admin/           # 6 composants admin
+│   │   ├── DashboardTab.jsx
+│   │   ├── UsersTab.jsx
+│   │   ├── MessagesTab.jsx
+│   │   ├── FoodsTab.jsx
+│   │   ├── CodesTab.jsx
+│   │   └── RefundsTab.jsx
+│   └── settings/        # 8 composants settings
+│       ├── PromoCodeSection.jsx
+│       ├── AccountSection.jsx
+│       ├── PasswordSection.jsx
+│       ├── TwoFactorSection.jsx
+│       ├── ReferralSection.jsx
+│       ├── RefundSection.jsx
+│       ├── PostpartumStatusSection.jsx
+│       └── NotificationsSection.jsx
+├── pages/
+│   ├── AdminPage.js     # 272 lignes (refactorisé)
+│   └── SettingsPage.js  # 158 lignes (refactorisé)
+└── public/
+    ├── sw.js            # Service Worker
+    └── offline.html     # Page hors-ligne
+```
 
 ## Future Tasks (Backlog)
 - **(P1)** Graphiques de suivi grossesse (poids, croissance)
-- **(P2)** Gestion multi-admins depuis l'interface
-- **(P2)** Refactoring AdminPage.js (actuellement 1050 lignes)
-- **(P2)** Mode hors-ligne complet
 - **(P3)** Déploiement Google Play Store
 
 ## Testing Status
-- Backend: 100% fonctionnel (15/15 tests passés)
+- Backend: 100% fonctionnel (16/16 tests iteration 5)
 - Frontend: 100% fonctionnel
 - Dernière exécution: 15 Mars 2026
 
