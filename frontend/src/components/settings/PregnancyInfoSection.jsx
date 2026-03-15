@@ -16,7 +16,6 @@ export function PregnancyInfoSection({
   const [birthDate, setBirthDate] = useState('');
   const [babyName, setBabyName] = useState('');
   const [confirmingBirth, setConfirmingBirth] = useState(false);
-  const [confirmText, setConfirmText] = useState('');
 
   const handleShowFinalWarning = () => {
     if (!birthDate) {
@@ -27,11 +26,6 @@ export function PregnancyInfoSection({
   };
 
   const handleBirthConfirmation = async () => {
-    if (confirmText.toLowerCase() !== 'confirmer') {
-      toast.error('Veuillez taper "CONFIRMER" pour valider');
-      return;
-    }
-    
     setConfirmingBirth(true);
     try {
       await api.postpartum.setBirthDate(birthDate, babyName);
@@ -39,7 +33,6 @@ export function PregnancyInfoSection({
       toast.success('Félicitations pour votre bébé ! Votre suivi post-partum est maintenant accessible.');
       setShowBirthConfirm(false);
       setShowFinalWarning(false);
-      setConfirmText('');
       setSubscriptionStatus('free');
       onLoadFullStatus?.();
     } catch (error) {
@@ -159,7 +152,6 @@ export function PregnancyInfoSection({
               <button
                 onClick={() => {
                   setShowFinalWarning(false);
-                  setConfirmText('');
                 }}
                 className="p-2 hover:bg-slate-100 rounded-full"
               >
@@ -204,26 +196,11 @@ export function PregnancyInfoSection({
               </ul>
             </div>
 
-            {/* Confirmation input */}
-            <div className="mb-4">
-              <label className="text-sm font-semibold text-slate-600 block mb-2">
-                Pour confirmer, tapez <span className="bg-slate-100 px-2 py-0.5 rounded font-mono">CONFIRMER</span> ci-dessous :
-              </label>
-              <Input
-                value={confirmText}
-                onChange={(e) => setConfirmText(e.target.value)}
-                placeholder="Tapez CONFIRMER"
-                className="rounded-xl border-slate-300 text-center font-semibold"
-                data-testid="confirm-text-input"
-              />
-            </div>
-
             {/* Buttons */}
             <div className="flex gap-3">
               <Button
                 onClick={() => {
                   setShowFinalWarning(false);
-                  setConfirmText('');
                 }}
                 className="flex-1 bg-slate-100 text-slate-600 rounded-full py-3"
               >
@@ -231,7 +208,7 @@ export function PregnancyInfoSection({
               </Button>
               <Button
                 onClick={handleBirthConfirmation}
-                disabled={confirmingBirth || confirmText.toLowerCase() !== 'confirmer'}
+                disabled={confirmingBirth}
                 data-testid="final-confirm-button"
                 className="flex-1 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full py-3 disabled:opacity-50"
               >
@@ -240,7 +217,7 @@ export function PregnancyInfoSection({
                 ) : (
                   <>
                     <Heart className="w-4 h-4 mr-2" />
-                    Confirmer l'accouchement
+                    Confirmer
                   </>
                 )}
               </Button>
