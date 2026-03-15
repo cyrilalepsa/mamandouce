@@ -21,7 +21,6 @@ function HomePage() {
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
-  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [userRole, setUserRole] = useState('user');
   
   // Agenda states
@@ -34,7 +33,6 @@ function HomePage() {
 
   useEffect(() => {
     loadUserData();
-    loadUpcomingAppointments();
     loadRapportDates();
   }, []);
 
@@ -175,15 +173,6 @@ function HomePage() {
     return nextImplantation;
   };
 
-  const loadUpcomingAppointments = async () => {
-    try {
-      const response = await api.medical.getUpcoming();
-      setUpcomingAppointments(response.data.appointments || []);
-    } catch (error) {
-      console.error('Erreur chargement rendez-vous:', error);
-    }
-  };
-
   const isAdmin = userRole === 'admin' || userEmail === ADMIN_EMAIL;
   const hasPregnancyProfile = pregnancyProfile && pregnancyProfile.current_week;
 
@@ -232,7 +221,6 @@ function HomePage() {
           {hasPregnancyProfile && (
             <PregnancyStatusCard
               pregnancyProfile={pregnancyProfile}
-              upcomingAppointments={upcomingAppointments}
             />
           )}
 

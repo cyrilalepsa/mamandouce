@@ -1,22 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../ui/card';
-import { Baby, ChevronRight, Stethoscope, Scan, TestTube, Calendar } from 'lucide-react';
+import { Baby, ChevronRight, Apple, ScanBarcode } from 'lucide-react';
 
-export function PregnancyStatusCard({ pregnancyProfile, upcomingAppointments }) {
+export function PregnancyStatusCard({ pregnancyProfile }) {
   const navigate = useNavigate();
-
-  const getAppointmentIcon = (type) => {
-    switch (type) {
-      case 'consultation':
-        return <Stethoscope className="w-4 h-4" />;
-      case 'echographie':
-        return <Scan className="w-4 h-4" />;
-      case 'prise_sang':
-        return <TestTube className="w-4 h-4" />;
-      default:
-        return <Calendar className="w-4 h-4" />;
-    }
-  };
 
   if (!pregnancyProfile || !pregnancyProfile.current_week) return null;
 
@@ -36,30 +23,39 @@ export function PregnancyStatusCard({ pregnancyProfile, upcomingAppointments }) 
         </div>
       </div>
       
-      {/* Prochains rendez-vous */}
-      {upcomingAppointments && upcomingAppointments.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-white/50">
-          <p className="text-sm font-semibold text-slate-600 mb-2">Prochains rendez-vous</p>
-          <div className="space-y-2">
-            {upcomingAppointments.slice(0, 2).map((apt) => (
-              <div 
-                key={apt.id}
-                className="flex items-center gap-3 bg-white/60 rounded-xl p-3 cursor-pointer hover:bg-white/80 transition-all"
-                onClick={() => navigate('/medical')}
-              >
-                <div className="w-8 h-8 bg-sky-100 rounded-lg flex items-center justify-center text-sky-600">
-                  {getAppointmentIcon(apt.type)}
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-slate-700 text-sm">{apt.title}</p>
-                  <p className="text-xs text-slate-500">Semaines {apt.week_start}-{apt.week_end}</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
-              </div>
-            ))}
+      {/* Section Alimentation */}
+      <div className="mt-4 pt-4 border-t border-white/50">
+        <p className="text-sm font-semibold text-slate-600 mb-2 flex items-center gap-2">
+          <Apple className="w-4 h-4 text-green-500" />
+          Alimentation
+        </p>
+        <div className="flex gap-2">
+          <div 
+            className="flex-1 flex items-center gap-2 bg-white/60 rounded-xl p-3 cursor-pointer hover:bg-white/80 transition-all"
+            onClick={() => navigate('/scanner')}
+          >
+            <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center text-green-600">
+              <ScanBarcode className="w-4 h-4" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-slate-700 text-sm">Scanner un aliment</p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-slate-400" />
+          </div>
+          <div 
+            className="flex-1 flex items-center gap-2 bg-white/60 rounded-xl p-3 cursor-pointer hover:bg-white/80 transition-all"
+            onClick={() => navigate('/library')}
+          >
+            <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center text-red-500">
+              <Apple className="w-4 h-4" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-slate-700 text-sm">Bibliothèque</p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-slate-400" />
           </div>
         </div>
-      )}
+      </div>
     </Card>
   );
 }

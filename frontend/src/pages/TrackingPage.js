@@ -202,67 +202,46 @@ function TrackingPage() {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-pink-100 to-rose-100 rounded-xl flex items-center justify-center">
-                <Scale className="w-5 h-5 text-pink-500" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500">Poids actuel</p>
-                <p className="text-lg font-bold text-slate-700">
-                  {stats.currentWeight ? `${stats.currentWeight} kg` : '-- kg'}
-                </p>
-              </div>
-            </div>
-          </Card>
+        {/* ========== CATÉGORIE MAMAN ========== */}
+        <div>
+          <h2 className="text-xl font-bold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+            <Heart className="w-5 h-5 text-pink-500" />
+            Maman
+          </h2>
 
-          <Card className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-green-500" />
+          {/* Stats Maman */}
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <Card className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-pink-100 to-rose-100 rounded-xl flex items-center justify-center">
+                  <Scale className="w-5 h-5 text-pink-500" />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">Poids actuel</p>
+                  <p className="text-lg font-bold text-slate-700">
+                    {stats.currentWeight ? `${stats.currentWeight} kg` : '-- kg'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-slate-500">Prise de poids</p>
-                <p className="text-lg font-bold text-slate-700">
-                  {stats.weightGain ? `+${stats.weightGain} kg` : '-- kg'}
-                </p>
-              </div>
-            </div>
-          </Card>
+            </Card>
 
-          <Card className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-sky-100 to-indigo-100 rounded-xl flex items-center justify-center">
-                <Baby className="w-5 h-5 text-sky-500" />
+            <Card className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-green-500" />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">Prise de poids</p>
+                  <p className="text-lg font-bold text-slate-700">
+                    {stats.weightGain ? `+${stats.weightGain} kg` : '-- kg'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-slate-500">Poids bébé</p>
-                <p className="text-lg font-bold text-slate-700">
-                  {stats.lastBabyWeight ? `${stats.lastBabyWeight} g` : '-- g'}
-                </p>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          </div>
 
-          <Card className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-violet-100 rounded-xl flex items-center justify-center">
-                <Ruler className="w-5 h-5 text-purple-500" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500">Taille bébé</p>
-                <p className="text-lg font-bold text-slate-700">
-                  {stats.lastBabySize ? `${stats.lastBabySize} cm` : '-- cm'}
-                </p>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Graphique Poids Maman */}
-        <Card className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100" data-testid="weight-chart">
+          {/* Graphique Poids Maman */}
+          <Card className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100" data-testid="weight-chart">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-400 rounded-xl flex items-center justify-center">
@@ -363,9 +342,48 @@ function TrackingPage() {
             </div>
           )}
         </Card>
+        </div>
 
-        {/* Graphique Croissance Bébé */}
-        <Card className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100" data-testid="baby-chart">
+        {/* ========== CATÉGORIE BÉBÉ ========== */}
+        <div>
+          <h2 className="text-xl font-bold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+            <Baby className="w-5 h-5 text-sky-500" />
+            Bébé
+          </h2>
+
+          {/* Stats Bébé */}
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <Card className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-sky-100 to-indigo-100 rounded-xl flex items-center justify-center">
+                  <Scale className="w-5 h-5 text-sky-500" />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">Poids estimé</p>
+                  <p className="text-lg font-bold text-slate-700">
+                    {stats.lastBabyWeight ? `${stats.lastBabyWeight} g` : '-- g'}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-violet-100 rounded-xl flex items-center justify-center">
+                  <Ruler className="w-5 h-5 text-purple-500" />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">Taille</p>
+                  <p className="text-lg font-bold text-slate-700">
+                    {stats.lastBabySize ? `${stats.lastBabySize} cm` : '-- cm'}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Graphique Croissance Bébé */}
+          <Card className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100" data-testid="baby-chart">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-br from-sky-400 to-indigo-400 rounded-xl flex items-center justify-center">
@@ -492,6 +510,7 @@ function TrackingPage() {
             </div>
           )}
         </Card>
+        </div>
 
         {/* Info sur les mesures */}
         <Card className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-200">
@@ -508,27 +527,6 @@ function TrackingPage() {
             </div>
           </div>
         </Card>
-
-        {/* Actions rapides */}
-        <div className="grid grid-cols-2 gap-4">
-          <Card
-            onClick={() => navigate('/medical')}
-            className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 cursor-pointer hover:shadow-md transition-all"
-          >
-            <Calendar className="w-8 h-8 text-pink-400 mx-auto mb-2" />
-            <h3 className="text-center font-semibold text-slate-700">Rendez-vous médicaux</h3>
-            <p className="text-center text-xs text-slate-500 mt-1">Voir les RDV prévus</p>
-          </Card>
-          
-          <Card
-            onClick={() => navigate('/tips')}
-            className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 cursor-pointer hover:shadow-md transition-all"
-          >
-            <Heart className="w-8 h-8 text-rose-400 mx-auto mb-2" />
-            <h3 className="text-center font-semibold text-slate-700">Conseils hebdo</h3>
-            <p className="text-center text-xs text-slate-500 mt-1">Évolution de bébé</p>
-          </Card>
-        </div>
       </div>
     </div>
   );
