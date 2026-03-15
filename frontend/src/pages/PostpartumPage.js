@@ -18,6 +18,7 @@ export default function PostpartumPage() {
   const [activeSection, setActiveSection] = useState('appointments');
   const [expandedDifficulty, setExpandedDifficulty] = useState(null);
   const [recipeFilter, setRecipeFilter] = useState(null);
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
   
   // Postpartum status
   const [postpartumStatus, setPostpartumStatus] = useState(null);
@@ -581,17 +582,26 @@ export default function PostpartumPage() {
         {activeSection === 'difficulties' && content?.difficulties && (
           <div className="space-y-3">
             <h2 className="text-lg font-bold text-slate-700">Difficultés post-partum</h2>
+            <p className="text-sm text-slate-500">Cliquez sur chaque difficulté pour découvrir les conseils et solutions.</p>
             {content.difficulties.map((diff, index) => (
               <Card key={index} className="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <div
                   onClick={() => setExpandedDifficulty(expandedDifficulty === index ? null : index)}
                   className="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50"
+                  data-testid={`difficulty-${index}`}
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
                       <AlertTriangle className="w-5 h-5 text-amber-600" />
                     </div>
-                    <h3 className="font-bold text-slate-700">{diff.title}</h3>
+                    <div>
+                      <h3 className="font-bold text-slate-700">{diff.title}</h3>
+                      {diff.video_url && (
+                        <span className="text-xs text-red-500 flex items-center gap-1">
+                          <Play className="w-3 h-3" /> Vidéo disponible
+                        </span>
+                      )}
+                    </div>
                   </div>
                   {expandedDifficulty === index ? (
                     <ChevronUp className="w-5 h-5 text-slate-400" />
@@ -602,35 +612,78 @@ export default function PostpartumPage() {
                 {expandedDifficulty === index && (
                   <div className="px-4 pb-4 space-y-3">
                     <p className="text-sm text-slate-600">{diff.description}</p>
-                    {diff.symptoms && (
+                    
+                    {/* Symptômes */}
+                    {diff.symptoms && diff.symptoms.length > 0 && (
                       <div className="bg-amber-50 rounded-xl p-3">
-                        <h4 className="text-sm font-bold text-amber-700 mb-2">Symptômes</h4>
+                        <h4 className="text-sm font-bold text-amber-700 mb-2">Symptômes à reconnaître</h4>
                         <ul className="text-xs text-amber-800 space-y-1">
                           {diff.symptoms.map((s, i) => (
-                            <li key={i}>• {s}</li>
+                            <li key={i} className="flex items-start gap-2">
+                              <span className="text-amber-500">•</span>
+                              <span>{s}</span>
+                            </li>
                           ))}
                         </ul>
                       </div>
                     )}
-                    {diff.when_to_consult && (
-                      <div className="bg-red-50 rounded-xl p-3">
-                        <h4 className="text-sm font-bold text-red-700 mb-2">Quand consulter ?</h4>
-                        <ul className="text-xs text-red-800 space-y-1">
-                          {diff.when_to_consult.map((w, i) => (
-                            <li key={i}>• {w}</li>
+                    
+                    {/* Conseils pratiques */}
+                    {diff.advice && diff.advice.length > 0 && (
+                      <div className="bg-green-50 rounded-xl p-3 border border-green-200">
+                        <h4 className="text-sm font-bold text-green-700 mb-2 flex items-center gap-2">
+                          <Heart className="w-4 h-4" />
+                          Conseils pour aller mieux
+                        </h4>
+                        <ul className="text-xs text-green-800 space-y-2">
+                          {diff.advice.map((a, i) => (
+                            <li key={i} className="flex items-start gap-2">
+                              <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                              <span>{a}</span>
+                            </li>
                           ))}
                         </ul>
                       </div>
                     )}
-                    {diff.tips && (
-                      <div className="bg-green-50 rounded-xl p-3">
-                        <h4 className="text-sm font-bold text-green-700 mb-2">Conseils</h4>
-                        <ul className="text-xs text-green-800 space-y-1">
-                          {diff.tips.map((t, i) => (
-                            <li key={i}>• {t}</li>
+                    
+                    {/* Ressources utiles */}
+                    {diff.resources && diff.resources.length > 0 && (
+                      <div className="bg-sky-50 rounded-xl p-3 border border-sky-200">
+                        <h4 className="text-sm font-bold text-sky-700 mb-2">Ressources utiles</h4>
+                        <ul className="text-xs text-sky-800 space-y-1">
+                          {diff.resources.map((r, i) => (
+                            <li key={i} className="flex items-start gap-2">
+                              <span>📞</span>
+                              <span>{r}</span>
+                            </li>
                           ))}
                         </ul>
                       </div>
+                    )}
+                    
+                    {/* Alerte */}
+                    {diff.alert && (
+                      <div className="bg-red-50 rounded-xl p-3 border-l-4 border-red-500">
+                        <h4 className="text-sm font-bold text-red-700 mb-1 flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4" />
+                          Quand consulter ?
+                        </h4>
+                        <p className="text-xs text-red-800">{diff.alert}</p>
+                      </div>
+                    )}
+                    
+                    {/* Vidéo explicative */}
+                    {diff.video_url && (
+                      <a 
+                        href={diff.video_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity"
+                      >
+                        <Play className="w-5 h-5" />
+                        Voir la vidéo explicative
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
                     )}
                   </div>
                 )}
@@ -1122,16 +1175,18 @@ export default function PostpartumPage() {
           </div>
         )}
 
-        {/* SECTION RECETTES */}
+        {/* SECTION RECETTES - Sommaire cliquable */}
         {activeSection === 'recipes' && content?.baby_recipes && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-slate-700">{content.baby_recipes.title}</h2>
             <p className="text-sm text-slate-600">{content.baby_recipes.description}</p>
             
-            {/* Conseils cuisine */}
-            <Card className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 shadow-sm border border-amber-200">
-              <h3 className="font-bold text-amber-800 mb-3">Conseils pour cuisiner</h3>
-              <ul className="space-y-2">
+            {/* Conseils cuisine (collapsible) */}
+            <details className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl shadow-sm border border-amber-200">
+              <summary className="p-4 font-bold text-amber-800 cursor-pointer hover:bg-amber-100 rounded-2xl">
+                Conseils pour cuisiner
+              </summary>
+              <ul className="px-4 pb-4 space-y-2">
                 {content.baby_recipes.tips_cooking?.map((tip, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-amber-900">
                     <Check className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
@@ -1139,14 +1194,18 @@ export default function PostpartumPage() {
                   </li>
                 ))}
               </ul>
-            </Card>
+            </details>
             
             {/* Filtres par catégorie */}
             <div className="flex flex-wrap gap-2">
               {['Tous', 'Légumes', 'Fruits', 'Viandes', 'Poissons', 'Légumineuses', 'Œufs', 'Féculents', 'Desserts'].map((cat) => (
                 <button
                   key={cat}
-                  onClick={() => setRecipeFilter && setRecipeFilter(cat === 'Tous' ? null : cat)}
+                  onClick={() => {
+                    setRecipeFilter(cat === 'Tous' ? null : cat);
+                    setSelectedRecipe(null);
+                  }}
+                  data-testid={`recipe-filter-${cat.toLowerCase()}`}
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
                     (recipeFilter === cat || (cat === 'Tous' && !recipeFilter))
                       ? 'bg-pink-500 text-white'
@@ -1158,32 +1217,37 @@ export default function PostpartumPage() {
               ))}
             </div>
             
-            {/* Nombre de recettes */}
-            <p className="text-sm text-slate-500">
-              {content.baby_recipes.recipes?.filter(r => !recipeFilter || r.category === recipeFilter).length} recette(s)
-            </p>
-            
-            {/* Recettes */}
-            {content.baby_recipes.recipes?.filter(r => !recipeFilter || r.category === recipeFilter).map((recipe, index) => (
-              <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
+            {/* Recette sélectionnée - Affichage détaillé */}
+            {selectedRecipe && (
+              <Card className="bg-white rounded-2xl p-4 shadow-lg border-2 border-pink-300">
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <h4 className="font-bold text-slate-700">{recipe.name}</h4>
-                    {recipe.category && (
-                      <span className="text-xs text-slate-500">{recipe.category}</span>
-                    )}
+                    <h4 className="font-bold text-slate-700 text-lg">{selectedRecipe.name}</h4>
+                    <span className="text-xs text-slate-500">{selectedRecipe.category}</span>
                   </div>
-                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold">
-                    {recipe.age}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold">
+                      {selectedRecipe.age}
+                    </span>
+                    <button 
+                      onClick={() => setSelectedRecipe(null)}
+                      className="bg-slate-100 hover:bg-slate-200 rounded-full p-1"
+                      data-testid="close-recipe"
+                    >
+                      <ChevronUp className="w-4 h-4 text-slate-600" />
+                    </button>
+                  </div>
                 </div>
                 
                 {/* Ingrédients */}
                 <div className="bg-slate-50 rounded-xl p-3 mb-3">
                   <h5 className="text-sm font-semibold text-slate-700 mb-2">Ingrédients</h5>
                   <ul className="text-sm text-slate-600 space-y-1">
-                    {recipe.ingredients?.map((ing, i) => (
-                      <li key={i}>• {ing}</li>
+                    {selectedRecipe.ingredients?.map((ing, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="text-pink-500">•</span>
+                        <span>{ing}</span>
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -1191,35 +1255,100 @@ export default function PostpartumPage() {
                 {/* Étapes */}
                 <div className="bg-green-50 rounded-xl p-3 mb-3">
                   <h5 className="text-sm font-semibold text-green-800 mb-2">Préparation</h5>
-                  <ol className="text-sm text-green-700 space-y-1">
-                    {recipe.steps?.map((step, i) => (
-                      <li key={i}>{i + 1}. {step}</li>
+                  <ol className="text-sm text-green-700 space-y-2">
+                    {selectedRecipe.steps?.map((step, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0">{i + 1}</span>
+                        <span>{step}</span>
+                      </li>
                     ))}
                   </ol>
                 </div>
                 
                 {/* Conseil */}
-                {recipe.tips && (
-                  <p className="text-sm text-pink-600 bg-pink-50 p-2 rounded-lg mb-3">
-                    💡 {recipe.tips}
+                {selectedRecipe.tips && (
+                  <p className="text-sm text-pink-600 bg-pink-50 p-3 rounded-xl mb-3">
+                    💡 {selectedRecipe.tips}
                   </p>
                 )}
                 
                 {/* Vidéo */}
-                {recipe.video_url && (
+                {selectedRecipe.video_url && (
                   <a 
-                    href={recipe.video_url} 
+                    href={selectedRecipe.video_url} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-sm font-semibold hover:bg-red-200 transition-colors"
+                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-3 rounded-xl font-semibold hover:opacity-90 transition-colors"
                   >
-                    <Play className="w-4 h-4" />
+                    <Play className="w-5 h-5" />
                     Voir la recette en vidéo
-                    <ExternalLink className="w-3 h-3" />
+                    <ExternalLink className="w-4 h-4" />
                   </a>
                 )}
               </Card>
-            ))}
+            )}
+            
+            {/* SOMMAIRE des recettes */}
+            {!selectedRecipe && (
+              <Card className="bg-white rounded-2xl p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-slate-700">Sommaire des recettes</h3>
+                  <span className="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs font-semibold">
+                    {content.baby_recipes.recipes?.filter(r => !recipeFilter || r.category === recipeFilter).length} recettes
+                  </span>
+                </div>
+                
+                {/* Liste groupée par catégorie et triée alphabétiquement */}
+                {(() => {
+                  const filteredRecipes = content.baby_recipes.recipes?.filter(r => !recipeFilter || r.category === recipeFilter) || [];
+                  const categories = [...new Set(filteredRecipes.map(r => r.category))].sort();
+                  
+                  return categories.map((category) => {
+                    const categoryRecipes = filteredRecipes
+                      .filter(r => r.category === category)
+                      .sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+                    
+                    const categoryColors = {
+                      'Légumes': 'bg-green-100 text-green-700 border-green-200',
+                      'Fruits': 'bg-orange-100 text-orange-700 border-orange-200',
+                      'Viandes': 'bg-red-100 text-red-700 border-red-200',
+                      'Poissons': 'bg-sky-100 text-sky-700 border-sky-200',
+                      'Légumineuses': 'bg-amber-100 text-amber-700 border-amber-200',
+                      'Œufs': 'bg-yellow-100 text-yellow-700 border-yellow-200',
+                      'Féculents': 'bg-purple-100 text-purple-700 border-purple-200',
+                      'Desserts': 'bg-pink-100 text-pink-700 border-pink-200'
+                    };
+                    
+                    return (
+                      <div key={category} className="mb-4">
+                        <h4 className={`text-sm font-bold px-3 py-1.5 rounded-lg mb-2 ${categoryColors[category] || 'bg-slate-100 text-slate-700'}`}>
+                          {category} ({categoryRecipes.length})
+                        </h4>
+                        <div className="grid grid-cols-1 gap-1">
+                          {categoryRecipes.map((recipe, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => setSelectedRecipe(recipe)}
+                              data-testid={`recipe-${recipe.name.replace(/\s+/g, '-').toLowerCase()}`}
+                              className="flex items-center justify-between w-full px-3 py-2 text-left rounded-lg hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200"
+                            >
+                              <span className="text-sm text-slate-700">{recipe.name}</span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-slate-400">{recipe.age}</span>
+                                {recipe.video_url && (
+                                  <Play className="w-3 h-3 text-red-500" />
+                                )}
+                                <ChevronDown className="w-4 h-4 text-slate-400" />
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </Card>
+            )}
             
             {/* Vidéo générale */}
             {content.baby_recipes.video_general && (
@@ -1239,17 +1368,67 @@ export default function PostpartumPage() {
         {activeSection === 'precautions' && content?.precautions && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-slate-700">Précautions générales</h2>
+            <p className="text-sm text-slate-500">Ces conseils de sécurité sont essentiels pour le bien-être de bébé et votre récupération.</p>
             {content.precautions.map((precaution, index) => (
               <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
-                <h3 className="font-bold text-slate-700 mb-2">{precaution.title}</h3>
-                <ul className="text-sm text-slate-600 space-y-1">
-                  {precaution.items?.map((item, i) => (
+                <div className="flex items-center gap-3 mb-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                    index === 0 ? 'bg-purple-100' : 
+                    index === 1 ? 'bg-sky-100' : 
+                    index === 2 ? 'bg-red-100' : 'bg-pink-100'
+                  }`}>
+                    <Shield className={`w-5 h-5 ${
+                      index === 0 ? 'text-purple-600' : 
+                      index === 1 ? 'text-sky-600' : 
+                      index === 2 ? 'text-red-600' : 'text-pink-600'
+                    }`} />
+                  </div>
+                  <h3 className="font-bold text-slate-700">{precaution.title}</h3>
+                </div>
+                
+                {/* Description détaillée */}
+                {precaution.description && (
+                  <p className="text-sm text-slate-600 mb-3 bg-slate-50 p-3 rounded-xl">{precaution.description}</p>
+                )}
+                
+                {/* Points clés (tips) */}
+                <ul className="text-sm text-slate-600 space-y-2 mb-3">
+                  {precaution.tips?.map((tip, i) => (
                     <li key={i} className="flex items-start gap-2">
-                      <Shield className="w-4 h-4 text-purple-500 flex-shrink-0 mt-0.5" />
-                      <span>{item}</span>
+                      <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                      <span>{tip}</span>
                     </li>
                   ))}
                 </ul>
+                
+                {/* Explications détaillées */}
+                {precaution.details && precaution.details.length > 0 && (
+                  <div className="bg-amber-50 rounded-xl p-3 border border-amber-200">
+                    <h4 className="text-sm font-bold text-amber-800 mb-2">Pourquoi c'est important ?</h4>
+                    <ul className="text-xs text-amber-700 space-y-1">
+                      {precaution.details.map((detail, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <Info className="w-3 h-3 text-amber-500 flex-shrink-0 mt-0.5" />
+                          <span>{detail}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {/* Vidéo si disponible */}
+                {precaution.video_url && (
+                  <a 
+                    href={precaution.video_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-sm font-semibold hover:bg-red-200 transition-colors mt-3"
+                  >
+                    <Play className="w-4 h-4" />
+                    Voir en vidéo
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
               </Card>
             ))}
           </div>

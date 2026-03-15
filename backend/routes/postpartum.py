@@ -755,19 +755,55 @@ POSTPARTUM_CONTENT = {
     "precautions": [
         {
             "title": "Couchage sécurisé",
-            "tips": ["Sur le dos, dans un lit adapté", "Pas d'oreiller ni couverture", "Température chambre 18-20°C", "Pas de co-dodo sur canapé ou fauteuil"]
+            "description": "La prévention de la mort inattendue du nourrisson (MIN) passe par des règles de couchage strictes. Ces recommandations sont validées par toutes les autorités de santé.",
+            "tips": ["Sur le dos, dans un lit adapté", "Pas d'oreiller ni couverture", "Température chambre 18-20°C", "Pas de co-dodo sur canapé ou fauteuil"],
+            "details": [
+                "Le couchage sur le dos réduit de 50% le risque de MIN (mort inattendue du nourrisson).",
+                "Un matelas ferme et plat évite que bébé ne s'enfonce et ne s'étouffe.",
+                "Les tours de lit, couvertures et peluches présentent un risque d'étouffement.",
+                "La gigoteuse (turbulette) est le seul moyen sûr de garder bébé au chaud.",
+                "Le partage de lit augmente le risque de MIN x5, surtout si fumeur ou après alcool."
+            ],
+            "video_url": "https://www.youtube.com/watch?v=DfaAcZvJKnY"
         },
         {
-            "title": "Hygiène",
-            "tips": ["Lavez-vous les mains avant de toucher bébé", "Limitez les visites les premières semaines", "Évitez les lieux très fréquentés"]
+            "title": "Hygiène et protection",
+            "description": "Le système immunitaire de bébé est immature les premiers mois. Quelques précautions simples le protègent des infections.",
+            "tips": ["Lavez-vous les mains avant de toucher bébé", "Limitez les visites les premières semaines", "Évitez les lieux très fréquentés", "Pas de bisous sur le visage par les visiteurs"],
+            "details": [
+                "Le lavage des mains est le geste le plus efficace contre les infections.",
+                "Les personnes enrhumées ou grippées ne doivent pas approcher bébé.",
+                "Le virus de l'herpès (bouton de fièvre) peut être mortel pour un nouveau-né.",
+                "Les premières semaines, limitez les visites à 2-3 personnes à la fois.",
+                "Évitez les transports en commun et centres commerciaux avant 2 mois."
+            ]
         },
         {
             "title": "Signes d'alerte bébé",
-            "tips": ["Fièvre > 38°C avant 3 mois = urgence", "Refus de s'alimenter", "Pleurs inconsolables inhabituels", "Teint gris ou bleuté", "Difficultés respiratoires"]
+            "description": "Certains symptômes chez le nouveau-né nécessitent une consultation urgente. Apprenez à les reconnaître pour réagir rapidement.",
+            "tips": ["Fièvre > 38°C avant 3 mois = URGENCES", "Refus de s'alimenter sur plusieurs heures", "Pleurs inconsolables inhabituels", "Teint gris, pâle ou bleuté", "Difficultés respiratoires visibles"],
+            "details": [
+                "Avant 3 mois, toute fièvre > 38°C est une urgence médicale (risque d'infection grave).",
+                "Un bébé qui refuse de manger pendant plus de 8h doit être vu par un médecin.",
+                "Des pleurs très différents de d'habitude peuvent signaler une douleur ou maladie.",
+                "Un teint gris ou des lèvres bleues indiquent un problème d'oxygénation urgent.",
+                "Une respiration rapide (> 60/min) ou sifflante nécessite une consultation rapide.",
+                "En cas de doute, appelez le 15 (SAMU) ou le 114 (urgences SMS)."
+            ],
+            "video_url": "https://www.youtube.com/watch?v=9i0AvZK4WmE"
         },
         {
             "title": "Récupération maman",
-            "tips": ["Pas de port de charges lourdes 6 semaines", "Reprise progressive des activités", "Écouter son corps", "Pas de bain (douche uniquement) tant que saignements"]
+            "description": "Votre corps a vécu un événement intense. La récupération prend du temps et nécessite d'écouter vos limites.",
+            "tips": ["Pas de port de charges lourdes pendant 6 semaines", "Reprise progressive des activités", "Écouter son corps et se reposer", "Pas de bain (douche uniquement) tant que saignements"],
+            "details": [
+                "Les organes internes reprennent leur place progressivement (6-8 semaines).",
+                "Le périnée est fragilisé : évitez les efforts de poussée (constipation, port de charges).",
+                "Les saignements (lochies) durent 2 à 6 semaines et sont normaux.",
+                "Le bain est déconseillé tant qu'il y a des saignements (risque d'infection).",
+                "La rééducation périnéale est recommandée même sans symptômes.",
+                "La reprise des rapports se fait quand VOUS vous sentez prête, sans pression."
+            ]
         }
     ],
     "babywearing": {

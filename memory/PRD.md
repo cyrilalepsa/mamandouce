@@ -96,6 +96,28 @@ Application pour les femmes enceintes avec :
   - 8 sous-composants créés dans `/app/frontend/src/components/profile/`
   - Composants: SubscriptionStatusCards, UserInfoCard, PregnancyCard, NotificationsCard, QuickLoginCard, FertilityRemindersCard, ContactCard, MessageHistoryCard
 
+### Features Ajoutées (15 Mars 2026 - Session 4)
+- [x] **Section Difficultés améliorée**
+  - Affichage des conseils pratiques pour chaque difficulté
+  - Liens vidéo explicatives intégrés
+  - Ressources utiles (numéros de téléphone, sites web)
+  - Bloc "Quand consulter ?" bien visible
+  
+- [x] **Section Précautions enrichie**
+  - Descriptions détaillées pour chaque précaution
+  - Nouveau bloc "Pourquoi c'est important ?" avec explications
+  - Liens vidéo pour certaines précautions (couchage sécurisé, signes d'alerte)
+  - 4 catégories: Couchage sécurisé, Hygiène et protection, Signes d'alerte bébé, Récupération maman
+
+- [x] **Recettes réorganisées en sommaire cliquable**
+  - Interface sommaire avec navigation par catégorie
+  - Tri alphabétique des recettes dans chaque catégorie
+  - 8 catégories colorées: Légumes, Fruits, Viandes, Poissons, Légumineuses, Œufs, Féculents, Desserts
+  - Vue détaillée de la recette au clic (ingrédients, étapes numérotées, conseils, vidéo)
+  - Filtres par catégorie fonctionnels
+  - 40 recettes au total
+  - Conseils de cuisine collapsibles
+
 ### Features Ajoutées (15 Mars 2026 - Session 3)
 - [x] **Nouvelle icône PWA** avec logo et texte "MamanDouce"
 - [x] **Bannière installation PWA** pour faciliter l'ajout sur l'écran d'accueil
