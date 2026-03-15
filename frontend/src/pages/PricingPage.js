@@ -2,42 +2,42 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Check, X, Crown, Baby, Users, Lock, Gift } from 'lucide-react';
-import AppTitle from '../components/AppTitle';
+import { Check, X, Crown, Baby, Users, Lock, Gift, Heart } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 
 function PricingPage() {
   const navigate = useNavigate();
 
-  const features = {
-    free: [
-      { text: 'Calculateur de grossesse basique', included: true },
-      { text: '5 scans de produits par semaine', included: true },
-      { text: 'Conseils des 4 premières semaines', included: true },
-      { text: 'Accès CAF/Ameli/Mairie', included: true },
-      { text: '41 semaines de conseils complets', included: false },
-      { text: 'Images évolution embryon', included: false },
-      { text: 'Scanner illimité', included: false },
-      { text: 'Démarches administratives', included: false },
-      { text: 'Notifications email', included: false },
-      { text: 'Historique complet', included: false },
-      { text: 'Support prioritaire', included: false }
-    ],
-    premium: [
-      { text: 'Calculateur de grossesse complet', included: true },
-      { text: 'Scanner ILLIMITÉ de produits', included: true },
-      { text: '41 semaines de conseils complets', included: true },
-      { text: 'Accès CAF/Ameli/Mairie', included: true },
-      { text: '6 images évolution embryon/fœtus', included: true },
-      { text: 'Calendrier de fertilité détaillé', included: true },
-      { text: 'Check-list sac de maternité', included: true },
-      { text: 'Démarches administratives détaillées', included: true },
-      { text: 'Notifications email automatiques', included: true },
-      { text: 'Historique complet recherches', included: true },
-      { text: 'Sans publicité', included: true },
-      { text: 'Support prioritaire', included: true }
-    ]
-  };
+  const featuresStandard = [
+    { text: 'Calculateur de grossesse basique', included: true },
+    { text: '5 scans de produits par semaine', included: true },
+    { text: 'Conseils des 4 premières semaines', included: true },
+    { text: 'Accès CAF/Ameli/Mairie', included: true },
+    { text: 'Calendrier de fertilité', included: true },
+    { text: '41 semaines de conseils complets', included: false },
+    { text: 'Images évolution embryon', included: false },
+    { text: 'Scanner illimité', included: false },
+    { text: 'Check-list sac de maternité', included: false },
+    { text: 'Démarches administratives', included: false },
+    { text: 'Notifications email', included: false },
+    { text: 'Historique complet', included: false },
+    { text: 'Support prioritaire', included: false }
+  ];
+  
+  const featuresPremium = [
+    { text: 'Calculateur de grossesse complet', included: true },
+    { text: 'Scanner ILLIMITÉ de produits', included: true },
+    { text: '41 semaines de conseils complets', included: true },
+    { text: 'Accès CAF/Ameli/Mairie', included: true },
+    { text: '6 images évolution embryon/fœtus', included: true },
+    { text: 'Calendrier de fertilité détaillé', included: true },
+    { text: 'Check-list sac de maternité', included: true },
+    { text: 'Démarches administratives détaillées', included: true },
+    { text: 'Notifications email automatiques', included: true },
+    { text: 'Historique complet recherches', included: true },
+    { text: 'Sans publicité', included: true },
+    { text: 'Support prioritaire', included: true }
+  ];
 
   return (
     <div className="min-h-screen gradient-bg p-6">
@@ -68,23 +68,26 @@ function PricingPage() {
 
         {/* Comparatif */}
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Gratuit */}
+          {/* Standard (Gratuit) */}
           <Card className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200">
             <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>Gratuit</h3>
-              <div className="text-4xl font-bold text-slate-600 mb-2">0€</div>
-              <p className="text-slate-500">Pour découvrir</p>
+              <h3 className="text-2xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>Standard</h3>
+              <div className="text-4xl font-bold text-slate-600 mb-2">Gratuit</div>
+              <p className="text-slate-500">Pour découvrir l'application</p>
             </div>
             <ul className="space-y-3 mb-6">
-              {features.free.map((feature, index) => (
+              {featuresStandard.map((feature, index) => (
                 <li key={index} className="flex items-start gap-3">
                   {feature.included ? (
                     <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                   ) : (
                     <X className="w-5 h-5 text-slate-300 flex-shrink-0 mt-0.5" />
                   )}
-                  <span className={feature.included ? 'text-slate-700' : 'text-slate-400 line-through'}>
+                  <span className={feature.included ? 'text-slate-700' : 'text-slate-400'}>
                     {feature.text}
+                    {feature.text.includes('4 premières semaines') && (
+                      <span className="text-xs text-slate-400 block">Semaines 1 à 4 uniquement</span>
+                    )}
                   </span>
                 </li>
               ))}
@@ -112,7 +115,7 @@ function PricingPage() {
               </div>
             </div>
             <ul className="space-y-3 mb-6">
-              {features.premium.map((feature, index) => (
+              {featuresPremium.map((feature, index) => (
                 <li key={index} className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
                   <span className="text-white font-medium">{feature.text}</span>
@@ -131,37 +134,50 @@ function PricingPage() {
 
         {/* Option Post-partum */}
         <Card className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-3xl p-8 border border-rose-200">
-          <div className="flex flex-col md:flex-row items-center gap-6">
+          <div className="flex flex-col md:flex-row items-start gap-6">
             <div className="w-20 h-20 bg-gradient-to-br from-rose-400 to-pink-400 rounded-2xl flex items-center justify-center flex-shrink-0">
               <Baby className="w-10 h-10 text-white" />
             </div>
-            <div className="flex-1 text-center md:text-left">
+            <div className="flex-1">
               <h3 className="text-2xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
                 Suivi Post-partum
               </h3>
-              <p className="text-slate-600 mb-3">
-                6 mois d'accompagnement après l'accouchement : conseils, rendez-vous, allaitement, couches, précautions...
+              <p className="text-slate-600 mb-4">
+                6 mois d'accompagnement après l'accouchement avec conseils détaillés, rendez-vous médicaux, 
+                guide allaitement, lait infantile, couches et précautions à prendre.
               </p>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-                <span className="text-3xl font-bold text-rose-600">+8€</span>
-                <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
-                  <Lock className="w-4 h-4" />
-                  Accessible après 6 mois d'abonnement
-                </span>
+              
+              <div className="bg-white rounded-2xl p-4 mb-4">
+                <div className="flex flex-wrap items-center gap-4 mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-3xl font-bold text-rose-600">8€</span>
+                    <span className="text-slate-500">paiement unique</span>
+                  </div>
+                  <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
+                    <Lock className="w-4 h-4" />
+                    Accessible après 6 mois d'abonnement Premium
+                  </span>
+                </div>
+                <p className="text-sm text-slate-500">
+                  Le suivi post-partum démarre automatiquement après votre accouchement (fin des 9 mois de grossesse).
+                </p>
+              </div>
+              
+              {/* Parrainage */}
+              <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-4 border border-purple-200">
+                <div className="flex items-center gap-3 mb-2">
+                  <Gift className="w-6 h-6 text-purple-600" />
+                  <h4 className="font-bold text-purple-800">Ou obtenez-le GRATUITEMENT !</h4>
+                </div>
+                <p className="text-purple-700 text-sm mb-3">
+                  <strong>Parrainez 2 amies</strong> qui s'inscrivent sur MamanDouce et le suivi post-partum vous est offert !
+                </p>
+                <div className="flex items-center gap-2 text-xs text-purple-600">
+                  <Users className="w-4 h-4" />
+                  <span>Rendez-vous dans <strong>Paramètres → Parrainage</strong> pour inviter vos amies</span>
+                </div>
               </div>
             </div>
-          </div>
-          
-          {/* Parrainage info */}
-          <div className="mt-6 pt-6 border-t border-rose-200">
-            <div className="flex items-center gap-3 mb-3">
-              <Gift className="w-6 h-6 text-purple-500" />
-              <h4 className="font-bold text-slate-700">Ou obtenez-le gratuitement !</h4>
-            </div>
-            <p className="text-slate-600 text-sm">
-              <span className="font-semibold text-purple-600">Parrainez 2 amies</span> qui s'inscrivent sur MamanDouce 
-              et le suivi post-partum vous est offert. Rendez-vous dans vos paramètres pour parrainer.
-            </p>
           </div>
         </Card>
 
@@ -185,10 +201,10 @@ function PricingPage() {
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-pink-300 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="w-8 h-8 text-white" />
+                <Heart className="w-8 h-8 text-white" />
               </div>
-              <h4 className="font-bold text-slate-700 mb-2">Données privées</h4>
-              <p className="text-sm text-slate-500">Conforme RGPD</p>
+              <h4 className="font-bold text-slate-700 mb-2">Remboursement fausse couche</h4>
+              <p className="text-sm text-slate-500">Au prorata sur attestation</p>
             </div>
           </div>
         </Card>
@@ -198,20 +214,34 @@ function PricingPage() {
           <h3 className="text-2xl font-bold text-slate-700 mb-6" style={{ fontFamily: 'Nunito, sans-serif' }}>Questions fréquentes</h3>
           <div className="space-y-4">
             <div>
-              <h4 className="font-bold text-slate-700 mb-2">Puis-je annuler mon abonnement ?</h4>
-              <p className="text-slate-600">Oui, vous pouvez annuler à tout moment depuis votre compte. Aucun engagement.</p>
+              <h4 className="font-bold text-slate-700 mb-2">Quelle est la différence entre Standard et Premium ?</h4>
+              <p className="text-slate-600">
+                En Standard, vous avez accès aux conseils des 4 premières semaines et à 5 scans par semaine. 
+                En Premium, vous débloquez les 41 semaines de conseils, le scanner illimité et toutes les fonctionnalités avancées.
+              </p>
             </div>
             <div>
               <h4 className="font-bold text-slate-700 mb-2">Comment fonctionne le paiement ?</h4>
               <p className="text-slate-600">Paiement sécurisé unique de 27€ pour 9 mois d'accès complet. Sans renouvellement automatique.</p>
             </div>
             <div>
-              <h4 className="font-bold text-slate-700 mb-2">Comment accéder au suivi post-partum ?</h4>
-              <p className="text-slate-600">L'option devient accessible après 6 mois d'abonnement. Vous pouvez aussi l'obtenir gratuitement en parrainant 2 amies !</p>
+              <h4 className="font-bold text-slate-700 mb-2">Que se passe-t-il après les 9 mois ?</h4>
+              <p className="text-slate-600">
+                Votre compte reste actif en version Standard. Si vous avez acheté le post-partum, vous gardez l'accès pendant 6 mois après l'accouchement.
+              </p>
             </div>
             <div>
-              <h4 className="font-bold text-slate-700 mb-2">Mes données sont-elles sécurisées ?</h4>
-              <p className="text-slate-600">Absolument. Nous sommes conformes RGPD et vos données ne sont jamais partagées.</p>
+              <h4 className="font-bold text-slate-700 mb-2">Comment accéder au suivi post-partum ?</h4>
+              <p className="text-slate-600">
+                L'option devient achetable (8€) après 6 mois d'abonnement Premium. 
+                Vous pouvez aussi l'obtenir gratuitement en parrainant 2 amies qui s'inscrivent !
+              </p>
+            </div>
+            <div>
+              <h4 className="font-bold text-slate-700 mb-2">Puis-je être remboursée en cas de fausse couche ?</h4>
+              <p className="text-slate-600">
+                Oui, nous comprenons cette situation difficile. Envoyez une attestation médicale via les paramètres et nous vous remboursons au prorata des mois restants.
+              </p>
             </div>
           </div>
         </Card>
