@@ -452,3 +452,130 @@ async def send_push_notification_to_user(user_email: str, title: str, body: str,
             logger.error(f"Push error: {e}")
     
     return success_count > 0
+
+
+
+# ==================== REMINDERS DASHBOARD ====================
+
+@router.get("/admin/reminders/dashboard")
+async def get_reminders_dashboard(admin: User = Depends(get_admin_user)):
+    """Get dashboard data for appointment reminders"""
+    from core.scheduler import scheduler
+    
+    now = datetime.now(timezone.utc)
+    
+    # Get all reminders
+    all_reminders = await db.appointment_reminders.find({}, {"_id": 0}).sort("created_at", -1).to_list(500)
+    
+    # Get reminder history (sent reminders with status)
+    reminder_history = await db.reminder_history.find({}, {"_id": 0}).sort("sent_at", -1).to_list(100)
+    
+    # Calculate stats
+    total_reminders = len(all_reminders)
+    pending_reminders = len([r for r in all_reminders if not r.get("sent")])
+    sent_reminders = len([r for r in all_reminders if r.get("sent")])
+    
+    # Due reminders (should have been sent)
+    due_reminders = [r for r in all_reminders if not r.get("sent") and r.get("reminder_datetime", "") <= now.isoformat()]
+    
+    # Scheduler status
+    scheduler_status = {
+        "running": scheduler.running,
+        "jobs": [{"id": job.id, "name": job.name, "next_run": job.next_run_time.isoformat() if job.next_run_time else None} for job in scheduler.get_jobs()]
+    }
+    
+    # Group by type
+    by_type = {"push": 0, "email": 0, "both": 0}
+    for r in all_reminders:
+        rtype = r.get("reminder_type", "push")
+        by_type[rtype] = by_type.get(rtype, 0) + 1
+    
+    # Group by user
+    users_with_reminders = {}
+    for r in all_reminders:
+        email = r.get("user_email", "unknown")
+        if email not in users_with_reminders:
+            users_with_reminders[email] = {"pending": 0, "sent": 0}
+        if r.get("sent"):
+            users_with_reminders[email]["sent"] += 1
+        else:
+            users_with_reminders[email]["pending"] += 1
+    
+    return {
+        "stats": {
+            "total": total_reminders,
+            "pending": pending_reminders,
+            "sent": sent_reminders,
+            "due_now": len(due_reminders),
+            "by_type": by_type
+        },
+        "scheduler": scheduler_status,
+        "users_with_reminders": users_with_reminders,
+        "recent_reminders": all_reminders[:20],
+        "history": reminder_history[:50]
+    }
+
+
+@router.get("/admin/reminders/all")
+async def get_all_reminders(
+    status: str = "all",  # all, pending, sent
+    admin: User = Depends(get_admin_user)
+):
+    """Get all reminders with optional filtering"""
+    query = {}
+    if status == "pending":
+        query["sent"] = False
+    elif status == "sent":
+        query["sent"] = True
+    
+    reminders = await db.appointment_reminders.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
+    
+    return {
+        "reminders": reminders,
+        "total": len(reminders),
+        "filter": status
+    }
+
+
+@router.get("/admin/reminders/history")
+async def get_reminder_history(limit: int = 100, admin: User = Depends(get_admin_user)):
+    """Get history of sent reminders with success/failure status"""
+    history = await db.reminder_history.find({}, {"_id": 0}).sort("sent_at", -1).to_list(limit)
+    
+    # Calculate success rate
+    total = len(history)
+    success = len([h for h in history if h.get("status") == "success"])
+    failed = len([h for h in history if h.get("status") == "failed"])
+    partial = len([h for h in history if h.get("status") == "partial"])
+    
+    return {
+        "history": history,
+        "stats": {
+            "total": total,
+            "success": success,
+            "failed": failed,
+            "partial": partial,
+            "success_rate": round(success / total * 100, 1) if total > 0 else 0
+        }
+    }
+
+
+@router.post("/admin/reminders/send-now")
+async def admin_send_due_reminders(admin: User = Depends(get_admin_user)):
+    """Manually trigger sending of all due reminders (admin only)"""
+    from core.scheduler import send_due_reminders_job
+    
+    await send_due_reminders_job()
+    
+    return {"success": True, "message": "Rappels dus envoyés"}
+
+
+@router.delete("/admin/reminders/{reminder_id}")
+async def admin_delete_reminder(reminder_id: str, admin: User = Depends(get_admin_user)):
+    """Delete a specific reminder (admin only)"""
+    result = await db.appointment_reminders.delete_one({"id": reminder_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Rappel non trouvé")
+    
+    return {"success": True, "message": "Rappel supprimé"}

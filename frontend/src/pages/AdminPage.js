@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, RefreshCw, Eye, Crown, Baby, ChevronDown } from 'lucide-react';
+import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, RefreshCw, Eye, Crown, Baby, ChevronDown, Bell } from 'lucide-react';
 import api from '../utils/api';
 import PageHeader from '../components/PageHeader';
 import { toast } from 'sonner';
@@ -12,7 +12,8 @@ import {
   MessagesTab,
   FoodsTab,
   CodesTab,
-  RefundsTab
+  RefundsTab,
+  RemindersTab
 } from '../components/admin';
 
 function AdminPage() {
@@ -210,6 +211,7 @@ function AdminPage() {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, count: null },
     { id: 'users', label: 'Utilisateurs', icon: Users, count: userStats.total },
     { id: 'messages', label: 'Messages', icon: MessageSquare, count: messageStats.unread },
+    { id: 'reminders', label: 'Rappels', icon: Bell, count: null },
     { id: 'foods', label: 'Aliments', icon: Apple, count: foodStats.pending },
     { id: 'codes', label: 'Codes Promo', icon: Gift, count: codeStats.available },
     { id: 'refunds', label: 'Remboursements', icon: RefreshCw, count: refundStats.pending },
@@ -313,6 +315,10 @@ function AdminPage() {
             messageStats={messageStats}
             loadMessages={loadMessages}
           />
+        )}
+
+        {activeTab === 'reminders' && (
+          <RemindersTab />
         )}
 
         {activeTab === 'foods' && (

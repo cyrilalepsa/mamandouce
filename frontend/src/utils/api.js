@@ -203,6 +203,12 @@ export const api = {
     setUserPremium: (userId, premium) => axios.post(`${API}/admin/user/${userId}/set-premium?premium=${premium}`, {}, getAuthHeaders()),
     setUserPostpartum: (userId, enabled) => axios.post(`${API}/admin/user/${userId}/set-postpartum?enabled=${enabled}`, {}, getAuthHeaders()),
     setUserRole: (userId, role) => axios.post(`${API}/admin/user/${userId}/set-role?role=${role}`, {}, getAuthHeaders()),
+    // Reminders Dashboard
+    getRemindersDashboard: () => axios.get(`${API}/admin/reminders/dashboard`, getAuthHeaders()),
+    getAllReminders: (status = 'all') => axios.get(`${API}/admin/reminders/all?status=${status}`, getAuthHeaders()),
+    getRemindersHistory: (limit = 100) => axios.get(`${API}/admin/reminders/history?limit=${limit}`, getAuthHeaders()),
+    sendDueReminders: () => axios.post(`${API}/admin/reminders/send-now`, {}, getAuthHeaders()),
+    deleteReminder: (reminderId) => axios.delete(`${API}/admin/reminders/${reminderId}`, getAuthHeaders()),
   },
   
   chatbot: {

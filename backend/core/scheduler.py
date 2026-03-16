@@ -15,6 +15,7 @@ async def send_due_reminders_job():
     from core.database import db
     from routes.push_notifications import send_push_notification
     from core.config import RESEND_API_KEY, SENDER_EMAIL
+    import uuid
     
     try:
         import resend
@@ -37,10 +38,26 @@ async def send_due_reminders_job():
     print(f"[Scheduler] Found {len(due_reminders)} due reminders to send")
     
     for reminder in due_reminders:
+        history_entry = {
+            "id": str(uuid.uuid4()),
+            "reminder_id": reminder.get("id"),
+            "user_email": reminder.get("user_email"),
+            "appointment_title": reminder.get("appointment_title"),
+            "reminder_type": reminder.get("reminder_type", "push"),
+            "sent_at": now.isoformat(),
+            "push_status": None,
+            "email_status": None,
+            "status": "pending",
+            "error_details": []
+        }
+        
         try:
             reminder_type = reminder.get("reminder_type", "push")
             user_email = reminder["user_email"]
             appointment_title = reminder["appointment_title"]
+            
+            push_success = False
+            email_success = False
             
             # Send push notification
             if reminder_type in ["push", "both"]:
@@ -51,8 +68,12 @@ async def send_due_reminders_job():
                         body=f"N'oubliez pas : {appointment_title}",
                         url="/medical"
                     )
+                    push_success = True
+                    history_entry["push_status"] = "success"
                     print(f"[Scheduler] Push notification sent to {user_email}")
                 except Exception as e:
+                    history_entry["push_status"] = "failed"
+                    history_entry["error_details"].append(f"Push: {str(e)}")
                     print(f"[Scheduler] Push notification error: {e}")
             
             # Send email notification
@@ -93,9 +114,26 @@ async def send_due_reminders_job():
                         </div>
                         """
                     })
+                    email_success = True
+                    history_entry["email_status"] = "success"
                     print(f"[Scheduler] Email sent to {user_email}")
                 except Exception as e:
+                    history_entry["email_status"] = "failed"
+                    history_entry["error_details"].append(f"Email: {str(e)}")
                     print(f"[Scheduler] Email error: {e}")
+            
+            # Determine overall status
+            if reminder_type == "push":
+                history_entry["status"] = "success" if push_success else "failed"
+            elif reminder_type == "email":
+                history_entry["status"] = "success" if email_success else "failed"
+            else:  # both
+                if push_success and email_success:
+                    history_entry["status"] = "success"
+                elif push_success or email_success:
+                    history_entry["status"] = "partial"
+                else:
+                    history_entry["status"] = "failed"
             
             # Mark as sent
             await db.appointment_reminders.update_one(
@@ -105,7 +143,12 @@ async def send_due_reminders_job():
             print(f"[Scheduler] Reminder {reminder['id']} marked as sent")
             
         except Exception as e:
+            history_entry["status"] = "failed"
+            history_entry["error_details"].append(f"General: {str(e)}")
             print(f"[Scheduler] Error processing reminder {reminder.get('id')}: {e}")
+        
+        # Save history entry
+        await db.reminder_history.insert_one(history_entry)
 
 
 def start_scheduler():
