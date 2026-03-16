@@ -30,6 +30,8 @@ function MedicalAppointmentsPage() {
   const [settingReminder, setSettingReminder] = useState(null);
   const [reminderDate, setReminderDate] = useState('');
   const [reminderTime, setReminderTime] = useState('09:00');
+  const [reminderType, setReminderType] = useState('both'); // push, email, both
+  const [showAutoReminderSuggestion, setShowAutoReminderSuggestion] = useState(null);
 
   useEffect(() => {
     loadAppointments();
@@ -40,8 +42,21 @@ function MedicalAppointmentsPage() {
   const loadAppointments = async () => {
     try {
       const response = await api.medical.getAppointments();
-      setAppointments(response.data.appointments || []);
+      const apts = response.data.appointments || [];
+      setAppointments(apts);
       setCurrentWeek(response.data.current_week || 1);
+      
+      // Check for "current" appointments that don't have reminders - show suggestion
+      const currentApt = apts.find(a => a.status === 'current' && !a.is_completed);
+      if (currentApt) {
+        // Will check for existing reminder after loading them
+        setTimeout(() => {
+          setShowAutoReminderSuggestion(prev => {
+            // Only suggest if no reminder exists for this appointment
+            return prev;
+          });
+        }, 500);
+      }
     } catch (error) {
       console.error('Erreur chargement rendez-vous:', error);
     } finally {
@@ -66,24 +81,39 @@ function MedicalAppointmentsPage() {
         remindersMap[r.appointment_id] = r;
       });
       setScheduledReminders(remindersMap);
+      
+      // Check if there's a "current" appointment without reminder
+      const currentApt = appointments.find(a => a.status === 'current' && !a.is_completed);
+      if (currentApt && !remindersMap[currentApt.id]) {
+        setShowAutoReminderSuggestion(currentApt.id);
+      }
     } catch (error) {
       console.error('Erreur chargement rappels:', error);
     }
   };
 
-  const scheduleReminder = async (appointmentId) => {
-    if (!reminderDate) {
+  const scheduleReminder = async (appointmentId, autoSuggest = false) => {
+    if (!reminderDate && !autoSuggest) {
       toast.error('Veuillez sélectionner une date');
       return;
     }
     
-    const reminderDatetime = `${reminderDate}T${reminderTime}:00`;
+    let dateToUse = reminderDate;
+    if (autoSuggest) {
+      // For auto-suggest, use tomorrow at 9am
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      dateToUse = tomorrow.toISOString().split('T')[0];
+    }
+    
+    const reminderDatetime = `${dateToUse}T${reminderTime}:00`;
     
     try {
-      await api.medical.scheduleReminder(appointmentId, reminderDatetime, 'push');
+      await api.medical.scheduleReminder(appointmentId, reminderDatetime, reminderType);
       toast.success('Rappel programmé !');
       setSettingReminder(null);
       setReminderDate('');
+      setShowAutoReminderSuggestion(null);
       loadScheduledReminders();
     } catch (error) {
       toast.error('Erreur lors de la programmation');
@@ -282,6 +312,38 @@ function MedicalAppointmentsPage() {
                   <span className="text-amber-800 font-medium">{currentCount} rendez-vous à planifier maintenant</span>
                 </div>
               )}
+              
+              {/* Auto-reminder suggestion */}
+              {showAutoReminderSuggestion && !scheduledReminders[showAutoReminderSuggestion] && (
+                <div className="mt-3 bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-4 border border-purple-200">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
+                      <Bell className="w-5 h-5 text-purple-500" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-purple-800 text-sm">Programmer un rappel ?</h4>
+                      <p className="text-purple-700 text-xs mt-1">
+                        Vous avez un RDV à planifier. Voulez-vous recevoir un rappel demain matin ?
+                      </p>
+                      <div className="flex gap-2 mt-3">
+                        <Button
+                          onClick={() => scheduleReminder(showAutoReminderSuggestion, true)}
+                          data-testid="auto-reminder-accept"
+                          className="bg-purple-500 hover:bg-purple-600 text-white rounded-full px-4 py-1.5 text-xs"
+                        >
+                          Oui, me rappeler
+                        </Button>
+                        <Button
+                          onClick={() => setShowAutoReminderSuggestion(null)}
+                          className="bg-white text-purple-600 rounded-full px-4 py-1.5 text-xs border border-purple-200"
+                        >
+                          Plus tard
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </Card>
 
             {/* Trimester sections */}
@@ -415,22 +477,39 @@ function MedicalAppointmentsPage() {
                                       data-testid="reminder-time"
                                     />
                                   </div>
+                                  <div>
+                                    <label className="text-xs text-slate-500 block mb-1">Type</label>
+                                    <select
+                                      value={reminderType}
+                                      onChange={(e) => setReminderType(e.target.value)}
+                                      className="text-sm h-9 rounded-xl px-2 border border-slate-200 bg-white"
+                                      data-testid="reminder-type"
+                                    >
+                                      <option value="both">Push + Email</option>
+                                      <option value="push">Push seul</option>
+                                      <option value="email">Email seul</option>
+                                    </select>
+                                  </div>
+                                </div>
+                                <div className="flex gap-2 mt-3">
                                   <Button
                                     onClick={() => scheduleReminder(apt.id)}
                                     data-testid="save-reminder"
-                                    className="bg-amber-500 hover:bg-amber-600 text-white rounded-xl px-4 py-2 text-sm h-9"
+                                    className="bg-amber-500 hover:bg-amber-600 text-white rounded-xl px-4 py-2 text-sm"
                                   >
                                     Programmer
                                   </Button>
                                   <Button
                                     onClick={() => setSettingReminder(null)}
-                                    className="bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-xl px-3 py-2 text-sm h-9"
+                                    className="bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-xl px-3 py-2 text-sm"
                                   >
                                     Annuler
                                   </Button>
                                 </div>
                                 <p className="text-xs text-amber-600 mt-2">
-                                  Vous recevrez une notification push à la date choisie.
+                                  {reminderType === 'both' ? 'Vous recevrez une notification push et un email.' :
+                                   reminderType === 'push' ? 'Vous recevrez une notification push.' :
+                                   'Vous recevrez un email.'}
                                 </p>
                               </div>
                             )}

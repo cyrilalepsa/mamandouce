@@ -1,10 +1,11 @@
 /* eslint-disable no-restricted-globals */
 
 // VERSION - Increment this to force cache update
-const APP_VERSION = '2.1.0';
+const APP_VERSION = '2.2.0';
 const CACHE_NAME = `mamandouce-v${APP_VERSION}`;
 const STATIC_CACHE = `mamandouce-static-v${APP_VERSION}`;
 const DYNAMIC_CACHE = `mamandouce-dynamic-v${APP_VERSION}`;
+const OFFLINE_QUEUE_CACHE = `mamandouce-offline-queue-v${APP_VERSION}`;
 
 // Assets to cache on install (expanded for better offline experience)
 const STATIC_ASSETS = [
@@ -24,7 +25,18 @@ const CACHEABLE_API_PATTERNS = [
   '/api/pregnancy/profile',
   '/api/postpartum/content',
   '/api/food-library',
-  '/api/birth-list'
+  '/api/birth-list',
+  '/api/medical/scheduled-reminders',
+  '/api/auth/me'
+];
+
+// API endpoints that should be queued when offline (POST/PUT/DELETE)
+const QUEUEABLE_API_PATTERNS = [
+  '/api/medical/schedule-reminder',
+  '/api/medical/complete/',
+  '/api/maternity-bag/check',
+  '/api/favorites',
+  '/api/contact/send'
 ];
 
 // Install event - cache minimal static assets and skip waiting
@@ -119,13 +131,125 @@ const isStaticAsset = (url) => {
   return url.match(/\.(js|css|png|jpg|jpeg|webp|svg|woff2?|ttf)(\?|$)/);
 };
 
+// Check if request should be queued when offline
+const shouldQueueOffline = (url) => {
+  return QUEUEABLE_API_PATTERNS.some(pattern => url.includes(pattern));
+};
+
+// Queue a request for later sync
+const queueRequest = async (request) => {
+  try {
+    const body = await request.clone().text();
+    const queueItem = {
+      id: Date.now().toString(),
+      url: request.url,
+      method: request.method,
+      headers: Object.fromEntries(request.headers.entries()),
+      body: body,
+      timestamp: new Date().toISOString()
+    };
+    
+    const cache = await caches.open(OFFLINE_QUEUE_CACHE);
+    const existingQueue = await cache.match('queue');
+    let queue = [];
+    
+    if (existingQueue) {
+      queue = await existingQueue.json();
+    }
+    
+    queue.push(queueItem);
+    await cache.put('queue', new Response(JSON.stringify(queue)));
+    
+    console.log('[SW] Request queued for sync:', request.url);
+    return true;
+  } catch (error) {
+    console.error('[SW] Failed to queue request:', error);
+    return false;
+  }
+};
+
+// Process queued requests when back online
+const processOfflineQueue = async () => {
+  try {
+    const cache = await caches.open(OFFLINE_QUEUE_CACHE);
+    const existingQueue = await cache.match('queue');
+    
+    if (!existingQueue) return { processed: 0, failed: 0 };
+    
+    const queue = await existingQueue.json();
+    let processed = 0;
+    let failed = 0;
+    const remainingQueue = [];
+    
+    for (const item of queue) {
+      try {
+        const response = await fetch(item.url, {
+          method: item.method,
+          headers: item.headers,
+          body: item.body || undefined
+        });
+        
+        if (response.ok) {
+          processed++;
+          console.log('[SW] Synced queued request:', item.url);
+        } else {
+          failed++;
+          remainingQueue.push(item);
+        }
+      } catch (error) {
+        failed++;
+        remainingQueue.push(item);
+        console.error('[SW] Failed to sync:', item.url, error);
+      }
+    }
+    
+    // Update queue with remaining items
+    if (remainingQueue.length > 0) {
+      await cache.put('queue', new Response(JSON.stringify(remainingQueue)));
+    } else {
+      await cache.delete('queue');
+    }
+    
+    return { processed, failed };
+  } catch (error) {
+    console.error('[SW] Error processing queue:', error);
+    return { processed: 0, failed: 0 };
+  }
+};
+
 // Fetch event - ALWAYS network first for HTML/JS/CSS
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
   
-  // Skip non-GET requests
+  // Skip non-GET requests for caching, but handle offline queue
   if (request.method !== 'GET') {
+    if (shouldQueueOffline(request.url)) {
+      event.respondWith(
+        fetch(request.clone())
+          .catch(async () => {
+            // Queue the request for later sync
+            const queued = await queueRequest(request);
+            if (queued) {
+              return new Response(
+                JSON.stringify({ 
+                  success: true, 
+                  offline: true, 
+                  message: 'Action enregistrée, sera synchronisée en ligne' 
+                }),
+                { 
+                  headers: { 'Content-Type': 'application/json' },
+                  status: 202 
+                }
+              );
+            }
+            return new Response(
+              JSON.stringify({ error: 'Offline and could not queue' }),
+              { status: 503 }
+            );
+          })
+      );
+    }
     return;
   }
   
@@ -143,34 +267,29 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('sync', (event) => {
   console.log('[SW] Background sync:', event.tag);
   
-  if (event.tag === 'sync-data') {
-    event.waitUntil(syncOfflineData());
+  if (event.tag === 'sync-data' || event.tag === 'sync-offline-queue') {
+    event.waitUntil(
+      processOfflineQueue().then(result => {
+        console.log(`[SW] Sync complete: ${result.processed} processed, ${result.failed} failed`);
+        
+        // Notify clients about sync completion
+        if (result.processed > 0) {
+          self.clients.matchAll().then(clients => {
+            clients.forEach(client => {
+              client.postMessage({
+                type: 'SYNC_COMPLETE',
+                processed: result.processed,
+                failed: result.failed
+              });
+            });
+          });
+        }
+      })
+    );
   }
 });
 
-// Sync offline data when back online
-const syncOfflineData = async () => {
-  try {
-    const pendingActions = await getPendingActions();
-    
-    for (const action of pendingActions) {
-      try {
-        await fetch(action.url, {
-          method: action.method,
-          headers: action.headers,
-          body: action.body
-        });
-        await removePendingAction(action.id);
-      } catch (error) {
-        console.error('[SW] Failed to sync action:', error);
-      }
-    }
-  } catch (error) {
-    console.error('[SW] Sync failed:', error);
-  }
-};
-
-// IndexedDB helpers for offline queue
+// IndexedDB helpers for offline queue (legacy - kept for compatibility)
 const DB_NAME = 'mamandouce-offline';
 const STORE_NAME = 'pending-actions';
 
@@ -263,7 +382,7 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-// Message handler for manual cache clear
+// Message handler for manual cache clear and sync
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
@@ -274,6 +393,34 @@ self.addEventListener('message', (event) => {
       return Promise.all(names.map((name) => caches.delete(name)));
     }).then(() => {
       event.source.postMessage({ type: 'CACHE_CLEARED' });
+    });
+  }
+  
+  if (event.data && event.data.type === 'SYNC_NOW') {
+    processOfflineQueue().then(result => {
+      event.source.postMessage({
+        type: 'SYNC_COMPLETE',
+        processed: result.processed,
+        failed: result.failed
+      });
+    });
+  }
+  
+  if (event.data && event.data.type === 'GET_QUEUE_STATUS') {
+    caches.open(OFFLINE_QUEUE_CACHE).then(async (cache) => {
+      const existingQueue = await cache.match('queue');
+      if (existingQueue) {
+        const queue = await existingQueue.json();
+        event.source.postMessage({
+          type: 'QUEUE_STATUS',
+          pendingCount: queue.length
+        });
+      } else {
+        event.source.postMessage({
+          type: 'QUEUE_STATUS',
+          pendingCount: 0
+        });
+      }
     });
   }
 });

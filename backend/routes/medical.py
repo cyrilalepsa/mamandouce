@@ -346,6 +346,15 @@ async def delete_appointment_reminder(appointment_id: str, current_user: User = 
 async def send_due_reminders():
     """Send all reminders that are due (called by cron job or manually)"""
     from routes.push_notifications import send_push_notification
+    from core.config import RESEND_API_KEY, SENDER_EMAIL
+    
+    # Import resend for email
+    try:
+        import resend
+        if RESEND_API_KEY:
+            resend.api_key = RESEND_API_KEY
+    except ImportError:
+        resend = None
     
     now = datetime.now(timezone.utc)
     
@@ -358,14 +367,56 @@ async def send_due_reminders():
     sent_count = 0
     for reminder in due_reminders:
         try:
+            reminder_type = reminder.get("reminder_type", "push")
+            
             # Send push notification
-            if reminder.get("reminder_type") in ["push", "both"]:
+            if reminder_type in ["push", "both"]:
                 await send_push_notification(
                     user_email=reminder["user_email"],
                     title="Rappel RDV médical",
                     body=f"N'oubliez pas : {reminder['appointment_title']}",
                     url="/medical"
                 )
+            
+            # Send email notification
+            if reminder_type in ["email", "both"] and resend and RESEND_API_KEY:
+                try:
+                    resend.Emails.send({
+                        "from": SENDER_EMAIL,
+                        "to": reminder["user_email"],
+                        "subject": f"Rappel: {reminder['appointment_title']}",
+                        "html": f"""
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                            <div style="background: linear-gradient(135deg, #ec4899, #8b5cf6); padding: 30px; border-radius: 20px; text-align: center;">
+                                <h1 style="color: white; margin: 0; font-size: 24px;">Rappel RDV Médical</h1>
+                            </div>
+                            <div style="padding: 30px 20px;">
+                                <h2 style="color: #334155; margin-top: 0;">{reminder['appointment_title']}</h2>
+                                <p style="color: #475569; font-size: 16px; line-height: 1.6;">
+                                    Bonjour,<br><br>
+                                    Ceci est un rappel pour votre rendez-vous médical prévu prochainement.
+                                </p>
+                                <div style="text-align: center; margin: 30px 0;">
+                                    <a href="https://femme-enceinte-app.preview.emergentagent.com/medical" 
+                                       style="background: linear-gradient(135deg, #ec4899, #8b5cf6); 
+                                              color: white; 
+                                              text-decoration: none; 
+                                              padding: 14px 32px; 
+                                              border-radius: 50px; 
+                                              font-weight: bold;
+                                              display: inline-block;">
+                                        Voir mes rendez-vous
+                                    </a>
+                                </div>
+                                <p style="color: #94a3b8; font-size: 12px; text-align: center;">
+                                    L'équipe MamanDouce
+                                </p>
+                            </div>
+                        </div>
+                        """
+                    })
+                except Exception as e:
+                    print(f"Error sending email reminder: {e}")
             
             # Mark as sent
             await db.appointment_reminders.update_one(

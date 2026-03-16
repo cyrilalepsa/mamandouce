@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import '@/App.css';
 import ErrorBoundary from './components/ErrorBoundary';
 import { SubscriptionGate } from './components/SubscriptionGate';
+import { OfflineSyncIndicator } from './components/OfflineSyncIndicator';
 import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import PregnancyCalculator from './pages/PregnancyCalculator';
@@ -101,6 +102,7 @@ function App() {
         <Toaster />
         <ChatBubble />
         <PWAInstallBanner />
+        <OfflineSyncIndicator />
       </div>
     </ErrorBoundary>
   );
