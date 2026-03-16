@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { Card } from '../components/ui/card';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, User, Baby, Settings, MessageSquare } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import { isBiometricEnabled, checkBiometricSupport, isPinEnabled } from '../utils/biometricAuth';
@@ -14,9 +13,8 @@ import {
   NotificationsCard,
   QuickLoginCard,
   FertilityRemindersCard,
-  ContactCard,
-  MessageHistoryCard,
-  MyMessagesCard
+  CollapsibleSection,
+  MessagingSection
 } from '../components/profile';
 
 // Helper function to convert base64 to Uint8Array for VAPID key
@@ -38,7 +36,6 @@ function ProfilePage() {
   const [user, setUser] = useState(null);
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [myMessages, setMyMessages] = useState([]);
   
   // Push notifications
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
@@ -81,9 +78,6 @@ function ProfilePage() {
       
       const profileRes = await api.pregnancy.getProfile();
       setPregnancyProfile(profileRes.data);
-      
-      const messagesRes = await api.contact.getMyMessages();
-      setMyMessages(messagesRes.data.messages || []);
     } catch (error) {
       console.error('Erreur chargement profil:', error);
     } finally {
@@ -226,11 +220,6 @@ function ProfilePage() {
     });
   };
 
-  const reloadMessages = async () => {
-    const messagesRes = await api.contact.getMyMessages();
-    setMyMessages(messagesRes.data.messages || []);
-  };
-
   return (
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
@@ -246,55 +235,88 @@ function ProfilePage() {
         </div>
 
         {loading ? (
-          <Card className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 text-center">
-            <p className="text-slate-500">Chargement...</p>
-          </Card>
+          <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 text-center">
+            <div className="animate-spin w-8 h-8 border-3 border-pink-400 border-t-transparent rounded-full mx-auto"></div>
+            <p className="text-slate-500 mt-3">Chargement...</p>
+          </div>
         ) : (
           <>
-            <SubscriptionStatusCards 
-              subscriptionStatus={subscriptionStatus} 
-              fullStatus={fullStatus} 
-            />
+            {/* Section Mon Compte - Toujours visible en premier */}
+            <CollapsibleSection
+              title="Mon compte"
+              icon={User}
+              defaultOpen={true}
+              iconBg="bg-gradient-to-br from-purple-100 to-pink-100"
+              iconColor="text-purple-600"
+              data-testid="account-section"
+            >
+              <SubscriptionStatusCards 
+                subscriptionStatus={subscriptionStatus} 
+                fullStatus={fullStatus} 
+              />
+              <UserInfoCard user={user} formatDate={formatDate} />
+              <AccountStatusSection />
+            </CollapsibleSection>
 
-            <UserInfoCard user={user} formatDate={formatDate} />
+            {/* Section Grossesse */}
+            <CollapsibleSection
+              title="Grossesse & Fertilité"
+              icon={Baby}
+              defaultOpen={false}
+              iconBg="bg-gradient-to-br from-pink-100 to-rose-100"
+              iconColor="text-pink-600"
+              data-testid="pregnancy-section"
+            >
+              <PregnancyCard
+                pregnancyProfile={pregnancyProfile}
+                subscriptionStatus={subscriptionStatus}
+                setSubscriptionStatus={setSubscriptionStatus}
+                onLoadFullStatus={loadFullSubscriptionStatus}
+                formatDate={formatDate}
+              />
+              <FertilityRemindersCard
+                pregnancyProfile={pregnancyProfile}
+                fertilityRemindersEnabled={fertilityRemindersEnabled}
+                fertilityRemindersLoading={fertilityRemindersLoading}
+                onToggle={toggleFertilityReminders}
+              />
+            </CollapsibleSection>
 
-            <PregnancyCard
-              pregnancyProfile={pregnancyProfile}
-              subscriptionStatus={subscriptionStatus}
-              setSubscriptionStatus={setSubscriptionStatus}
-              onLoadFullStatus={loadFullSubscriptionStatus}
-              formatDate={formatDate}
-            />
+            {/* Section Paramètres */}
+            <CollapsibleSection
+              title="Paramètres"
+              icon={Settings}
+              defaultOpen={false}
+              iconBg="bg-gradient-to-br from-slate-100 to-gray-200"
+              iconColor="text-slate-600"
+              data-testid="settings-section"
+            >
+              <NotificationsCard
+                notificationsSupported={notificationsSupported}
+                notificationsEnabled={notificationsEnabled}
+                notificationsLoading={notificationsLoading}
+                onToggle={toggleNotifications}
+              />
+              <QuickLoginCard
+                biometricEnabled={biometricEnabled}
+                biometricSupported={biometricSupported}
+                pinEnabled={pinEnabled}
+                setBiometricEnabled={setBiometricEnabled}
+                setPinEnabled={setPinEnabled}
+              />
+            </CollapsibleSection>
 
-            <AccountStatusSection />
-
-            <NotificationsCard
-              notificationsSupported={notificationsSupported}
-              notificationsEnabled={notificationsEnabled}
-              notificationsLoading={notificationsLoading}
-              onToggle={toggleNotifications}
-            />
-
-            <QuickLoginCard
-              biometricEnabled={biometricEnabled}
-              biometricSupported={biometricSupported}
-              pinEnabled={pinEnabled}
-              setBiometricEnabled={setBiometricEnabled}
-              setPinEnabled={setPinEnabled}
-            />
-
-            <FertilityRemindersCard
-              pregnancyProfile={pregnancyProfile}
-              fertilityRemindersEnabled={fertilityRemindersEnabled}
-              fertilityRemindersLoading={fertilityRemindersLoading}
-              onToggle={toggleFertilityReminders}
-            />
-
-            <MyMessagesCard />
-
-            <ContactCard onMessageSent={reloadMessages} />
-
-            <MessageHistoryCard myMessages={myMessages} />
+            {/* Section Messagerie */}
+            <CollapsibleSection
+              title="Messagerie"
+              icon={MessageSquare}
+              defaultOpen={false}
+              iconBg="bg-gradient-to-br from-sky-100 to-blue-100"
+              iconColor="text-sky-600"
+              data-testid="messaging-section"
+            >
+              <MessagingSection />
+            </CollapsibleSection>
           </>
         )}
       </div>

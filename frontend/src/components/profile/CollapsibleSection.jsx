@@ -9,15 +9,17 @@ export function CollapsibleSection({
   defaultOpen = false,
   badge = null,
   iconBg = 'bg-gradient-to-br from-slate-100 to-slate-200',
-  iconColor = 'text-slate-600'
+  iconColor = 'text-slate-600',
+  'data-testid': dataTestId
 }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <Card className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+    <Card className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden" data-testid={dataTestId}>
       <div 
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-between p-4 cursor-pointer hover:bg-slate-50 transition-colors"
+        data-testid={dataTestId ? `${dataTestId}-header` : undefined}
       >
         <div className="flex items-center gap-3">
           <div className={`w-10 h-10 ${iconBg} rounded-xl flex items-center justify-center`}>

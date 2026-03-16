@@ -7,3 +7,5 @@ export { FertilityRemindersCard } from './FertilityRemindersCard';
 export { ContactCard } from './ContactCard';
 export { MessageHistoryCard } from './MessageHistoryCard';
 export { MyMessagesCard } from './MyMessagesCard';
+export { CollapsibleSection } from './CollapsibleSection';
+export { MessagingSection } from './MessagingSection';
