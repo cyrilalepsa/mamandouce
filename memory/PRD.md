@@ -190,6 +190,14 @@ Application pour les femmes enceintes avec :
   - API `/api/admin/scheduler/alerts` pour monitoring externe
   - Tests automatisés: 14/14 backend + 100% frontend (iteration 14)
 
+- [x] **Menus déroulants pour 3 pages principales**
+  - **Sac de maternité:** Sections par catégorie (Pour maman, Pour bébé, Pour le retour) avec compteur circulaire de progression
+  - **RDV médicaux:** Sections par trimestre (T1, T2, T3) avec barre de progression et badge coloré
+  - **Post-partum:** 9 sections déroulantes (RDV, Difficultés, Allaitement, Biberon, Couches, Portage, Diversification, Recettes, Précautions)
+  - Animation fluide d'ouverture/fermeture avec max-height
+  - Icônes flèches (ChevronUp/ChevronDown) selon l'état
+  - Tests automatisés: 100% frontend (iteration 15)
+
 ### Features Ajoutées (15 Mars 2026 - Session 6)
 
 - [x] **Flux d'onboarding avec paywall**
