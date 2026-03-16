@@ -132,6 +132,26 @@ Application pour les femmes enceintes avec :
   - Cache automatique des assets statiques (JS, CSS, images)
   - Stratégie Network First avec fallback cache
 
+### Features Ajoutées (16 Mars 2026 - Session 7 Suite)
+
+- [x] **Suggestion automatique de rappel**
+  - Popup violet proposant de programmer un rappel pour les RDV "à planifier maintenant"
+  - Option "Oui, me rappeler" / "Plus tard"
+  - Pré-remplissage avec demain matin 9h
+
+- [x] **Notifications email pour rappels de RDV**
+  - Sélecteur de type: "Push + Email", "Push seul", "Email seul"
+  - Email HTML stylé avec bouton d'action
+  - Texte d'aide dynamique selon le type sélectionné
+
+- [x] **Mode hors-ligne complet avec synchronisation (Service Worker v2.2.0)**
+  - Queue offline pour les actions POST (rappels, favoris, etc.)
+  - Composant `OfflineSyncIndicator` affiché en bas de l'écran
+  - Synchronisation automatique au retour en ligne
+  - Notification toast après synchronisation réussie
+  - Cache étendu: rappels planifiés, profil utilisateur
+  - Tests automatisés: 8/8 backend + 100% frontend (iteration 12)
+
 ### Features Ajoutées (15 Mars 2026 - Session 6)
 
 - [x] **Flux d'onboarding avec paywall**
