@@ -209,6 +209,9 @@ export const api = {
     getRemindersHistory: (limit = 100) => axios.get(`${API}/admin/reminders/history?limit=${limit}`, getAuthHeaders()),
     sendDueReminders: () => axios.post(`${API}/admin/reminders/send-now`, {}, getAuthHeaders()),
     deleteReminder: (reminderId) => axios.delete(`${API}/admin/reminders/${reminderId}`, getAuthHeaders()),
+    exportRemindersCSV: (includeHistory = true) => `${API}/admin/reminders/export-csv?include_history=${includeHistory}`,
+    getSchedulerAlerts: () => axios.get(`${API}/admin/scheduler/alerts`, getAuthHeaders()),
+    testSchedulerAlert: () => axios.post(`${API}/admin/scheduler/test-alert`, {}, getAuthHeaders()),
   },
   
   chatbot: {

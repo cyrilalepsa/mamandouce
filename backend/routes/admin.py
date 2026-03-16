@@ -3,7 +3,7 @@ Admin routes for MamanDouce
 Handles: Users management, Promo codes, Food validation, Messages
 """
 from fastapi import APIRouter, HTTPException, Depends
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import logging
 import json
 
@@ -579,3 +579,166 @@ async def admin_delete_reminder(reminder_id: str, admin: User = Depends(get_admi
         raise HTTPException(status_code=404, detail="Rappel non trouvé")
     
     return {"success": True, "message": "Rappel supprimé"}
+
+
+@router.get("/admin/reminders/export-csv")
+async def export_reminders_csv(
+    include_history: bool = True,
+    admin: User = Depends(get_admin_user)
+):
+    """Export all reminders and history as CSV"""
+    from fastapi.responses import StreamingResponse
+    import csv
+    import io
+    
+    output = io.StringIO()
+    
+    # Export reminders
+    reminders = await db.appointment_reminders.find({}, {"_id": 0}).to_list(1000)
+    
+    if reminders:
+        writer = csv.writer(output)
+        writer.writerow(["=== RAPPELS PLANIFIÉS ==="])
+        writer.writerow(["ID", "Utilisateur", "RDV", "Date rappel", "Type", "Envoyé", "Créé le"])
+        
+        for r in reminders:
+            writer.writerow([
+                r.get("id", ""),
+                r.get("user_email", ""),
+                r.get("appointment_title", ""),
+                r.get("reminder_datetime", ""),
+                r.get("reminder_type", ""),
+                "Oui" if r.get("sent") else "Non",
+                r.get("created_at", "")
+            ])
+        
+        writer.writerow([])
+    
+    # Export history
+    if include_history:
+        history = await db.reminder_history.find({}, {"_id": 0}).to_list(1000)
+        
+        if history:
+            writer = csv.writer(output)
+            writer.writerow(["=== HISTORIQUE D'ENVOI ==="])
+            writer.writerow(["ID", "Utilisateur", "RDV", "Date envoi", "Type", "Statut", "Push", "Email", "Erreurs"])
+            
+            for h in history:
+                writer.writerow([
+                    h.get("id", ""),
+                    h.get("user_email", ""),
+                    h.get("appointment_title", ""),
+                    h.get("sent_at", ""),
+                    h.get("reminder_type", ""),
+                    h.get("status", ""),
+                    h.get("push_status", "-"),
+                    h.get("email_status", "-"),
+                    "; ".join(h.get("error_details", []))
+                ])
+    
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename=rappels_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        }
+    )
+
+
+@router.get("/admin/scheduler/alerts")
+async def get_scheduler_alerts(admin: User = Depends(get_admin_user)):
+    """Get scheduler alerts and health status"""
+    from core.scheduler import scheduler
+    
+    alerts = []
+    now = datetime.now(timezone.utc)
+    
+    # Check if scheduler is running
+    if not scheduler.running:
+        alerts.append({
+            "level": "critical",
+            "type": "scheduler_stopped",
+            "message": "Le scheduler est arrêté ! Les rappels ne seront pas envoyés automatiquement.",
+            "timestamp": now.isoformat()
+        })
+    
+    # Check for overdue reminders (due more than 5 minutes ago)
+    overdue_threshold = (now - timedelta(minutes=5)).isoformat()
+    overdue_count = await db.appointment_reminders.count_documents({
+        "sent": False,
+        "reminder_datetime": {"$lte": overdue_threshold}
+    })
+    
+    if overdue_count > 0:
+        alerts.append({
+            "level": "warning",
+            "type": "overdue_reminders",
+            "message": f"{overdue_count} rappel(s) en retard de plus de 5 minutes",
+            "count": overdue_count,
+            "timestamp": now.isoformat()
+        })
+    
+    # Check recent failures in history (last hour)
+    one_hour_ago = (now - timedelta(hours=1)).isoformat()
+    recent_failures = await db.reminder_history.count_documents({
+        "sent_at": {"$gte": one_hour_ago},
+        "status": {"$in": ["failed", "partial"]}
+    })
+    
+    if recent_failures > 0:
+        alerts.append({
+            "level": "warning",
+            "type": "recent_failures",
+            "message": f"{recent_failures} échec(s) d'envoi dans la dernière heure",
+            "count": recent_failures,
+            "timestamp": now.isoformat()
+        })
+    
+    # Check if there are pending reminders but no recent activity
+    pending_count = await db.appointment_reminders.count_documents({"sent": False})
+    recent_sent = await db.reminder_history.count_documents({
+        "sent_at": {"$gte": one_hour_ago}
+    })
+    
+    # Get scheduler job info
+    jobs = scheduler.get_jobs()
+    next_run = None
+    if jobs:
+        next_run = jobs[0].next_run_time.isoformat() if jobs[0].next_run_time else None
+    
+    # Health status
+    health = "healthy"
+    if any(a["level"] == "critical" for a in alerts):
+        health = "critical"
+    elif any(a["level"] == "warning" for a in alerts):
+        health = "warning"
+    
+    return {
+        "health": health,
+        "alerts": alerts,
+        "scheduler": {
+            "running": scheduler.running,
+            "next_run": next_run
+        },
+        "stats": {
+            "pending_reminders": pending_count,
+            "recent_sent": recent_sent,
+            "recent_failures": recent_failures
+        }
+    }
+
+
+@router.post("/admin/scheduler/test-alert")
+async def test_scheduler_alert(admin: User = Depends(get_admin_user)):
+    """Send a test alert to verify notification system"""
+    # This would typically send an email/push to admin
+    # For now, just log and return confirmation
+    logger.warning("[ALERT TEST] Test alert triggered by admin")
+    
+    return {
+        "success": True,
+        "message": "Alerte de test envoyée",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }

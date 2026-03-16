@@ -1,18 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
-import { Bell, Clock, Mail, Smartphone, CheckCircle, XCircle, AlertCircle, RefreshCw, Trash2, Play, Users } from 'lucide-react';
+import { Bell, Clock, Mail, Smartphone, CheckCircle, XCircle, AlertCircle, RefreshCw, Trash2, Play, Users, Download, AlertTriangle, ShieldAlert } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'sonner';
 
 export function RemindersTab() {
   const [dashboard, setDashboard] = useState(null);
+  const [alerts, setAlerts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
 
   useEffect(() => {
     loadDashboard();
+    loadAlerts();
   }, []);
 
   const loadDashboard = async () => {
@@ -27,17 +29,35 @@ export function RemindersTab() {
     }
   };
 
+  const loadAlerts = async () => {
+    try {
+      const response = await api.admin.getSchedulerAlerts();
+      setAlerts(response.data);
+    } catch (error) {
+      console.error('Erreur chargement alertes:', error);
+    }
+  };
+
   const handleSendNow = async () => {
     setSending(true);
     try {
       await api.admin.sendDueReminders();
       toast.success('Rappels dus envoyés !');
       loadDashboard();
+      loadAlerts();
     } catch (error) {
       toast.error('Erreur lors de l\'envoi');
     } finally {
       setSending(false);
     }
+  };
+
+  const handleExportCSV = () => {
+    const token = localStorage.getItem('token');
+    const url = api.admin.exportRemindersCSV(true);
+    // Open in new tab with auth
+    window.open(`${url}&token=${token}`, '_blank');
+    toast.success('Export CSV en cours...');
   };
 
   const handleDeleteReminder = async (reminderId) => {
@@ -46,6 +66,7 @@ export function RemindersTab() {
       await api.admin.deleteReminder(reminderId);
       toast.success('Rappel supprimé');
       loadDashboard();
+      loadAlerts();
     } catch (error) {
       toast.error('Erreur lors de la suppression');
     }
@@ -126,6 +147,58 @@ export function RemindersTab() {
         </Card>
       </div>
 
+      {/* Alerts Section */}
+      {alerts && alerts.alerts && alerts.alerts.length > 0 && (
+        <Card className={`rounded-3xl p-4 shadow-sm border-2 ${
+          alerts.health === 'critical' ? 'bg-red-50 border-red-300' :
+          alerts.health === 'warning' ? 'bg-amber-50 border-amber-300' :
+          'bg-green-50 border-green-300'
+        }`}>
+          <div className="flex items-center gap-3 mb-3">
+            <ShieldAlert className={`w-6 h-6 ${
+              alerts.health === 'critical' ? 'text-red-500' :
+              alerts.health === 'warning' ? 'text-amber-500' :
+              'text-green-500'
+            }`} />
+            <h3 className="font-bold text-slate-700">Alertes Scheduler</h3>
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+              alerts.health === 'critical' ? 'bg-red-200 text-red-700' :
+              alerts.health === 'warning' ? 'bg-amber-200 text-amber-700' :
+              'bg-green-200 text-green-700'
+            }`}>
+              {alerts.health === 'critical' ? 'Critique' :
+               alerts.health === 'warning' ? 'Attention' : 'OK'}
+            </span>
+          </div>
+          <div className="space-y-2">
+            {alerts.alerts.map((alert, idx) => (
+              <div 
+                key={idx}
+                className={`flex items-start gap-2 p-3 rounded-xl ${
+                  alert.level === 'critical' ? 'bg-red-100' : 'bg-amber-100'
+                }`}
+              >
+                {alert.level === 'critical' ? (
+                  <XCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                ) : (
+                  <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                )}
+                <div>
+                  <p className={`font-medium ${
+                    alert.level === 'critical' ? 'text-red-700' : 'text-amber-700'
+                  }`}>
+                    {alert.message}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {formatDate(alert.timestamp)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
       {/* Scheduler Status & Actions */}
       <Card className="bg-white rounded-3xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
@@ -140,6 +213,14 @@ export function RemindersTab() {
               {scheduler.running ? 'Actif' : 'Arrêté'}
             </span>
             <Button
+              onClick={handleExportCSV}
+              className="bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full px-4 py-2 text-sm flex items-center gap-2"
+              data-testid="export-csv-btn"
+            >
+              <Download className="w-4 h-4" />
+              Export CSV
+            </Button>
+            <Button
               onClick={handleSendNow}
               disabled={sending || stats.due_now === 0}
               className="bg-purple-500 hover:bg-purple-600 text-white rounded-full px-4 py-2 text-sm flex items-center gap-2"
@@ -149,7 +230,7 @@ export function RemindersTab() {
               Envoyer maintenant
             </Button>
             <Button
-              onClick={loadDashboard}
+              onClick={() => { loadDashboard(); loadAlerts(); }}
               className="bg-slate-100 text-slate-600 rounded-full px-3 py-2"
             >
               <RefreshCw className="w-4 h-4" />
