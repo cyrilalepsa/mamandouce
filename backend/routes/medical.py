@@ -428,3 +428,34 @@ async def send_due_reminders():
             print(f"Error sending reminder: {e}")
     
     return {"success": True, "sent_count": sent_count}
+
+
+@router.get("/medical/scheduler-status")
+async def get_scheduler_status():
+    """Get the status of the background scheduler"""
+    from core.scheduler import scheduler
+    
+    jobs = []
+    for job in scheduler.get_jobs():
+        jobs.append({
+            "id": job.id,
+            "name": job.name,
+            "next_run": job.next_run_time.isoformat() if job.next_run_time else None
+        })
+    
+    # Count pending reminders
+    now = datetime.now(timezone.utc)
+    pending_count = await db.appointment_reminders.count_documents({
+        "sent": False
+    })
+    due_count = await db.appointment_reminders.count_documents({
+        "sent": False,
+        "reminder_datetime": {"$lte": now.isoformat()}
+    })
+    
+    return {
+        "scheduler_running": scheduler.running,
+        "jobs": jobs,
+        "pending_reminders": pending_count,
+        "due_reminders": due_count
+    }

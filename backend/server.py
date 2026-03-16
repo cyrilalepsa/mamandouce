@@ -75,11 +75,18 @@ app.include_router(api_router)
 @app.on_event("startup")
 async def startup_db_client():
     from core.database import client
+    from core.scheduler import start_scheduler
     logger.info("Connected to MongoDB")
+    # Start background scheduler for reminders
+    start_scheduler()
+    logger.info("Background scheduler started")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
     from core.database import client
+    from core.scheduler import stop_scheduler
+    # Stop scheduler
+    stop_scheduler()
     client.close()
     logger.info("Disconnected from MongoDB")
 

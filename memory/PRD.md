@@ -152,6 +152,13 @@ Application pour les femmes enceintes avec :
   - Cache étendu: rappels planifiés, profil utilisateur
   - Tests automatisés: 8/8 backend + 100% frontend (iteration 12)
 
+- [x] **Cron Job automatique pour rappels de RDV**
+  - APScheduler intégré au backend FastAPI
+  - Vérification des rappels dus toutes les minutes
+  - Envoi automatique push + email selon le type configuré
+  - Endpoint `/api/medical/scheduler-status` pour monitoring
+  - Logs détaillés dans `/var/log/supervisor/backend.out.log`
+
 ### Features Ajoutées (15 Mars 2026 - Session 6)
 
 - [x] **Flux d'onboarding avec paywall**
