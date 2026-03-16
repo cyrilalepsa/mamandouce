@@ -108,6 +108,30 @@ Application pour les femmes enceintes avec :
   - UX améliorée: interface plus claire et organisée
   - Tests automatisés: 100% frontend passés (iteration 10)
 
+- [x] **Badge de notification sur la section Messagerie**
+  - Affiche un badge rose avec le nombre de réponses non lues
+  - Se met à jour automatiquement quand les messages sont lus
+  - Intégré dans le composant `CollapsibleSection`
+
+- [x] **Rappels de RDV médicaux planifiés**
+  - Bouton cloche sur chaque RDV pour programmer un rappel
+  - Formulaire avec date et heure personnalisables
+  - Badge "Rappel le X" affiché sous le RDV
+  - API Backend complète:
+    - `GET /api/medical/scheduled-reminders`
+    - `POST /api/medical/schedule-reminder`
+    - `DELETE /api/medical/reminder/{appointment_id}`
+  - Tests automatisés: 9/9 backend passés (iteration 11)
+
+- [x] **PWA améliorée (Service Worker v2.1.0)**
+  - Cache étendu pour plus de contenu offline:
+    - Profil de grossesse
+    - Contenu post-partum
+    - Bibliothèque d'aliments
+    - Liste de naissance
+  - Cache automatique des assets statiques (JS, CSS, images)
+  - Stratégie Network First avec fallback cache
+
 ### Features Ajoutées (15 Mars 2026 - Session 6)
 
 - [x] **Flux d'onboarding avec paywall**
