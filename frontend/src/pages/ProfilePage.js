@@ -36,6 +36,7 @@ function ProfilePage() {
   const [user, setUser] = useState(null);
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [unreadMessages, setUnreadMessages] = useState(0);
   
   // Push notifications
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
@@ -63,6 +64,7 @@ function ProfilePage() {
     loadFertilityRemindersStatus();
     loadSubscriptionStatus();
     loadFullSubscriptionStatus();
+    loadUnreadMessages();
     
     const checkSupport = async () => {
       const support = await checkBiometricSupport();
@@ -100,6 +102,16 @@ function ProfilePage() {
       setFullStatus(response.data);
     } catch (error) {
       console.error('Erreur chargement statut complet:', error);
+    }
+  };
+
+  const loadUnreadMessages = async () => {
+    try {
+      const response = await api.contact.getMyMessages();
+      const unread = response.data.unread_replies || 0;
+      setUnreadMessages(unread);
+    } catch (error) {
+      console.error('Erreur chargement messages non lus:', error);
     }
   };
 
@@ -313,9 +325,10 @@ function ProfilePage() {
               defaultOpen={false}
               iconBg="bg-gradient-to-br from-sky-100 to-blue-100"
               iconColor="text-sky-600"
+              badge={unreadMessages > 0 ? unreadMessages : null}
               data-testid="messaging-section"
             >
-              <MessagingSection />
+              <MessagingSection onMessagesRead={() => setUnreadMessages(0)} />
             </CollapsibleSection>
           </>
         )}

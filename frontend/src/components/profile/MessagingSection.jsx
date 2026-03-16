@@ -9,7 +9,7 @@ import {
 import api from '../../utils/api';
 import { toast } from 'sonner';
 
-export function MessagingSection() {
+export function MessagingSection({ onMessagesRead }) {
   const [messages, setMessages] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -58,7 +58,13 @@ export function MessagingSection() {
         setMessages(prev => prev.map(m => 
           m.id === messageId ? { ...m, user_read_reply: true } : m
         ));
-        setUnreadCount(prev => Math.max(0, prev - 1));
+        setUnreadCount(prev => {
+          const newCount = Math.max(0, prev - 1);
+          if (newCount === 0 && onMessagesRead) {
+            onMessagesRead();
+          }
+          return newCount;
+        });
       } catch (error) {
         console.error('Erreur marquage lu:', error);
       }

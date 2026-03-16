@@ -104,6 +104,15 @@ export const api = {
     getNotes: (appointmentId) => axios.get(`${API}/medical/notes/${appointmentId}`, getAuthHeaders()),
     getAllNotes: () => axios.get(`${API}/medical/notes`, getAuthHeaders()),
     getHealthSummary: () => axios.get(`${API}/medical/health-summary`, getAuthHeaders()),
+    // Scheduled reminders
+    getScheduledReminders: () => axios.get(`${API}/medical/scheduled-reminders`, getAuthHeaders()),
+    scheduleReminder: (appointmentId, reminderDatetime, reminderType = 'push') => 
+      axios.post(`${API}/medical/schedule-reminder`, { 
+        appointment_id: appointmentId, 
+        reminder_datetime: reminderDatetime, 
+        reminder_type: reminderType 
+      }, getAuthHeaders()),
+    deleteReminder: (appointmentId) => axios.delete(`${API}/medical/reminder/${appointmentId}`, getAuthHeaders()),
   },
   notifications: {
     create: (data) => axios.post(`${API}/notifications`, data, getAuthHeaders()),

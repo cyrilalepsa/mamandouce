@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { Stethoscope, Scan, TestTube, Baby, Activity, UserCog, Check, Calendar, Clock, AlertTriangle, ChevronDown, ChevronUp, Edit3, Save, X, Heart, Scale, Ruler } from 'lucide-react';
+import { Stethoscope, Scan, TestTube, Baby, Activity, UserCog, Check, Calendar, Clock, AlertTriangle, ChevronDown, ChevronUp, Edit3, Save, X, Heart, Scale, Ruler, Bell, BellOff } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
@@ -26,10 +26,15 @@ function MedicalAppointmentsPage() {
     notes: '',
     doctor_name: ''
   });
+  const [scheduledReminders, setScheduledReminders] = useState({});
+  const [settingReminder, setSettingReminder] = useState(null);
+  const [reminderDate, setReminderDate] = useState('');
+  const [reminderTime, setReminderTime] = useState('09:00');
 
   useEffect(() => {
     loadAppointments();
     loadAllNotes();
+    loadScheduledReminders();
   }, []);
 
   const loadAppointments = async () => {
@@ -50,6 +55,48 @@ function MedicalAppointmentsPage() {
       setAllNotes(response.data || {});
     } catch (error) {
       console.error('Erreur chargement notes:', error);
+    }
+  };
+
+  const loadScheduledReminders = async () => {
+    try {
+      const response = await api.medical.getScheduledReminders();
+      const remindersMap = {};
+      (response.data.reminders || []).forEach(r => {
+        remindersMap[r.appointment_id] = r;
+      });
+      setScheduledReminders(remindersMap);
+    } catch (error) {
+      console.error('Erreur chargement rappels:', error);
+    }
+  };
+
+  const scheduleReminder = async (appointmentId) => {
+    if (!reminderDate) {
+      toast.error('Veuillez sélectionner une date');
+      return;
+    }
+    
+    const reminderDatetime = `${reminderDate}T${reminderTime}:00`;
+    
+    try {
+      await api.medical.scheduleReminder(appointmentId, reminderDatetime, 'push');
+      toast.success('Rappel programmé !');
+      setSettingReminder(null);
+      setReminderDate('');
+      loadScheduledReminders();
+    } catch (error) {
+      toast.error('Erreur lors de la programmation');
+    }
+  };
+
+  const deleteReminder = async (appointmentId) => {
+    try {
+      await api.medical.deleteReminder(appointmentId);
+      toast.success('Rappel supprimé');
+      loadScheduledReminders();
+    } catch (error) {
+      toast.error('Erreur lors de la suppression');
     }
   };
 
@@ -283,6 +330,28 @@ function MedicalAppointmentsPage() {
                               
                               <div className="flex items-center gap-2">
                                 <button
+                                  onClick={() => {
+                                    if (scheduledReminders[apt.id]) {
+                                      deleteReminder(apt.id);
+                                    } else {
+                                      setSettingReminder(apt.id);
+                                      // Pre-fill with appointment start date
+                                      const startDate = new Date(apt.start_date);
+                                      startDate.setDate(startDate.getDate() - 1); // Day before
+                                      setReminderDate(startDate.toISOString().split('T')[0]);
+                                    }
+                                  }}
+                                  data-testid={`reminder-${apt.id}`}
+                                  className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                                    scheduledReminders[apt.id]
+                                      ? 'bg-amber-500 text-white'
+                                      : 'bg-amber-50 text-amber-500 hover:bg-amber-100'
+                                  }`}
+                                  title={scheduledReminders[apt.id] ? 'Supprimer le rappel' : 'Programmer un rappel'}
+                                >
+                                  {scheduledReminders[apt.id] ? <BellOff className="w-4 h-4" /> : <Bell className="w-4 h-4" />}
+                                </button>
+                                <button
                                   onClick={() => startEditingNotes(apt)}
                                   data-testid={`notes-${apt.id}`}
                                   className="w-8 h-8 rounded-full flex items-center justify-center bg-blue-50 text-blue-500 hover:bg-blue-100 transition-all"
@@ -308,6 +377,61 @@ function MedicalAppointmentsPage() {
                               <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
                                 <Clock className="w-3 h-3" />
                                 À planifier maintenant
+                              </div>
+                            )}
+                            
+                            {/* Reminder indicator */}
+                            {scheduledReminders[apt.id] && (
+                              <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-amber-50 text-amber-600 rounded-full text-xs font-medium ml-2">
+                                <Bell className="w-3 h-3" />
+                                Rappel le {new Date(scheduledReminders[apt.id].reminder_datetime).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                              </div>
+                            )}
+                            
+                            {/* Reminder scheduling form */}
+                            {settingReminder === apt.id && (
+                              <div className="mt-3 p-3 bg-amber-50 rounded-xl border border-amber-200 animate-fade-in">
+                                <h5 className="text-sm font-bold text-amber-700 mb-2 flex items-center gap-2">
+                                  <Bell className="w-4 h-4" /> Programmer un rappel
+                                </h5>
+                                <div className="flex flex-wrap items-end gap-2">
+                                  <div>
+                                    <label className="text-xs text-slate-500 block mb-1">Date</label>
+                                    <Input
+                                      type="date"
+                                      value={reminderDate}
+                                      onChange={(e) => setReminderDate(e.target.value)}
+                                      className="text-sm h-9 rounded-xl w-40"
+                                      data-testid="reminder-date"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-xs text-slate-500 block mb-1">Heure</label>
+                                    <Input
+                                      type="time"
+                                      value={reminderTime}
+                                      onChange={(e) => setReminderTime(e.target.value)}
+                                      className="text-sm h-9 rounded-xl w-24"
+                                      data-testid="reminder-time"
+                                    />
+                                  </div>
+                                  <Button
+                                    onClick={() => scheduleReminder(apt.id)}
+                                    data-testid="save-reminder"
+                                    className="bg-amber-500 hover:bg-amber-600 text-white rounded-xl px-4 py-2 text-sm h-9"
+                                  >
+                                    Programmer
+                                  </Button>
+                                  <Button
+                                    onClick={() => setSettingReminder(null)}
+                                    className="bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-xl px-3 py-2 text-sm h-9"
+                                  >
+                                    Annuler
+                                  </Button>
+                                </div>
+                                <p className="text-xs text-amber-600 mt-2">
+                                  Vous recevrez une notification push à la date choisie.
+                                </p>
                               </div>
                             )}
                             

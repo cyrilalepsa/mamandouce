@@ -266,3 +266,114 @@ async def get_health_summary(current_user: User = Depends(get_current_user)):
         "blood_pressure_history": blood_pressure_history,
         "baby_growth_history": baby_growth_history
     }
+
+
+# ==================== SCHEDULED REMINDERS ====================
+
+@router.get("/medical/scheduled-reminders")
+async def get_scheduled_reminders(current_user: User = Depends(get_current_user)):
+    """Get all scheduled appointment reminders for the user"""
+    reminders = await db.appointment_reminders.find(
+        {"user_id": current_user.id},
+        {"_id": 0}
+    ).to_list(100)
+    
+    return {"reminders": reminders}
+
+@router.post("/medical/schedule-reminder")
+async def schedule_appointment_reminder(
+    reminder_data: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Schedule a reminder for an appointment"""
+    appointment_id = reminder_data.get("appointment_id")
+    reminder_datetime = reminder_data.get("reminder_datetime")
+    reminder_type = reminder_data.get("reminder_type", "push")  # push, email, both
+    
+    if not appointment_id or not reminder_datetime:
+        raise HTTPException(status_code=400, detail="appointment_id et reminder_datetime requis")
+    
+    # Validate the appointment exists
+    all_appointments = await get_medical_appointments()
+    apt = next((a for a in all_appointments if a["id"] == appointment_id), None)
+    if not apt:
+        raise HTTPException(status_code=404, detail="Rendez-vous non trouvé")
+    
+    # Check for existing reminder
+    existing = await db.appointment_reminders.find_one({
+        "user_id": current_user.id,
+        "appointment_id": appointment_id
+    })
+    
+    reminder_doc = {
+        "user_id": current_user.id,
+        "user_email": current_user.email,
+        "appointment_id": appointment_id,
+        "appointment_title": apt["title"],
+        "reminder_datetime": reminder_datetime,
+        "reminder_type": reminder_type,
+        "sent": False,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    if existing:
+        await db.appointment_reminders.update_one(
+            {"user_id": current_user.id, "appointment_id": appointment_id},
+            {"$set": reminder_doc}
+        )
+        return {"success": True, "message": "Rappel mis à jour", "id": existing.get("id")}
+    else:
+        reminder_id = str(uuid.uuid4())
+        reminder_doc["id"] = reminder_id
+        reminder_doc["created_at"] = datetime.now(timezone.utc).isoformat()
+        await db.appointment_reminders.insert_one(reminder_doc)
+        return {"success": True, "message": "Rappel planifié", "id": reminder_id}
+
+@router.delete("/medical/reminder/{appointment_id}")
+async def delete_appointment_reminder(appointment_id: str, current_user: User = Depends(get_current_user)):
+    """Delete a scheduled appointment reminder"""
+    result = await db.appointment_reminders.delete_one({
+        "user_id": current_user.id,
+        "appointment_id": appointment_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Rappel non trouvé")
+    
+    return {"success": True, "message": "Rappel supprimé"}
+
+@router.post("/medical/send-due-reminders")
+async def send_due_reminders():
+    """Send all reminders that are due (called by cron job or manually)"""
+    from routes.push_notifications import send_push_notification
+    
+    now = datetime.now(timezone.utc)
+    
+    # Find reminders that are due and not yet sent
+    due_reminders = await db.appointment_reminders.find({
+        "sent": False,
+        "reminder_datetime": {"$lte": now.isoformat()}
+    }).to_list(100)
+    
+    sent_count = 0
+    for reminder in due_reminders:
+        try:
+            # Send push notification
+            if reminder.get("reminder_type") in ["push", "both"]:
+                await send_push_notification(
+                    user_email=reminder["user_email"],
+                    title="Rappel RDV médical",
+                    body=f"N'oubliez pas : {reminder['appointment_title']}",
+                    url="/medical"
+                )
+            
+            # Mark as sent
+            await db.appointment_reminders.update_one(
+                {"id": reminder["id"]},
+                {"$set": {"sent": True, "sent_at": now.isoformat()}}
+            )
+            sent_count += 1
+        except Exception as e:
+            print(f"Error sending reminder: {e}")
+    
+    return {"success": True, "sent_count": sent_count}

@@ -1,23 +1,30 @@
 /* eslint-disable no-restricted-globals */
 
 // VERSION - Increment this to force cache update
-const APP_VERSION = '2.0.3';
+const APP_VERSION = '2.1.0';
 const CACHE_NAME = `mamandouce-v${APP_VERSION}`;
 const STATIC_CACHE = `mamandouce-static-v${APP_VERSION}`;
 const DYNAMIC_CACHE = `mamandouce-dynamic-v${APP_VERSION}`;
 
-// Assets to cache on install (minimal - we'll cache on demand)
+// Assets to cache on install (expanded for better offline experience)
 const STATIC_ASSETS = [
-  '/offline.html'
+  '/offline.html',
+  '/manifest.json',
+  '/app-icon-192.png',
+  '/app-icon-512.png'
 ];
 
-// API endpoints to cache for offline use
+// API endpoints to cache for offline use (expanded)
 const CACHEABLE_API_PATTERNS = [
   '/api/tips/weekly/',
   '/api/foods',
   '/api/maternity-bag',
   '/api/medical/appointments',
-  '/api/embryo/week/'
+  '/api/embryo/week/',
+  '/api/pregnancy/profile',
+  '/api/postpartum/content',
+  '/api/food-library',
+  '/api/birth-list'
 ];
 
 // Install event - cache minimal static assets and skip waiting
@@ -83,6 +90,12 @@ const networkFirst = async (request) => {
       cache.put(request, networkResponse.clone());
     }
     
+    // Also cache successful static assets for offline use
+    if (networkResponse.ok && isStaticAsset(request.url)) {
+      const cache = await caches.open(STATIC_CACHE);
+      cache.put(request, networkResponse.clone());
+    }
+    
     return networkResponse;
   } catch (error) {
     // If network fails, try cache
@@ -99,6 +112,11 @@ const networkFirst = async (request) => {
     
     throw error;
   }
+};
+
+// Check if URL is a static asset worth caching
+const isStaticAsset = (url) => {
+  return url.match(/\.(js|css|png|jpg|jpeg|webp|svg|woff2?|ttf)(\?|$)/);
 };
 
 // Fetch event - ALWAYS network first for HTML/JS/CSS
@@ -196,7 +214,7 @@ const removePendingAction = async (id) => {
   });
 };
 
-// Push notification handler
+// Push notification handler with scheduled reminders support
 self.addEventListener('push', (event) => {
   const data = event.data?.json() || {};
   
@@ -205,6 +223,8 @@ self.addEventListener('push', (event) => {
     icon: '/app-icon-512.png',
     badge: '/app-icon-512.png',
     vibrate: [100, 50, 100],
+    tag: data.tag || 'default',
+    renotify: true,
     data: {
       url: data.url || '/'
     },
