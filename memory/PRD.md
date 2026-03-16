@@ -176,6 +176,20 @@ Application pour les femmes enceintes avec :
   - Détails des erreurs en cas d'échec
   - Taux de succès calculé automatiquement
 
+- [x] **Export CSV des rappels depuis l'admin**
+  - Bouton "Export CSV" dans le dashboard Rappels
+  - Export des rappels planifiés + historique d'envoi
+  - Colonnes: ID, Utilisateur, RDV, Date rappel, Type, Envoyé, etc.
+  - Téléchargement automatique avec nom de fichier daté
+
+- [x] **Alertes admin quand le scheduler échoue**
+  - Section "Alertes Scheduler" dans le dashboard
+  - 3 types d'alertes: scheduler_stopped (critique), overdue_reminders (warning), recent_failures (warning)
+  - Niveaux de santé: healthy, warning, critical
+  - Badge coloré selon le niveau (vert/jaune/rouge)
+  - API `/api/admin/scheduler/alerts` pour monitoring externe
+  - Tests automatisés: 14/14 backend + 100% frontend (iteration 14)
+
 ### Features Ajoutées (15 Mars 2026 - Session 6)
 
 - [x] **Flux d'onboarding avec paywall**
