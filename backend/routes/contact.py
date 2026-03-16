@@ -57,4 +57,62 @@ async def get_my_messages(current_user: User = Depends(get_current_user)):
         {"_id": 0}
     ).sort("created_at", -1).to_list(50)
     
-    return {"messages": messages}
+    # Count unread replies
+    unread_count = len([m for m in messages if m.get("admin_reply") and not m.get("user_read_reply")])
+    
+    return {"messages": messages, "unread_replies": unread_count}
+
+@router.post("/contact/messages/{message_id}/mark-read")
+async def mark_reply_as_read(message_id: str, current_user: User = Depends(get_current_user)):
+    """Mark admin reply as read by user"""
+    result = await db.admin_messages.update_one(
+        {"id": message_id, "user_email": current_user.email},
+        {"$set": {"user_read_reply": True}}
+    )
+    
+    if result.matched_count == 0:
+        return {"success": False, "message": "Message non trouvé"}
+    
+    return {"success": True}
+
+@router.post("/contact/messages/{message_id}/reply")
+async def user_reply_to_conversation(message_id: str, request: ContactMessageRequest, current_user: User = Depends(get_current_user)):
+    """User replies to an existing conversation"""
+    import uuid
+    
+    # Find the original message
+    original = await db.admin_messages.find_one(
+        {"id": message_id, "user_email": current_user.email},
+        {"_id": 0}
+    )
+    
+    if not original:
+        return {"success": False, "message": "Conversation non trouvée"}
+    
+    # Add user reply to conversation history
+    conversation = original.get("conversation", [])
+    conversation.append({
+        "id": str(uuid.uuid4())[:8],
+        "from": "user",
+        "message": request.message,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    # Update the message
+    await db.admin_messages.update_one(
+        {"id": message_id},
+        {
+            "$set": {
+                "conversation": conversation,
+                "is_read": False,  # Mark as unread for admin
+                "last_update": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    # Notify admin
+    user = await db.users.find_one({"email": current_user.email}, {"_id": 0})
+    await notify_admin_new_message(user.get("name", "Une utilisatrice"), f"Re: {original.get('subject', 'Sans sujet')}")
+    
+    return {"success": True, "message": "Réponse envoyée"}
+

@@ -75,6 +75,8 @@ export const api = {
   contact: {
     sendMessage: (data) => axios.post(`${API}/contact/send`, data, getAuthHeaders()),
     getMyMessages: () => axios.get(`${API}/contact/my-messages`, getAuthHeaders()),
+    markReplyRead: (messageId) => axios.post(`${API}/contact/messages/${messageId}/mark-read`, {}, getAuthHeaders()),
+    replyToConversation: (messageId, message) => axios.post(`${API}/contact/messages/${messageId}/reply`, { subject: '', message }, getAuthHeaders()),
   },
   notifications: {
     getVapidKey: () => axios.get(`${API}/notifications/vapid-public-key`),

@@ -6,3 +6,4 @@ export { QuickLoginCard } from './QuickLoginCard';
 export { FertilityRemindersCard } from './FertilityRemindersCard';
 export { ContactCard } from './ContactCard';
 export { MessageHistoryCard } from './MessageHistoryCard';
+export { MyMessagesCard } from './MyMessagesCard';

@@ -15,7 +15,8 @@ import {
   QuickLoginCard,
   FertilityRemindersCard,
   ContactCard,
-  MessageHistoryCard
+  MessageHistoryCard,
+  MyMessagesCard
 } from '../components/profile';
 
 // Helper function to convert base64 to Uint8Array for VAPID key
@@ -288,6 +289,8 @@ function ProfilePage() {
               fertilityRemindersLoading={fertilityRemindersLoading}
               onToggle={toggleFertilityReminders}
             />
+
+            <MyMessagesCard />
 
             <ContactCard onMessageSent={reloadMessages} />
 
