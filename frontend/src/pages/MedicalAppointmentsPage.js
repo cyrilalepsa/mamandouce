@@ -16,7 +16,7 @@ function MedicalAppointmentsPage() {
   const [expandedId, setExpandedId] = useState(null);
   const [editingNotes, setEditingNotes] = useState(null);
   const [allNotes, setAllNotes] = useState({});
-  const [expandedTrimesters, setExpandedTrimesters] = useState({ 1: true, 2: true, 3: true });
+  const [expandedTrimesters, setExpandedTrimesters] = useState({ 1: false, 2: false, 3: false });
   const [noteForm, setNoteForm] = useState({
     weight: '',
     blood_pressure_systolic: '',

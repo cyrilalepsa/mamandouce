@@ -16,8 +16,8 @@ export default function MaternityBagPage() {
   const [newItem, setNewItem] = useState('');
   const [newCategory, setNewCategory] = useState('Pour maman');
   const [expandedCategories, setExpandedCategories] = useState({
-    'Pour maman': true,
-    'Pour bébé': true,
+    'Pour maman': false,
+    'Pour bébé': false,
     'Pour le retour': false
   });
 

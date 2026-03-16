@@ -28,7 +28,7 @@ export default function PostpartumPage() {
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [expandedSections, setExpandedSections] = useState({
-    appointments: true,
+    appointments: false,
     difficulties: false,
     breastfeeding: false,
     formula: false,
