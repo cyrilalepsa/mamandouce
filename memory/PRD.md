@@ -159,6 +159,23 @@ Application pour les femmes enceintes avec :
   - Endpoint `/api/medical/scheduler-status` pour monitoring
   - Logs détaillés dans `/var/log/supervisor/backend.out.log`
 
+- [x] **Dashboard Admin pour rappels planifiés**
+  - Nouvel onglet "Rappels" dans la page admin
+  - Cartes de statistiques: Total, En attente, Envoyés, Dus maintenant
+  - Section Scheduler avec statut (Actif/Arrêté) et prochaine exécution
+  - Distribution par type (Push/Email/Both)
+  - Liste des utilisateurs avec rappels (compteurs pending/sent)
+  - Liste des rappels récents avec filtres (Tous/En attente/Envoyés)
+  - Bouton "Envoyer maintenant" pour déclencher manuellement
+  - Tests automatisés: 13/13 backend + 100% frontend (iteration 13)
+
+- [x] **Historique des rappels avec statut**
+  - Collection MongoDB `reminder_history` pour traçabilité
+  - Statut détaillé: success, failed, partial
+  - Statut séparé pour push et email
+  - Détails des erreurs en cas d'échec
+  - Taux de succès calculé automatiquement
+
 ### Features Ajoutées (15 Mars 2026 - Session 6)
 
 - [x] **Flux d'onboarding avec paywall**
