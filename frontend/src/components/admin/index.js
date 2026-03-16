@@ -5,3 +5,4 @@ export { FoodsTab } from './FoodsTab';
 export { RefundsTab } from './RefundsTab';
 export { DashboardTab } from './DashboardTab';
 export { RemindersTab } from './RemindersTab';
+export { AndroidExportTab } from './AndroidExportTab';

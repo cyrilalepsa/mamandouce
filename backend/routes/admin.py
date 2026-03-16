@@ -742,3 +742,369 @@ async def test_scheduler_alert(admin: User = Depends(get_admin_user)):
         "message": "Alerte de test envoyée",
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
+
+
+# ==================== ANDROID EXPORT ====================
+
+@router.get("/admin/android/download")
+async def download_android_project(admin: User = Depends(get_admin_user)):
+    """Generate and download the Android project as a ZIP file"""
+    import zipfile
+    import io
+    import os
+    from fastapi.responses import StreamingResponse
+    
+    # Path to the frontend folder
+    frontend_path = "/app/frontend"
+    
+    # Create a BytesIO object to hold the zip file
+    zip_buffer = io.BytesIO()
+    
+    # Files/folders to include in the export
+    include_paths = [
+        "android",
+        "capacitor.config.json",
+        "package.json",
+        "src",
+        "public"
+    ]
+    
+    # Files/folders to exclude
+    exclude_patterns = ["node_modules", ".git", "build", "__pycache__", ".env"]
+    
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        # Add README_BUILD.md
+        readme_content = """# Guide de Build Android - MamanDouce
+
+## Prérequis
+
+1. **Node.js** (version LTS) - https://nodejs.org
+2. **Android Studio** - https://developer.android.com/studio
+
+---
+
+## Étapes pour générer le fichier AAB
+
+### 1. Ouvrir un terminal/invite de commande
+
+Naviguez vers le dossier `frontend` :
+```bash
+cd chemin/vers/mamandouce-main/frontend
+```
+
+### 2. Installer les dépendances
+
+```bash
+npm install --legacy-peer-deps
+```
+
+### 3. Compiler l'application React
+
+```bash
+npm run build
+```
+
+### 4. Synchroniser avec Capacitor
+
+```bash
+npx cap sync android
+```
+
+### 5. Ouvrir dans Android Studio
+
+Ouvrez le dossier `android` dans Android Studio :
+- File → Open → sélectionnez le dossier `android`
+- Attendez que Gradle synchronise le projet
+
+### 6. Générer le fichier AAB signé
+
+1. Menu : **Build** → **Generate Signed Bundle / APK...**
+2. Sélectionnez **Android App Bundle** → **Next**
+3. Configurez ou sélectionnez votre **keystore** (.jks)
+4. Sélectionnez **release** → **Create**
+
+Le fichier `app-release.aab` sera généré dans `android/app/release/`
+
+---
+
+## Important
+
+⚠️ **Conservez précieusement votre fichier keystore (.jks) et son mot de passe !**
+Sans eux, vous ne pourrez plus mettre à jour votre application sur le Play Store.
+
+---
+
+## Publication sur le Google Play Store
+
+1. Créez un compte développeur : https://play.google.com/console (25$ USD)
+2. Créez une nouvelle application
+3. Remplissez les informations requises (description, captures d'écran, icône)
+4. Uploadez le fichier `app-release.aab`
+5. Soumettez pour examen (1-3 jours)
+
+---
+
+Généré automatiquement par MamanDouce
+"""
+        zipf.writestr("mamandouce-android/README_BUILD.md", readme_content)
+        
+        # Add the frontend files
+        for include_path in include_paths:
+            full_path = os.path.join(frontend_path, include_path)
+            if os.path.exists(full_path):
+                if os.path.isfile(full_path):
+                    arcname = f"mamandouce-android/frontend/{include_path}"
+                    zipf.write(full_path, arcname)
+                else:
+                    for root, dirs, files in os.walk(full_path):
+                        # Exclude unwanted directories
+                        dirs[:] = [d for d in dirs if d not in exclude_patterns]
+                        
+                        for file in files:
+                            file_path = os.path.join(root, file)
+                            # Skip excluded patterns
+                            if any(ex in file_path for ex in exclude_patterns):
+                                continue
+                            
+                            arcname = f"mamandouce-android/frontend/{os.path.relpath(file_path, frontend_path)}"
+                            try:
+                                zipf.write(file_path, arcname)
+                            except Exception as e:
+                                logger.warning(f"Could not add file {file_path}: {e}")
+    
+    zip_buffer.seek(0)
+    
+    # Generate filename with date
+    filename = f"mamandouce-android-{datetime.now().strftime('%Y%m%d-%H%M')}.zip"
+    
+    return StreamingResponse(
+        zip_buffer,
+        media_type="application/zip",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
+@router.post("/admin/android/send-email")
+async def send_android_project_email(admin: User = Depends(get_admin_user)):
+    """Send the Android project ZIP to admin's email"""
+    import zipfile
+    import io
+    import os
+    import base64
+    
+    if not resend or not RESEND_API_KEY:
+        raise HTTPException(status_code=503, detail="Service email non configuré")
+    
+    # Get admin email
+    admin_email = admin.email
+    
+    # Path to the frontend folder
+    frontend_path = "/app/frontend"
+    
+    # Create a BytesIO object to hold the zip file
+    zip_buffer = io.BytesIO()
+    
+    # Files/folders to include (smaller subset for email)
+    include_paths = [
+        "android",
+        "capacitor.config.json",
+        "package.json"
+    ]
+    
+    exclude_patterns = ["node_modules", ".git", "build", "__pycache__", ".env"]
+    
+    readme_content = """# Guide de Build Android - MamanDouce
+
+## Prérequis
+
+1. **Node.js** (version LTS) - https://nodejs.org
+2. **Android Studio** - https://developer.android.com/studio
+
+---
+
+## Étapes pour générer le fichier AAB
+
+### 1. Téléchargez le projet complet
+
+Téléchargez le projet complet depuis l'interface Admin de MamanDouce
+(le fichier envoyé par email contient uniquement les fichiers Android essentiels)
+
+### 2. Ouvrir un terminal/invite de commande
+
+Naviguez vers le dossier `frontend` :
+```bash
+cd chemin/vers/mamandouce-main/frontend
+```
+
+### 3. Installer les dépendances
+
+```bash
+npm install --legacy-peer-deps
+```
+
+### 4. Compiler l'application React
+
+```bash
+npm run build
+```
+
+### 5. Synchroniser avec Capacitor
+
+```bash
+npx cap sync android
+```
+
+### 6. Ouvrir dans Android Studio
+
+Ouvrez le dossier `android` dans Android Studio.
+
+### 7. Générer le fichier AAB signé
+
+1. Menu : **Build** → **Generate Signed Bundle / APK...**
+2. Sélectionnez **Android App Bundle** → **Next**
+3. Configurez votre **keystore** (.jks)
+4. Sélectionnez **release** → **Create**
+
+---
+
+⚠️ **Conservez précieusement votre fichier keystore (.jks) et son mot de passe !**
+
+---
+
+Généré automatiquement par MamanDouce
+"""
+    
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        zipf.writestr("mamandouce-android/README_BUILD.md", readme_content)
+        
+        for include_path in include_paths:
+            full_path = os.path.join(frontend_path, include_path)
+            if os.path.exists(full_path):
+                if os.path.isfile(full_path):
+                    arcname = f"mamandouce-android/frontend/{include_path}"
+                    zipf.write(full_path, arcname)
+                else:
+                    for root, dirs, files in os.walk(full_path):
+                        dirs[:] = [d for d in dirs if d not in exclude_patterns]
+                        
+                        for file in files:
+                            file_path = os.path.join(root, file)
+                            if any(ex in file_path for ex in exclude_patterns):
+                                continue
+                            
+                            arcname = f"mamandouce-android/frontend/{os.path.relpath(file_path, frontend_path)}"
+                            try:
+                                zipf.write(file_path, arcname)
+                            except Exception as e:
+                                logger.warning(f"Could not add file {file_path}: {e}")
+    
+    zip_buffer.seek(0)
+    zip_data = zip_buffer.read()
+    
+    # Check file size (Resend limit is ~40MB for attachments)
+    if len(zip_data) > 35 * 1024 * 1024:
+        raise HTTPException(
+            status_code=413,
+            detail="Le fichier est trop volumineux pour l'envoi par email. Utilisez le téléchargement direct."
+        )
+    
+    filename = f"mamandouce-android-{datetime.now().strftime('%Y%m%d-%H%M')}.zip"
+    
+    try:
+        # Send email with attachment
+        response = resend.Emails.send({
+            "from": SENDER_EMAIL,
+            "to": admin_email,
+            "subject": f"📱 MamanDouce - Projet Android ({datetime.now().strftime('%d/%m/%Y')})",
+            "html": f"""
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h1 style="color: #ec4899;">📱 Projet Android MamanDouce</h1>
+                <p>Bonjour,</p>
+                <p>Vous trouverez ci-joint le projet Android MamanDouce mis à jour.</p>
+                
+                <div style="background: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; margin: 20px 0;">
+                    <strong>📋 Contenu de l'archive :</strong>
+                    <ul>
+                        <li>Projet Android (dossier android/)</li>
+                        <li>Configuration Capacitor</li>
+                        <li>README avec les instructions de build</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0;">
+                    <strong>⚠️ Note :</strong> Pour un projet complet avec le code source React,
+                    utilisez le bouton "Télécharger" dans l'interface Admin.
+                </div>
+                
+                <p>Consultez le fichier <code>README_BUILD.md</code> pour les instructions détaillées.</p>
+                
+                <p style="color: #6b7280; font-size: 12px; margin-top: 30px;">
+                    Généré automatiquement par MamanDouce le {datetime.now().strftime('%d/%m/%Y à %H:%M')}
+                </p>
+            </div>
+            """,
+            "attachments": [
+                {
+                    "filename": filename,
+                    "content": base64.b64encode(zip_data).decode('utf-8')
+                }
+            ]
+        })
+        
+        logger.info(f"Android project sent to {admin_email}")
+        
+        return {
+            "success": True,
+            "message": f"Projet envoyé à {admin_email}",
+            "filename": filename,
+            "size_mb": round(len(zip_data) / (1024 * 1024), 2)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error sending Android project email: {e}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de l'envoi: {str(e)}")
+
+
+@router.get("/admin/android/info")
+async def get_android_project_info(admin: User = Depends(get_admin_user)):
+    """Get information about the Android project"""
+    import os
+    
+    frontend_path = "/app/frontend"
+    android_path = os.path.join(frontend_path, "android")
+    
+    # Check if Android project exists
+    android_exists = os.path.exists(android_path)
+    
+    # Get last modification date of key files
+    last_modified = None
+    if android_exists:
+        try:
+            gradle_file = os.path.join(android_path, "app", "build.gradle")
+            if os.path.exists(gradle_file):
+                last_modified = datetime.fromtimestamp(os.path.getmtime(gradle_file)).isoformat()
+        except Exception:
+            pass
+    
+    # Check capacitor config
+    capacitor_config_path = os.path.join(frontend_path, "capacitor.config.json")
+    capacitor_exists = os.path.exists(capacitor_config_path)
+    
+    app_version = "1.0.0"
+    if capacitor_exists:
+        try:
+            import json
+            with open(capacitor_config_path, 'r') as f:
+                config = json.load(f)
+                app_version = config.get("appId", "com.mamandouce.app")
+        except Exception:
+            pass
+    
+    return {
+        "android_ready": android_exists,
+        "capacitor_configured": capacitor_exists,
+        "last_modified": last_modified,
+        "app_id": "com.mamandouce.app",
+        "download_available": android_exists,
+        "email_available": android_exists and RESEND_API_KEY is not None
+    }

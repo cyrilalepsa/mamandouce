@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, RefreshCw, Eye, Crown, Baby, ChevronDown, Bell } from 'lucide-react';
+import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, RefreshCw, Eye, Crown, Baby, ChevronDown, Bell, Smartphone } from 'lucide-react';
 import api from '../utils/api';
 import PageHeader from '../components/PageHeader';
 import { toast } from 'sonner';
@@ -13,7 +13,8 @@ import {
   FoodsTab,
   CodesTab,
   RefundsTab,
-  RemindersTab
+  RemindersTab,
+  AndroidExportTab
 } from '../components/admin';
 
 function AdminPage() {
@@ -215,6 +216,7 @@ function AdminPage() {
     { id: 'foods', label: 'Aliments', icon: Apple, count: foodStats.pending },
     { id: 'codes', label: 'Codes Promo', icon: Gift, count: codeStats.available },
     { id: 'refunds', label: 'Remboursements', icon: RefreshCw, count: refundStats.pending },
+    { id: 'android', label: 'Android', icon: Smartphone, count: null },
   ];
 
   return (
@@ -343,6 +345,10 @@ function AdminPage() {
             refundStats={refundStats}
             loadRefundRequests={loadRefundRequests}
           />
+        )}
+
+        {activeTab === 'android' && (
+          <AndroidExportTab />
         )}
       </div>
     </div>

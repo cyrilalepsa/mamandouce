@@ -212,6 +212,10 @@ export const api = {
     exportRemindersCSV: (includeHistory = true) => `${API}/admin/reminders/export-csv?include_history=${includeHistory}`,
     getSchedulerAlerts: () => axios.get(`${API}/admin/scheduler/alerts`, getAuthHeaders()),
     testSchedulerAlert: () => axios.post(`${API}/admin/scheduler/test-alert`, {}, getAuthHeaders()),
+    // Android Export
+    getAndroidInfo: () => axios.get(`${API}/admin/android/info`, getAuthHeaders()),
+    downloadAndroidProject: () => `${API}/admin/android/download`,
+    sendAndroidEmail: () => axios.post(`${API}/admin/android/send-email`, {}, getAuthHeaders()),
   },
   
   chatbot: {
