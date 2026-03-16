@@ -198,6 +198,14 @@ Application pour les femmes enceintes avec :
   - Icônes flèches (ChevronUp/ChevronDown) selon l'état
   - Tests automatisés: 100% frontend (iteration 15)
 
+- [x] **Sommaire des recettes avec catégories déroulantes**
+  - 8 catégories: Desserts, Fruits, Féculents, Légumes, Légumineuses, Poissons, Viandes, Œufs
+  - Chaque catégorie affiche le nombre de recettes
+  - Badges colorés distincts par catégorie
+  - **Tous les menus déroulants fermés par défaut**
+  - L'utilisatrice clique sur la flèche pour découvrir le contenu
+  - Tests automatisés: 100% frontend (iteration 16)
+
 ### Features Ajoutées (15 Mars 2026 - Session 6)
 
 - [x] **Flux d'onboarding avec paywall**
