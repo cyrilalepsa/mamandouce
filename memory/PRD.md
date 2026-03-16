@@ -96,6 +96,18 @@ Application pour les femmes enceintes avec :
   - 8 sous-composants créés dans `/app/frontend/src/components/profile/`
   - Composants: SubscriptionStatusCards, UserInfoCard, PregnancyCard, NotificationsCard, QuickLoginCard, FertilityRemindersCard, ContactCard, MessageHistoryCard
 
+### Features Ajoutées (16 Mars 2026 - Session 7)
+
+- [x] **Réorganisation complète de la page Profil en sections déroulantes**
+  - 4 sections accordéon avec animations:
+    - **Mon compte** (ouverte par défaut): Statuts Premium/Post-partum, infos utilisateur, suivi post-partum
+    - **Grossesse & Fertilité**: Informations de grossesse, rappels de fertilité
+    - **Paramètres**: Notifications push, connexion rapide (biométrie/PIN)
+    - **Messagerie**: Onglets "Mes échanges" et "Contacter"
+  - 2 nouveaux composants: `CollapsibleSection.jsx`, `MessagingSection.jsx`
+  - UX améliorée: interface plus claire et organisée
+  - Tests automatisés: 100% frontend passés (iteration 10)
+
 ### Features Ajoutées (15 Mars 2026 - Session 6)
 
 - [x] **Flux d'onboarding avec paywall**
