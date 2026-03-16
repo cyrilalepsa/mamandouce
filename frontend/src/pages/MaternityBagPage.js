@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { ArrowLeft, CheckSquare, Square, Plus, Send, Briefcase, Baby, Car } from 'lucide-react';
+import { ArrowLeft, CheckSquare, Square, Plus, Send, Briefcase, Baby, Car, ChevronDown, ChevronUp } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 
@@ -15,6 +15,11 @@ export default function MaternityBagPage() {
   const [showSuggestion, setShowSuggestion] = useState(false);
   const [newItem, setNewItem] = useState('');
   const [newCategory, setNewCategory] = useState('Pour maman');
+  const [expandedCategories, setExpandedCategories] = useState({
+    'Pour maman': true,
+    'Pour bébé': true,
+    'Pour le retour': false
+  });
 
   useEffect(() => {
     loadItems();
@@ -86,6 +91,26 @@ export default function MaternityBagPage() {
     }
   };
 
+  const getCategoryStyle = (category) => {
+    switch (category) {
+      case 'Pour maman':
+        return { bg: 'bg-pink-100', text: 'text-pink-600', border: 'border-pink-200' };
+      case 'Pour bébé':
+        return { bg: 'bg-sky-100', text: 'text-sky-600', border: 'border-sky-200' };
+      case 'Pour le retour':
+        return { bg: 'bg-green-100', text: 'text-green-600', border: 'border-green-200' };
+      default:
+        return { bg: 'bg-slate-100', text: 'text-slate-600', border: 'border-slate-200' };
+    }
+  };
+
+  const toggleCategory = (category) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
+  };
+
   const groupedItems = items.reduce((acc, item, index) => {
     const cat = item.category || 'Autres';
     if (!acc[cat]) acc[cat] = [];
@@ -144,48 +169,99 @@ export default function MaternityBagPage() {
           </p>
         </Card>
 
-        {/* Grouped Items */}
-        {Object.entries(groupedItems).map(([category, categoryItems]) => (
-          <Card key={category} className="bg-white rounded-3xl p-5 shadow-sm">
-            <div className="flex items-center gap-3 mb-4">
-              {getCategoryIcon(category)}
-              <h2 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                {category}
-              </h2>
-              <span className="text-sm text-slate-400">
-                ({categoryItems.filter(i => i.checked).length}/{categoryItems.length})
-              </span>
-            </div>
-            
-            <div className="space-y-2">
-              {categoryItems.map((item) => (
-                <button
-                  key={`${item.isCustom ? 'custom' : 'default'}-${item.index}`}
-                  onClick={() => toggleItem(item.index, !item.checked, item.isCustom)}
-                  className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${
-                    item.checked 
-                      ? 'bg-green-50 text-green-700' 
-                      : 'bg-slate-50 text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  {item.checked ? (
-                    <CheckSquare className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  ) : (
-                    <Square className="w-5 h-5 text-slate-300 flex-shrink-0" />
-                  )}
-                  <span className={`text-left ${item.checked ? 'line-through opacity-70' : ''}`}>
-                    {item.item}
+        {/* Grouped Items with Collapsible Sections */}
+        {Object.entries(groupedItems).map(([category, categoryItems]) => {
+          const style = getCategoryStyle(category);
+          const isExpanded = expandedCategories[category] ?? true;
+          const checkedCount = categoryItems.filter(i => i.checked).length;
+          
+          return (
+            <Card key={category} className="bg-white rounded-3xl shadow-sm overflow-hidden">
+              {/* Collapsible Header */}
+              <button
+                onClick={() => toggleCategory(category)}
+                className="w-full p-4 flex items-center gap-3 hover:bg-slate-50 transition-colors"
+                data-testid={`toggle-${category.toLowerCase().replace(/\s+/g, '-')}`}
+              >
+                <div className={`w-10 h-10 ${style.bg} rounded-xl flex items-center justify-center`}>
+                  {getCategoryIcon(category)}
+                </div>
+                <div className="flex-1 text-left">
+                  <h2 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                    {category}
+                  </h2>
+                  <p className="text-sm text-slate-500">
+                    {checkedCount}/{categoryItems.length} articles préparés
+                  </p>
+                </div>
+                {/* Progress circle */}
+                <div className="relative w-12 h-12">
+                  <svg className="w-12 h-12 transform -rotate-90">
+                    <circle
+                      cx="24"
+                      cy="24"
+                      r="20"
+                      stroke="#e2e8f0"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <circle
+                      cx="24"
+                      cy="24"
+                      r="20"
+                      stroke={category === 'Pour maman' ? '#ec4899' : category === 'Pour bébé' ? '#0ea5e9' : '#22c55e'}
+                      strokeWidth="4"
+                      fill="none"
+                      strokeDasharray={`${(checkedCount / categoryItems.length) * 125.6} 125.6`}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-600">
+                    {Math.round((checkedCount / categoryItems.length) * 100)}%
                   </span>
-                  {item.added_by && (
-                    <span className="ml-auto text-xs text-purple-500 bg-purple-50 px-2 py-0.5 rounded-full">
-                      Ajouté
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </Card>
-        ))}
+                </div>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                  isExpanded ? `${style.bg} ${style.text}` : 'bg-slate-100 text-slate-400'
+                }`}>
+                  {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                </div>
+              </button>
+              
+              {/* Collapsible Content */}
+              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
+              }`}>
+                <div className="px-4 pb-4 space-y-2 border-t border-slate-100 pt-3">
+                  {categoryItems.map((item) => (
+                    <button
+                      key={`${item.isCustom ? 'custom' : 'default'}-${item.index}`}
+                      onClick={() => toggleItem(item.index, !item.checked, item.isCustom)}
+                      className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${
+                        item.checked 
+                          ? 'bg-green-50 text-green-700' 
+                          : 'bg-slate-50 text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      {item.checked ? (
+                        <CheckSquare className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      ) : (
+                        <Square className="w-5 h-5 text-slate-300 flex-shrink-0" />
+                      )}
+                      <span className={`text-left ${item.checked ? 'line-through opacity-70' : ''}`}>
+                        {item.item}
+                      </span>
+                      {item.added_by && (
+                        <span className="ml-auto text-xs text-purple-500 bg-purple-50 px-2 py-0.5 rounded-full">
+                          Ajouté
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          );
+        })}
 
         {/* Add Suggestion */}
         {showSuggestion ? (

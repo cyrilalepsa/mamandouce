@@ -16,6 +16,7 @@ function MedicalAppointmentsPage() {
   const [expandedId, setExpandedId] = useState(null);
   const [editingNotes, setEditingNotes] = useState(null);
   const [allNotes, setAllNotes] = useState({});
+  const [expandedTrimesters, setExpandedTrimesters] = useState({ 1: true, 2: true, 3: true });
   const [noteForm, setNoteForm] = useState({
     weight: '',
     blood_pressure_systolic: '',
@@ -265,6 +266,19 @@ function MedicalAppointmentsPage() {
   const completedCount = appointments.filter(a => a.is_completed).length;
   const currentCount = appointments.filter(a => a.status === 'current' && !a.is_completed).length;
 
+  const toggleTrimester = (trimester) => {
+    setExpandedTrimesters(prev => ({
+      ...prev,
+      [trimester]: !prev[trimester]
+    }));
+  };
+
+  const getTrimesterStats = (trimester) => {
+    const apts = trimesters[trimester] || [];
+    const completed = apts.filter(a => a.is_completed).length;
+    return { total: apts.length, completed };
+  };
+
   const hasNotes = (aptId) => {
     const note = allNotes[aptId];
     return note && (note.weight || note.notes || note.baby_weight || note.blood_pressure_systolic);
@@ -346,21 +360,59 @@ function MedicalAppointmentsPage() {
               )}
             </Card>
 
-            {/* Trimester sections */}
-            {[1, 2, 3].map((trimester) => (
-              trimesters[trimester].length > 0 && (
+            {/* Trimester sections with collapsible headers */}
+            {[1, 2, 3].map((trimester) => {
+              const stats = getTrimesterStats(trimester);
+              const isExpanded = expandedTrimesters[trimester];
+              const trimesterColor = trimester === 1 ? 'sky' : trimester === 2 ? 'purple' : 'pink';
+              
+              return trimesters[trimester].length > 0 && (
                 <div key={trimester}>
-                  <h2 className="text-lg font-bold text-slate-600 mb-3 flex items-center gap-2">
-                    <span className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm ${
+                  {/* Collapsible Trimester Header */}
+                  <button
+                    onClick={() => toggleTrimester(trimester)}
+                    className="w-full flex items-center gap-3 mb-3 p-3 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all"
+                    data-testid={`toggle-trimestre-${trimester}`}
+                  >
+                    <span className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold ${
                       trimester === 1 ? 'bg-sky-400' : trimester === 2 ? 'bg-purple-400' : 'bg-pink-400'
                     }`}>
                       T{trimester}
                     </span>
-                    {trimester === 1 ? '1er' : `${trimester}ème`} trimestre
-                  </h2>
+                    <div className="flex-1 text-left">
+                      <h2 className="text-lg font-bold text-slate-600">
+                        {trimester === 1 ? '1er' : `${trimester}ème`} trimestre
+                      </h2>
+                      <p className="text-sm text-slate-500">
+                        {stats.completed}/{stats.total} rendez-vous complétés
+                      </p>
+                    </div>
+                    {/* Progress indicator */}
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full transition-all duration-500 ${
+                            trimester === 1 ? 'bg-sky-400' : trimester === 2 ? 'bg-purple-400' : 'bg-pink-400'
+                          }`}
+                          style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }}
+                        />
+                      </div>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                        isExpanded 
+                          ? `bg-${trimesterColor}-100 text-${trimesterColor}-600` 
+                          : 'bg-slate-100 text-slate-400'
+                      }`}>
+                        {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                      </div>
+                    </div>
+                  </button>
                   
-                  <div className="space-y-3">
-                    {trimesters[trimester].map((apt) => (
+                  {/* Collapsible Content */}
+                  <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    isExpanded ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'
+                  }`}>
+                    <div className="space-y-3 mb-6">
+                      {trimesters[trimester].map((apt) => (
                       <Card 
                         key={apt.id} 
                         className={`rounded-2xl p-4 border transition-all ${getStatusStyle(apt.status, apt.is_completed)}`}
@@ -737,11 +789,12 @@ function MedicalAppointmentsPage() {
                           </div>
                         </div>
                       </Card>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
-              )
-            ))}
+              );
+            })}
           </>
         )}
       </div>

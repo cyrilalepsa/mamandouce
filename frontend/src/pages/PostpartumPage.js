@@ -5,7 +5,7 @@ import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { 
   ArrowLeft, Calendar, Heart, AlertTriangle, Baby, Droplets,
-  Shield, Stethoscope, Info, CalendarDays, Check, Lock, Gift, Crown, Sparkles, Utensils, HandHeart
+  Shield, Stethoscope, Info, CalendarDays, Check, Lock, Gift, Crown, Sparkles, Utensils, HandHeart, ChevronDown, ChevronUp
 } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
@@ -27,7 +27,17 @@ export default function PostpartumPage() {
   const navigate = useNavigate();
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState('appointments');
+  const [expandedSections, setExpandedSections] = useState({
+    appointments: true,
+    difficulties: false,
+    breastfeeding: false,
+    formula: false,
+    diapers: false,
+    babywearing: false,
+    diversification: false,
+    recipes: false,
+    precautions: false
+  });
   
   // Postpartum status
   const [postpartumStatus, setPostpartumStatus] = useState(null);
@@ -124,6 +134,28 @@ export default function PostpartumPage() {
   const hasGivenBirth = postpartumStatus?.actual_birth_date;
   const canViewFullContent = hasPostpartumAccess && hasGivenBirth;
 
+  const toggleSection = (section) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
+  const getColorClasses = (color) => {
+    const colors = {
+      pink: { bg: 'bg-pink-100', text: 'text-pink-600' },
+      amber: { bg: 'bg-amber-100', text: 'text-amber-600' },
+      rose: { bg: 'bg-rose-100', text: 'text-rose-600' },
+      sky: { bg: 'bg-sky-100', text: 'text-sky-600' },
+      cyan: { bg: 'bg-cyan-100', text: 'text-cyan-600' },
+      violet: { bg: 'bg-violet-100', text: 'text-violet-600' },
+      orange: { bg: 'bg-orange-100', text: 'text-orange-600' },
+      emerald: { bg: 'bg-emerald-100', text: 'text-emerald-600' },
+      slate: { bg: 'bg-slate-100', text: 'text-slate-600' }
+    };
+    return colors[color] || colors.pink;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen gradient-bg flex items-center justify-center">
@@ -133,15 +165,15 @@ export default function PostpartumPage() {
   }
 
   const sections = [
-    { id: 'appointments', label: 'RDV', icon: Calendar },
-    { id: 'difficulties', label: 'Difficultés', icon: AlertTriangle },
-    { id: 'breastfeeding', label: 'Allaitement', icon: Heart },
-    { id: 'formula', label: 'Biberon', icon: Baby },
-    { id: 'diapers', label: 'Couches', icon: Droplets },
-    { id: 'babywearing', label: 'Portage', icon: HandHeart },
-    { id: 'diversification', label: 'Diversification', icon: Utensils },
-    { id: 'recipes', label: 'Recettes', icon: Utensils },
-    { id: 'precautions', label: 'Précautions', icon: Shield },
+    { id: 'appointments', label: 'RDV post-partum', icon: Calendar, color: 'pink' },
+    { id: 'difficulties', label: 'Difficultés courantes', icon: AlertTriangle, color: 'amber' },
+    { id: 'breastfeeding', label: 'Allaitement maternel', icon: Heart, color: 'rose' },
+    { id: 'formula', label: 'Biberon & préparation', icon: Baby, color: 'sky' },
+    { id: 'diapers', label: 'Couches & change', icon: Droplets, color: 'cyan' },
+    { id: 'babywearing', label: 'Portage bébé', icon: HandHeart, color: 'violet' },
+    { id: 'diversification', label: 'Diversification alimentaire', icon: Utensils, color: 'orange' },
+    { id: 'recipes', label: 'Recettes pour bébé', icon: Sparkles, color: 'emerald', badge: content?.recipes?.length || 0 },
+    { id: 'precautions', label: 'Précautions & sécurité', icon: Shield, color: 'slate' },
   ];
 
   // ==================== APERÇU POUR NON-ACHETEURS ====================
@@ -465,68 +497,83 @@ export default function PostpartumPage() {
           </div>
         </Card>
 
-        {/* Navigation Tabs */}
-        <div className="flex gap-2 overflow-x-auto pb-2">
+        {/* Collapsible Sections */}
+        <div className="space-y-3">
           {sections.map((section) => {
             const Icon = section.icon;
+            const colorClasses = getColorClasses(section.color);
+            const isExpanded = expandedSections[section.id];
+            
             return (
-              <Button
-                key={section.id}
-                onClick={() => setActiveSection(section.id)}
-                data-testid={`tab-${section.id}`}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap ${
-                  activeSection === section.id
-                    ? 'bg-rose-500 text-white'
-                    : 'bg-white text-slate-600 hover:bg-slate-100'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                {section.label}
-              </Button>
+              <Card key={section.id} className="bg-white rounded-3xl shadow-sm overflow-hidden">
+                {/* Collapsible Header */}
+                <button
+                  onClick={() => toggleSection(section.id)}
+                  className="w-full p-4 flex items-center gap-3 hover:bg-slate-50 transition-colors"
+                  data-testid={`toggle-${section.id}`}
+                >
+                  <div className={`w-10 h-10 ${colorClasses.bg} rounded-xl flex items-center justify-center`}>
+                    <Icon className={`w-5 h-5 ${colorClasses.text}`} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-slate-700">{section.label}</h3>
+                      {section.badge && (
+                        <span className={`px-2 py-0.5 ${colorClasses.bg} ${colorClasses.text} text-xs rounded-full font-medium`}>
+                          {section.badge}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                    isExpanded ? `${colorClasses.bg} ${colorClasses.text}` : 'bg-slate-100 text-slate-400'
+                  }`}>
+                    {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                  </div>
+                </button>
+                
+                {/* Collapsible Content */}
+                <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                  isExpanded ? 'max-h-[10000px] opacity-100' : 'max-h-0 opacity-0'
+                }`}>
+                  <div className="px-4 pb-4 border-t border-slate-100">
+                    {section.id === 'appointments' && (
+                      <AppointmentsSection appointments={content?.appointments} />
+                    )}
+                    {section.id === 'difficulties' && (
+                      <DifficultiesSection difficulties={content?.difficulties} />
+                    )}
+                    {section.id === 'breastfeeding' && (
+                      <BreastfeedingSection breastfeeding={content?.breastfeeding} />
+                    )}
+                    {section.id === 'formula' && (
+                      <FormulaSection formula={content?.formula} />
+                    )}
+                    {section.id === 'diapers' && (
+                      <DiapersSection diapers={content?.diapers} />
+                    )}
+                    {section.id === 'babywearing' && (
+                      <BabywearingSection babywearing={content?.babywearing} />
+                    )}
+                    {section.id === 'diversification' && (
+                      <DiversificationSection diversification={content?.diversification} />
+                    )}
+                    {section.id === 'recipes' && (
+                      <RecipesSection 
+                        babyRecipes={content?.baby_recipes} 
+                        favorites={favorites}
+                        onFavoritesChange={setFavorites}
+                      />
+                    )}
+                    {section.id === 'precautions' && (
+                      <PrecautionsSection precautions={content?.precautions} />
+                    )}
+                  </div>
+                </div>
+              </Card>
             );
           })}
         </div>
-
-        {/* Content Sections */}
-        {activeSection === 'appointments' && (
-          <AppointmentsSection appointments={content?.appointments} />
-        )}
-
-        {activeSection === 'difficulties' && (
-          <DifficultiesSection difficulties={content?.difficulties} />
-        )}
-
-        {activeSection === 'breastfeeding' && (
-          <BreastfeedingSection breastfeeding={content?.breastfeeding} />
-        )}
-
-        {activeSection === 'formula' && (
-          <FormulaSection formula={content?.formula} />
-        )}
-
-        {activeSection === 'diapers' && (
-          <DiapersSection diapers={content?.diapers} />
-        )}
-
-        {activeSection === 'babywearing' && (
-          <BabywearingSection babywearing={content?.babywearing} />
-        )}
-
-        {activeSection === 'diversification' && (
-          <DiversificationSection diversification={content?.diversification} />
-        )}
-
-        {activeSection === 'recipes' && (
-          <RecipesSection 
-            babyRecipes={content?.baby_recipes} 
-            favorites={favorites}
-            onFavoritesChange={setFavorites}
-          />
-        )}
-
-        {activeSection === 'precautions' && (
-          <PrecautionsSection precautions={content?.precautions} />
-        )}
       </div>
     </div>
   );
