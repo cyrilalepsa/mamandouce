@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { ArrowLeft, CheckSquare, Square, Plus, Send, Briefcase, Baby, Car, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, CheckSquare, Square, Plus, Send, Briefcase, Baby, Car, ChevronDown, ChevronUp, Heart } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 
@@ -11,6 +11,7 @@ export default function MaternityBagPage() {
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [customItems, setCustomItems] = useState([]);
+  const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSuggestion, setShowSuggestion] = useState(false);
   const [newItem, setNewItem] = useState('');
@@ -27,9 +28,13 @@ export default function MaternityBagPage() {
 
   const loadItems = async () => {
     try {
-      const response = await api.postpartum.getMaternityBag();
-      setItems(response.data.items || []);
-      setCustomItems(response.data.custom_items || []);
+      const [bagResponse, favResponse] = await Promise.all([
+        api.postpartum.getMaternityBag(),
+        api.postpartum.getMaternityBagFavorites()
+      ]);
+      setItems(bagResponse.data.items || []);
+      setCustomItems(bagResponse.data.custom_items || []);
+      setFavorites(favResponse.data.favorites || []);
     } catch (error) {
       console.error('Erreur chargement liste:', error);
       toast.error('Erreur lors du chargement');
@@ -55,6 +60,24 @@ export default function MaternityBagPage() {
       toast.error('Erreur lors de la mise à jour');
     }
   };
+
+  const toggleFavorite = async (e, itemName) => {
+    e.stopPropagation();
+    try {
+      const response = await api.postpartum.toggleMaternityBagFavorite(itemName);
+      if (response.data.is_favorite) {
+        setFavorites([...favorites, itemName]);
+        toast.success('Ajouté aux favoris');
+      } else {
+        setFavorites(favorites.filter(f => f !== itemName));
+        toast.success('Retiré des favoris');
+      }
+    } catch (error) {
+      toast.error('Erreur lors de la mise à jour');
+    }
+  };
+
+  const isFavorite = (itemName) => favorites.includes(itemName);
 
   const submitSuggestion = async () => {
     if (!newItem.trim()) {
@@ -233,29 +256,45 @@ export default function MaternityBagPage() {
               }`}>
                 <div className="px-4 pb-4 space-y-2 border-t border-slate-100 pt-3">
                   {categoryItems.map((item) => (
-                    <button
+                    <div
                       key={`${item.isCustom ? 'custom' : 'default'}-${item.index}`}
-                      onClick={() => toggleItem(item.index, !item.checked, item.isCustom)}
                       className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${
                         item.checked 
                           ? 'bg-green-50 text-green-700' 
                           : 'bg-slate-50 text-slate-700 hover:bg-slate-100'
                       }`}
                     >
-                      {item.checked ? (
-                        <CheckSquare className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      ) : (
-                        <Square className="w-5 h-5 text-slate-300 flex-shrink-0" />
-                      )}
-                      <span className={`text-left ${item.checked ? 'line-through opacity-70' : ''}`}>
-                        {item.item}
-                      </span>
+                      <button
+                        onClick={() => toggleItem(item.index, !item.checked, item.isCustom)}
+                        className="flex items-center gap-3 flex-1 text-left"
+                        data-testid={`toggle-item-${item.index}`}
+                      >
+                        {item.checked ? (
+                          <CheckSquare className="w-5 h-5 text-green-500 flex-shrink-0" />
+                        ) : (
+                          <Square className="w-5 h-5 text-slate-300 flex-shrink-0" />
+                        )}
+                        <span className={`${item.checked ? 'line-through opacity-70' : ''}`}>
+                          {item.item}
+                        </span>
+                      </button>
                       {item.added_by && (
-                        <span className="ml-auto text-xs text-purple-500 bg-purple-50 px-2 py-0.5 rounded-full">
+                        <span className="text-xs text-purple-500 bg-purple-50 px-2 py-0.5 rounded-full">
                           Ajouté
                         </span>
                       )}
-                    </button>
+                      <button
+                        onClick={(e) => toggleFavorite(e, item.item)}
+                        className={`p-1.5 rounded-full transition-all ${
+                          isFavorite(item.item)
+                            ? 'bg-red-100 text-red-500'
+                            : 'bg-slate-100 text-slate-400 hover:text-red-400 hover:bg-red-50'
+                        }`}
+                        data-testid={`favorite-item-${item.index}`}
+                      >
+                        <Heart className={`w-4 h-4 ${isFavorite(item.item) ? 'fill-current' : ''}`} />
+                      </button>
+                    </div>
                   ))}
                 </div>
               </div>

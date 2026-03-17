@@ -187,6 +187,9 @@ export const api = {
     shareRecipes: (recipeNames) => axios.post(`${API}/postpartum/share-recipes`, { recipe_names: recipeNames }, getAuthHeaders()),
     getSharedRecipes: (shareCode) => axios.get(`${API}/postpartum/shared/${shareCode}`),
     getMyShares: () => axios.get(`${API}/postpartum/my-shares`, getAuthHeaders()),
+    // Maternity bag favorites
+    getMaternityBagFavorites: () => axios.get(`${API}/maternity-bag/favorites`, getAuthHeaders()),
+    toggleMaternityBagFavorite: (itemName) => axios.post(`${API}/maternity-bag/favorites/toggle`, { item_name: itemName }, getAuthHeaders()),
   },
   admin: {
     generateCodes: (count, note) => axios.post(`${API}/admin/generate-codes?count=${count}&note=${encodeURIComponent(note)}`, {}, getAuthHeaders()),

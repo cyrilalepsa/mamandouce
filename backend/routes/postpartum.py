@@ -185,6 +185,53 @@ async def approve_suggestion(suggestion_id: str, approved: bool, current_user: U
         return {"success": True, "message": "Suggestion rejetée"}
 
 
+# ==================== MATERNITY BAG FAVORITES ====================
+
+class MaternityBagFavorite(BaseModel):
+    item_name: str
+
+@router.get("/maternity-bag/favorites")
+async def get_maternity_bag_favorites(current_user: User = Depends(get_current_user)):
+    """Récupérer la liste des articles favoris du sac de maternité"""
+    user_favorites = await db.maternity_bag_favorites.find_one({"user_id": current_user.id})
+    
+    if user_favorites:
+        return {"favorites": user_favorites.get("items", [])}
+    
+    return {"favorites": []}
+
+@router.post("/maternity-bag/favorites/toggle")
+async def toggle_maternity_bag_favorite(data: MaternityBagFavorite, current_user: User = Depends(get_current_user)):
+    """Ajouter ou retirer un article des favoris du sac de maternité"""
+    user_favorites = await db.maternity_bag_favorites.find_one({"user_id": current_user.id})
+    
+    if not user_favorites:
+        # Créer le document de favoris pour cet utilisateur
+        await db.maternity_bag_favorites.insert_one({
+            "user_id": current_user.id,
+            "items": [data.item_name],
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        return {"success": True, "is_favorite": True, "message": "Article ajouté aux favoris"}
+    
+    current_favorites = user_favorites.get("items", [])
+    
+    if data.item_name in current_favorites:
+        # Retirer des favoris
+        await db.maternity_bag_favorites.update_one(
+            {"user_id": current_user.id},
+            {"$pull": {"items": data.item_name}}
+        )
+        return {"success": True, "is_favorite": False, "message": "Article retiré des favoris"}
+    else:
+        # Ajouter aux favoris
+        await db.maternity_bag_favorites.update_one(
+            {"user_id": current_user.id},
+            {"$push": {"items": data.item_name}}
+        )
+        return {"success": True, "is_favorite": True, "message": "Article ajouté aux favoris"}
+
+
 # ==================== POSTPARTUM CONTENT ====================
 
 POSTPARTUM_CONTENT = {
@@ -2066,9 +2113,10 @@ async def get_shared_recipes(share_code: str):
         raise HTTPException(status_code=404, detail="Lien de partage invalide ou expiré")
     
     # Incrémenter le compteur de vues
-    await db.recipe_shares.update_one(
+    result = await db.recipe_shares.find_one_and_update(
         {"code": share_code},
-        {"$inc": {"views": 1}}
+        {"$inc": {"views": 1}},
+        return_document=True
     )
     
     # Récupérer les détails des recettes depuis le contenu
@@ -2079,6 +2127,7 @@ async def get_shared_recipes(share_code: str):
         "shared_by": share.get("user_name", "Une maman"),
         "recipes": shared_recipes,
         "recipes_count": len(shared_recipes),
+        "views": result.get("views", 1) if result else 1,
         "shared_at": share.get("created_at")
     }
 

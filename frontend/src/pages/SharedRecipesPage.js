@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { 
-  Heart, Play, ExternalLink, ChevronDown, ChevronUp, Baby, ArrowLeft, Share2, Download
+  Heart, Play, ExternalLink, ChevronDown, ChevronUp, Baby, ArrowLeft, Share2, Download, Eye
 } from 'lucide-react';
 import api from '../utils/api';
 
@@ -83,6 +83,13 @@ export default function SharedRecipesPage() {
           <p className="text-slate-500 mt-2">
             <span className="text-pink-600 font-semibold">{shareData?.shared_by}</span> vous partage {shareData?.recipes_count} recette(s) pour bébé
           </p>
+          {/* View counter */}
+          <div className="flex items-center justify-center gap-2 mt-3">
+            <div className="flex items-center gap-1.5 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm">
+              <Eye className="w-4 h-4 text-slate-500" />
+              <span className="text-sm text-slate-600 font-medium">{shareData?.views || 1} vue{(shareData?.views || 1) > 1 ? 's' : ''}</span>
+            </div>
+          </div>
         </div>
 
         {/* Selected Recipe Detail */}
