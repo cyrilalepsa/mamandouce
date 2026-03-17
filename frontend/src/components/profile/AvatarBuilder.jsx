@@ -47,19 +47,14 @@ const AVATAR_OPTIONS = {
     { id: 'square', name: 'Carrées' },
     { id: 'cat', name: 'Œil de chat' },
   ],
-  age: [
-    { id: 'young', name: 'Jeune', wrinkles: false },
-    { id: 'mature', name: 'Mature', wrinkles: true },
-  ],
 };
 
 // Composant pour générer l'avatar SVG
 function AvatarPreview({ config, size = 120 }) {
-  const { faceShape, skinTone, hairStyle, hairColor, glasses, age } = config;
+  const { faceShape, skinTone, hairStyle, hairColor, glasses } = config;
   
   const skin = AVATAR_OPTIONS.skinTone.find(s => s.id === skinTone)?.color || '#F5CBA7';
   const hair = AVATAR_OPTIONS.hairColor.find(h => h.id === hairColor)?.color || '#3d2314';
-  const isOld = age === 'mature';
   
   // Rendu des cheveux selon le style
   const renderHair = () => {
@@ -160,9 +155,11 @@ function AvatarPreview({ config, size = 120 }) {
       ),
       'cat': (
         <>
-          <path d="M6.5 10l2-1h3l2 1v3l-2 1h-3l-2-1v-3z" fill="none" stroke="#333" strokeWidth="0.5" />
-          <path d="M12.5 10l2-1h3l2 1v3l-2 1h-3l-2-1v-3z" fill="none" stroke="#333" strokeWidth="0.5" />
-          <path d="M11.5 12h1" stroke="#333" strokeWidth="0.5" />
+          {/* Lunettes œil de chat - centrées sur les yeux */}
+          <path d="M7 11.5l1.5-1h2l1.5 1v2l-1.5 1h-2l-1.5-1v-2z" fill="none" stroke="#333" strokeWidth="0.5" />
+          <path d="M12 11.5l1.5-1h2l1.5 1v2l-1.5 1h-2l-1.5-1v-2z" fill="none" stroke="#333" strokeWidth="0.5" />
+          <path d="M11 12h1" stroke="#333" strokeWidth="0.5" />
+          <path d="M7 12H5.5M17 12h1.5" stroke="#333" strokeWidth="0.5" />
         </>
       ),
     };
@@ -187,15 +184,6 @@ function AvatarPreview({ config, size = 120 }) {
       
       {/* Visage */}
       <ellipse cx="12" cy="13" rx="6" ry="7" fill={skin} />
-      
-      {/* Rides pour âge mature */}
-      {isOld && (
-        <>
-          <path d="M8 11c0.5-0.5 1-0.3 1.5 0" stroke={skin} strokeWidth="0.3" fill="none" opacity="0.5" />
-          <path d="M14.5 11c0.5-0.5 1-0.3 1.5 0" stroke={skin} strokeWidth="0.3" fill="none" opacity="0.5" />
-          <path d="M9 17c1 0.5 2 0.5 3 0" stroke={skin} strokeWidth="0.2" fill="none" opacity="0.3" />
-        </>
-      )}
       
       {/* Yeux */}
       <ellipse cx="9.5" cy="12" rx="1" ry="1.2" fill="#4a3728" />
@@ -278,7 +266,6 @@ export function AvatarBuilder({ currentConfig, onSave, onCancel, onUseCamera }) 
     hairStyle: 'long-straight',
     hairColor: 'dark-brown',
     glasses: 'none',
-    age: 'young',
   });
   
   const [step, setStep] = useState(0);
@@ -287,7 +274,6 @@ export function AvatarBuilder({ currentConfig, onSave, onCancel, onUseCamera }) 
     { key: 'hairStyle', title: 'Coiffure' },
     { key: 'hairColor', title: 'Couleur des cheveux' },
     { key: 'glasses', title: 'Lunettes' },
-    { key: 'age', title: 'Âge' },
   ];
 
   const updateConfig = (key, value) => {
@@ -379,14 +365,6 @@ export function AvatarBuilder({ currentConfig, onSave, onCancel, onUseCamera }) 
               options={AVATAR_OPTIONS.glasses}
               value={config.glasses}
               onChange={(v) => updateConfig('glasses', v)}
-            />
-          )}
-          {step === 4 && (
-            <OptionSelector
-              title="Votre tranche d'âge"
-              options={AVATAR_OPTIONS.age}
-              value={config.age}
-              onChange={(v) => updateConfig('age', v)}
             />
           )}
         </div>
