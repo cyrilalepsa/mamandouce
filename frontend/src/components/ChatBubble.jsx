@@ -106,21 +106,21 @@ function ChatBubble() {
 
   return (
     <>
-      {/* Bulle flottante */}
+      {/* Bulle flottante - Discrète et transparente */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
           data-testid="chat-bubble-button"
-          className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center z-50 group"
+          className="fixed bottom-6 right-6 w-12 h-12 bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-full shadow-sm hover:shadow-md hover:bg-white hover:scale-105 transition-all duration-300 flex items-center justify-center z-50 group"
         >
-          <MessageCircle className="w-6 h-6 text-white" />
+          <MessageCircle className="w-5 h-5 text-pink-400" />
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-pink-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
               {unreadCount}
             </span>
           )}
-          <span className="absolute right-full mr-3 bg-slate-800 text-white text-sm px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            Une question ?
+          <span className="absolute right-full mr-2 bg-slate-700/90 text-white text-xs px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            Aide
           </span>
         </button>
       )}
