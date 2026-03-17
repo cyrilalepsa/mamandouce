@@ -22,15 +22,15 @@ export function PWAInstallBanner() {
     const dismissed = localStorage.getItem('pwa-banner-dismissed');
     if (dismissed) {
       const dismissedTime = parseInt(dismissed);
-      // Ne pas afficher pendant 7 jours après fermeture
-      if (Date.now() - dismissedTime < 7 * 24 * 60 * 60 * 1000) {
+      // Ne pas afficher pendant 1 jour après fermeture (au lieu de 7)
+      if (Date.now() - dismissedTime < 1 * 24 * 60 * 60 * 1000) {
         return;
       }
     }
 
     // Pour iOS, afficher la bannière avec instructions
     if (iOS && !standalone) {
-      setTimeout(() => setShowBanner(true), 3000);
+      setTimeout(() => setShowBanner(true), 2000);
       return;
     }
 
@@ -38,7 +38,7 @@ export function PWAInstallBanner() {
     const handleBeforeInstall = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setTimeout(() => setShowBanner(true), 3000);
+      setTimeout(() => setShowBanner(true), 2000);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);

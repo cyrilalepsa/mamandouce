@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
-import { Crown, User, Settings, LogOut, Shield, MoreVertical, Share2 } from 'lucide-react';
+import { Crown, User, Settings, LogOut, Shield, MoreVertical, Share2, Download } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function TopBar({ isAdmin }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isInstalled, setIsInstalled] = useState(false);
   const menuRef = useRef(null);
 
   // URL et message de partage
@@ -22,6 +24,29 @@ export function TopBar({ isAdmin }) {
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Détecter si l'app peut être installée
+  useEffect(() => {
+    // Vérifier si déjà installée
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || 
+                       window.navigator.standalone === true;
+    setIsInstalled(standalone);
+
+    const handleBeforeInstall = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    window.addEventListener('appinstalled', () => {
+      setIsInstalled(true);
+      setDeferredPrompt(null);
+    });
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -56,7 +81,46 @@ export function TopBar({ isAdmin }) {
     }
   };
 
+  const handleInstall = async () => {
+    setMenuOpen(false);
+    
+    // Pour iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS) {
+      toast.info(
+        <div>
+          <p className="font-bold">Pour installer sur iPhone/iPad :</p>
+          <p>1. Appuyez sur <strong>⬆️ Partager</strong></p>
+          <p>2. Puis <strong>"Sur l'écran d'accueil"</strong></p>
+        </div>,
+        { duration: 8000 }
+      );
+      return;
+    }
+
+    // Pour Android/Desktop avec deferredPrompt
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        toast.success('Installation en cours...');
+      }
+      setDeferredPrompt(null);
+    } else {
+      // Réactiver la bannière si elle était cachée
+      localStorage.removeItem('pwa-banner-dismissed');
+      toast.info('Rechargez la page pour voir la bannière d\'installation');
+    }
+  };
+
   const menuItems = [
+    // Option d'installation (seulement si pas déjà installée)
+    ...(!isInstalled ? [{
+      icon: Download,
+      label: 'Installer l\'app',
+      onClick: handleInstall,
+      iconBg: 'bg-gradient-to-br from-green-400 to-emerald-500'
+    }] : []),
     {
       icon: Share2,
       label: 'Partager',
