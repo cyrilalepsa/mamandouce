@@ -43,17 +43,29 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - Personnalisation complète dans les paramètres
 
 ### 8. Personnalisation du Profil
-- Upload d'avatar (compression auto 200x200, max 500KB)
-- Nom d'affichage personnalisé (display_name)
-- Affichage sur page d'accueil "Bonjour, [nom]" avec avatar
-- Par défaut: nom d'inscription
+- **Avatar personnalisable** (NEW)
+  - 6 couleurs de peau
+  - 10 styles de coiffure (inclut hijab)
+  - 8 couleurs de cheveux
+  - 4 types de lunettes
+  - 2 tranches d'âge
+  - Option photo réelle (caméra/galerie)
+- Nom d'affichage personnalisé
+- Avatar SVG dynamique affiché partout
 
-### 9. Messagerie avec Photos (NEW)
+### 9. Messagerie avec Photos
 - Joindre jusqu'à 3 photos par message
 - Support caméra et galerie sur mobile
-- Compression automatique (800px max, ~500KB)
-- Visualisation plein écran au clic
-- Images dans messages et réponses
+- Visualisation plein écran
+
+### 10. Grossesse après 35 ans (NEW)
+Nouvelle section dédiée avec :
+- Fertilité après 35 ans
+- Examens recommandés (DPNI, amniocentèse)
+- Risques et précautions
+- Suivi médical renforcé
+- Accompagnement psychologique
+- Avantages d'être maman plus tard
 
 ## Tech Stack
 - **Frontend:** React, PWA, Shadcn/UI, Capacitor (Android)
@@ -63,14 +75,13 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 ## Recent Changes (March 2026)
 
 ### Session du 17/03/2026
-- ✅ Avatar utilisateur dans la page Profil
-- ✅ Nom d'affichage personnalisé (display_name)
-- ✅ Affichage de l'avatar et du nom sur la page d'accueil
-- ✅ Partage de photos dans la messagerie (max 3 par message)
-- ✅ Compression images côté client
-- ✅ Modal de visualisation plein écran
+- ✅ Avatar personnalisable avec système de création
+- ✅ 10 styles de coiffures multi-ethniques
+- ✅ Support du hijab
+- ✅ Nouvelle page "Grossesse après 35 ans"
+- ✅ 6 sections de contenu médical complet
+- ✅ Photos dans messagerie
 - ✅ Notifications push natives
-- ✅ Nettoyage fichiers obsolètes
 
 ## Backlog
 
@@ -94,34 +105,27 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 /app
 ├── backend/
 │   ├── routes/
-│   │   ├── auth.py         # PUT /auth/profile pour avatar/display_name
-│   │   ├── contact.py      # Messages avec support images
-│   │   ├── admin.py        # Export, kit business, super admin
-│   │   ├── preferences.py  # Préférences notifications
-│   │   └── push_notifications.py
-│   ├── models/
-│   │   └── schemas.py      # User, AdminMessage, ContactMessageRequest avec images
-│   └── server.py
+│   │   ├── auth.py         # avatar_config support
+│   │   └── contact.py      # images in messages
+│   └── models/schemas.py   # User with avatar_config
 └── frontend/
     └── src/
-        ├── components/
-        │   └── profile/
-        │       ├── ProfileEditCard.jsx    # Avatar + nom
-        │       └── MessagingSection.jsx   # Messages + photos
-        ├── pages/
-        │   ├── ProfilePage.js
-        │   └── HomePage.js
-        └── utils/
-            └── api.js
+        ├── components/profile/
+        │   ├── AvatarBuilder.jsx     # Avatar creation system
+        │   └── ProfileEditCard.jsx   # Integration
+        └── pages/
+            ├── HomePage.js           # AvatarPreview display
+            └── PregnancyAfter35Page.js  # New content page
 ```
 
-## API Endpoints
-
-### Profile
-- `PUT /api/auth/profile` - Update display_name and avatar
-- `GET /api/auth/me` - Returns user with display_name and avatar
-
-### Contact/Messages
-- `POST /api/contact/send` - Send message with optional images (max 3)
-- `GET /api/contact/my-messages` - Get messages with images
-- `POST /api/contact/messages/{id}/reply` - Reply with optional images
+## Avatar Configuration
+```javascript
+avatar_config: {
+  faceShape: 'oval',        // round, oval, heart, square
+  skinTone: 'medium',       // light, light-medium, medium, medium-dark, dark, deep
+  hairStyle: 'curly',       // long-straight, long-wavy, medium-straight, medium-curly, short, curly, afro, braids, bun, hijab
+  hairColor: 'dark-brown',  // black, dark-brown, brown, light-brown, blonde, red, gray, white
+  glasses: 'none',          // none, round, square, cat
+  age: 'young'              // young, mature
+}
+```
