@@ -71,6 +71,12 @@ api_router.include_router(chatbot_router)
 # Include main router
 app.include_router(api_router)
 
+# Health check endpoint
+@app.get("/api/health")
+async def health_check():
+    """Simple health check endpoint for server wake-up detection"""
+    return {"status": "ok", "message": "MamanDouce API is running"}
+
 # Startup/Shutdown events
 @app.on_event("startup")
 async def startup_db_client():
