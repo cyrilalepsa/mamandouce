@@ -199,16 +199,24 @@ function HomePage() {
 
           {/* Salutation avec avatar */}
           <div className="flex flex-col items-center gap-3">
-            {userAvatar && (
-              <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-white shadow-lg">
+            <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-white shadow-lg">
+              {userAvatar ? (
                 <img 
                   src={userAvatar} 
                   alt="Avatar" 
                   className="w-full h-full object-cover"
                   data-testid="home-user-avatar"
                 />
-              </div>
-            )}
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center" data-testid="home-default-avatar">
+                  <svg viewBox="0 0 100 100" className="w-10 h-10 text-white/90" fill="currentColor">
+                    <ellipse cx="50" cy="22" rx="12" ry="14" />
+                    <path d="M35 38 Q30 50 32 65 Q34 80 40 90 L45 90 Q43 80 44 70 Q45 60 50 55 Q55 60 56 70 Q57 80 55 90 L60 90 Q66 80 68 65 Q70 50 65 38 Q58 35 50 35 Q42 35 35 38" />
+                    <ellipse cx="50" cy="58" rx="14" ry="12" />
+                  </svg>
+                </div>
+              )}
+            </div>
             <h2 className="text-2xl sm:text-3xl text-center" data-testid="user-welcome">
               <span className="text-slate-500 font-medium" style={{ fontFamily: "'Quicksand', sans-serif" }}>Bonjour, </span>
               <span className="text-slate-700 text-4xl sm:text-5xl font-semibold" style={{ fontFamily: "'Caveat', cursive" }}>

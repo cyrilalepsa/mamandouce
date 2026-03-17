@@ -171,7 +171,12 @@ export function ProfileEditCard({ user, onUpdate }) {
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center">
-                <User className="w-10 h-10 text-white" />
+                <svg viewBox="0 0 100 100" className="w-14 h-14 text-white/90" fill="currentColor">
+                  {/* Silhouette femme enceinte */}
+                  <ellipse cx="50" cy="22" rx="12" ry="14" /> {/* Tête */}
+                  <path d="M35 38 Q30 50 32 65 Q34 80 40 90 L45 90 Q43 80 44 70 Q45 60 50 55 Q55 60 56 70 Q57 80 55 90 L60 90 Q66 80 68 65 Q70 50 65 38 Q58 35 50 35 Q42 35 35 38" /> {/* Corps avec ventre */}
+                  <ellipse cx="50" cy="58" rx="14" ry="12" /> {/* Ventre arrondi */}
+                </svg>
               </div>
             )}
           </div>
