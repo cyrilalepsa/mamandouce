@@ -1108,3 +1108,251 @@ async def get_android_project_info(admin: User = Depends(get_admin_user)):
         "download_available": android_exists,
         "email_available": android_exists and RESEND_API_KEY is not None
     }
+
+
+
+# ==================== BUSINESS KIT ====================
+
+@router.post("/admin/business-kit/send-email")
+async def send_business_kit_email(admin: User = Depends(get_admin_user)):
+    """Send the complete business kit (plan + business card) to admin's email"""
+    import os
+    
+    if not resend or not RESEND_API_KEY:
+        raise HTTPException(status_code=503, detail="Service email non configuré")
+    
+    admin_email = admin.email
+    
+    # Read the business plan markdown
+    business_plan_path = "/app/frontend/public/docs/BUSINESS_PLAN_MAMANDOUCE.md"
+    business_card_path = "/app/frontend/public/docs/CARTE_VISITE_MAMANDOUCE.html"
+    
+    business_plan_content = ""
+    business_card_content = ""
+    
+    try:
+        if os.path.exists(business_plan_path):
+            with open(business_plan_path, 'r', encoding='utf-8') as f:
+                business_plan_content = f.read()
+        
+        if os.path.exists(business_card_path):
+            with open(business_card_path, 'r', encoding='utf-8') as f:
+                business_card_content = f.read()
+    except Exception as e:
+        logger.error(f"Error reading business kit files: {e}")
+        raise HTTPException(status_code=500, detail="Erreur lecture des fichiers")
+    
+    # Convert markdown to simple HTML for email
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {{
+                font-family: 'Segoe UI', Arial, sans-serif;
+                line-height: 1.6;
+                color: #1e293b;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+            }}
+            h1 {{
+                color: #ec4899;
+                border-bottom: 2px solid #ec4899;
+                padding-bottom: 10px;
+            }}
+            h2 {{
+                color: #7c3aed;
+                margin-top: 30px;
+            }}
+            h3 {{
+                color: #0ea5e9;
+            }}
+            table {{
+                border-collapse: collapse;
+                width: 100%;
+                margin: 15px 0;
+            }}
+            th, td {{
+                border: 1px solid #e2e8f0;
+                padding: 10px;
+                text-align: left;
+            }}
+            th {{
+                background: #f8fafc;
+            }}
+            code {{
+                background: #f1f5f9;
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-size: 14px;
+            }}
+            pre {{
+                background: #1e293b;
+                color: #e2e8f0;
+                padding: 15px;
+                border-radius: 8px;
+                overflow-x: auto;
+            }}
+            blockquote {{
+                border-left: 4px solid #ec4899;
+                margin: 20px 0;
+                padding: 15px 20px;
+                background: #fdf2f8;
+            }}
+            .highlight {{
+                background: #fef3c7;
+                padding: 15px;
+                border-radius: 8px;
+                margin: 15px 0;
+            }}
+            ul {{
+                padding-left: 20px;
+            }}
+            li {{
+                margin-bottom: 8px;
+            }}
+        </style>
+    </head>
+    <body>
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="border: none;">📱 Kit Business MamanDouce</h1>
+            <p style="color: #64748b;">Document confidentiel - Généré le {datetime.now().strftime('%d/%m/%Y à %H:%M')}</p>
+        </div>
+        
+        <div class="highlight">
+            <strong>📎 Ce kit contient :</strong>
+            <ul>
+                <li>Plan financier sur 3 ans</li>
+                <li>Stratégie d'internationalisation</li>
+                <li>Pitchs pour partenariats (maternités, sages-femmes, influenceuses)</li>
+                <li>Fiche App Store optimisée</li>
+                <li>Design de carte de visite</li>
+                <li>Calendrier de lancement</li>
+                <li>Contacts utiles (presse, associations, salons)</li>
+            </ul>
+        </div>
+        
+        <hr style="margin: 30px 0; border: none; border-top: 2px solid #e2e8f0;">
+        
+        <p>Le document complet est disponible en téléchargement depuis votre interface Admin :</p>
+        <p><strong>Admin → Android → Documents Business</strong></p>
+        
+        <p>Ou accédez directement aux fichiers :</p>
+        <ul>
+            <li><a href="https://femme-enceinte-app.preview.emergentagent.com/docs/BUSINESS_PLAN_MAMANDOUCE.md">Plan Business (Markdown)</a></li>
+            <li><a href="https://femme-enceinte-app.preview.emergentagent.com/docs/CARTE_VISITE_MAMANDOUCE.html">Carte de Visite (HTML)</a></li>
+        </ul>
+        
+        <hr style="margin: 30px 0; border: none; border-top: 2px solid #e2e8f0;">
+        
+        <h2>📊 Résumé du Plan Financier</h2>
+        
+        <table>
+            <tr>
+                <th>Année</th>
+                <th>Revenus estimés</th>
+                <th>Charges</th>
+                <th>Résultat</th>
+            </tr>
+            <tr>
+                <td>Année 1</td>
+                <td>3 600€ - 10 800€</td>
+                <td>~4 000€</td>
+                <td>-400€ à +6 800€</td>
+            </tr>
+            <tr>
+                <td>Année 2</td>
+                <td>18 000€ - 36 000€</td>
+                <td>~16 000€</td>
+                <td>+2 000€ à +20 000€</td>
+            </tr>
+            <tr>
+                <td>Année 3</td>
+                <td>54 000€ - 126 000€</td>
+                <td>~38 000€</td>
+                <td>+16 000€ à +88 000€</td>
+            </tr>
+        </table>
+        
+        <h2>🎯 Prochaines étapes recommandées</h2>
+        <ol>
+            <li>Publier l'application sur le Play Store</li>
+            <li>Créer les comptes réseaux sociaux (@mamandouce_app)</li>
+            <li>Contacter 5 sages-femmes locales avec le pitch</li>
+            <li>Faire imprimer les cartes de visite (500 ex.)</li>
+            <li>Préparer les captures d'écran pour l'App Store</li>
+        </ol>
+        
+        <div style="margin-top: 40px; padding: 20px; background: linear-gradient(135deg, #ec4899, #a855f7); color: white; border-radius: 12px; text-align: center;">
+            <h3 style="color: white; margin: 0;">🚀 Bonne chance pour le lancement !</h3>
+            <p style="margin: 10px 0 0;">L'équipe MamanDouce</p>
+        </div>
+    </body>
+    </html>
+    """
+    
+    try:
+        import base64
+        
+        attachments = []
+        
+        # Add business plan as attachment
+        if business_plan_content:
+            attachments.append({
+                "filename": "BUSINESS_PLAN_MAMANDOUCE.md",
+                "content": base64.b64encode(business_plan_content.encode('utf-8')).decode('utf-8')
+            })
+        
+        # Add business card HTML as attachment
+        if business_card_content:
+            attachments.append({
+                "filename": "CARTE_VISITE_MAMANDOUCE.html",
+                "content": base64.b64encode(business_card_content.encode('utf-8')).decode('utf-8')
+            })
+        
+        response = resend.Emails.send({
+            "from": SENDER_EMAIL,
+            "to": admin_email,
+            "subject": f"📊 MamanDouce - Kit Business Complet ({datetime.now().strftime('%d/%m/%Y')})",
+            "html": html_content,
+            "attachments": attachments
+        })
+        
+        logger.info(f"Business kit sent to {admin_email}")
+        
+        return {
+            "success": True,
+            "message": f"Kit business envoyé à {admin_email}",
+            "files_sent": ["BUSINESS_PLAN_MAMANDOUCE.md", "CARTE_VISITE_MAMANDOUCE.html"]
+        }
+        
+    except Exception as e:
+        logger.error(f"Error sending business kit email: {e}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de l'envoi: {str(e)}")
+
+
+@router.get("/admin/business-kit/info")
+async def get_business_kit_info(admin: User = Depends(get_admin_user)):
+    """Get information about available business kit documents"""
+    import os
+    
+    docs_path = "/app/frontend/public/docs"
+    
+    files = []
+    if os.path.exists(docs_path):
+        for filename in os.listdir(docs_path):
+            file_path = os.path.join(docs_path, filename)
+            if os.path.isfile(file_path):
+                files.append({
+                    "name": filename,
+                    "size": os.path.getsize(file_path),
+                    "url": f"/docs/{filename}"
+                })
+    
+    return {
+        "available": len(files) > 0,
+        "files": files,
+        "email_available": RESEND_API_KEY is not None
+    }

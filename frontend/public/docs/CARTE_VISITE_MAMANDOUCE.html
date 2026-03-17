@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte de Visite MamanDouce</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 40px;
+        }
+        
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .card-wrapper {
+            text-align: center;
+        }
+        
+        .card-label {
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .card {
+            width: 340px;
+            height: 220px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(236, 72, 153, 0.2);
+            overflow: hidden;
+        }
+        
+        /* RECTO */
+        .card-recto {
+            background: linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            position: relative;
+        }
+        
+        .card-recto::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ec4899, #a855f7);
+        }
+        
+        .logo-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .brand-name {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(90deg, #ec4899, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tagline {
+            color: #64748b;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .qr-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .qr-placeholder {
+            width: 60px;
+            height: 60px;
+            border: 2px dashed #ec4899;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #ec4899;
+            text-align: center;
+        }
+        
+        .qr-text {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        /* VERSO */
+        .card-verso {
+            background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+            color: white;
+            padding: 20px 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .features-list {
+            list-style: none;
+        }
+        
+        .features-list li {
+            font-size: 12px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .features-list li::before {
+            content: '✓';
+            font-weight: bold;
+        }
+        
+        .contact-section {
+            border-top: 1px solid rgba(255,255,255,0.3);
+            padding-top: 12px;
+            margin-top: 10px;
+        }
+        
+        .contact-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+        
+        .promo-badge {
+            background: white;
+            color: #ec4899;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        /* Instructions d'impression */
+        .print-instructions {
+            max-width: 800px;
+            margin: 60px auto 0;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .print-instructions h2 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .print-instructions ul {
+            color: #475569;
+            line-height: 1.8;
+        }
+        
+        .print-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .color-swatch {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            vertical-align: middle;
+            margin-right: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .tip-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .tip-box strong {
+            color: #92400e;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .print-instructions {
+                display: none;
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #e2e8f0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Carte de Visite MamanDouce</h1>
+    <p class="subtitle">Modèle prêt à imprimer - Format 85mm x 55mm</p>
+    
+    <div class="cards-container">
+        <!-- RECTO -->
+        <div class="card-wrapper">
+            <div class="card-label">RECTO</div>
+            <div class="card card-recto">
+                <div class="logo-icon">🤱</div>
+                <div class="brand-name">MamanDouce</div>
+                <div class="tagline">L'app qui accompagne votre grossesse</div>
+                <div class="qr-section">
+                    <div class="qr-placeholder">QR<br>CODE</div>
+                    <div class="qr-text">Scannez pour<br>télécharger l'app</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- VERSO -->
+        <div class="card-wrapper">
+            <div class="card-label">VERSO</div>
+            <div class="card card-verso">
+                <ul class="features-list">
+                    <li>Suivi semaine par semaine</li>
+                    <li>Scanner d'aliments autorisés</li>
+                    <li>Chatbot IA disponible 24/7</li>
+                    <li>Recettes post-partum</li>
+                    <li>100% adapté à la France 🇫🇷</li>
+                </ul>
+                
+                <div class="contact-section">
+                    <div class="contact-row">
+                        <span>📱 App Store & Google Play</span>
+                        <span>🌐 mamandouce.fr</span>
+                    </div>
+                    <div class="contact-row">
+                        <span>📧 contact@mamandouce.fr</span>
+                        <span>📷 @mamandouce_app</span>
+                    </div>
+                </div>
+                
+                <div class="promo-badge">
+                    CODE PROMO : BIENVENUE • -20%
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="print-instructions">
+        <h2>🖨️ Instructions d'impression</h2>
+        <ul>
+            <li><strong>Format :</strong> 85mm x 55mm (format carte de visite standard)</li>
+            <li><strong>Papier recommandé :</strong> 350g/m² couché mat ou soft touch premium</li>
+            <li><strong>Finition :</strong> Coins arrondis (rayon 3mm) pour un look moderne</li>
+            <li><strong>Impression :</strong> Recto-verso, quadrichromie (CMJN)</li>
+            <li>
+                <strong>Couleurs :</strong><br>
+                <span class="color-swatch" style="background: #ec4899;"></span> Rose principal : #EC4899<br>
+                <span class="color-swatch" style="background: #a855f7;"></span> Violet accent : #A855F7<br>
+                <span class="color-swatch" style="background: #1e293b;"></span> Texte foncé : #1E293B
+            </li>
+            <li><strong>Quantité suggérée :</strong> 500 exemplaires (~40-60€ chez Vistaprint, Moo, ou imprimeur local)</li>
+        </ul>
+        
+        <div class="tip-box">
+            <strong>💡 Astuce :</strong> Générez votre QR Code sur <a href="https://www.qr-code-generator.com/" target="_blank">qr-code-generator.com</a> 
+            en pointant vers votre lien App Store/Play Store. Vous pouvez aussi créer un lien court personnalisé 
+            (ex: mamandouce.fr/app) qui redirige vers le store approprié selon l'appareil.
+        </div>
+    </div>
+</body>
+</html>

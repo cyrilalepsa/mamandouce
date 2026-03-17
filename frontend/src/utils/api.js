@@ -216,6 +216,9 @@ export const api = {
     getAndroidInfo: () => axios.get(`${API}/admin/android/info`, getAuthHeaders()),
     downloadAndroidProject: () => `${API}/admin/android/download`,
     sendAndroidEmail: () => axios.post(`${API}/admin/android/send-email`, {}, getAuthHeaders()),
+    // Business Kit
+    getBusinessKitInfo: () => axios.get(`${API}/admin/business-kit/info`, getAuthHeaders()),
+    sendBusinessKitEmail: () => axios.post(`${API}/admin/business-kit/send-email`, {}, getAuthHeaders()),
   },
   
   chatbot: {

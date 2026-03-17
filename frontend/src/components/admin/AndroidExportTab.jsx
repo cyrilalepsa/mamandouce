@@ -11,7 +11,10 @@ import {
   Loader2,
   FileArchive,
   BookOpen,
-  AlertTriangle
+  AlertTriangle,
+  FileText,
+  Briefcase,
+  CreditCard
 } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'sonner';
@@ -22,9 +25,15 @@ export function AndroidExportTab() {
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [exportType, setExportType] = useState(null);
+  
+  // Business Kit state
+  const [businessKitInfo, setBusinessKitInfo] = useState(null);
+  const [showBusinessMenu, setShowBusinessMenu] = useState(false);
+  const [sendingBusinessKit, setSendingBusinessKit] = useState(false);
 
   useEffect(() => {
     loadProjectInfo();
+    loadBusinessKitInfo();
   }, []);
 
   const loadProjectInfo = async () => {
@@ -36,6 +45,15 @@ export function AndroidExportTab() {
       toast.error('Erreur lors du chargement des informations');
     } finally {
       setLoading(false);
+    }
+  };
+  
+  const loadBusinessKitInfo = async () => {
+    try {
+      const response = await api.admin.getBusinessKitInfo();
+      setBusinessKitInfo(response.data);
+    } catch (error) {
+      console.error('Erreur chargement business kit:', error);
     }
   };
 
@@ -95,6 +113,27 @@ export function AndroidExportTab() {
       setExporting(false);
       setExportType(null);
     }
+  };
+  
+  const handleSendBusinessKit = async () => {
+    setSendingBusinessKit(true);
+    setShowBusinessMenu(false);
+    
+    try {
+      const response = await api.admin.sendBusinessKitEmail();
+      toast.success(response.data.message);
+    } catch (error) {
+      console.error('Erreur envoi business kit:', error);
+      const message = error.response?.data?.detail || 'Erreur lors de l\'envoi';
+      toast.error(message);
+    } finally {
+      setSendingBusinessKit(false);
+    }
+  };
+  
+  const handleViewBusinessDoc = (filename) => {
+    window.open(`${process.env.REACT_APP_BACKEND_URL}/docs/${filename}`, '_blank');
+    setShowBusinessMenu(false);
   };
 
   if (loading) {
@@ -311,6 +350,85 @@ export function AndroidExportTab() {
             <strong>Important :</strong> Conservez précieusement votre fichier keystore (.jks) et son mot de passe.
             Sans eux, vous ne pourrez plus mettre à jour votre application sur le Play Store.
           </p>
+        </div>
+      </Card>
+
+      {/* Business Kit Card */}
+      <Card className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-3xl p-6 text-white">
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
+            <Briefcase className="w-7 h-7" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold">Kit Business</h2>
+            <p className="text-white/80 text-sm">Plan financier, pitchs & carte de visite</p>
+          </div>
+        </div>
+        
+        <div className="relative">
+          <Button
+            onClick={() => setShowBusinessMenu(!showBusinessMenu)}
+            disabled={sendingBusinessKit}
+            data-testid="business-kit-btn"
+            className="w-full bg-white text-amber-600 rounded-xl py-3 hover:bg-white/90 flex items-center justify-center gap-3 font-semibold"
+          >
+            {sendingBusinessKit ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Envoi en cours...
+              </>
+            ) : (
+              <>
+                <FileText className="w-5 h-5" />
+                Accéder au kit business
+                <ChevronDown className={`w-5 h-5 transition-transform ${showBusinessMenu ? 'rotate-180' : ''}`} />
+              </>
+            )}
+          </Button>
+          
+          {showBusinessMenu && !sendingBusinessKit && (
+            <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50 animate-fade-in">
+              <button
+                onClick={() => handleViewBusinessDoc('BUSINESS_PLAN_MAMANDOUCE.md')}
+                className="w-full px-4 py-4 text-left hover:bg-slate-50 flex items-center gap-4 transition-colors"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-slate-700">Plan Business</p>
+                  <p className="text-sm text-slate-500">Financier, pitchs, App Store...</p>
+                </div>
+              </button>
+              
+              <button
+                onClick={() => handleViewBusinessDoc('CARTE_VISITE_MAMANDOUCE.html')}
+                className="w-full px-4 py-4 text-left hover:bg-slate-50 flex items-center gap-4 transition-colors border-t border-slate-100"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center">
+                  <CreditCard className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-slate-700">Carte de visite</p>
+                  <p className="text-sm text-slate-500">Modèle prêt à imprimer</p>
+                </div>
+              </button>
+              
+              <button
+                onClick={handleSendBusinessKit}
+                disabled={!businessKitInfo?.email_available}
+                className="w-full px-4 py-4 text-left hover:bg-amber-50 flex items-center gap-4 transition-colors border-t border-slate-100 disabled:opacity-50"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center">
+                  <Mail className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-slate-700">Envoyer par email</p>
+                  <p className="text-sm text-slate-500">Recevoir le kit complet</p>
+                </div>
+              </button>
+            </div>
+          )}
         </div>
       </Card>
     </div>
