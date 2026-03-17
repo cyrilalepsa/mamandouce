@@ -14,10 +14,17 @@ from models.schemas import User
 router = APIRouter(tags=["preferences"])
 
 class NotificationPreferences(BaseModel):
+    # Email notifications
     email_notifications: bool = True
     weekly_tips: bool = True
     appointment_reminders: bool = True
     email_address: Optional[str] = None
+    # Push notifications
+    push_enabled: bool = False
+    push_weekly_tips: bool = True
+    push_appointment_reminders: bool = True
+    push_appointment_24h: bool = True
+    push_appointment_day: bool = True
 
 class CustomReminder(BaseModel):
     title: str
@@ -91,8 +98,20 @@ async def get_notification_preferences(current_user: User = Depends(get_current_
             "email_notifications": True,
             "weekly_tips": True,
             "appointment_reminders": True,
-            "email_address": user.get("email", "") if user else ""
+            "email_address": user.get("email", "") if user else "",
+            "push_enabled": False,
+            "push_weekly_tips": True,
+            "push_appointment_reminders": True,
+            "push_appointment_24h": True,
+            "push_appointment_day": True
         }
+    
+    # Ensure all push fields exist (for backward compatibility)
+    prefs.setdefault("push_enabled", False)
+    prefs.setdefault("push_weekly_tips", True)
+    prefs.setdefault("push_appointment_reminders", True)
+    prefs.setdefault("push_appointment_24h", True)
+    prefs.setdefault("push_appointment_day", True)
     
     return prefs
 

@@ -48,6 +48,11 @@ function App() {
       setIsAuthenticated(true);
     }
     setLoading(false);
+    
+    // Cacher le loader initial HTML quand React est prêt
+    if (window.hideInitialLoader) {
+      window.hideInitialLoader();
+    }
   }, []);
 
   const ProtectedRoute = ({ children, requireSubscription = true }) => {

@@ -3,14 +3,15 @@ import { Card } from '../components/ui/card';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
-import { Gift, Shield, Bell, CreditCard, Users, Key, ChevronDown } from 'lucide-react';
+import { Gift, Shield, Bell, BellRing, CreditCard, Users, Key, ChevronDown } from 'lucide-react';
 import {
   PromoCodeSection,
   AccountSection,
   ReferralSection,
   RefundSection,
   NotificationsSection,
-  TwoFactorSection
+  TwoFactorSection,
+  PushNotificationsSection
 } from '../components/settings';
 
 // Composant CollapsibleSection pour les paramètres
@@ -206,9 +207,9 @@ function SettingsPage() {
               <RefundSection subscriptionStatus={subscriptionStatus} />
             </CollapsibleSettingsSection>
 
-            {/* Section Notifications */}
+            {/* Section Notifications Email */}
             <CollapsibleSettingsSection
-              title="Notifications"
+              title="Notifications Email"
               icon={Bell}
               defaultOpen={false}
               iconBg="bg-gradient-to-br from-sky-100 to-cyan-100"
@@ -218,6 +219,21 @@ function SettingsPage() {
                 preferences={preferences}
                 setPreferences={setPreferences}
                 saving={saving}
+                onSave={handleSave}
+              />
+            </CollapsibleSettingsSection>
+
+            {/* Section Notifications Push */}
+            <CollapsibleSettingsSection
+              title="Notifications Push"
+              icon={BellRing}
+              defaultOpen={false}
+              iconBg="bg-gradient-to-br from-violet-100 to-pink-100"
+              iconColor="text-violet-600"
+            >
+              <PushNotificationsSection 
+                preferences={preferences}
+                setPreferences={setPreferences}
                 onSave={handleSave}
               />
             </CollapsibleSettingsSection>

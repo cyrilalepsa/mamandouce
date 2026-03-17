@@ -85,86 +85,17 @@
         </style>
         
         <script>
-            // Script pour réveiller le serveur et cacher le loader
-            (function() {
-                var API_URL = '%REACT_APP_BACKEND_URL%' || '';
-                var maxAttempts = 15;
-                var attempt = 0;
-                var loaderMessage = document.getElementById('loader-message');
-                
-                function hideLoader() {
-                    var loader = document.getElementById('initial-loader');
-                    if (loader) {
-                        loader.style.transition = 'opacity 0.3s';
-                        loader.style.opacity = '0';
-                        setTimeout(function() {
-                            loader.style.display = 'none';
-                        }, 300);
-                    }
+            // Cacher le loader initial quand React est prêt
+            window.hideInitialLoader = function() {
+                var loader = document.getElementById('initial-loader');
+                if (loader) {
+                    loader.style.transition = 'opacity 0.3s';
+                    loader.style.opacity = '0';
+                    setTimeout(function() { loader.style.display = 'none'; }, 300);
                 }
-                
-                function hideEmergentBanners() {
-                    // Cacher tous les éléments qui ressemblent à des bannières Emergent
-                    var allElements = document.querySelectorAll('*');
-                    allElements.forEach(function(el) {
-                        var text = (el.textContent || '').toLowerCase();
-                        var hasSpinning = text.includes('spinning') && text.includes('server');
-                        var hasWakeUp = text.includes('wake') && text.includes('server');
-                        if ((hasSpinning || hasWakeUp) && el.id !== 'initial-loader') {
-                            el.style.display = 'none';
-                            el.style.visibility = 'hidden';
-                        }
-                    });
-                }
-                
-                function checkServer() {
-                    attempt++;
-                    if (loaderMessage) {
-                        if (attempt > 1) {
-                            loaderMessage.textContent = 'Réveil du serveur... (' + attempt + '/' + maxAttempts + ')';
-                        }
-                    }
-                    
-                    // Toujours essayer de cacher les bannières Emergent
-                    hideEmergentBanners();
-                    
-                    fetch((API_URL || window.location.origin) + '/api/health', {
-                        method: 'GET',
-                        cache: 'no-store'
-                    })
-                    .then(function(response) {
-                        if (response.ok) {
-                            hideLoader();
-                            hideEmergentBanners();
-                        } else {
-                            throw new Error('Not ready');
-                        }
-                    })
-                    .catch(function(error) {
-                        if (attempt < maxAttempts) {
-                            setTimeout(checkServer, 2000);
-                        } else {
-                            if (loaderMessage) {
-                                loaderMessage.textContent = 'Le serveur prend du temps à démarrer...';
-                            }
-                            // Continuer à essayer en arrière-plan
-                            setTimeout(checkServer, 3000);
-                        }
-                    });
-                }
-                
-                // Observer pour cacher les nouvelles bannières
-                var observer = new MutationObserver(function(mutations) {
-                    hideEmergentBanners();
-                });
-                observer.observe(document.body, { childList: true, subtree: true });
-                
-                // Démarrer après un court délai
-                setTimeout(checkServer, 500);
-                
-                // Continuer à cacher les bannières périodiquement
-                setInterval(hideEmergentBanners, 500);
-            })();
+            };
+            // Timeout de secours - cacher après 5 secondes max
+            setTimeout(window.hideInitialLoader, 5000);
         </script>
         
         <div id="root"></div>

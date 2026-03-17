@@ -151,8 +151,67 @@ async def send_due_reminders_job():
         await db.reminder_history.insert_one(history_entry)
 
 
+async def send_weekly_tips_push_job():
+    """Job to send weekly tips push notifications - runs every day at 9:00 AM"""
+    from core.database import db
+    from routes.push_notifications import send_push_notification
+    from datetime import datetime, timezone, timedelta
+    
+    now = datetime.now(timezone.utc)
+    
+    # Find users with push enabled and weekly tips enabled
+    users_with_push = await db.notification_preferences.find({
+        "push_enabled": True,
+        "push_weekly_tips": True
+    }).to_list(1000)
+    
+    if not users_with_push:
+        return
+    
+    print(f"[Scheduler] Sending weekly tips push to {len(users_with_push)} users")
+    
+    for user_pref in users_with_push:
+        user_id = user_pref.get("user_id")
+        user_email = user_pref.get("email_address")
+        
+        if not user_email:
+            # Get email from user record
+            user = await db.users.find_one({"id": user_id}, {"_id": 0, "email": 1})
+            if user:
+                user_email = user.get("email")
+        
+        if not user_email:
+            continue
+        
+        # Get user's pregnancy week
+        profile = await db.pregnancy_profiles.find_one({"user_id": user_id})
+        if not profile:
+            continue
+        
+        # Calculate current week
+        dpa = profile.get("due_date")
+        if dpa:
+            try:
+                due_date = datetime.fromisoformat(dpa.replace('Z', '+00:00'))
+                conception_date = due_date - timedelta(weeks=40)
+                days_pregnant = (now - conception_date).days
+                current_week = max(1, min(42, days_pregnant // 7))
+                
+                await send_push_notification(
+                    user_email=user_email,
+                    title=f"Semaine {current_week} de grossesse",
+                    body="De nouveaux conseils vous attendent ! Découvrez ce qui se passe cette semaine.",
+                    url="/tips"
+                )
+                print(f"[Scheduler] Weekly tip push sent to {user_email}")
+            except Exception as e:
+                print(f"[Scheduler] Error sending weekly tip push: {e}")
+
+
 def start_scheduler():
     """Start the background scheduler"""
+    from apscheduler.triggers.cron import CronTrigger
+    
     # Add job to check reminders every minute
     scheduler.add_job(
         send_due_reminders_job,
@@ -162,9 +221,18 @@ def start_scheduler():
         replace_existing=True
     )
     
+    # Add job for weekly tips push - every day at 9:00 AM UTC
+    scheduler.add_job(
+        send_weekly_tips_push_job,
+        CronTrigger(hour=9, minute=0),
+        id='send_weekly_tips_push',
+        name='Send weekly tips push notifications',
+        replace_existing=True
+    )
+    
     # Start the scheduler
     scheduler.start()
-    print("[Scheduler] Background scheduler started - checking reminders every minute")
+    print("[Scheduler] Background scheduler started - checking reminders every minute, weekly tips daily at 9:00 AM")
 
 
 def stop_scheduler():
