@@ -4,6 +4,7 @@ import api from '../utils/api';
 import { toast } from 'sonner';
 import AppTitle from '../components/AppTitle';
 import FertilityCalendar from '../components/FertilityCalendar';
+import { AvatarPreview } from '../components/profile/AvatarBuilder';
 import {
   AgendaCard,
   PregnancyStatusCard,
@@ -21,6 +22,7 @@ function HomePage() {
   const [userName, setUserName] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [userAvatar, setUserAvatar] = useState('');
+  const [userAvatarConfig, setUserAvatarConfig] = useState(null);
   const [userEmail, setUserEmail] = useState('');
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [userRole, setUserRole] = useState('user');
@@ -44,6 +46,7 @@ function HomePage() {
       setUserName(userRes.data.name);
       setDisplayName(userRes.data.display_name || '');
       setUserAvatar(userRes.data.avatar || '');
+      setUserAvatarConfig(userRes.data.avatar_config || null);
       setUserEmail(userRes.data.email);
       setUserRole(userRes.data.role || 'user');
       
@@ -207,6 +210,8 @@ function HomePage() {
                   className="w-full h-full object-cover"
                   data-testid="home-user-avatar"
                 />
+              ) : userAvatarConfig ? (
+                <AvatarPreview config={userAvatarConfig} size={64} />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center" data-testid="home-default-avatar">
                   <svg viewBox="0 0 24 24" className="w-10 h-10 text-white/90" fill="currentColor">

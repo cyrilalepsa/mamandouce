@@ -39,6 +39,28 @@ export function PreconceptionSection() {
         </Card>
       </div>
       
+      {/* Nouvelle carte : Grossesse après 35 ans */}
+      <Card
+        onClick={() => navigate('/pregnancy-after-35')}
+        data-testid="pregnancy-after-35-nav"
+        className="mt-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-purple-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 bg-gradient-to-br from-purple-400 to-pink-400 rounded-2xl flex items-center justify-center flex-shrink-0">
+            <Heart className="w-7 h-7 text-white" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              Grossesse après 35 ans
+            </h3>
+            <p className="text-xs text-slate-500 mt-1">
+              Conseils, examens et accompagnement spécialisé
+            </p>
+          </div>
+          <ChevronRight className="w-5 h-5 text-slate-400" />
+        </div>
+      </Card>
+      
       {/* Avertissement médical */}
       <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
         <p className="text-xs text-amber-700">

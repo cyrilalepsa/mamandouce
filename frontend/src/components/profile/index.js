@@ -10,3 +10,4 @@ export { MyMessagesCard } from './MyMessagesCard';
 export { CollapsibleSection } from './CollapsibleSection';
 export { MessagingSection } from './MessagingSection';
 export { ProfileEditCard } from './ProfileEditCard';
+export { AvatarBuilder, AvatarPreview } from './AvatarBuilder';

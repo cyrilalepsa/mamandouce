@@ -427,6 +427,17 @@ async def update_profile(profile_data: ProfileUpdate, current_user: User = Depen
             raise HTTPException(status_code=400, detail="Format d'image invalide")
         update_fields["avatar"] = profile_data.avatar if profile_data.avatar else None
     
+    # Gérer la configuration de l'avatar personnalisé
+    if profile_data.avatar_config is not None:
+        if profile_data.avatar_config:
+            # Valider les champs de la config
+            valid_keys = {'faceShape', 'skinTone', 'hairStyle', 'hairColor', 'glasses', 'age'}
+            if not all(k in valid_keys for k in profile_data.avatar_config.keys()):
+                raise HTTPException(status_code=400, detail="Configuration d'avatar invalide")
+            update_fields["avatar_config"] = profile_data.avatar_config
+        else:
+            update_fields["avatar_config"] = None
+    
     if not update_fields:
         return {"success": True, "message": "Aucune modification"}
     
