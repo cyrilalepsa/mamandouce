@@ -230,6 +230,9 @@ async def set_user_postpartum(user_id: str, enabled: bool = True, admin: User = 
 
 # ==================== ADMIN ROLE MANAGEMENT ====================
 
+# Admin principal permanent - ne peut jamais perdre ses droits
+SUPER_ADMIN_EMAIL = "cyrilalepsa@gmail.com"
+
 @router.post("/admin/user/{user_id}/set-role")
 async def set_user_role(user_id: str, role: str = "user", admin: User = Depends(get_admin_user)):
     """Promouvoir ou révoquer un administrateur (admin only)"""
@@ -243,7 +246,14 @@ async def set_user_role(user_id: str, role: str = "user", admin: User = Depends(
     if not user:
         raise HTTPException(status_code=404, detail="Utilisatrice non trouvée")
     
-    # Empêcher de se retirer ses propres droits admin
+    # Protection du super admin - personne ne peut lui retirer ses droits
+    if user.get("email") == SUPER_ADMIN_EMAIL and role == "user":
+        raise HTTPException(
+            status_code=403, 
+            detail="Ce compte est l'administrateur principal permanent. Ses droits ne peuvent pas être modifiés."
+        )
+    
+    # Empêcher de se retirer ses propres droits admin (pour les autres admins)
     if user.get("email") == admin.email and role == "user":
         raise HTTPException(status_code=400, detail="Vous ne pouvez pas vous retirer vos propres droits admin")
     

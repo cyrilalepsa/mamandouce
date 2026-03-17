@@ -30,6 +30,9 @@ export function AndroidExportTab() {
   const [businessKitInfo, setBusinessKitInfo] = useState(null);
   const [showBusinessMenu, setShowBusinessMenu] = useState(false);
   const [sendingBusinessKit, setSendingBusinessKit] = useState(false);
+  
+  // Instructions dropdown state
+  const [showInstructions, setShowInstructions] = useState(false);
 
   useEffect(() => {
     loadProjectInfo();
@@ -278,79 +281,87 @@ export function AndroidExportTab() {
         )}
       </Card>
 
-      {/* Instructions Card */}
+      {/* Instructions Card - Collapsible */}
       <Card className="bg-white rounded-3xl p-6">
-        <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
-          <BookOpen className="w-5 h-5 text-sky-500" />
-          Instructions de build
-        </h3>
+        <button
+          onClick={() => setShowInstructions(!showInstructions)}
+          className="w-full flex items-center justify-between"
+        >
+          <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-sky-500" />
+            Instructions de build
+          </h3>
+          <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${showInstructions ? 'rotate-180' : ''}`} />
+        </button>
         
-        <div className="space-y-4">
-          <div className="flex gap-4">
-            <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-pink-600 font-bold">1</span>
+        {showInstructions && (
+          <div className="mt-4 space-y-4 animate-fade-in">
+            <div className="flex gap-4">
+              <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-pink-600 font-bold">1</span>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-700">Installer Node.js</p>
+                <p className="text-sm text-slate-500">Téléchargez la version LTS sur nodejs.org</p>
+              </div>
             </div>
-            <div>
-              <p className="font-semibold text-slate-700">Installer Node.js</p>
-              <p className="text-sm text-slate-500">Téléchargez la version LTS sur nodejs.org</p>
+            
+            <div className="flex gap-4">
+              <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-pink-600 font-bold">2</span>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-700">Installer les dépendances</p>
+                <p className="text-sm text-slate-500 font-mono bg-slate-100 px-2 py-1 rounded mt-1">
+                  npm install --legacy-peer-deps
+                </p>
+              </div>
             </div>
-          </div>
-          
-          <div className="flex gap-4">
-            <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-pink-600 font-bold">2</span>
+            
+            <div className="flex gap-4">
+              <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-pink-600 font-bold">3</span>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-700">Compiler l'application</p>
+                <p className="text-sm text-slate-500 font-mono bg-slate-100 px-2 py-1 rounded mt-1">
+                  npm run build
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="font-semibold text-slate-700">Installer les dépendances</p>
-              <p className="text-sm text-slate-500 font-mono bg-slate-100 px-2 py-1 rounded mt-1">
-                npm install --legacy-peer-deps
+            
+            <div className="flex gap-4">
+              <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-pink-600 font-bold">4</span>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-700">Synchroniser avec Android</p>
+                <p className="text-sm text-slate-500 font-mono bg-slate-100 px-2 py-1 rounded mt-1">
+                  npx cap sync android
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-4">
+              <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-pink-600 font-bold">5</span>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-700">Générer le fichier AAB</p>
+                <p className="text-sm text-slate-500">
+                  Dans Android Studio : Build → Generate Signed Bundle / APK...
+                </p>
+              </div>
+            </div>
+            
+            <div className="mt-6 p-4 bg-amber-50 rounded-xl">
+              <p className="text-sm text-amber-700">
+                <strong>Important :</strong> Conservez précieusement votre fichier keystore (.jks) et son mot de passe.
+                Sans eux, vous ne pourrez plus mettre à jour votre application sur le Play Store.
               </p>
             </div>
           </div>
-          
-          <div className="flex gap-4">
-            <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-pink-600 font-bold">3</span>
-            </div>
-            <div>
-              <p className="font-semibold text-slate-700">Compiler l'application</p>
-              <p className="text-sm text-slate-500 font-mono bg-slate-100 px-2 py-1 rounded mt-1">
-                npm run build
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex gap-4">
-            <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-pink-600 font-bold">4</span>
-            </div>
-            <div>
-              <p className="font-semibold text-slate-700">Synchroniser avec Android</p>
-              <p className="text-sm text-slate-500 font-mono bg-slate-100 px-2 py-1 rounded mt-1">
-                npx cap sync android
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex gap-4">
-            <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-pink-600 font-bold">5</span>
-            </div>
-            <div>
-              <p className="font-semibold text-slate-700">Générer le fichier AAB</p>
-              <p className="text-sm text-slate-500">
-                Dans Android Studio : Build → Generate Signed Bundle / APK...
-              </p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="mt-6 p-4 bg-amber-50 rounded-xl">
-          <p className="text-sm text-amber-700">
-            <strong>Important :</strong> Conservez précieusement votre fichier keystore (.jks) et son mot de passe.
-            Sans eux, vous ne pourrez plus mettre à jour votre application sur le Play Store.
-          </p>
-        </div>
+        )}
       </Card>
 
       {/* Business Kit Card */}

@@ -1,8 +1,11 @@
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
-import { Users, Sparkles, Star, Crown, Baby, Shield, ShieldOff } from 'lucide-react';
+import { Users, Sparkles, Star, Crown, Baby, Shield, ShieldOff, Lock } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'sonner';
+
+// Admin principal permanent
+const SUPER_ADMIN_EMAIL = "cyrilalepsa@gmail.com";
 
 const getStatusBadge = (status) => {
   switch (status) {
@@ -58,13 +61,16 @@ export function UsersTab({ users, userStats, loadUsers }) {
               const isPremium = user.display_status === 'premium' || user.display_status === 'beta_tester';
               const hasPostpartum = user.postpartum_purchased || user.postpartum_free_via_referral;
               const isAdmin = user.role === 'admin';
+              const isSuperAdmin = user.email === SUPER_ADMIN_EMAIL;
               
               return (
-                <div key={index} className={`p-4 border rounded-xl ${isAdmin ? 'bg-indigo-50 border-indigo-200' : 'bg-slate-50 border-slate-200'}`}>
+                <div key={index} className={`p-4 border rounded-xl ${isSuperAdmin ? 'bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-300' : isAdmin ? 'bg-indigo-50 border-indigo-200' : 'bg-slate-50 border-slate-200'}`}>
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        isAdmin
+                        isSuperAdmin
+                          ? 'bg-gradient-to-br from-amber-500 to-red-500'
+                          : isAdmin
                           ? 'bg-gradient-to-br from-indigo-500 to-purple-600'
                           : user.display_status === 'beta_tester' 
                           ? 'bg-gradient-to-br from-purple-400 to-purple-500' 
@@ -72,7 +78,9 @@ export function UsersTab({ users, userStats, loadUsers }) {
                           ? 'bg-gradient-to-br from-amber-400 to-amber-500'
                           : 'bg-slate-300'
                       }`}>
-                        {isAdmin ? (
+                        {isSuperAdmin ? (
+                          <Lock className="w-5 h-5 text-white" />
+                        ) : isAdmin ? (
                           <Shield className="w-5 h-5 text-white" />
                         ) : (
                           <span className="text-white font-bold text-sm">
@@ -83,7 +91,12 @@ export function UsersTab({ users, userStats, loadUsers }) {
                       <div>
                         <div className="flex items-center gap-2">
                           <p className="font-semibold text-slate-700">{user.name || 'Sans nom'}</p>
-                          {isAdmin && (
+                          {isSuperAdmin ? (
+                            <span className="px-2 py-0.5 bg-gradient-to-r from-amber-500 to-red-500 text-white text-xs rounded-full font-semibold flex items-center gap-1">
+                              <Lock className="w-3 h-3" />
+                              Super Admin
+                            </span>
+                          ) : isAdmin && (
                             <span className="px-2 py-0.5 bg-indigo-500 text-white text-xs rounded-full font-semibold">
                               Admin
                             </span>
@@ -208,8 +221,13 @@ export function UsersTab({ users, userStats, loadUsers }) {
                       </Button>
                     )}
                     
-                    {/* Admin toggle */}
-                    {isAdmin ? (
+                    {/* Admin toggle - pas de modification possible pour le super admin */}
+                    {isSuperAdmin ? (
+                      <div className="px-3 py-1.5 bg-gradient-to-r from-amber-100 to-red-100 text-amber-700 rounded-lg text-xs font-semibold flex items-center gap-1">
+                        <Lock className="w-3 h-3" />
+                        Admin permanent
+                      </div>
+                    ) : isAdmin ? (
                       <Button
                         onClick={async () => {
                           if (window.confirm(`Retirer les droits admin à ${user.email} ?`)) {
