@@ -103,7 +103,7 @@ function PricingPage() {
             <div className="text-center mb-4 mt-2">
               <h3 className="text-xl font-bold text-white" style={{ fontFamily: 'Nunito, sans-serif' }}>Premium</h3>
               <div className="text-4xl font-bold text-white">27€</div>
-              <p className="text-sm text-sky-100">/9 mois (3€/mois)</p>
+              <p className="text-sm text-sky-100">/9 mois - soit 3€/mois</p>
             </div>
             <ul className="space-y-2.5 mb-4">
               {featuresPremium.map((feature, index) => (
