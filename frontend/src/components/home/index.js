@@ -8,3 +8,4 @@ export {
   ServicesSection 
 } from './NavigationSections';
 export { TopBar } from './TopBar';
+export { AccountMenuSection } from './AccountMenuSection';
