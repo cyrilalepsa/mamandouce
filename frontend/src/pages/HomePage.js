@@ -209,10 +209,10 @@ function HomePage() {
                 />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center" data-testid="home-default-avatar">
-                  <svg viewBox="0 0 100 100" className="w-10 h-10 text-white/90" fill="currentColor">
-                    <ellipse cx="50" cy="22" rx="12" ry="14" />
-                    <path d="M35 38 Q30 50 32 65 Q34 80 40 90 L45 90 Q43 80 44 70 Q45 60 50 55 Q55 60 56 70 Q57 80 55 90 L60 90 Q66 80 68 65 Q70 50 65 38 Q58 35 50 35 Q42 35 35 38" />
-                    <ellipse cx="50" cy="58" rx="14" ry="12" />
+                  <svg viewBox="0 0 24 24" className="w-10 h-10 text-white/90" fill="currentColor">
+                    <circle cx="12" cy="6" r="4" />
+                    <path d="M12 12c-4 0-6 2-6 4v1c0 .5.2 1 .6 1.3.5.4 1.2.7 2.4.7h6c1.2 0 1.9-.3 2.4-.7.4-.3.6-.8.6-1.3v-1c0-2-2-4-6-4z" />
+                    <path d="M9 19c-.3 1.5-.5 2.5-.5 3h7c0-.5-.2-1.5-.5-3H9z" />
                   </svg>
                 </div>
               )}
