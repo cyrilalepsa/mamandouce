@@ -73,14 +73,23 @@
                 0%, 100% { opacity: 0.4; transform: scale(1); }
                 50% { opacity: 1; transform: scale(1.2); }
             }
-            /* Cacher TOUTES les bannières Emergent */
+            /* Cacher TOUTES les bannières Emergent - version ultra-agressive */
             [class*="wake"], [class*="spinning"], [class*="preview-banner"],
-            [id*="wake"], [id*="spinning"],
+            [class*="Wake"], [class*="Spinning"], [class*="Preview"],
+            [class*="emergent"], [class*="Emergent"],
+            [id*="wake"], [id*="spinning"], [id*="emergent"],
             div[style*="Spinning"], div[style*="spinning"],
-            .emergent-toast, .emergent-notification {
+            div[style*="position: fixed"][style*="bottom"],
+            .emergent-toast, .emergent-notification,
+            /* Cacher les toasts/pills en position fixed en bas */
+            div[style*="fixed"][style*="z-index"]:not(#initial-loader):not(#root):not(.App) {
                 display: none !important;
                 visibility: hidden !important;
                 opacity: 0 !important;
+                pointer-events: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
             }
         </style>
         
@@ -96,6 +105,49 @@
             };
             // Timeout de secours - cacher après 5 secondes max
             setTimeout(window.hideInitialLoader, 5000);
+            
+            // Script agressif pour cacher la bannière Emergent "Spinning up Servers"
+            (function hideEmergentBanner() {
+                function hide() {
+                    // Chercher tous les éléments contenant "Spinning" ou "spinning"
+                    document.querySelectorAll('*').forEach(function(el) {
+                        if (el.id === 'initial-loader' || el.id === 'root') return;
+                        var text = el.innerText || el.textContent || '';
+                        if (text.toLowerCase().includes('spinning') || 
+                            text.toLowerCase().includes('wake up') ||
+                            text.toLowerCase().includes('made with emergent')) {
+                            if (el.tagName !== 'HTML' && el.tagName !== 'BODY') {
+                                el.style.cssText = 'display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;width:0!important;overflow:hidden!important;';
+                            }
+                        }
+                    });
+                    // Cacher spécifiquement les éléments fixes en bas de page (sauf le chatbot)
+                    document.querySelectorAll('div[style*="fixed"]').forEach(function(el) {
+                        var style = el.getAttribute('style') || '';
+                        var text = el.innerText || '';
+                        if ((style.includes('bottom') || text.toLowerCase().includes('spinning')) && 
+                            el.id !== 'initial-loader' && 
+                            !el.classList.contains('chat-bubble') &&
+                            !el.closest('#root')) {
+                            el.style.cssText = 'display:none!important;';
+                        }
+                    });
+                }
+                // Exécuter immédiatement et périodiquement
+                hide();
+                setInterval(hide, 500);
+                // Observer les mutations DOM
+                if (typeof MutationObserver !== 'undefined') {
+                    var observer = new MutationObserver(hide);
+                    if (document.body) {
+                        observer.observe(document.body, { childList: true, subtree: true });
+                    } else {
+                        document.addEventListener('DOMContentLoaded', function() {
+                            observer.observe(document.body, { childList: true, subtree: true });
+                        });
+                    }
+                }
+            })();
         </script>
         
         <div id="root"></div>

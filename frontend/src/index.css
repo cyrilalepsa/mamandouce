@@ -112,11 +112,20 @@ div[style*="position:fixed"][style*="bottom:0"],
 [class*="wake-servers"],
 [class*="wakeup"],
 [id*="wake-servers"],
-[id*="emergent-banner"] {
+[id*="emergent-banner"],
+/* Cacher agressivement toutes les bannières Emergent sur mobile et desktop */
+div[class*="spinning" i],
+div[class*="emergent" i],
+div[class*="preview" i]:not(.preview-content),
+*[style*="Spinning"],
+*[style*="spinning"] {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
   height: 0 !important;
+  width: 0 !important;
   overflow: hidden !important;
+  position: absolute !important;
+  left: -9999px !important;
 }
