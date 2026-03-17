@@ -15,10 +15,12 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - Scanner d'aliments (vérification compatibilité grossesse)
 - Bibliothèque alimentaire complète
 - Recettes adaptées avec système de partage
+- **Compteur de vues pour recettes partagées** (NEW 17/03)
 
 ### 3. Organisation
 - Liste de naissance partageable
 - Sac de maternité avec checklist
+- **Favoris pour articles du sac de maternité** (NEW 17/03)
 - Agenda des rendez-vous médicaux
 - Système de rappels par email ET push
 
@@ -43,7 +45,7 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - Personnalisation complète dans les paramètres
 
 ### 8. Personnalisation du Profil
-- **Avatar personnalisable** (NEW)
+- **Avatar personnalisable**
   - 6 couleurs de peau
   - 10 styles de coiffure (inclut hijab)
   - 8 couleurs de cheveux
@@ -58,8 +60,8 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - Support caméra et galerie sur mobile
 - Visualisation plein écran
 
-### 10. Grossesse après 35 ans (NEW)
-Nouvelle section dédiée avec :
+### 10. Grossesse après 35 ans
+Section dédiée avec :
 - Fertilité après 35 ans
 - Examens recommandés (DPNI, amniocentèse)
 - Risques et précautions
@@ -72,9 +74,14 @@ Nouvelle section dédiée avec :
 - **Backend:** FastAPI, MongoDB
 - **Integrations:** Stripe, Resend, OpenAI (via Emergent LLM Key), APScheduler, Web Push API
 
-## Recent Changes (March 2026)
+## Recent Changes
 
 ### Session du 17/03/2026
+- ✅ **Compteur de vues** pour recettes partagées (affiché avec icône œil)
+- ✅ **Favoris sac de maternité** (icône cœur sur chaque article)
+- ✅ Tests automatisés validés (100% de réussite)
+
+### Session précédente (17/03/2026)
 - ✅ Avatar personnalisable avec système de création
 - ✅ 10 styles de coiffures multi-ethniques
 - ✅ Support du hijab
@@ -89,13 +96,16 @@ Nouvelle section dédiée avec :
 - [ ] Guide publication Google Play Store
 
 ### P2 - Moyenne priorité
-- [ ] Compteur de vues pour recettes partagées
-- [ ] Favoris pour articles du sac de maternité
+- [x] ~~Compteur de vues pour recettes partagées~~ ✅
+- [x] ~~Favoris pour articles du sac de maternité~~ ✅
 - [ ] Fonction "Tout ouvrir/Tout fermer" pour sections
 
 ### P3 - Future
 - [ ] Mode hors-ligne amélioré
 - [ ] Statistiques d'utilisation
+
+## Known Issues
+- Bannière "Spinning up servers" visible sur environnement preview (disparaîtra en production)
 
 ## Credentials (Test)
 - **Admin:** cyrilalepsa@gmail.com / Cyc@dmin9630
@@ -106,7 +116,8 @@ Nouvelle section dédiée avec :
 ├── backend/
 │   ├── routes/
 │   │   ├── auth.py         # avatar_config support
-│   │   └── contact.py      # images in messages
+│   │   ├── contact.py      # images in messages
+│   │   └── postpartum.py   # maternity-bag/favorites + recipe views
 │   └── models/schemas.py   # User with avatar_config
 └── frontend/
     └── src/
@@ -115,17 +126,12 @@ Nouvelle section dédiée avec :
         │   └── ProfileEditCard.jsx   # Integration
         └── pages/
             ├── HomePage.js           # AvatarPreview display
+            ├── MaternityBagPage.js   # Heart favorites icons
+            ├── SharedRecipesPage.js  # View counter with Eye icon
             └── PregnancyAfter35Page.js  # New content page
 ```
 
-## Avatar Configuration
-```javascript
-avatar_config: {
-  faceShape: 'oval',        // round, oval, heart, square
-  skinTone: 'medium',       // light, light-medium, medium, medium-dark, dark, deep
-  hairStyle: 'curly',       // long-straight, long-wavy, medium-straight, medium-curly, short, curly, afro, braids, bun, hijab
-  hairColor: 'dark-brown',  // black, dark-brown, brown, light-brown, blonde, red, gray, white
-  glasses: 'none',          // none, round, square, cat
-  age: 'young'              // young, mature
-}
-```
+## API Endpoints (New)
+- `GET /api/maternity-bag/favorites` - Liste des articles favoris
+- `POST /api/maternity-bag/favorites/toggle` - Ajouter/retirer un favori
+- `GET /api/postpartum/shared/{shareCode}` - Retourne maintenant le compteur de vues
