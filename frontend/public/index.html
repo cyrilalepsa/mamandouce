@@ -40,23 +40,41 @@
         <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
         <!-- App Version for cache busting -->
         <script>
-            window.APP_VERSION = '2.3.0';
-            // Force SW update on load
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistration().then(function(reg) {
-                    if (reg) {
-                        reg.update();
-                        // Check for waiting worker and activate it
-                        if (reg.waiting) {
-                            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+            window.APP_VERSION = '2.3.1';
+            
+            // FORCE COMPLETE CACHE CLEAR - Remove after users are updated
+            (async function() {
+                try {
+                    // 1. Unregister ALL service workers
+                    if ('serviceWorker' in navigator) {
+                        const registrations = await navigator.serviceWorker.getRegistrations();
+                        for (const registration of registrations) {
+                            await registration.unregister();
+                            console.log('[Update] SW unregistered');
                         }
                     }
-                });
-                // Listen for new service worker
-                navigator.serviceWorker.addEventListener('controllerchange', function() {
-                    window.location.reload();
-                });
-            }
+                    
+                    // 2. Clear ALL caches
+                    if ('caches' in window) {
+                        const cacheNames = await caches.keys();
+                        for (const name of cacheNames) {
+                            await caches.delete(name);
+                            console.log('[Update] Cache deleted:', name);
+                        }
+                    }
+                    
+                    // 3. Check if we already did the force refresh
+                    const lastVersion = localStorage.getItem('app_version');
+                    if (lastVersion !== window.APP_VERSION) {
+                        localStorage.setItem('app_version', window.APP_VERSION);
+                        console.log('[Update] Version updated, reloading...');
+                        // Force reload from server
+                        window.location.reload(true);
+                    }
+                } catch (e) {
+                    console.log('[Update] Error:', e);
+                }
+            })();
         </script>
     </head>
     <body>
