@@ -37,10 +37,15 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - Kit Business (business plan + carte de visite)
 - Protection Super Admin
 
-### 7. Notifications Push Natives (NEW)
+### 7. Notifications Push Natives
 - Rappels de RDV médicaux (24h avant + jour même)
 - Conseils hebdomadaires de grossesse
 - Personnalisation complète dans les paramètres
+
+### 8. Personnalisation du Profil (NEW)
+- Upload d'avatar (compression auto 200x200, max 500KB)
+- Nom d'affichage personnalisé (display_name)
+- Affichage sur page d'accueil "Bonjour, [nom]" avec avatar
 
 ## Tech Stack
 - **Frontend:** React, PWA, Shadcn/UI, Capacitor (Android)
@@ -49,12 +54,15 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 
 ## Recent Changes (December 2025)
 
+### Session du 17/03/2026 (suite)
+- ✅ Avatar utilisateur dans la page Profil
+- ✅ Nom d'affichage personnalisé (display_name)
+- ✅ Affichage de l'avatar et du nom sur la page d'accueil
+- ✅ Composant ProfileEditCard avec upload d'image
+
 ### Session du 17/03/2026
 - ✅ Notifications push natives implémentées
-  - Préférences utilisateur (push_enabled, push_weekly_tips, push_appointment_reminders, push_appointment_24h, push_appointment_day)
-  - Section "Notifications Push" dans Paramètres
-  - Job scheduler quotidien pour conseils hebdomadaires (9h UTC)
-- ✅ Nettoyage fichiers obsolètes (ShareAppSection, ServerWakeUp, AccountMenuSection)
+- ✅ Nettoyage fichiers obsolètes
 - ✅ Correction écran de chargement initial
 
 ### Session précédente
@@ -62,10 +70,7 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - ✅ Export projet Android dans admin
 - ✅ Kit Business (plan financier + carte de visite)
 - ✅ Protection compte Super Admin
-- ✅ Refonte UI: TopBar avec menu déroulant
-- ✅ Refonte page Tarification (FAQ déroulante)
-- ✅ Refonte page Paramètres (sections déroulantes)
-- ✅ Chatbot moins intrusif
+- ✅ Refonte UI: TopBar, Tarification, Paramètres
 
 ## Backlog
 
@@ -89,30 +94,31 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 /app
 ├── backend/
 │   ├── routes/
+│   │   ├── auth.py         # PUT /auth/profile pour avatar/display_name
 │   │   ├── admin.py        # Export, kit business, super admin
-│   │   ├── preferences.py  # Préférences notifications (email + push)
-│   │   └── push_notifications.py  # VAPID, subscribe/unsubscribe
+│   │   ├── preferences.py  # Préférences notifications
+│   │   └── push_notifications.py
+│   ├── models/
+│   │   └── schemas.py      # User avec display_name, avatar + ProfileUpdate
 │   ├── core/
 │   │   └── scheduler.py    # Jobs: rappels RDV + conseils hebdo push
-│   └── server.py           # API principale
+│   └── server.py
 └── frontend/
     ├── public/
-    │   ├── docs/           # Business plan, carte de visite
-    │   ├── index.html      # Loader pré-React
-    │   └── service-worker.js # Push notifications handler
+    │   └── index.html      # Loader pré-React + hide Emergent banners
     └── src/
         ├── components/
-        │   ├── admin/      # AndroidExportTab
-        │   ├── home/       # TopBar avec menu
-        │   └── settings/
-        │       ├── NotificationsSection.jsx  # Emails
-        │       └── PushNotificationsSection.jsx # Push (NEW)
-        └── pages/          # Toutes les pages
-
-## Push Notifications Configuration
-- VAPID keys configured in backend/.env
-- Service worker handles push events (public/service-worker.js)
-- Scheduler jobs:
-  - send_due_reminders_job: every minute for appointment reminders
-  - send_weekly_tips_push_job: daily at 9:00 AM UTC
+        │   └── profile/
+        │       └── ProfileEditCard.jsx  # NEW - avatar + nom
+        ├── pages/
+        │   ├── ProfilePage.js  # Intègre ProfileEditCard
+        │   └── HomePage.js     # Affiche avatar + displayName
+        └── utils/
+            └── api.js          # auth.updateProfile()
 ```
+
+## API Endpoints (Profile)
+- `PUT /api/auth/profile` - Update display_name and avatar
+  - Body: `{ display_name?: string, avatar?: string (base64) }`
+  - Validation: display_name max 50 chars, avatar max 500KB
+- `GET /api/auth/me` - Returns user with display_name and avatar fields
