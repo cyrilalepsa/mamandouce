@@ -1,12 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
-import { Crown, User, Settings, LogOut, Shield, MoreVertical } from 'lucide-react';
+import { Crown, User, Settings, LogOut, Shield, MoreVertical, Share2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export function TopBar({ isAdmin }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+
+  // URL et message de partage
+  const appUrl = "https://femme-enceinte-app.preview.emergentagent.com";
+  const shareMessage = `Découvre MamanDouce, l'app qui m'accompagne pendant ma grossesse ! 🤰✨ ${appUrl}`;
 
   // Fermer le menu quand on clique ailleurs
   useEffect(() => {
@@ -24,7 +29,40 @@ export function TopBar({ isAdmin }) {
     navigate('/auth');
   };
 
+  const handleShare = async () => {
+    setMenuOpen(false);
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'MamanDouce - App Grossesse',
+          text: shareMessage,
+          url: appUrl
+        });
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          // Fallback: copier le lien
+          await navigator.clipboard.writeText(appUrl);
+          toast.success('Lien copié !');
+        }
+      }
+    } else {
+      // Fallback: copier le lien
+      try {
+        await navigator.clipboard.writeText(appUrl);
+        toast.success('Lien copié !');
+      } catch {
+        toast.error('Erreur lors de la copie');
+      }
+    }
+  };
+
   const menuItems = [
+    {
+      icon: Share2,
+      label: 'Partager',
+      onClick: handleShare,
+      iconBg: 'bg-gradient-to-br from-pink-400 to-purple-500'
+    },
     ...(isAdmin ? [{
       icon: Shield,
       label: 'Admin',
