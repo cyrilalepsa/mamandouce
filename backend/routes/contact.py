@@ -160,3 +160,36 @@ async def user_reply_to_conversation(message_id: str, request: ContactMessageReq
     
     return {"success": True, "message": "Réponse envoyée", "images_count": len(validated_images)}
 
+
+@router.delete("/contact/messages/{message_id}")
+async def delete_message(message_id: str, current_user: User = Depends(get_current_user)):
+    """Supprimer un message (utilisateur peut supprimer ses propres messages)"""
+    # Vérifier que le message appartient à l'utilisateur
+    message = await db.admin_messages.find_one({"id": message_id, "user_id": current_user.id})
+    
+    if not message:
+        raise HTTPException(status_code=404, detail="Message non trouvé")
+    
+    # Supprimer le message
+    await db.admin_messages.delete_one({"id": message_id})
+    
+    return {"success": True, "message": "Message supprimé"}
+
+
+@router.delete("/admin/messages/{message_id}")
+async def admin_delete_message(message_id: str, current_user: User = Depends(get_current_user)):
+    """Supprimer un message (admin seulement)"""
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    # Vérifier que le message existe
+    message = await db.admin_messages.find_one({"id": message_id})
+    
+    if not message:
+        raise HTTPException(status_code=404, detail="Message non trouvé")
+    
+    # Supprimer le message
+    await db.admin_messages.delete_one({"id": message_id})
+    
+    return {"success": True, "message": "Message supprimé"}
+

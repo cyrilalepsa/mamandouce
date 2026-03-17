@@ -78,6 +78,7 @@ export const api = {
     getMyMessages: () => axios.get(`${API}/contact/my-messages`, getAuthHeaders()),
     markReplyRead: (messageId) => axios.post(`${API}/contact/messages/${messageId}/mark-read`, {}, getAuthHeaders()),
     replyToConversation: (messageId, message, images = []) => axios.post(`${API}/contact/messages/${messageId}/reply`, { subject: '', message, images }, getAuthHeaders()),
+    deleteMessage: (messageId) => axios.delete(`${API}/contact/messages/${messageId}`, getAuthHeaders()),
   },
   notifications: {
     getVapidKey: () => axios.get(`${API}/notifications/vapid-public-key`),
@@ -201,6 +202,7 @@ export const api = {
     getMessages: () => axios.get(`${API}/admin/messages`, getAuthHeaders()),
     markMessageRead: (messageId) => axios.post(`${API}/admin/messages/${messageId}/read`, {}, getAuthHeaders()),
     replyToMessage: (messageId, reply) => axios.post(`${API}/admin/messages/${messageId}/reply`, { reply }, getAuthHeaders()),
+    deleteMessage: (messageId) => axios.delete(`${API}/admin/messages/${messageId}`, getAuthHeaders()),
     getRefundRequests: () => axios.get(`${API}/admin/refund-requests`, getAuthHeaders()),
     approveRefund: (userId, approved) => axios.post(`${API}/admin/refund-requests/${userId}/approve?approved=${approved}`, {}, getAuthHeaders()),
     getRefundDocument: (userId) => `${API}/admin/refund-document/${userId}`,

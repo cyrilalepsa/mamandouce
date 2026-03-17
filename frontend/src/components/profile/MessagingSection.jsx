@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { 
   MessageSquare, ChevronDown, ChevronUp, Send, Clock, CheckCircle, 
-  Mail, User, Shield, Inbox, MessageCircle, HelpCircle, Image, X, Camera
+  Mail, User, Shield, Inbox, MessageCircle, HelpCircle, Image, X, Camera, Trash2
 } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'sonner';
@@ -208,6 +208,20 @@ export function MessagingSection({ onMessagesRead }) {
     return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
   };
 
+  const handleDeleteMessage = async (messageId) => {
+    if (!window.confirm('Êtes-vous sûre de vouloir supprimer ce message ?')) {
+      return;
+    }
+    
+    try {
+      await api.contact.deleteMessage(messageId);
+      toast.success('Message supprimé');
+      loadMessages();
+    } catch (error) {
+      toast.error('Erreur lors de la suppression');
+    }
+  };
+
   const tabs = [
     { id: 'exchanges', label: 'Mes échanges', icon: MessageCircle, count: messages.length },
     { id: 'contact', label: 'Contacter', icon: HelpCircle, count: null },
@@ -307,6 +321,20 @@ export function MessagingSection({ onMessagesRead }) {
                   {/* Expanded Content */}
                   {isExpanded && (
                     <div className="px-4 pb-4 space-y-3 border-t border-slate-200 pt-3">
+                      {/* Delete button */}
+                      <div className="flex justify-end">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteMessage(msg.id);
+                          }}
+                          className="flex items-center gap-1 text-xs text-red-500 hover:text-red-700 hover:bg-red-50 px-2 py-1 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                          Supprimer
+                        </button>
+                      </div>
+                      
                       {/* Original Message */}
                       <div className="flex gap-2">
                         <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">

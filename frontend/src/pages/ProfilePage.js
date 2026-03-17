@@ -277,6 +277,19 @@ function ProfilePage() {
               <AccountStatusSection />
             </CollapsibleSection>
 
+            {/* Section Messagerie - Entre Mon compte et Grossesse */}
+            <CollapsibleSection
+              title="Messagerie"
+              icon={MessageSquare}
+              defaultOpen={false}
+              iconBg="bg-gradient-to-br from-sky-100 to-blue-100"
+              iconColor="text-sky-600"
+              badge={unreadMessages > 0 ? unreadMessages : null}
+              data-testid="messaging-section"
+            >
+              <MessagingSection onMessagesRead={() => setUnreadMessages(0)} />
+            </CollapsibleSection>
+
             {/* Section Grossesse */}
             <CollapsibleSection
               title="Grossesse & Fertilité"
@@ -323,19 +336,6 @@ function ProfilePage() {
                 setBiometricEnabled={setBiometricEnabled}
                 setPinEnabled={setPinEnabled}
               />
-            </CollapsibleSection>
-
-            {/* Section Messagerie */}
-            <CollapsibleSection
-              title="Messagerie"
-              icon={MessageSquare}
-              defaultOpen={false}
-              iconBg="bg-gradient-to-br from-sky-100 to-blue-100"
-              iconColor="text-sky-600"
-              badge={unreadMessages > 0 ? unreadMessages : null}
-              data-testid="messaging-section"
-            >
-              <MessagingSection onMessagesRead={() => setUnreadMessages(0)} />
             </CollapsibleSection>
           </>
         )}
