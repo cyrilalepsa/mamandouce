@@ -401,6 +401,47 @@ async def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
+from models.schemas import ProfileUpdate
+
+@router.put("/auth/profile")
+async def update_profile(profile_data: ProfileUpdate, current_user: User = Depends(get_current_user)):
+    """Update user profile (display name and avatar)"""
+    update_fields = {}
+    
+    if profile_data.display_name is not None:
+        # Nettoyer et valider le nom
+        display_name = profile_data.display_name.strip()
+        if len(display_name) > 50:
+            raise HTTPException(status_code=400, detail="Le nom ne peut pas dépasser 50 caractères")
+        update_fields["display_name"] = display_name if display_name else None
+    
+    if profile_data.avatar is not None:
+        # Valider la taille de l'image (max 500KB en base64)
+        if len(profile_data.avatar) > 700000:  # ~500KB in base64
+            raise HTTPException(status_code=400, detail="L'image est trop grande (max 500KB)")
+        # Vérifier le format base64 image
+        if profile_data.avatar and not (
+            profile_data.avatar.startswith("data:image/") or 
+            profile_data.avatar == ""
+        ):
+            raise HTTPException(status_code=400, detail="Format d'image invalide")
+        update_fields["avatar"] = profile_data.avatar if profile_data.avatar else None
+    
+    if not update_fields:
+        return {"success": True, "message": "Aucune modification"}
+    
+    update_fields["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.users.update_one(
+        {"id": current_user.id},
+        {"$set": update_fields}
+    )
+    
+    # Retourner l'utilisateur mis à jour
+    updated_user = await db.users.find_one({"id": current_user.id}, {"_id": 0, "password_hash": 0})
+    return {"success": True, "message": "Profil mis à jour", "user": updated_user}
+
+
 # ==================== PASSWORD RESET ====================
 
 @router.post("/auth/forgot-password")

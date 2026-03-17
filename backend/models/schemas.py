@@ -25,8 +25,16 @@ class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     email: str
     name: str
+    display_name: Optional[str] = None  # Nom personnalisé pour l'affichage
+    avatar: Optional[str] = None  # URL ou base64 de l'avatar
     role: str = "user"  # "user" or "admin"
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class ProfileUpdate(BaseModel):
+    """Modèle pour la mise à jour du profil utilisateur"""
+    display_name: Optional[str] = None
+    avatar: Optional[str] = None  # Base64 encoded image
 
 # ==================== PREGNANCY ====================
 class PregnancyCalculation(BaseModel):

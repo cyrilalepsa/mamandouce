@@ -14,7 +14,8 @@ import {
   QuickLoginCard,
   FertilityRemindersCard,
   CollapsibleSection,
-  MessagingSection
+  MessagingSection,
+  ProfileEditCard
 } from '../components/profile';
 
 // Helper function to convert base64 to Uint8Array for VAPID key
@@ -253,6 +254,12 @@ function ProfilePage() {
           </div>
         ) : (
           <>
+            {/* Carte d'édition du profil (Avatar + Nom) */}
+            <ProfileEditCard 
+              user={user} 
+              onUpdate={(updatedUser) => setUser(prev => ({ ...prev, ...updatedUser }))}
+            />
+            
             {/* Section Mon Compte - Toujours visible en premier */}
             <CollapsibleSection
               title="Mon compte"

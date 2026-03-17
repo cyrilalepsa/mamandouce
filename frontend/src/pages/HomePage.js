@@ -19,6 +19,8 @@ const ADMIN_EMAIL = 'cyrilalepsa@gmail.com';
 
 function HomePage() {
   const [userName, setUserName] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [userAvatar, setUserAvatar] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [userRole, setUserRole] = useState('user');
@@ -40,6 +42,8 @@ function HomePage() {
     try {
       const userRes = await api.auth.getMe();
       setUserName(userRes.data.name);
+      setDisplayName(userRes.data.display_name || '');
+      setUserAvatar(userRes.data.avatar || '');
       setUserEmail(userRes.data.email);
       setUserRole(userRes.data.role || 'user');
       
@@ -193,11 +197,22 @@ function HomePage() {
             <AppTitle size="xl" showSubtitle={false} />
           </div>
 
-          <div className="text-center">
-            <h2 className="text-2xl sm:text-3xl" data-testid="user-welcome">
+          {/* Salutation avec avatar */}
+          <div className="flex flex-col items-center gap-3">
+            {userAvatar && (
+              <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-white shadow-lg">
+                <img 
+                  src={userAvatar} 
+                  alt="Avatar" 
+                  className="w-full h-full object-cover"
+                  data-testid="home-user-avatar"
+                />
+              </div>
+            )}
+            <h2 className="text-2xl sm:text-3xl text-center" data-testid="user-welcome">
               <span className="text-slate-500 font-medium" style={{ fontFamily: "'Quicksand', sans-serif" }}>Bonjour, </span>
               <span className="text-slate-700 text-4xl sm:text-5xl font-semibold" style={{ fontFamily: "'Caveat', cursive" }}>
-                {userName}
+                {displayName || userName}
               </span>
               <span className="text-pink-400 ml-2">❤️</span>
             </h2>

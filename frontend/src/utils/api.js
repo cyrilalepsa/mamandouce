@@ -32,6 +32,7 @@ export const api = {
     login: (data) => axios.post(`${API}/auth/login`, data),
     getMe: () => axios.get(`${API}/auth/me`, getAuthHeaders()),
     me: () => axios.get(`${API}/auth/me`, getAuthHeaders()), // Alias for compatibility
+    updateProfile: (data) => axios.put(`${API}/auth/profile`, data, getAuthHeaders()),
     forgotPassword: (email) => axios.post(`${API}/auth/forgot-password`, { email }),
     verifyResetToken: (token) => axios.post(`${API}/auth/verify-reset-token`, { token }),
     resetPassword: (token, new_password) => axios.post(`${API}/auth/reset-password`, { token, new_password }),
