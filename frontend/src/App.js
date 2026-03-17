@@ -54,6 +54,13 @@ function App() {
     if (window.hideInitialLoader) {
       window.hideInitialLoader();
     }
+
+    // Force Service Worker update check on app load
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(registration => {
+        registration.update().catch(err => console.log('SW update check failed:', err));
+      });
+    }
   }, []);
 
   const ProtectedRoute = ({ children, requireSubscription = true }) => {

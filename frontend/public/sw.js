@@ -1,7 +1,8 @@
 /* eslint-disable no-restricted-globals */
 
 // VERSION - Increment this to force cache update
-const APP_VERSION = '2.2.0';
+// IMPORTANT: Increment this version for every deployment with UI/text changes!
+const APP_VERSION = '2.3.0';
 const CACHE_NAME = `mamandouce-v${APP_VERSION}`;
 const STATIC_CACHE = `mamandouce-static-v${APP_VERSION}`;
 const DYNAMIC_CACHE = `mamandouce-dynamic-v${APP_VERSION}`;
