@@ -117,7 +117,7 @@ export function TopBar({ isAdmin }) {
     // Option d'installation (seulement si pas déjà installée)
     ...(!isInstalled ? [{
       icon: Download,
-      label: 'Installer l\'app',
+      label: 'Installer',
       onClick: handleInstall,
       iconBg: 'bg-gradient-to-br from-green-400 to-emerald-500'
     }] : []),
