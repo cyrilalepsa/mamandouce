@@ -12,8 +12,7 @@ import {
   PregnancySection,
   BabyPreparationSection,
   PostpartumSection,
-  ServicesSection,
-  AccountMenuSection
+  ServicesSection
 } from '../components/home';
 
 const ADMIN_EMAIL = 'cyrilalepsa@gmail.com';
@@ -234,9 +233,6 @@ function HomePage() {
           <BabyPreparationSection />
           <PostpartumSection />
           <ServicesSection />
-
-          {/* Section compte en bas */}
-          <AccountMenuSection isAdmin={isAdmin} />
 
         </div>
       </div>
