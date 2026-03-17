@@ -1,13 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { 
   MessageSquare, ChevronDown, ChevronUp, Send, Clock, CheckCircle, 
-  Mail, User, Shield, Inbox, MessageCircle, HelpCircle
+  Mail, User, Shield, Inbox, MessageCircle, HelpCircle, Image, X, Camera
 } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'sonner';
+
+const MAX_IMAGES = 3;
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB avant compression
 
 export function MessagingSection({ onMessagesRead }) {
   const [messages, setMessages] = useState([]);
@@ -15,16 +18,25 @@ export function MessagingSection({ onMessagesRead }) {
   const [loading, setLoading] = useState(true);
   const [expandedMessage, setExpandedMessage] = useState(null);
   const [replyText, setReplyText] = useState('');
+  const [replyImages, setReplyImages] = useState([]);
   const [sending, setSending] = useState(false);
   
   // Contact form state
   const [showContactForm, setShowContactForm] = useState(false);
   const [contactSubject, setContactSubject] = useState('');
   const [contactMessage, setContactMessage] = useState('');
+  const [contactImages, setContactImages] = useState([]);
   const [sendingContact, setSendingContact] = useState(false);
   
   // Active tab
   const [activeTab, setActiveTab] = useState('exchanges');
+  
+  // File input refs
+  const contactFileRef = useRef(null);
+  const replyFileRef = useRef(null);
+  
+  // Image viewer
+  const [viewingImage, setViewingImage] = useState(null);
 
   useEffect(() => {
     loadMessages();
@@ -40,6 +52,72 @@ export function MessagingSection({ onMessagesRead }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Image handling functions
+  const compressImage = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new window.Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxSize = 800;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height && width > maxSize) {
+            height = (height * maxSize) / width;
+            width = maxSize;
+          } else if (height > maxSize) {
+            width = (width * maxSize) / height;
+            height = maxSize;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.7));
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImageSelect = async (e, target) => {
+    const files = Array.from(e.target.files || []);
+    const currentImages = target === 'contact' ? contactImages : replyImages;
+    const setImages = target === 'contact' ? setContactImages : setReplyImages;
+    
+    if (currentImages.length >= MAX_IMAGES) {
+      toast.error(`Maximum ${MAX_IMAGES} photos autorisées`);
+      return;
+    }
+
+    for (const file of files) {
+      if (!file.type.startsWith('image/')) {
+        toast.error('Fichier non supporté');
+        continue;
+      }
+      if (file.size > MAX_IMAGE_SIZE) {
+        toast.error('Image trop grande (max 2MB)');
+        continue;
+      }
+      if (currentImages.length >= MAX_IMAGES) break;
+
+      const compressed = await compressImage(file);
+      setImages(prev => [...prev.slice(0, MAX_IMAGES - 1), compressed]);
+    }
+    
+    // Reset input
+    e.target.value = '';
+  };
+
+  const removeImage = (index, target) => {
+    const setImages = target === 'contact' ? setContactImages : setReplyImages;
+    setImages(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleExpand = async (messageId) => {
@@ -72,16 +150,17 @@ export function MessagingSection({ onMessagesRead }) {
   };
 
   const handleReply = async (messageId) => {
-    if (!replyText.trim()) {
-      toast.error('Veuillez écrire un message');
+    if (!replyText.trim() && replyImages.length === 0) {
+      toast.error('Veuillez écrire un message ou ajouter une photo');
       return;
     }
     
     setSending(true);
     try {
-      await api.contact.replyToConversation(messageId, replyText);
+      await api.contact.replyToConversation(messageId, replyText, replyImages);
       toast.success('Réponse envoyée !');
       setReplyText('');
+      setReplyImages([]);
       loadMessages();
     } catch (error) {
       toast.error('Erreur lors de l\'envoi');
@@ -91,18 +170,22 @@ export function MessagingSection({ onMessagesRead }) {
   };
 
   const handleSendContact = async () => {
-    if (!contactSubject.trim() || !contactMessage.trim()) {
-      toast.error('Veuillez remplir tous les champs');
+    if (!contactMessage.trim() && contactImages.length === 0) {
+      toast.error('Veuillez écrire un message ou ajouter une photo');
       return;
     }
     
     setSendingContact(true);
     try {
-      await api.contact.sendMessage({ subject: contactSubject, message: contactMessage });
+      await api.contact.sendMessage({ 
+        subject: contactSubject || 'Sans sujet', 
+        message: contactMessage,
+        images: contactImages
+      });
       toast.success('Message envoyé !');
       setContactSubject('');
       setContactMessage('');
-      setShowContactForm(false);
+      setContactImages([]);
       setActiveTab('exchanges');
       loadMessages();
     } catch (error) {
@@ -232,6 +315,20 @@ export function MessagingSection({ onMessagesRead }) {
                         <div className="flex-1 bg-purple-50 rounded-xl p-3">
                           <p className="text-xs text-purple-600 font-semibold mb-1">Vous</p>
                           <p className="text-sm text-slate-700">{msg.message}</p>
+                          {/* Images in original message */}
+                          {msg.images && msg.images.length > 0 && (
+                            <div className="flex gap-2 mt-2 flex-wrap">
+                              {msg.images.map((img, idx) => (
+                                <img 
+                                  key={idx}
+                                  src={img} 
+                                  alt={`Photo ${idx + 1}`}
+                                  className="w-20 h-20 object-cover rounded-lg cursor-pointer hover:opacity-80"
+                                  onClick={() => setViewingImage(img)}
+                                />
+                              ))}
+                            </div>
+                          )}
                           <p className="text-xs text-slate-400 mt-2">{formatDate(msg.created_at)}</p>
                         </div>
                       </div>
@@ -273,27 +370,76 @@ export function MessagingSection({ onMessagesRead }) {
                               {item.from === 'user' ? 'Vous' : 'Équipe MamanDouce'}
                             </p>
                             <p className="text-sm text-slate-700">{item.message}</p>
+                            {/* Images in conversation */}
+                            {item.images && item.images.length > 0 && (
+                              <div className="flex gap-2 mt-2 flex-wrap">
+                                {item.images.map((img, imgIdx) => (
+                                  <img 
+                                    key={imgIdx}
+                                    src={img} 
+                                    alt={`Photo ${imgIdx + 1}`}
+                                    className="w-20 h-20 object-cover rounded-lg cursor-pointer hover:opacity-80"
+                                    onClick={() => setViewingImage(img)}
+                                  />
+                                ))}
+                              </div>
+                            )}
                             <p className="text-xs text-slate-400 mt-2">{formatDate(item.created_at)}</p>
                           </div>
                         </div>
                       ))}
                       
-                      {/* Reply Input */}
+                      {/* Reply Input with Image support */}
                       {msg.admin_reply && (
-                        <div className="flex gap-2 mt-3">
-                          <textarea
-                            value={replyText}
-                            onChange={(e) => setReplyText(e.target.value)}
-                            placeholder="Répondre..."
-                            className="flex-1 rounded-xl border border-slate-200 p-3 text-sm min-h-[60px] focus:outline-none focus:ring-2 focus:ring-purple-200"
-                          />
-                          <Button
-                            onClick={() => handleReply(msg.id)}
-                            disabled={sending || !replyText.trim()}
-                            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl px-4 self-end"
-                          >
-                            {sending ? '...' : <Send className="w-4 h-4" />}
-                          </Button>
+                        <div className="space-y-2 mt-3">
+                          {/* Image preview */}
+                          {replyImages.length > 0 && (
+                            <div className="flex gap-2 flex-wrap">
+                              {replyImages.map((img, idx) => (
+                                <div key={idx} className="relative">
+                                  <img src={img} alt="" className="w-16 h-16 object-cover rounded-lg" />
+                                  <button
+                                    onClick={() => removeImage(idx, 'reply')}
+                                    className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center"
+                                  >
+                                    <X className="w-3 h-3 text-white" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <div className="flex gap-2">
+                            <div className="flex-1 flex gap-2">
+                              <button
+                                onClick={() => replyFileRef.current?.click()}
+                                disabled={replyImages.length >= MAX_IMAGES}
+                                className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-200 disabled:opacity-50 flex-shrink-0"
+                              >
+                                <Camera className="w-5 h-5" />
+                              </button>
+                              <input
+                                ref={replyFileRef}
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={(e) => handleImageSelect(e, 'reply')}
+                                className="hidden"
+                              />
+                              <textarea
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                placeholder="Répondre..."
+                                className="flex-1 rounded-xl border border-slate-200 p-3 text-sm min-h-[60px] focus:outline-none focus:ring-2 focus:ring-purple-200"
+                              />
+                            </div>
+                            <Button
+                              onClick={() => handleReply(msg.id)}
+                              disabled={sending || (!replyText.trim() && replyImages.length === 0)}
+                              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl px-4 self-end"
+                            >
+                              {sending ? '...' : <Send className="w-4 h-4" />}
+                            </Button>
+                          </div>
                         </div>
                       )}
                       
@@ -328,7 +474,7 @@ export function MessagingSection({ onMessagesRead }) {
           
           <div className="space-y-3">
             <div>
-              <label className="text-sm text-slate-600 font-semibold mb-1 block">Sujet</label>
+              <label className="text-sm text-slate-600 font-semibold mb-1 block">Sujet (optionnel)</label>
               <Input
                 value={contactSubject}
                 onChange={(e) => setContactSubject(e.target.value)}
@@ -347,9 +493,53 @@ export function MessagingSection({ onMessagesRead }) {
                 data-testid="contact-message"
               />
             </div>
+            
+            {/* Image upload section */}
+            <div>
+              <label className="text-sm text-slate-600 font-semibold mb-2 block">
+                Photos (optionnel - max {MAX_IMAGES})
+              </label>
+              
+              {/* Image previews */}
+              {contactImages.length > 0 && (
+                <div className="flex gap-2 flex-wrap mb-3">
+                  {contactImages.map((img, idx) => (
+                    <div key={idx} className="relative">
+                      <img src={img} alt="" className="w-20 h-20 object-cover rounded-xl" />
+                      <button
+                        onClick={() => removeImage(idx, 'contact')}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shadow-lg"
+                      >
+                        <X className="w-4 h-4 text-white" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {contactImages.length < MAX_IMAGES && (
+                <button
+                  onClick={() => contactFileRef.current?.click()}
+                  className="flex items-center gap-2 px-4 py-3 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-colors w-full justify-center"
+                >
+                  <Camera className="w-5 h-5" />
+                  <span className="text-sm font-medium">Ajouter une photo</span>
+                </button>
+              )}
+              <input
+                ref={contactFileRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => handleImageSelect(e, 'contact')}
+                className="hidden"
+                data-testid="contact-image-input"
+              />
+            </div>
+            
             <Button
               onClick={handleSendContact}
-              disabled={sendingContact || !contactSubject.trim() || !contactMessage.trim()}
+              disabled={sendingContact || (!contactMessage.trim() && contactImages.length === 0)}
               data-testid="send-contact-btn"
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full py-3 font-semibold hover:opacity-90"
             >
@@ -367,6 +557,27 @@ export function MessagingSection({ onMessagesRead }) {
           <p className="text-xs text-slate-400 text-center">
             Nous répondons généralement sous 24h. Vous recevrez une notification et un email.
           </p>
+        </div>
+      )}
+
+      {/* Image Viewer Modal */}
+      {viewingImage && (
+        <div 
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          onClick={() => setViewingImage(null)}
+        >
+          <button
+            className="absolute top-4 right-4 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"
+            onClick={() => setViewingImage(null)}
+          >
+            <X className="w-6 h-6 text-white" />
+          </button>
+          <img 
+            src={viewingImage} 
+            alt="Photo agrandie" 
+            className="max-w-full max-h-full object-contain rounded-lg"
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
       )}
     </div>

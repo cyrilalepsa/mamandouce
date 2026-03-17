@@ -208,14 +208,19 @@ class AdminMessage(BaseModel):
     user_name: Optional[str] = None
     subject: str
     message: str
+    images: Optional[List[str]] = None  # Liste d'images en base64
     is_read: bool = False
     admin_reply: Optional[str] = None
+    admin_reply_images: Optional[List[str]] = None  # Images dans la réponse admin
     replied_at: Optional[str] = None
+    user_read_reply: bool = False
+    conversation: Optional[List[dict]] = None  # Historique avec images
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class ContactMessageRequest(BaseModel):
-    subject: str
+    subject: Optional[str] = None
     message: str
+    images: Optional[List[str]] = None  # Liste d'images en base64 (max 3)
 
 class AdminReplyRequest(BaseModel):
     reply: str
