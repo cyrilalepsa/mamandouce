@@ -3,14 +3,15 @@ import { Card } from '../components/ui/card';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
-import { Gift, Shield, Bell, CreditCard, Users, Key, ChevronDown } from 'lucide-react';
+import { Gift, Shield, Bell, CreditCard, Users, Key, ChevronDown, Share2 } from 'lucide-react';
 import {
   PromoCodeSection,
   AccountSection,
   ReferralSection,
   RefundSection,
   NotificationsSection,
-  TwoFactorSection
+  TwoFactorSection,
+  ShareAppSection
 } from '../components/settings';
 
 // Composant CollapsibleSection pour les paramètres
@@ -220,6 +221,17 @@ function SettingsPage() {
                 saving={saving}
                 onSave={handleSave}
               />
+            </CollapsibleSettingsSection>
+
+            {/* Section Partager l'application */}
+            <CollapsibleSettingsSection
+              title="Partager l'application"
+              icon={Share2}
+              defaultOpen={false}
+              iconBg="bg-gradient-to-br from-pink-100 to-purple-100"
+              iconColor="text-pink-600"
+            >
+              <ShareAppSection />
             </CollapsibleSettingsSection>
           </>
         )}
