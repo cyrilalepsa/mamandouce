@@ -37,6 +37,136 @@
     </head>
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
+        
+        <!-- Écran de chargement initial - s'affiche AVANT React -->
+        <div id="initial-loader" style="
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #e0f2fe 0%, #fce7f3 50%, #f3e8ff 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 999999;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        ">
+            <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 64px; margin-bottom: 16px;">🤱</div>
+                <h1 style="
+                    font-size: 28px;
+                    font-weight: bold;
+                    color: #334155;
+                    margin: 0 0 8px 0;
+                    font-family: 'Nunito', sans-serif;
+                ">MamanDouce</h1>
+                <p id="loader-message" style="color: #64748b; margin: 0; font-size: 14px;">Chargement...</p>
+                <div style="display: flex; justify-content: center; gap: 4px; margin-top: 16px;">
+                    <div class="loader-dot" style="width: 8px; height: 8px; background: #f9a8d4; border-radius: 50%; animation: pulse 1.4s ease-in-out infinite;"></div>
+                    <div class="loader-dot" style="width: 8px; height: 8px; background: #f9a8d4; border-radius: 50%; animation: pulse 1.4s ease-in-out 0.2s infinite;"></div>
+                    <div class="loader-dot" style="width: 8px; height: 8px; background: #f9a8d4; border-radius: 50%; animation: pulse 1.4s ease-in-out 0.4s infinite;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+            @keyframes pulse {
+                0%, 100% { opacity: 0.4; transform: scale(1); }
+                50% { opacity: 1; transform: scale(1.2); }
+            }
+            /* Cacher TOUTES les bannières Emergent */
+            [class*="wake"], [class*="spinning"], [class*="preview-banner"],
+            [id*="wake"], [id*="spinning"],
+            div[style*="Spinning"], div[style*="spinning"],
+            .emergent-toast, .emergent-notification {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+            }
+        </style>
+        
+        <script>
+            // Script pour réveiller le serveur et cacher le loader
+            (function() {
+                var API_URL = '%REACT_APP_BACKEND_URL%' || '';
+                var maxAttempts = 15;
+                var attempt = 0;
+                var loaderMessage = document.getElementById('loader-message');
+                
+                function hideLoader() {
+                    var loader = document.getElementById('initial-loader');
+                    if (loader) {
+                        loader.style.transition = 'opacity 0.3s';
+                        loader.style.opacity = '0';
+                        setTimeout(function() {
+                            loader.style.display = 'none';
+                        }, 300);
+                    }
+                }
+                
+                function hideEmergentBanners() {
+                    // Cacher tous les éléments qui ressemblent à des bannières Emergent
+                    var allElements = document.querySelectorAll('*');
+                    allElements.forEach(function(el) {
+                        var text = (el.textContent || '').toLowerCase();
+                        var hasSpinning = text.includes('spinning') && text.includes('server');
+                        var hasWakeUp = text.includes('wake') && text.includes('server');
+                        if ((hasSpinning || hasWakeUp) && el.id !== 'initial-loader') {
+                            el.style.display = 'none';
+                            el.style.visibility = 'hidden';
+                        }
+                    });
+                }
+                
+                function checkServer() {
+                    attempt++;
+                    if (loaderMessage) {
+                        if (attempt > 1) {
+                            loaderMessage.textContent = 'Réveil du serveur... (' + attempt + '/' + maxAttempts + ')';
+                        }
+                    }
+                    
+                    // Toujours essayer de cacher les bannières Emergent
+                    hideEmergentBanners();
+                    
+                    fetch((API_URL || window.location.origin) + '/api/health', {
+                        method: 'GET',
+                        cache: 'no-store'
+                    })
+                    .then(function(response) {
+                        if (response.ok) {
+                            hideLoader();
+                            hideEmergentBanners();
+                        } else {
+                            throw new Error('Not ready');
+                        }
+                    })
+                    .catch(function(error) {
+                        if (attempt < maxAttempts) {
+                            setTimeout(checkServer, 2000);
+                        } else {
+                            if (loaderMessage) {
+                                loaderMessage.textContent = 'Le serveur prend du temps à démarrer...';
+                            }
+                            // Continuer à essayer en arrière-plan
+                            setTimeout(checkServer, 3000);
+                        }
+                    });
+                }
+                
+                // Observer pour cacher les nouvelles bannières
+                var observer = new MutationObserver(function(mutations) {
+                    hideEmergentBanners();
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+                
+                // Démarrer après un court délai
+                setTimeout(checkServer, 500);
+                
+                // Continuer à cacher les bannières périodiquement
+                setInterval(hideEmergentBanners, 500);
+            })();
+        </script>
+        
         <div id="root"></div>
         <!--
       This HTML file is a template.
