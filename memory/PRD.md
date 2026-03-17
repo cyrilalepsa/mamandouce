@@ -42,35 +42,35 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - Conseils hebdomadaires de grossesse
 - Personnalisation complète dans les paramètres
 
-### 8. Personnalisation du Profil (NEW)
+### 8. Personnalisation du Profil
 - Upload d'avatar (compression auto 200x200, max 500KB)
 - Nom d'affichage personnalisé (display_name)
 - Affichage sur page d'accueil "Bonjour, [nom]" avec avatar
+- Par défaut: nom d'inscription
+
+### 9. Messagerie avec Photos (NEW)
+- Joindre jusqu'à 3 photos par message
+- Support caméra et galerie sur mobile
+- Compression automatique (800px max, ~500KB)
+- Visualisation plein écran au clic
+- Images dans messages et réponses
 
 ## Tech Stack
 - **Frontend:** React, PWA, Shadcn/UI, Capacitor (Android)
 - **Backend:** FastAPI, MongoDB
 - **Integrations:** Stripe, Resend, OpenAI (via Emergent LLM Key), APScheduler, Web Push API
 
-## Recent Changes (December 2025)
+## Recent Changes (March 2026)
 
-### Session du 17/03/2026 (suite)
+### Session du 17/03/2026
 - ✅ Avatar utilisateur dans la page Profil
 - ✅ Nom d'affichage personnalisé (display_name)
 - ✅ Affichage de l'avatar et du nom sur la page d'accueil
-- ✅ Composant ProfileEditCard avec upload d'image
-
-### Session du 17/03/2026
-- ✅ Notifications push natives implémentées
+- ✅ Partage de photos dans la messagerie (max 3 par message)
+- ✅ Compression images côté client
+- ✅ Modal de visualisation plein écran
+- ✅ Notifications push natives
 - ✅ Nettoyage fichiers obsolètes
-- ✅ Correction écran de chargement initial
-
-### Session précédente
-- ✅ Guide complet pour build Android (.aab généré)
-- ✅ Export projet Android dans admin
-- ✅ Kit Business (plan financier + carte de visite)
-- ✅ Protection compte Super Admin
-- ✅ Refonte UI: TopBar, Tarification, Paramètres
 
 ## Backlog
 
@@ -95,30 +95,33 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 ├── backend/
 │   ├── routes/
 │   │   ├── auth.py         # PUT /auth/profile pour avatar/display_name
+│   │   ├── contact.py      # Messages avec support images
 │   │   ├── admin.py        # Export, kit business, super admin
 │   │   ├── preferences.py  # Préférences notifications
 │   │   └── push_notifications.py
 │   ├── models/
-│   │   └── schemas.py      # User avec display_name, avatar + ProfileUpdate
-│   ├── core/
-│   │   └── scheduler.py    # Jobs: rappels RDV + conseils hebdo push
+│   │   └── schemas.py      # User, AdminMessage, ContactMessageRequest avec images
 │   └── server.py
 └── frontend/
-    ├── public/
-    │   └── index.html      # Loader pré-React + hide Emergent banners
     └── src/
         ├── components/
         │   └── profile/
-        │       └── ProfileEditCard.jsx  # NEW - avatar + nom
+        │       ├── ProfileEditCard.jsx    # Avatar + nom
+        │       └── MessagingSection.jsx   # Messages + photos
         ├── pages/
-        │   ├── ProfilePage.js  # Intègre ProfileEditCard
-        │   └── HomePage.js     # Affiche avatar + displayName
+        │   ├── ProfilePage.js
+        │   └── HomePage.js
         └── utils/
-            └── api.js          # auth.updateProfile()
+            └── api.js
 ```
 
-## API Endpoints (Profile)
+## API Endpoints
+
+### Profile
 - `PUT /api/auth/profile` - Update display_name and avatar
-  - Body: `{ display_name?: string, avatar?: string (base64) }`
-  - Validation: display_name max 50 chars, avatar max 500KB
-- `GET /api/auth/me` - Returns user with display_name and avatar fields
+- `GET /api/auth/me` - Returns user with display_name and avatar
+
+### Contact/Messages
+- `POST /api/contact/send` - Send message with optional images (max 3)
+- `GET /api/contact/my-messages` - Get messages with images
+- `POST /api/contact/messages/{id}/reply` - Reply with optional images
