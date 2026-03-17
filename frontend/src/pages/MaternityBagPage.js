@@ -192,6 +192,74 @@ export default function MaternityBagPage() {
           </p>
         </Card>
 
+        {/* My Favorites Section */}
+        {favorites.length > 0 && (
+          <Card className="bg-gradient-to-br from-red-50 to-pink-50 rounded-3xl shadow-sm overflow-hidden border border-red-100">
+            <div className="p-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                  <Heart className="w-5 h-5 text-red-500 fill-current" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                    Mes essentiels
+                  </h2>
+                  <p className="text-sm text-slate-500">
+                    {favorites.length} article{favorites.length > 1 ? 's' : ''} favori{favorites.length > 1 ? 's' : ''}
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                {[...items, ...customItems]
+                  .filter(item => favorites.includes(item.item))
+                  .map((item, idx) => {
+                    const originalIndex = items.findIndex(i => i.item === item.item);
+                    const isCustom = originalIndex === -1;
+                    const actualIndex = isCustom 
+                      ? customItems.findIndex(i => i.item === item.item)
+                      : originalIndex;
+                    
+                    return (
+                      <div
+                        key={`fav-${idx}`}
+                        className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
+                          item.checked 
+                            ? 'bg-green-50 text-green-700' 
+                            : 'bg-white text-slate-700'
+                        }`}
+                      >
+                        <button
+                          onClick={() => toggleItem(actualIndex, !item.checked, isCustom)}
+                          className="flex items-center gap-3 flex-1 text-left"
+                          data-testid={`fav-toggle-${idx}`}
+                        >
+                          {item.checked ? (
+                            <CheckSquare className="w-5 h-5 text-green-500 flex-shrink-0" />
+                          ) : (
+                            <Square className="w-5 h-5 text-slate-300 flex-shrink-0" />
+                          )}
+                          <span className={`${item.checked ? 'line-through opacity-70' : ''}`}>
+                            {item.item}
+                          </span>
+                        </button>
+                        <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+                          {item.category}
+                        </span>
+                        <button
+                          onClick={(e) => toggleFavorite(e, item.item)}
+                          className="p-1.5 rounded-full bg-red-100 text-red-500 hover:bg-red-200 transition-all"
+                          data-testid={`fav-remove-${idx}`}
+                        >
+                          <Heart className="w-4 h-4 fill-current" />
+                        </button>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* Grouped Items with Collapsible Sections */}
         {Object.entries(groupedItems).map(([category, categoryItems]) => {
           const style = getCategoryStyle(category);

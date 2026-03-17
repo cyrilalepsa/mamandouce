@@ -21,6 +21,7 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - Liste de naissance partageable
 - Sac de maternité avec checklist
 - **Favoris pour articles du sac de maternité** (NEW 17/03)
+- **Section "Mes essentiels"** - Vue rapide des articles favoris (NEW 17/03)
 - Agenda des rendez-vous médicaux
 - Système de rappels par email ET push
 
