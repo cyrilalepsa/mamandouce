@@ -5,6 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#87CEEB" />
         <meta name="description" content="MamanDouce - Votre compagnon de grossesse complet" />
+        <!-- Force no-cache for PWA updates -->
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="0" />
         <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -34,6 +38,26 @@
         <title>MamanDouce - Compagnon de Grossesse</title>
         <script>window.addEventListener("error",function(e){if(e.error instanceof DOMException&&e.error.name==="DataCloneError"&&e.message&&e.message.includes("PerformanceServerTiming")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
         <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
+        <!-- App Version for cache busting -->
+        <script>
+            window.APP_VERSION = '2.3.0';
+            // Force SW update on load
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration().then(function(reg) {
+                    if (reg) {
+                        reg.update();
+                        // Check for waiting worker and activate it
+                        if (reg.waiting) {
+                            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                        }
+                    }
+                });
+                // Listen for new service worker
+                navigator.serviceWorker.addEventListener('controllerchange', function() {
+                    window.location.reload();
+                });
+            }
+        </script>
     </head>
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>

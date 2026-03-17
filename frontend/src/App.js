@@ -60,6 +60,15 @@ function App() {
       navigator.serviceWorker.ready.then(registration => {
         registration.update().catch(err => console.log('SW update check failed:', err));
       });
+
+      // Listen for SW messages to auto-reload on update
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'SW_UPDATED') {
+          console.log('New version available:', event.data.version);
+          // Auto-reload to get new version
+          window.location.reload();
+        }
+      });
     }
   }, []);
 

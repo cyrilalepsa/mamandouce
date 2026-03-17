@@ -62,7 +62,8 @@ self.addEventListener('activate', (event) => {
         cacheNames
           .filter((name) => {
             // Delete ANY cache that doesn't match current version
-            return !name.includes(APP_VERSION);
+            // This is aggressive but ensures updates are always applied
+            return name.startsWith('mamandouce') && !name.includes(APP_VERSION);
           })
           .map((name) => {
             console.log('[SW] Deleting old cache:', name);
@@ -74,7 +75,7 @@ self.addEventListener('activate', (event) => {
       // Immediately claim all clients
       return self.clients.claim();
     }).then(() => {
-      // Notify all clients to refresh
+      // Notify all clients to refresh immediately
       return self.clients.matchAll().then((clients) => {
         clients.forEach((client) => {
           client.postMessage({
