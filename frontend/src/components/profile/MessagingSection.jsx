@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { 
   MessageSquare, ChevronDown, ChevronUp, Send, Clock, CheckCircle, 
-  Mail, User, Shield, Inbox, MessageCircle, HelpCircle, Image, X, Camera, Trash2
+  Mail, User, Shield, Inbox, MessageCircle, HelpCircle, Image, X, Camera, Trash2, Check
 } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'sonner';
@@ -37,6 +37,12 @@ export function MessagingSection({ onMessagesRead }) {
   
   // Image viewer
   const [viewingImage, setViewingImage] = useState(null);
+  
+  // Selection mode
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedMessages, setSelectedMessages] = useState([]);
+  const [deleting, setDeleting] = useState(false);
+  const longPressTimer = useRef(null);
 
   useEffect(() => {
     loadMessages();
@@ -222,6 +228,64 @@ export function MessagingSection({ onMessagesRead }) {
     }
   };
 
+  // Long press handlers for selection mode
+  const handleLongPressStart = (messageId) => {
+    longPressTimer.current = setTimeout(() => {
+      setSelectionMode(true);
+      setSelectedMessages([messageId]);
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+    }, 500);
+  };
+
+  const handleLongPressEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const toggleMessageSelection = (messageId) => {
+    if (selectionMode) {
+      setSelectedMessages(prev => 
+        prev.includes(messageId)
+          ? prev.filter(id => id !== messageId)
+          : [...prev, messageId]
+      );
+    }
+  };
+
+  const selectAllMessages = () => {
+    setSelectedMessages(messages.map(m => m.id));
+  };
+
+  const cancelSelection = () => {
+    setSelectionMode(false);
+    setSelectedMessages([]);
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedMessages.length === 0) return;
+    
+    if (!window.confirm(`Supprimer ${selectedMessages.length} message(s) ?`)) {
+      return;
+    }
+    
+    setDeleting(true);
+    try {
+      await Promise.all(selectedMessages.map(id => api.contact.deleteMessage(id)));
+      toast.success(`${selectedMessages.length} message(s) supprimé(s)`);
+      setSelectionMode(false);
+      setSelectedMessages([]);
+      loadMessages();
+    } catch (error) {
+      toast.error('Erreur lors de la suppression');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const tabs = [
     { id: 'exchanges', label: 'Mes échanges', icon: MessageCircle, count: messages.length },
     { id: 'contact', label: 'Contacter', icon: HelpCircle, count: null },
@@ -259,6 +323,46 @@ export function MessagingSection({ onMessagesRead }) {
       {/* Mes échanges Tab */}
       {activeTab === 'exchanges' && (
         <div className="space-y-3">
+          {/* Selection Mode Bar */}
+          {selectionMode && (
+            <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={cancelSelection}
+                  className="p-2 rounded-full bg-white hover:bg-slate-100"
+                >
+                  <X className="w-4 h-4 text-slate-600" />
+                </button>
+                <span className="text-sm font-semibold text-purple-700">
+                  {selectedMessages.length} sélectionné(s)
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={selectAllMessages}
+                  className="text-xs bg-purple-100 text-purple-700 px-3 py-1.5 rounded-full hover:bg-purple-200"
+                >
+                  Tout
+                </button>
+                <button
+                  onClick={handleDeleteSelected}
+                  disabled={selectedMessages.length === 0 || deleting}
+                  className="text-xs bg-red-500 text-white px-3 py-1.5 rounded-full hover:bg-red-600 disabled:opacity-50 flex items-center gap-1"
+                >
+                  <Trash2 className="w-3 h-3" />
+                  {deleting ? '...' : 'Supprimer'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Hint for long press */}
+          {!selectionMode && messages.length > 0 && (
+            <p className="text-xs text-slate-400 text-center">
+              Appui long pour sélectionner plusieurs messages
+            </p>
+          )}
+
           {loading ? (
             <div className="text-center py-8">
               <div className="animate-spin w-6 h-6 border-2 border-pink-400 border-t-transparent rounded-full mx-auto"></div>
@@ -278,30 +382,55 @@ export function MessagingSection({ onMessagesRead }) {
             messages.map((msg) => {
               const hasUnreadReply = msg.admin_reply && !msg.user_read_reply;
               const isExpanded = expandedMessage === msg.id;
+              const isSelected = selectedMessages.includes(msg.id);
               
               return (
                 <div 
                   key={msg.id} 
                   className={`rounded-2xl border transition-all ${
-                    hasUnreadReply 
-                      ? 'border-pink-300 bg-pink-50' 
-                      : 'border-slate-100 bg-slate-50'
+                    isSelected
+                      ? 'border-purple-400 bg-purple-50 ring-2 ring-purple-200'
+                      : hasUnreadReply 
+                        ? 'border-pink-300 bg-pink-50' 
+                        : 'border-slate-100 bg-slate-50'
                   }`}
                 >
                   {/* Message Header */}
                   <div 
-                    onClick={() => handleExpand(msg.id)}
-                    className="p-4 cursor-pointer hover:bg-white/50 rounded-2xl transition-colors"
+                    onMouseDown={() => handleLongPressStart(msg.id)}
+                    onMouseUp={handleLongPressEnd}
+                    onMouseLeave={handleLongPressEnd}
+                    onTouchStart={() => handleLongPressStart(msg.id)}
+                    onTouchEnd={handleLongPressEnd}
+                    onClick={() => {
+                      if (selectionMode) {
+                        toggleMessageSelection(msg.id);
+                      } else {
+                        handleExpand(msg.id);
+                      }
+                    }}
+                    className="p-4 cursor-pointer hover:bg-white/50 rounded-2xl transition-colors select-none"
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
+                    <div className="flex items-start gap-3">
+                      {/* Selection Checkbox */}
+                      {selectionMode && (
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                          isSelected 
+                            ? 'bg-purple-500 border-purple-500' 
+                            : 'border-slate-300 bg-white'
+                        }`}>
+                          {isSelected && <Check className="w-4 h-4 text-white" />}
+                        </div>
+                      )}
+                      
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-semibold text-slate-700 text-sm">{msg.subject || 'Sans sujet'}</h4>
+                          <h4 className="font-semibold text-slate-700 text-sm truncate">{msg.subject || 'Sans sujet'}</h4>
                           {hasUnreadReply && (
-                            <span className="bg-pink-500 text-white text-xs px-2 py-0.5 rounded-full animate-pulse">Nouveau</span>
+                            <span className="bg-pink-500 text-white text-xs px-2 py-0.5 rounded-full animate-pulse flex-shrink-0">Nouveau</span>
                           )}
                           {msg.admin_reply && !hasUnreadReply && (
-                            <CheckCircle className="w-4 h-4 text-green-500" />
+                            <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                           )}
                         </div>
                         <p className="text-xs text-slate-500 line-clamp-1">{msg.message}</p>
@@ -310,16 +439,19 @@ export function MessagingSection({ onMessagesRead }) {
                           {formatDate(msg.created_at)}
                         </p>
                       </div>
-                      {isExpanded ? (
-                        <ChevronUp className="w-5 h-5 text-slate-400" />
-                      ) : (
-                        <ChevronDown className="w-5 h-5 text-slate-400" />
+                      
+                      {!selectionMode && (
+                        isExpanded ? (
+                          <ChevronUp className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                        )
                       )}
                     </div>
                   </div>
                   
                   {/* Expanded Content */}
-                  {isExpanded && (
+                  {isExpanded && !selectionMode && (
                     <div className="px-4 pb-4 space-y-3 border-t border-slate-200 pt-3">
                       {/* Delete button */}
                       <div className="flex justify-end">
