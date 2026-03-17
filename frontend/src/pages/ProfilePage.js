@@ -260,11 +260,11 @@ function ProfilePage() {
               onUpdate={(updatedUser) => setUser(prev => ({ ...prev, ...updatedUser }))}
             />
             
-            {/* Section Mon Compte - Toujours visible en premier */}
+            {/* Section Mon Compte */}
             <CollapsibleSection
               title="Mon compte"
               icon={User}
-              defaultOpen={true}
+              defaultOpen={false}
               iconBg="bg-gradient-to-br from-purple-100 to-pink-100"
               iconColor="text-purple-600"
               data-testid="account-section"

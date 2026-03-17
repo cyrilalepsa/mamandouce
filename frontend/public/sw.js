@@ -2,7 +2,7 @@
 
 // VERSION - Increment this to force cache update
 // IMPORTANT: Increment this version for every deployment with UI/text changes!
-const APP_VERSION = '2.3.3';
+const APP_VERSION = '2.3.4';
 const CACHE_NAME = `mamandouce-v${APP_VERSION}`;
 const STATIC_CACHE = `mamandouce-static-v${APP_VERSION}`;
 const DYNAMIC_CACHE = `mamandouce-dynamic-v${APP_VERSION}`;

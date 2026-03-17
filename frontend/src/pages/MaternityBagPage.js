@@ -263,7 +263,7 @@ export default function MaternityBagPage() {
         {/* Grouped Items with Collapsible Sections */}
         {Object.entries(groupedItems).map(([category, categoryItems]) => {
           const style = getCategoryStyle(category);
-          const isExpanded = expandedCategories[category] ?? true;
+          const isExpanded = expandedCategories[category] ?? false;
           const checkedCount = categoryItems.filter(i => i.checked).length;
           
           return (

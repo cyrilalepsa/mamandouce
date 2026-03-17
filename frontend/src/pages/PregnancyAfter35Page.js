@@ -126,7 +126,7 @@ export default function PregnancyAfter35Page() {
           title="Fertilité après 35 ans" 
           icon={Sparkles} 
           color="pink"
-          defaultOpen={true}
+          defaultOpen={false}
         >
           <div className="space-y-4">
             <p className="text-sm text-slate-600">
