@@ -7,7 +7,8 @@ import PageHeader from '../components/PageHeader';
 
 function PricingPage() {
   const navigate = useNavigate();
-  const [showFAQ, setShowFAQ] = useState(null); // Index de la question FAQ ouverte
+  const [faqOpen, setFaqOpen] = useState(false); // Section FAQ ouverte ou non
+  const [openQuestion, setOpenQuestion] = useState(null); // Index de la question ouverte
 
   const featuresStandard = [
     { text: 'Calculateur de grossesse basique', included: true },
@@ -194,51 +195,62 @@ function PricingPage() {
           </div>
         </Card>
 
-        {/* FAQ en bas de page */}
-        <Card className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 mb-20">
-          <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-            <HelpCircle className="w-5 h-5 text-indigo-500" />
-            Questions fréquentes
-          </h3>
-          <div className="space-y-2">
-            {[
-              {
-                question: "Quelle est la différence entre Standard et Premium ?",
-                answer: "En Standard, vous avez accès aux conseils des 4 premières semaines et à 5 scans par semaine. En Premium, vous débloquez les 41 semaines de conseils, le scanner illimité et toutes les fonctionnalités avancées."
-              },
-              {
-                question: "Comment fonctionne le paiement ?",
-                answer: "Paiement sécurisé unique de 27€ pour 9 mois d'accès complet. Sans renouvellement automatique."
-              },
-              {
-                question: "Que se passe-t-il après les 9 mois ?",
-                answer: "Votre compte reste actif en version Standard. Si vous avez acheté le post-partum, vous gardez l'accès pendant 6 mois après l'accouchement."
-              },
-              {
-                question: "Comment accéder au suivi post-partum ?",
-                answer: "Vous pouvez acheter l'option (8€) à tout moment. Le contenu sera débloqué après avoir confirmé votre accouchement via l'icône bébé dans Profil → Informations de grossesse."
-              },
-              {
-                question: "Puis-je être remboursée en cas de fausse couche ?",
-                answer: "Oui, nous comprenons cette situation difficile. Envoyez une attestation médicale via les paramètres et nous vous remboursons au prorata des mois restants."
-              }
-            ].map((faq, index) => (
-              <div key={index} className="border border-slate-200 rounded-xl overflow-hidden">
-                <button
-                  onClick={() => setShowFAQ(showFAQ === index ? null : index)}
-                  className="w-full p-3 flex items-center justify-between text-left bg-slate-50 hover:bg-slate-100 transition-colors"
-                >
-                  <span className="font-medium text-slate-700 pr-2">{faq.question}</span>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform ${showFAQ === index ? 'rotate-180' : ''}`} />
-                </button>
-                {showFAQ === index && (
-                  <div className="p-3 bg-white border-t border-slate-200 text-slate-600 text-sm">
-                    {faq.answer}
-                  </div>
-                )}
+        {/* FAQ en section déroulante */}
+        <Card className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mb-20">
+          <button
+            onClick={() => setFaqOpen(!faqOpen)}
+            className="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl flex items-center justify-center">
+                <HelpCircle className="w-5 h-5 text-indigo-600" />
               </div>
-            ))}
-          </div>
+              <h3 className="font-bold text-slate-700">Questions fréquentes</h3>
+            </div>
+            <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${faqOpen ? 'rotate-180' : ''}`} />
+          </button>
+          
+          {faqOpen && (
+            <div className="px-4 pb-4 space-y-2 animate-fade-in">
+              {[
+                {
+                  question: "Quelle est la différence entre Standard et Premium ?",
+                  answer: "En Standard, vous avez accès aux conseils des 4 premières semaines et à 5 scans par semaine. En Premium, vous débloquez les 41 semaines de conseils, le scanner illimité et toutes les fonctionnalités avancées."
+                },
+                {
+                  question: "Comment fonctionne le paiement ?",
+                  answer: "Paiement sécurisé unique de 27€ pour 9 mois d'accès complet. Sans renouvellement automatique."
+                },
+                {
+                  question: "Que se passe-t-il après les 9 mois ?",
+                  answer: "Votre compte reste actif en version Standard. Si vous avez acheté le post-partum, vous gardez l'accès pendant 6 mois après l'accouchement."
+                },
+                {
+                  question: "Comment accéder au suivi post-partum ?",
+                  answer: "Vous pouvez acheter l'option (8€) à tout moment. Le contenu sera débloqué après avoir confirmé votre accouchement via l'icône bébé dans Profil → Informations de grossesse."
+                },
+                {
+                  question: "Puis-je être remboursée en cas de fausse couche ?",
+                  answer: "Oui, nous comprenons cette situation difficile. Envoyez une attestation médicale via les paramètres et nous vous remboursons au prorata des mois restants."
+                }
+              ].map((faq, index) => (
+                <div key={index} className="border border-slate-200 rounded-xl overflow-hidden">
+                  <button
+                    onClick={() => setOpenQuestion(openQuestion === index ? null : index)}
+                    className="w-full p-3 flex items-center justify-between text-left bg-slate-50 hover:bg-slate-100 transition-colors"
+                  >
+                    <span className="font-medium text-slate-700 pr-2">{faq.question}</span>
+                    <ChevronDown className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform ${openQuestion === index ? 'rotate-180' : ''}`} />
+                  </button>
+                  {openQuestion === index && (
+                    <div className="p-3 bg-white border-t border-slate-200 text-slate-600 text-sm">
+                      {faq.answer}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </Card>
       </div>
     </div>
