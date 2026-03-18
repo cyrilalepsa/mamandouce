@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carte de Visite MamanDouce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,7 +13,7 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Quicksand', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
             min-height: 100vh;
             padding: 40px 20px;
@@ -22,6 +23,7 @@
             text-align: center;
             color: #1e293b;
             margin-bottom: 10px;
+            font-family: 'Quicksand', sans-serif;
         }
         
         .subtitle {
@@ -76,7 +78,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #ec4899, #a855f7);
+            background: linear-gradient(90deg, #f472b6, #fb7185, #f97316);
         }
         
         .logo-icon {
@@ -85,50 +87,55 @@
         }
         
         .brand-name {
-            font-size: 28px;
-            font-weight: bold;
-            background: linear-gradient(90deg, #ec4899, #a855f7);
+            font-size: 36px;
+            font-weight: 600;
+            font-family: 'Dancing Script', cursive;
+            background: linear-gradient(90deg, #f472b6, #fb7185, #f97316);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: 0 2px 4px rgba(244, 114, 182, 0.15);
         }
         
         .tagline {
             color: #64748b;
-            font-size: 14px;
-            margin-top: 5px;
+            font-size: 13px;
+            margin-top: 8px;
+            font-family: 'Quicksand', sans-serif;
         }
         
         .qr-section {
             display: flex;
             align-items: center;
             gap: 15px;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         
         .qr-placeholder {
-            width: 60px;
-            height: 60px;
-            border: 2px dashed #ec4899;
+            width: 55px;
+            height: 55px;
+            border: 2px dashed #f472b6;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
-            color: #ec4899;
+            font-size: 9px;
+            color: #f472b6;
             text-align: center;
+            font-weight: 600;
         }
         
         .qr-text {
-            font-size: 12px;
+            font-size: 11px;
             color: #64748b;
+            line-height: 1.4;
         }
         
         /* VERSO */
         .card-verso {
-            background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+            background: linear-gradient(135deg, #f472b6 0%, #fb7185 50%, #f97316 100%);
             color: white;
-            padding: 20px 25px;
+            padding: 18px 22px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -139,11 +146,12 @@
         }
         
         .features-list li {
-            font-size: 12px;
-            margin-bottom: 6px;
+            font-size: 11px;
+            margin-bottom: 5px;
             display: flex;
             align-items: center;
             gap: 8px;
+            font-family: 'Quicksand', sans-serif;
         }
         
         .features-list li::before {
@@ -151,28 +159,29 @@
             font-weight: bold;
         }
         
+        .features-list li.highlight {
+            font-weight: 700;
+            font-size: 12px;
+        }
+        
         .contact-section {
             border-top: 1px solid rgba(255,255,255,0.3);
             padding-top: 12px;
-            margin-top: 10px;
+            margin-top: 8px;
         }
         
         .contact-row {
             display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            margin-bottom: 4px;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 12px;
+            font-family: 'Quicksand', sans-serif;
         }
         
-        .promo-badge {
-            background: white;
-            color: #ec4899;
-            padding: 8px 15px;
-            border-radius: 20px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 12px;
-            margin-top: 10px;
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         /* Instructions d'impression */
@@ -191,11 +200,13 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            font-family: 'Quicksand', sans-serif;
         }
         
         .print-instructions ul {
             color: #475569;
             line-height: 1.8;
+            font-family: 'Quicksand', sans-serif;
         }
         
         .print-instructions li {
@@ -218,10 +229,46 @@
             padding: 15px;
             margin-top: 20px;
             border-radius: 0 8px 8px 0;
+            font-family: 'Quicksand', sans-serif;
         }
         
         .tip-box strong {
             color: #92400e;
+        }
+        
+        .download-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            font-family: 'Quicksand', sans-serif;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .download-btn.pdf {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        
+        .download-btn.png {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
         }
         
         @media print {
@@ -229,7 +276,7 @@
                 background: white;
                 padding: 0;
             }
-            .print-instructions {
+            .print-instructions, .download-buttons {
                 display: none;
             }
             .card {
@@ -250,7 +297,7 @@
             <div class="card card-recto">
                 <div class="logo-icon">🤱</div>
                 <div class="brand-name">MamanDouce</div>
-                <div class="tagline">L'app qui accompagne votre grossesse</div>
+                <div class="tagline">Votre compagnon de grossesse</div>
                 <div class="qr-section">
                     <div class="qr-placeholder">QR<br>CODE</div>
                     <div class="qr-text">Scannez pour<br>télécharger l'app</div>
@@ -263,26 +310,19 @@
             <div class="card-label">VERSO</div>
             <div class="card card-verso">
                 <ul class="features-list">
+                    <li class="highlight">Suivi et calcul des règles et ovulation</li>
                     <li>Suivi semaine par semaine</li>
                     <li>Scanner d'aliments autorisés</li>
                     <li>Chatbot IA disponible 24/7</li>
                     <li>Recettes post-partum</li>
-                    <li>100% adapté à la France 🇫🇷</li>
+                    <li>100% adapté à la France</li>
                 </ul>
                 
                 <div class="contact-section">
                     <div class="contact-row">
-                        <span>📱 App Store & Google Play</span>
-                        <span>🌐 mamandouce.fr</span>
+                        <span class="contact-item">📞 06 08 76 67 38</span>
+                        <span class="contact-item">📧 cyrilalepsa@gmail.com</span>
                     </div>
-                    <div class="contact-row">
-                        <span>📧 contact@mamandouce.fr</span>
-                        <span>📷 @mamandouce_app</span>
-                    </div>
-                </div>
-                
-                <div class="promo-badge">
-                    CODE PROMO : BIENVENUE • -20%
                 </div>
             </div>
         </div>
@@ -297,17 +337,18 @@
             <li><strong>Impression :</strong> Recto-verso, quadrichromie (CMJN)</li>
             <li>
                 <strong>Couleurs :</strong><br>
-                <span class="color-swatch" style="background: #ec4899;"></span> Rose principal : #EC4899<br>
-                <span class="color-swatch" style="background: #a855f7;"></span> Violet accent : #A855F7<br>
+                <span class="color-swatch" style="background: #f472b6;"></span> Rose principal : #F472B6<br>
+                <span class="color-swatch" style="background: #fb7185;"></span> Rose accent : #FB7185<br>
+                <span class="color-swatch" style="background: #f97316;"></span> Orange coral : #F97316<br>
                 <span class="color-swatch" style="background: #1e293b;"></span> Texte foncé : #1E293B
             </li>
             <li><strong>Quantité suggérée :</strong> 500 exemplaires (~40-60€ chez Vistaprint, Moo, ou imprimeur local)</li>
         </ul>
         
         <div class="tip-box">
-            <strong>💡 Astuce :</strong> Générez votre QR Code sur <a href="https://www.qr-code-generator.com/" target="_blank">qr-code-generator.com</a> 
-            en pointant vers votre lien App Store/Play Store. Vous pouvez aussi créer un lien court personnalisé 
-            (ex: mamandouce.fr/app) qui redirige vers le store approprié selon l'appareil.
+            <strong>💡 QR Code :</strong> Une fois votre application publiée sur Google Play, générez votre QR Code sur 
+            <a href="https://www.qr-code-generator.com/" target="_blank">qr-code-generator.com</a> 
+            en pointant vers votre lien Play Store. Vous pourrez ensuite remplacer le placeholder par le vrai QR code.
         </div>
     </div>
 </body>
