@@ -15,13 +15,13 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - Scanner d'aliments (vérification compatibilité grossesse)
 - Bibliothèque alimentaire complète
 - Recettes adaptées avec système de partage
-- **Compteur de vues pour recettes partagées** (NEW 17/03)
+- Compteur de vues pour recettes partagées
 
 ### 3. Organisation
 - Liste de naissance partageable
 - Sac de maternité avec checklist
-- **Favoris pour articles du sac de maternité** (NEW 17/03)
-- **Section "Mes essentiels"** - Vue rapide des articles favoris (NEW 17/03)
+- Favoris pour articles du sac de maternité
+- Section "Mes essentiels" - Vue rapide des articles favoris
 - Agenda des rendez-vous médicaux
 - Système de rappels par email ET push
 
@@ -46,15 +46,9 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - Personnalisation complète dans les paramètres
 
 ### 8. Personnalisation du Profil
-- **Avatar personnalisable**
-  - 6 couleurs de peau
-  - 10 styles de coiffure (inclut hijab)
-  - 8 couleurs de cheveux
-  - 4 types de lunettes
-  - 2 tranches d'âge
-  - Option photo réelle (caméra/galerie)
+- Avatar personnalisable (6 couleurs de peau, 10 coiffures, hijab)
 - Nom d'affichage personnalisé
-- Avatar SVG dynamique affiché partout
+- Avatar SVG dynamique
 
 ### 9. Messagerie avec Photos
 - Joindre jusqu'à 3 photos par message
@@ -62,13 +56,30 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - Visualisation plein écran
 
 ### 10. Grossesse après 35 ans
-Section dédiée avec :
-- Fertilité après 35 ans
-- Examens recommandés (DPNI, amniocentèse)
-- Risques et précautions
-- Suivi médical renforcé
-- Accompagnement psychologique
-- Avantages d'être maman plus tard
+Section dédiée avec fertilité, examens, risques, accompagnement
+
+## Restrictions Premium/Gratuit (NEW 18/03/2026)
+
+### Fonctionnalités GRATUITES
+| Fonctionnalité | Limite |
+|---|---|
+| Scanner d'aliments | 5 scans/semaine |
+| Conseils hebdomadaires | Semaines 1-4 uniquement |
+| Évolution de l'embryon | Semaines 1-4 uniquement |
+| Calculateur de grossesse | Illimité |
+| Calendrier de fertilité | Illimité |
+| Liste de naissance | Illimité |
+
+### Fonctionnalités PREMIUM
+| Fonctionnalité | Accès |
+|---|---|
+| Scanner d'aliments | Illimité |
+| Conseils hebdomadaires | 41 semaines complètes |
+| Évolution de l'embryon | 40 semaines complètes |
+| Chatbot IA | Accès complet |
+| Sac de maternité | Accès complet |
+| Images embryon HD | Toutes les semaines |
+| Démarches administratives | Toutes les semaines |
 
 ## Tech Stack
 - **Frontend:** React, PWA, Shadcn/UI, Capacitor (Android)
@@ -77,19 +88,48 @@ Section dédiée avec :
 
 ## Recent Changes
 
-### Session du 17/03/2026
-- ✅ **Compteur de vues** pour recettes partagées (affiché avec icône œil)
-- ✅ **Favoris sac de maternité** (icône cœur sur chaque article)
-- ✅ Tests automatisés validés (100% de réussite)
+### Session du 18/03/2026
+- ✅ **Restrictions Premium implémentées** - Différenciation claire entre utilisateurs gratuits et premium
+- ✅ **Bug scanner corrigé** - La page blanche pour utilisateurs gratuits est résolue
+- ✅ **SubscriptionGate refactorisé** - Utilise maintenant un Context React pour partager le statut d'abonnement
+- ✅ **Composant PremiumFeatureLock créé** - Composant réutilisable pour bloquer les fonctionnalités premium
+- ✅ **Nettoyage du code** - Suppression du fichier subscription.js inutilisé
 
-### Session précédente (17/03/2026)
-- ✅ Avatar personnalisable avec système de création
-- ✅ 10 styles de coiffures multi-ethniques
-- ✅ Support du hijab
-- ✅ Nouvelle page "Grossesse après 35 ans"
-- ✅ 6 sections de contenu médical complet
-- ✅ Photos dans messagerie
-- ✅ Notifications push natives
+### Session du 17/03/2026
+- Compteur de vues pour recettes partagées
+- Favoris sac de maternité
+- Avatar personnalisable
+- Correction bug traduction automatique
+- Suppression/sélection multiple des messages
+- Point rouge notification messages non lus
+
+## Architecture
+```
+/app
+├── backend/
+│   ├── routes/
+│   │   ├── food.py         # Logique restriction scans
+│   │   ├── referral.py     # Endpoint full-status avec scans_this_week
+│   │   └── contact.py      # Suppression messages
+│   └── models/schemas.py
+└── frontend/
+    └── src/
+        ├── components/
+        │   ├── SubscriptionGate.jsx    # Context d'abonnement (refactorisé)
+        │   ├── PremiumFeatureLock.jsx  # Composant blocage premium (NEW)
+        │   └── ui/
+        └── pages/
+            ├── FoodScanner.js          # Restrictions scans
+            ├── WeeklyTipsPage.js       # Restrictions semaines 1-4
+            ├── EmbryoTracker.js        # Restrictions semaines 1-4
+            ├── ChatbotPage.js          # Blocage complet
+            └── MaternityBagPage.js     # Blocage complet
+```
+
+## API Endpoints
+- `GET /api/subscription/full-status` - Retourne is_premium, scans_this_week, scans_limit
+- `POST /api/scan/barcode` - Vérifie limite scans, retourne 403 si dépassée
+- `POST /api/scan/search` - Vérifie limite scans, retourne 403 si dépassée
 
 ## Backlog
 
@@ -97,42 +137,17 @@ Section dédiée avec :
 - [ ] Guide publication Google Play Store
 
 ### P2 - Moyenne priorité
-- [x] ~~Compteur de vues pour recettes partagées~~ ✅
-- [x] ~~Favoris pour articles du sac de maternité~~ ✅
-- [ ] Fonction "Tout ouvrir/Tout fermer" pour sections
+- [ ] Résolution bannière "Spinning up servers" (artefact preview)
+- [ ] Fonction "Tout ouvrir/Tout fermer" pour sections déroulantes
 
 ### P3 - Future
 - [ ] Mode hors-ligne amélioré
 - [ ] Statistiques d'utilisation
 
 ## Known Issues
-- Bannière "Spinning up servers" visible sur environnement preview (disparaîtra en production)
+- Bannière "Spinning up servers" visible sur environnement preview uniquement (disparaîtra en production)
+- L'URL de preview contient "femme-enceinte-app" - en production, utilisez un domaine personnalisé
 
 ## Credentials (Test)
 - **Admin:** cyrilalepsa@gmail.com / Cyc@dmin9630
-
-## Architecture
-```
-/app
-├── backend/
-│   ├── routes/
-│   │   ├── auth.py         # avatar_config support
-│   │   ├── contact.py      # images in messages
-│   │   └── postpartum.py   # maternity-bag/favorites + recipe views
-│   └── models/schemas.py   # User with avatar_config
-└── frontend/
-    └── src/
-        ├── components/profile/
-        │   ├── AvatarBuilder.jsx     # Avatar creation system
-        │   └── ProfileEditCard.jsx   # Integration
-        └── pages/
-            ├── HomePage.js           # AvatarPreview display
-            ├── MaternityBagPage.js   # Heart favorites icons
-            ├── SharedRecipesPage.js  # View counter with Eye icon
-            └── PregnancyAfter35Page.js  # New content page
-```
-
-## API Endpoints (New)
-- `GET /api/maternity-bag/favorites` - Liste des articles favoris
-- `POST /api/maternity-bag/favorites/toggle` - Ajouter/retirer un favori
-- `GET /api/postpartum/shared/{shareCode}` - Retourne maintenant le compteur de vues
+- **Test Gratuit:** test.free@example.com / Test1234!

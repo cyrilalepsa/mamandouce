@@ -9,10 +9,13 @@ import api from '../utils/api';
 import { toast } from 'sonner';
 import { Html5Qrcode } from 'html5-qrcode';
 import PageHeader from '../components/PageHeader';
+import { useSubscription } from '../components/SubscriptionGate';
 
 function FoodScanner() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isPremium: isPremiumContext, isAdmin, subscriptionStatus, loading: subscriptionLoading } = useSubscription();
+  
   const [barcode, setBarcode] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [result, setResult] = useState(null);
@@ -28,14 +31,13 @@ function FoodScanner() {
   const html5QrCodeRef = useRef(null);
   const scannerRef = useRef(null);
   
-  // Subscription state
-  const [isPremium, setIsPremium] = useState(false);
-  const [scansRemaining, setScansRemaining] = useState(5);
-  const [subscriptionLoading, setSubscriptionLoading] = useState(true);
+  // Compute premium status from context
+  const isPremium = isPremiumContext || isAdmin;
+  const scansThisWeek = subscriptionStatus?.scans_this_week || 0;
+  const scansRemaining = isPremium ? -1 : Math.max(0, 5 - scansThisWeek);
 
   useEffect(() => {
     loadFavorites();
-    loadSubscriptionStatus();
     // Check if we should open the add modal
     if (location.state?.openAddModal) {
       setShowAddFoodModal(true);
@@ -44,23 +46,6 @@ function FoodScanner() {
       stopScanner();
     };
   }, [location.state]);
-
-  const loadSubscriptionStatus = async () => {
-    try {
-      const response = await api.subscription.getFullStatus();
-      const data = response.data;
-      setIsPremium(data.is_premium || data.subscription_status === 'premium');
-      if (!data.is_premium) {
-        setScansRemaining(Math.max(0, 5 - (data.scans_this_week || 0)));
-      } else {
-        setScansRemaining(-1); // Illimité
-      }
-    } catch (error) {
-      console.error('Erreur chargement abonnement:', error);
-    } finally {
-      setSubscriptionLoading(false);
-    }
-  };
 
   const loadFavorites = async () => {
     try {
@@ -142,10 +127,6 @@ function FoodScanner() {
       setResult(response.data);
       setSearchResults([]);
       toast.success('Produit trouvé !');
-      // Décrémenter le compteur local
-      if (!isPremium) {
-        setScansRemaining(prev => Math.max(0, prev - 1));
-      }
     } catch (error) {
       if (error.response?.status === 403) {
         toast.error(
@@ -161,7 +142,6 @@ function FoodScanner() {
           </div>,
           { duration: 5000 }
         );
-        setScansRemaining(0);
       } else {
         toast.error('Erreur lors du scan');
       }
@@ -232,11 +212,6 @@ function FoodScanner() {
       if (response.data.length === 0) {
         setNotFound(true);
         setNewFoodData(prev => ({ ...prev, name: searchQuery }));
-      } else {
-        // Décrémenter le compteur local
-        if (!isPremium) {
-          setScansRemaining(prev => Math.max(0, prev - 1));
-        }
       }
     } catch (error) {
       if (error.response?.status === 403) {
@@ -253,7 +228,6 @@ function FoodScanner() {
           </div>,
           { duration: 5000 }
         );
-        setScansRemaining(0);
       } else {
         toast.error('Erreur lors de la recherche');
       }

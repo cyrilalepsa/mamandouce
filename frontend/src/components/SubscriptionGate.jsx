@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect, createContext, useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 import api from '../utils/api';
 
-// Pages accessibles sans abonnement
-const FREE_PAGES = [
-  '/subscription/checkout',
-  '/subscription/success',
-  '/subscription/cancel',
-  '/pricing',
-  '/privacy',
-  '/profile',
-  '/settings'
-];
+// Context pour partager le statut d'abonnement dans toute l'app
+const SubscriptionContext = createContext({
+  isPremium: false,
+  isAdmin: false,
+  subscriptionStatus: null,
+  loading: true,
+  refreshStatus: () => {}
+});
+
+export const useSubscription = () => useContext(SubscriptionContext);
 
 // Pages accessibles sans authentification
 const PUBLIC_PAGES = [
@@ -25,24 +25,12 @@ const PUBLIC_PAGES = [
 
 export function SubscriptionGate({ children }) {
   const [loading, setLoading] = useState(true);
-  const [hasSubscription, setHasSubscription] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+  const [isPremium, setIsPremium] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    checkSubscription();
-  }, [location.pathname]);
-
   const checkSubscription = async () => {
-    // Si c'est une page gratuite, ne pas vérifier
-    const isFreePage = FREE_PAGES.some(page => location.pathname.startsWith(page));
-    if (isFreePage) {
-      setLoading(false);
-      setHasSubscription(true);
-      return;
-    }
-
     try {
       // Vérifier le statut de l'utilisateur
       const userResponse = await api.auth.getMe();
@@ -51,32 +39,29 @@ export function SubscriptionGate({ children }) {
       // Les admins ont accès à tout
       if (user.role === 'admin') {
         setIsAdmin(true);
-        setHasSubscription(true);
-        setLoading(false);
-        return;
+        setIsPremium(true);
       }
 
       // Vérifier le statut d'abonnement
       const subResponse = await api.subscription.getFullStatus();
       const status = subResponse.data;
       
-      // Un utilisateur a un abonnement actif s'il est premium OU s'il a accès post-partum
-      const hasActiveSubscription = status.is_premium || status.postpartum_purchased;
+      setSubscriptionStatus(status);
+      setIsPremium(status.is_premium || user.role === 'admin');
       
-      setHasSubscription(hasActiveSubscription);
-      
-      // Si pas d'abonnement, rediriger vers la page de choix
-      if (!hasActiveSubscription) {
-        navigate('/subscription/checkout?onboarding=true', { replace: true });
-      }
     } catch (error) {
       console.error('Erreur vérification abonnement:', error);
-      // En cas d'erreur, laisser passer (fail open)
-      setHasSubscription(true);
+      // En cas d'erreur, définir comme utilisateur gratuit
+      setIsPremium(false);
+      setSubscriptionStatus({ is_premium: false, subscription_status: 'free' });
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    checkSubscription();
+  }, [location.pathname]);
 
   if (loading) {
     return (
@@ -89,7 +74,17 @@ export function SubscriptionGate({ children }) {
     );
   }
 
-  return children;
+  return (
+    <SubscriptionContext.Provider value={{ 
+      isPremium, 
+      isAdmin, 
+      subscriptionStatus, 
+      loading,
+      refreshStatus: checkSubscription 
+    }}>
+      {children}
+    </SubscriptionContext.Provider>
+  );
 }
 
 export function isPublicPage(pathname) {

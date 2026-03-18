@@ -2,15 +2,20 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { BookOpen, ChevronRight, AlertTriangle } from 'lucide-react';
+import { BookOpen, ChevronRight, AlertTriangle, Lock, Crown } from 'lucide-react';
 import api from '../utils/api';
 import PageHeader from '../components/PageHeader';
+import { useSubscription } from '../components/SubscriptionGate';
 
 function WeeklyTipsPage() {
   const navigate = useNavigate();
+  const { isPremium, isAdmin, loading: subscriptionLoading } = useSubscription();
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [currentTip, setCurrentTip] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState(1);
+  
+  // Semaines gratuites (1-4)
+  const FREE_WEEKS = [1, 2, 3, 4];
 
   useEffect(() => {
     loadPregnancyProfile();
@@ -27,7 +32,13 @@ function WeeklyTipsPage() {
       const response = await api.pregnancy.getProfile();
       if (response.data && response.data.current_week) {
         setPregnancyProfile(response.data);
-        setSelectedWeek(response.data.current_week);
+        // Si l'utilisateur est gratuit et sa semaine actuelle > 4, mettre semaine 4
+        const currentWeek = response.data.current_week;
+        if (!isPremium && !isAdmin && currentWeek > 4) {
+          setSelectedWeek(4);
+        } else {
+          setSelectedWeek(currentWeek);
+        }
       }
     } catch (error) {
       console.error('Erreur chargement profil:', error);
@@ -41,6 +52,14 @@ function WeeklyTipsPage() {
     } catch (error) {
       console.error('Erreur chargement conseil:', error);
     }
+  };
+
+  const handleWeekSelect = (week) => {
+    // Si l'utilisateur est gratuit et essaie de sélectionner une semaine > 4
+    if (!isPremium && !isAdmin && !FREE_WEEKS.includes(week)) {
+      return; // Ne rien faire - le bouton sera désactivé visuellement
+    }
+    setSelectedWeek(week);
   };
 
   const weeks = [
@@ -80,21 +99,48 @@ function WeeklyTipsPage() {
 
         <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
           <h3 className="text-lg font-bold text-slate-700 mb-4" style={{ fontFamily: 'Nunito, sans-serif' }}>Sélectionner une semaine</h3>
-          <div className="grid grid-cols-3 gap-2">
-            {weeks.map((item) => (
+          
+          {/* Banner pour utilisateurs gratuits */}
+          {!subscriptionLoading && !isPremium && !isAdmin && (
+            <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Lock className="w-4 h-4 text-amber-500" />
+                <span className="text-sm text-amber-700">Semaines 1-4 disponibles gratuitement</span>
+              </div>
               <button
-                key={item.week}
-                data-testid={`week-${item.week}-button`}
-                onClick={() => setSelectedWeek(item.week)}
-                className={`rounded-2xl py-3 px-4 font-semibold transition-all ${
-                  selectedWeek === item.week
-                    ? 'bg-gradient-to-r from-teal-400 to-teal-300 text-white shadow-lg'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
+                onClick={() => navigate('/pricing')}
+                className="flex items-center gap-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-3 py-1.5 rounded-full"
               >
-                S{item.week}
+                <Crown className="w-3 h-3" />
+                Tout débloquer
               </button>
-            ))}
+            </div>
+          )}
+          
+          <div className="grid grid-cols-3 gap-2">
+            {weeks.map((item) => {
+              const isLocked = !isPremium && !isAdmin && !FREE_WEEKS.includes(item.week);
+              return (
+                <button
+                  key={item.week}
+                  data-testid={`week-${item.week}-button`}
+                  onClick={() => handleWeekSelect(item.week)}
+                  disabled={isLocked}
+                  className={`relative rounded-2xl py-3 px-4 font-semibold transition-all ${
+                    selectedWeek === item.week
+                      ? 'bg-gradient-to-r from-teal-400 to-teal-300 text-white shadow-lg'
+                      : isLocked
+                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  S{item.week}
+                  {isLocked && (
+                    <Lock className="w-3 h-3 absolute top-1 right-1 text-slate-400" />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </Card>
 

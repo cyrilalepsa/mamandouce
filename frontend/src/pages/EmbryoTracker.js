@@ -2,15 +2,20 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { ArrowLeft, Baby } from 'lucide-react';
+import { ArrowLeft, Baby, Lock, Crown } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
+import { useSubscription } from '../components/SubscriptionGate';
 
 function EmbryoTracker() {
   const navigate = useNavigate();
+  const { isPremium, isAdmin, loading: subscriptionLoading } = useSubscription();
   const [currentWeek, setCurrentWeek] = useState(1);
   const [embryoData, setEmbryoData] = useState(null);
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
+  
+  // Semaines gratuites (1-4)
+  const MAX_FREE_WEEK = 4;
 
   useEffect(() => {
     loadPregnancyProfile();
@@ -27,7 +32,13 @@ function EmbryoTracker() {
       const response = await api.pregnancy.getProfile();
       if (response.data && response.data.current_week) {
         setPregnancyProfile(response.data);
-        setCurrentWeek(response.data.current_week);
+        // Si l'utilisateur est gratuit et sa semaine actuelle > 4, mettre semaine 4
+        const week = response.data.current_week;
+        if (!isPremium && !isAdmin && week > MAX_FREE_WEEK) {
+          setCurrentWeek(MAX_FREE_WEEK);
+        } else {
+          setCurrentWeek(week);
+        }
       }
     } catch (error) {
       console.error('Erreur chargement profil:', error);
@@ -44,10 +55,13 @@ function EmbryoTracker() {
   };
 
   const handleWeekChange = (newWeek) => {
-    if (newWeek >= 1 && newWeek <= 40) {
+    const maxWeek = (isPremium || isAdmin) ? 40 : MAX_FREE_WEEK;
+    if (newWeek >= 1 && newWeek <= maxWeek) {
       setCurrentWeek(newWeek);
     }
   };
+  
+  const maxWeek = (isPremium || isAdmin) ? 40 : MAX_FREE_WEEK;
 
   return (
     <div className="min-h-screen gradient-bg p-6">
@@ -78,6 +92,23 @@ function EmbryoTracker() {
         )}
 
         <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
+          {/* Banner pour utilisateurs gratuits */}
+          {!subscriptionLoading && !isPremium && !isAdmin && (
+            <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Lock className="w-4 h-4 text-amber-500" />
+                <span className="text-sm text-amber-700">Semaines 1-4 disponibles gratuitement</span>
+              </div>
+              <button
+                onClick={() => navigate('/pricing')}
+                className="flex items-center gap-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-3 py-1.5 rounded-full"
+              >
+                <Crown className="w-3 h-3" />
+                Tout débloquer
+              </button>
+            </div>
+          )}
+          
           <div className="flex items-center justify-between mb-6">
             <Button
               onClick={() => handleWeekChange(currentWeek - 1)}
@@ -94,7 +125,7 @@ function EmbryoTracker() {
             <Button
               onClick={() => handleWeekChange(currentWeek + 1)}
               data-testid="next-week-button"
-              disabled={currentWeek >= 40}
+              disabled={currentWeek >= maxWeek}
               className="bg-slate-100 text-slate-600 rounded-full px-6 py-2 font-semibold hover:bg-slate-200 disabled:opacity-50"
             >
               Suivant →
@@ -105,7 +136,7 @@ function EmbryoTracker() {
             type="range"
             data-testid="week-slider"
             min="1"
-            max="40"
+            max={maxWeek}
             value={currentWeek}
             onChange={(e) => handleWeekChange(parseInt(e.target.value))}
             className="w-full h-2 bg-gradient-to-r from-sky-200 to-pink-200 rounded-full appearance-none cursor-pointer"
@@ -115,7 +146,7 @@ function EmbryoTracker() {
           />
           <div className="flex justify-between text-xs text-slate-400 mt-2">
             <span>Semaine 1</span>
-            <span>Semaine 40</span>
+            <span>Semaine {maxWeek}</span>
           </div>
         </Card>
 
