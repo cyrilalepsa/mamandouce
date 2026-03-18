@@ -487,30 +487,69 @@ async def forgot_password(request: ForgotPasswordRequest):
             reset_link = f"{frontend_url}/reset-password?token={reset_token}"
             
             resend.Emails.send({
-                "from": SENDER_EMAIL,
+                "from": f"MamanDouce <{SENDER_EMAIL}>",
                 "to": request.email,
                 "subject": "Réinitialisation de votre mot de passe MamanDouce",
                 "html": f"""
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                    <div style="background: linear-gradient(135deg, #ec4899, #8b5cf6); padding: 30px; border-radius: 20px; text-align: center;">
-                        <h1 style="color: white; margin: 0; font-size: 28px;">MamanDouce</h1>
-                        <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Réinitialisation de mot de passe</p>
-                    </div>
-                    <div style="padding: 30px 20px;">
-                        <p style="color: #374151; font-size: 16px;">Bonjour,</p>
-                        <p style="color: #374151; font-size: 16px;">Vous avez demandé la réinitialisation de votre mot de passe.</p>
-                        <p style="color: #374151; font-size: 16px;">Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe :</p>
-                        <div style="text-align: center; margin: 30px 0;">
-                            <a href="{reset_link}" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; padding: 15px 40px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 16px; display: inline-block;">
-                                Réinitialiser mon mot de passe
-                            </a>
-                        </div>
-                        <p style="color: #6b7280; font-size: 14px;">Ce lien expire dans 1 heure.</p>
-                        <p style="color: #6b7280; font-size: 14px;">Si vous n'avez pas demandé cette réinitialisation, ignorez simplement cet email.</p>
-                        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-                        <p style="color: #9ca3af; font-size: 12px; text-align: center;">L'équipe MamanDouce</p>
-                    </div>
-                </div>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f8f9fa;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; width: 100%;">
+                    <!-- Header -->
+                    <tr>
+                        <td align="center" style="background: #ec4899; padding: 30px 20px; border-radius: 20px 20px 0 0;">
+                            <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">MamanDouce</h1>
+                            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 14px;">Réinitialisation de mot de passe</p>
+                        </td>
+                    </tr>
+                    <!-- Content -->
+                    <tr>
+                        <td style="background: white; padding: 40px 30px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <p style="color: #374151; font-size: 16px; margin: 0 0 20px 0;">Bonjour,</p>
+                            <p style="color: #374151; font-size: 16px; margin: 0 0 20px 0;">Vous avez demandé la réinitialisation de votre mot de passe.</p>
+                            <p style="color: #374151; font-size: 16px; margin: 0 0 30px 0;">Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe :</p>
+                            
+                            <!-- Button -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td align="center" style="padding: 20px 0;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                            <tr>
+                                                <td style="background: #ec4899; border-radius: 30px;">
+                                                    <a href="{reset_link}" target="_blank" style="display: block; padding: 16px 40px; color: white; text-decoration: none; font-weight: bold; font-size: 16px;">
+                                                        Réinitialiser mon mot de passe
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <p style="color: #6b7280; font-size: 14px; margin: 30px 0 10px 0;">Ce lien expire dans 1 heure.</p>
+                            <p style="color: #6b7280; font-size: 14px; margin: 0 0 30px 0;">Si vous n'avez pas demandé cette réinitialisation, ignorez simplement cet email.</p>
+                            
+                            <!-- Fallback link -->
+                            <p style="color: #9ca3af; font-size: 12px; margin: 20px 0 0 0;">Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :</p>
+                            <p style="color: #ec4899; font-size: 12px; word-break: break-all; margin: 5px 0 0 0;">{reset_link}</p>
+                            
+                            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+                            <p style="color: #9ca3af; font-size: 12px; text-align: center; margin: 0;">L'équipe MamanDouce</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
                 """
             })
             email_sent = True
