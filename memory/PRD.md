@@ -12,7 +12,7 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - Conseils hebdomadaires personnalisés (semaines 1-4 gratuites)
 
 ### 2. Alimentation
-- Scanner d'aliments (5 scans/semaine gratuits)
+- Scanner d'aliments (5 scans/semaine gratuits, illimité Premium)
 - Bibliothèque alimentaire complète
 - Recettes adaptées avec système de partage
 - Compteur de vues pour recettes partagées
@@ -34,16 +34,26 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - Chatbot IA (GPT-4o-mini)
 - Intégration Stripe pour abonnements
 - Système de codes promo et parrainage
-- **Essai gratuit 7 jours**
+- **Essai gratuit 7 jours** avec rappels automatiques
 
 ### 6. Administration
 - Panel admin complet avec **statistiques avancées**
+- **Export CSV des statistiques**
 - Export projet Android (ZIP/email)
 - Kit Business (business plan + carte de visite)
 - Protection Super Admin
 
-### 7. UI/UX Avancée
-- Bouton "Tout ouvrir / Tout fermer" sur pages Paramètres et Post-partum
+### 7. Notifications Push
+- Rappels de RDV médicaux (24h avant + jour même)
+- Conseils hebdomadaires de grossesse
+- **Rappels fin d'essai gratuit** (J-1 et jour J)
+- Personnalisation complète dans les paramètres
+
+### 8. UI/UX Avancée
+- Bouton "Tout ouvrir / Tout fermer" sur :
+  - Page Paramètres
+  - Page Post-partum
+  - Page Grossesse après 35 ans
 - Indicateur de connexion hors-ligne
 - Mode hors-ligne avec synchronisation automatique
 
@@ -84,36 +94,43 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 ### Session du 18/03/2026 (Complète)
 - ✅ **Restrictions Premium** - Différenciation gratuit/premium complète
 - ✅ **Essai gratuit 7 jours** - API et UI implémentés
-- ✅ **FAQ enrichie** - Questions sur essai et remboursement
-- ✅ **Bouton "Tout ouvrir / Tout fermer"** - Pages Paramètres et Post-partum
+- ✅ **Notifications rappel fin d'essai** - J-1 et jour J avec emails
+- ✅ **Export CSV statistiques** - Téléchargement direct depuis dashboard admin
+- ✅ **Bouton "Tout ouvrir / Tout fermer"** - Paramètres, Post-partum, Grossesse 35+
 - ✅ **Statistiques avancées admin** - Conversions, revenus, utilisation features
-- ✅ **Mode hors-ligne** - Indicateur et synchronisation (déjà présent)
 - ✅ **Mot de passe oublié** - Vérifié fonctionnel
 
 ## Architecture
 ```
 /app
 ├── backend/
+│   ├── core/
+│   │   └── scheduler.py        # +Job rappels fin d'essai (toutes les heures)
 │   └── routes/
-│       ├── admin.py            # +endpoint /admin/advanced-stats
-│       ├── payments.py         # +endpoints /trial/start, /trial/status
-│       └── referral.py         # +trial status dans full-status
+│       ├── admin.py            # +endpoint /admin/export-stats-csv
+│       └── payments.py         # +endpoints /trial/start, /trial/status
 └── frontend/
     └── src/
         ├── components/
-        │   ├── ToggleAllSections.jsx       # Composant réutilisable
-        │   ├── OfflineSyncIndicator.jsx    # Indicateur hors-ligne
+        │   ├── ToggleAllSections.jsx
         │   └── admin/
-        │       └── DashboardTab.jsx        # +Stats avancées
+        │       └── DashboardTab.jsx    # +Bouton Export CSV
         └── pages/
-            ├── SettingsPage.js             # +Bouton toggle
-            └── PostpartumPage.js           # +Bouton toggle
+            ├── SettingsPage.js         # +Bouton toggle
+            ├── PostpartumPage.js       # +Bouton toggle
+            └── PregnancyAfter35Page.js # +Bouton toggle
 ```
 
 ## API Endpoints (Nouveaux)
-- `GET /api/admin/advanced-stats` - Statistiques avancées (conversions, revenus, features)
+- `GET /api/admin/export-stats-csv` - Export statistiques en CSV
+- `GET /api/admin/advanced-stats` - Statistiques avancées (conversions, revenus)
 - `POST /api/payments/trial/start` - Démarrer l'essai gratuit
 - `GET /api/payments/trial/status` - Statut de l'essai
+
+## Scheduler Jobs
+- **send_due_reminders_job** - Toutes les minutes (rappels RDV)
+- **send_weekly_tips_push_job** - Tous les jours à 9h (conseils hebdo)
+- **send_trial_expiry_reminders_job** - Toutes les heures (rappels fin d'essai)
 
 ## Backlog
 
@@ -121,14 +138,13 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - [ ] Guide publication Google Play Store
 
 ### P2 - Complétés ✅
-- [x] Bouton "Tout ouvrir/Tout fermer" - Pages Paramètres et Post-partum
-- [x] Mode hors-ligne amélioré - Indicateur et synchronisation
-- [x] Statistiques d'utilisation - Dashboard admin complet
+- [x] Notifications push rappel fin d'essai
+- [x] Export CSV des statistiques
+- [x] Bouton toggle sur autres pages
 
 ### P3 - Future
-- [ ] Ajouter toggle à d'autres pages si nécessaire
-- [ ] Notifications push pour rappel fin d'essai
-- [ ] Export CSV des statistiques
+- [ ] Statistiques plus détaillées (graphiques temporels)
+- [ ] Notifications push personnalisables par type
 
 ## Known Issues
 - Bannière "Spinning up servers" : script de masquage en place (artefact preview)

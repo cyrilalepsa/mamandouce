@@ -7,11 +7,10 @@ import {
 } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
+import { ToggleAllSections } from '../components/ToggleAllSections';
 
 // Composant de section déroulante
-function CollapsibleSection({ title, icon: Icon, children, defaultOpen = false, color = "pink" }) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-  
+function CollapsibleSection({ title, icon: Icon, children, isOpen, onToggle, color = "pink" }) {
   const colorClasses = {
     pink: "from-pink-100 to-purple-100 text-pink-600",
     amber: "from-amber-100 to-orange-100 text-amber-600",
@@ -23,7 +22,7 @@ function CollapsibleSection({ title, icon: Icon, children, defaultOpen = false, 
   return (
     <Card className="bg-white rounded-2xl overflow-hidden border-0 shadow-sm">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={onToggle}
         className="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
       >
         <div className="flex items-center gap-3">
@@ -70,6 +69,33 @@ function BulletList({ items, color = "pink" }) {
 
 export default function PregnancyAfter35Page() {
   const navigate = useNavigate();
+  
+  // État des sections
+  const [openSections, setOpenSections] = useState({
+    fertility: false,
+    exams: false,
+    risks: false,
+    lifestyle: false,
+    support: false,
+    positive: false
+  });
+  
+  const toggleSection = (section) => {
+    setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
+  };
+  
+  const allOpen = Object.values(openSections).every(Boolean);
+  
+  const toggleAllSections = (open) => {
+    setOpenSections({
+      fertility: open,
+      exams: open,
+      risks: open,
+      lifestyle: open,
+      support: open,
+      positive: open
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-white">
@@ -121,12 +147,21 @@ export default function PregnancyAfter35Page() {
           </div>
         </Card>
 
+        {/* Toggle All Button */}
+        <div className="flex justify-end">
+          <ToggleAllSections 
+            allOpen={allOpen} 
+            onToggle={toggleAllSections}
+          />
+        </div>
+
         {/* Section 1: Fertilité après 35 ans */}
         <CollapsibleSection 
           title="Fertilité après 35 ans" 
           icon={Sparkles} 
           color="pink"
-          defaultOpen={false}
+          isOpen={openSections.fertility}
+          onToggle={() => toggleSection('fertility')}
         >
           <div className="space-y-4">
             <p className="text-sm text-slate-600">
@@ -170,6 +205,8 @@ export default function PregnancyAfter35Page() {
           title="Examens et tests recommandés" 
           icon={Stethoscope} 
           color="teal"
+          isOpen={openSections.exams}
+          onToggle={() => toggleSection('exams')}
         >
           <div className="space-y-4">
             <p className="text-sm text-slate-600">
@@ -222,6 +259,8 @@ export default function PregnancyAfter35Page() {
           title="Risques et précautions" 
           icon={AlertTriangle} 
           color="amber"
+          isOpen={openSections.risks}
+          onToggle={() => toggleSection('risks')}
         >
           <div className="space-y-4">
             <p className="text-sm text-slate-600">
@@ -269,6 +308,8 @@ export default function PregnancyAfter35Page() {
           title="Suivi médical renforcé" 
           icon={Calendar} 
           color="violet"
+          isOpen={openSections.lifestyle}
+          onToggle={() => toggleSection('lifestyle')}
         >
           <div className="space-y-4">
             <p className="text-sm text-slate-600">
@@ -316,6 +357,8 @@ export default function PregnancyAfter35Page() {
           title="Accompagnement psychologique" 
           icon={Brain} 
           color="rose"
+          isOpen={openSections.support}
+          onToggle={() => toggleSection('support')}
         >
           <div className="space-y-4">
             <p className="text-sm text-slate-600">
@@ -368,6 +411,8 @@ export default function PregnancyAfter35Page() {
           title="Les avantages d'être maman plus tard" 
           icon={Users} 
           color="pink"
+          isOpen={openSections.positive}
+          onToggle={() => toggleSection('positive')}
         >
           <div className="space-y-4">
             <div className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-4">

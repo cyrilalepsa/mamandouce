@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
-import { Users, MessageSquare, Apple, TrendingUp, Gift, Heart, BarChart3, Euro, RefreshCw } from 'lucide-react';
+import { Users, MessageSquare, Apple, TrendingUp, BarChart3, Euro, RefreshCw, Download } from 'lucide-react';
 import api from '../../utils/api';
+import { Button } from '../ui/button';
+import { toast } from 'sonner';
 
 export function DashboardTab({ globalStats, codeStats, setActiveTab, messageStats }) {
   const [advancedStats, setAdvancedStats] = useState(null);
   const [loadingAdvanced, setLoadingAdvanced] = useState(true);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     loadAdvancedStats();
@@ -22,8 +25,64 @@ export function DashboardTab({ globalStats, codeStats, setActiveTab, messageStat
     }
   };
 
+  const handleExportCSV = async () => {
+    setExporting(true);
+    try {
+      // Create a link and trigger download
+      const token = localStorage.getItem('token');
+      const API_URL = process.env.REACT_APP_BACKEND_URL;
+      
+      const response = await fetch(`${API_URL}/api/admin/export-stats-csv`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) throw new Error('Erreur export');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `mamandouce_stats_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('Export CSV téléchargé !');
+    } catch (error) {
+      console.error('Erreur export:', error);
+      toast.error('Erreur lors de l\'export');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {/* Header with Export Button */}
+      <div className="flex justify-end">
+        <Button
+          onClick={handleExportCSV}
+          disabled={exporting}
+          data-testid="export-csv-button"
+          className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full px-4 py-2 text-sm font-medium hover:opacity-90 transition-opacity"
+        >
+          {exporting ? (
+            <>
+              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+              Export...
+            </>
+          ) : (
+            <>
+              <Download className="w-4 h-4 mr-2" />
+              Export CSV
+            </>
+          )}
+        </Button>
+      </div>
+      
       {/* Main Stats Cards */}
       <div className="grid grid-cols-4 gap-3">
         <Card className="bg-gradient-to-br from-sky-400 to-sky-500 rounded-xl p-3 text-white">

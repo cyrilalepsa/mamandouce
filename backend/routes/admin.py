@@ -223,6 +223,98 @@ async def get_advanced_stats(admin: User = Depends(get_admin_user)):
     }
 
 
+@router.get("/admin/export-stats-csv")
+async def export_stats_csv(admin: User = Depends(get_admin_user)):
+    """Export all statistics as CSV file"""
+    from fastapi.responses import StreamingResponse
+    import csv
+    import io
+    
+    # Get all users
+    users = await db.users.find({}, {"_id": 0, "hashed_password": 0}).to_list(10000)
+    
+    # Create CSV in memory
+    output = io.StringIO()
+    
+    # Users CSV section
+    output.write("=== UTILISATEURS ===\n")
+    if users:
+        user_fieldnames = ["email", "name", "subscription_status", "premium_source", "trial_used", "created_at", "postpartum_purchased"]
+        writer = csv.DictWriter(output, fieldnames=user_fieldnames, extrasaction='ignore')
+        writer.writeheader()
+        for user in users:
+            writer.writerow({
+                "email": user.get("email", ""),
+                "name": user.get("name", ""),
+                "subscription_status": user.get("subscription_status", "free"),
+                "premium_source": user.get("premium_source", ""),
+                "trial_used": user.get("trial_used", False),
+                "created_at": user.get("created_at", ""),
+                "postpartum_purchased": user.get("postpartum_purchased", False)
+            })
+    
+    output.write("\n=== STATISTIQUES GLOBALES ===\n")
+    
+    # Calculate stats
+    total_users = len(users)
+    trial_count = len([u for u in users if u.get("subscription_status") == "trial"])
+    premium_paid = len([u for u in users if u.get("subscription_status") == "premium" and u.get("premium_source") != "promo_code"])
+    premium_promo = len([u for u in users if u.get("subscription_status") == "premium" and u.get("premium_source") == "promo_code"])
+    free_count = len([u for u in users if u.get("subscription_status") == "free"])
+    postpartum_count = len([u for u in users if u.get("postpartum_purchased") or u.get("postpartum_free_via_referral")])
+    
+    output.write(f"Total utilisateurs,{total_users}\n")
+    output.write(f"En essai,{trial_count}\n")
+    output.write(f"Premium payants,{premium_paid}\n")
+    output.write(f"Premium promo,{premium_promo}\n")
+    output.write(f"Gratuits,{free_count}\n")
+    output.write(f"Post-partum,{postpartum_count}\n")
+    
+    # Conversion rate
+    conversion_rate = (premium_paid / total_users * 100) if total_users > 0 else 0
+    output.write(f"Taux de conversion,{round(conversion_rate, 1)}%\n")
+    
+    # Revenue estimate
+    estimated_revenue = (premium_paid * 27) + (postpartum_count * 8)
+    output.write(f"Revenus estimes (EUR),{estimated_revenue}\n")
+    
+    output.write("\n=== UTILISATION FONCTIONNALITES ===\n")
+    
+    # Feature usage
+    favorites_count = await db.favorites.count_documents({})
+    food_scans_count = await db.food_scans.count_documents({})
+    birth_lists_count = await db.birth_lists.count_documents({})
+    recipes_shared = await db.recipes.count_documents({"is_shared": True})
+    
+    output.write(f"Favoris,{favorites_count}\n")
+    output.write(f"Scans alimentaires,{food_scans_count}\n")
+    output.write(f"Listes de naissance,{birth_lists_count}\n")
+    output.write(f"Recettes partagees,{recipes_shared}\n")
+    
+    output.write("\n=== MESSAGES ===\n")
+    total_messages = await db.admin_messages.count_documents({})
+    unread_messages = await db.admin_messages.count_documents({"is_read": False})
+    output.write(f"Total messages,{total_messages}\n")
+    output.write(f"Messages non lus,{unread_messages}\n")
+    
+    # Get the CSV content
+    csv_content = output.getvalue()
+    output.close()
+    
+    # Generate filename with date
+    filename = f"mamandouce_stats_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.csv"
+    
+    # Return as downloadable file
+    return StreamingResponse(
+        io.BytesIO(csv_content.encode('utf-8-sig')),  # utf-8-sig for Excel compatibility
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}"
+        }
+    )
+
+
+
 # ==================== USER MANAGEMENT ====================
 
 @router.post("/admin/user/{user_id}/set-premium")
