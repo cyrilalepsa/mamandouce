@@ -201,6 +201,7 @@ export const api = {
     getUsers: () => axios.get(`${API}/admin/users`, getAuthHeaders()),
     getStats: () => axios.get(`${API}/admin/stats`, getAuthHeaders()),
     getAdvancedStats: () => axios.get(`${API}/admin/advanced-stats`, getAuthHeaders()),
+    getChartStats: () => axios.get(`${API}/admin/chart-stats`, getAuthHeaders()),
     getPendingFoods: () => axios.get(`${API}/admin/pending-foods`, getAuthHeaders()),
     updateFoodStatus: (foodId, status) => axios.post(`${API}/admin/food-status/${foodId}?status=${status}`, {}, getAuthHeaders()),
     getMessages: () => axios.get(`${API}/admin/messages`, getAuthHeaders()),

@@ -287,6 +287,54 @@ export function PushNotificationsSection({ preferences, setPreferences, onSave }
               </div>
             </div>
           )}
+
+          {/* Rappels essai Premium */}
+          <div
+            onClick={() => handleToggle('push_trial_reminders')}
+            data-testid="toggle-push-trial-reminders"
+            className="flex items-center justify-between p-4 bg-white rounded-2xl cursor-pointer hover:bg-slate-50 border border-slate-100 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                <Clock className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-slate-700">Rappels fin d'essai</p>
+                <p className="text-sm text-slate-500">Avant l'expiration de votre essai Premium</p>
+              </div>
+            </div>
+            <div className={`w-12 h-7 rounded-full flex items-center transition-colors ${
+              preferences.push_trial_reminders !== false ? 'bg-purple-400' : 'bg-slate-200'
+            }`}>
+              <div className={`w-5 h-5 bg-white rounded-full shadow-md transition-transform ${
+                preferences.push_trial_reminders !== false ? 'translate-x-6' : 'translate-x-1'
+              }`} />
+            </div>
+          </div>
+
+          {/* Promotions et actualités */}
+          <div
+            onClick={() => handleToggle('push_promotions')}
+            data-testid="toggle-push-promotions"
+            className="flex items-center justify-between p-4 bg-white rounded-2xl cursor-pointer hover:bg-slate-50 border border-slate-100 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-pink-100 rounded-xl flex items-center justify-center">
+                <Bell className="w-5 h-5 text-pink-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-slate-700">Promotions et actualités</p>
+                <p className="text-sm text-slate-500">Offres spéciales et nouveautés</p>
+              </div>
+            </div>
+            <div className={`w-12 h-7 rounded-full flex items-center transition-colors ${
+              preferences.push_promotions ? 'bg-pink-400' : 'bg-slate-200'
+            }`}>
+              <div className={`w-5 h-5 bg-white rounded-full shadow-md transition-transform ${
+                preferences.push_promotions ? 'translate-x-6' : 'translate-x-1'
+              }`} />
+            </div>
+          </div>
         </div>
       )}
 

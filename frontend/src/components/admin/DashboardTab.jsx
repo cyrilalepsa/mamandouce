@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
-import { Users, MessageSquare, Apple, TrendingUp, BarChart3, Euro, RefreshCw, Download } from 'lucide-react';
+import { Users, MessageSquare, Apple, TrendingUp, BarChart3, Euro, RefreshCw, Download, ChevronDown } from 'lucide-react';
 import api from '../../utils/api';
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
+import { StatsCharts } from './StatsCharts';
 
 export function DashboardTab({ globalStats, codeStats, setActiveTab, messageStats }) {
   const [advancedStats, setAdvancedStats] = useState(null);
   const [loadingAdvanced, setLoadingAdvanced] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [showCharts, setShowCharts] = useState(false);
 
   useEffect(() => {
     loadAdvancedStats();
@@ -268,6 +270,25 @@ export function DashboardTab({ globalStats, codeStats, setActiveTab, messageStat
             <p className="text-[10px] text-slate-500">Codes utilisés</p>
           </div>
         </div>
+      </Card>
+
+      {/* Charts Section - Collapsible */}
+      <Card className="bg-white rounded-xl overflow-hidden border border-slate-100">
+        <button
+          onClick={() => setShowCharts(!showCharts)}
+          className="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-purple-500" />
+            <h3 className="font-bold text-slate-700">Graphiques statistiques</h3>
+          </div>
+          <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${showCharts ? 'rotate-180' : ''}`} />
+        </button>
+        {showCharts && (
+          <div className="p-4 pt-0 animate-fade-in">
+            <StatsCharts />
+          </div>
+        )}
       </Card>
     </div>
   );

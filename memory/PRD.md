@@ -21,13 +21,11 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - Liste de naissance partageable
 - Sac de maternité avec checklist (Premium)
 - Favoris pour articles du sac de maternité
-- Section "Mes essentiels"
 - Agenda des rendez-vous médicaux
 - Système de rappels par email ET push
 
 ### 4. Post-partum (Premium)
 - Guide complet post-accouchement
-- Suivi de reprise
 - Bouton "Tout ouvrir / Tout fermer" pour les sections
 
 ### 5. Premium Features
@@ -38,77 +36,75 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 
 ### 6. Administration
 - Panel admin complet avec **statistiques avancées**
-  - Distinction entre vrais paiements et déblocages admin
-  - Revenus calculés uniquement sur les vrais paiements
+  - Revenus calculés uniquement sur les vrais paiements (hors admin)
 - **Export CSV des statistiques**
+- **Graphiques temporels** : inscriptions 30j, répartition utilisateurs, utilisation features
 - Export projet Android (ZIP/email)
-- Kit Business (business plan + carte de visite)
-- Protection Super Admin
+- Kit Business
 
-### 7. Notifications Push
-- Rappels de RDV médicaux (24h avant + jour même)
-- Conseils hebdomadaires de grossesse
-- **Rappels fin d'essai gratuit** (J-1 et jour J)
-- Personnalisation complète dans les paramètres
+### 7. Notifications Push Personnalisables
+- Conseils hebdomadaires
+- Rappels de rendez-vous (24h avant, jour même)
+- **Rappels fin d'essai** (J-1 et jour J)
+- **Promotions et actualités**
+- Personnalisation complète par type dans Paramètres
 
-### 8. UI/UX Avancée
-- Bouton "Tout ouvrir / Tout fermer" sur :
-  - Page Paramètres
-  - Page Post-partum
-  - Page Grossesse après 35 ans
-- Indicateur de connexion hors-ligne
+### 8. UI/UX
+- Bouton "Tout ouvrir / Tout fermer" sur : Paramètres, Post-partum, Grossesse 35+
 - Mode hors-ligne avec synchronisation automatique
+- Interface en français (Planificateur au lieu de Scheduler)
 
-## Statistiques Admin (Corrigées)
+## Statistiques Admin
 
-### Revenus et Conversions
-Les statistiques excluent les déblocages admin :
-- **premium_paid** : Uniquement les vrais paiements Stripe
-- **premium_admin** : Déblocages par l'admin (non comptés)
-- **postpartum_paid** : Vrais achats post-partum
-- **postpartum_free** : Via parrainage ou admin
+### Graphiques Disponibles
+1. **Inscriptions (30 derniers jours)** - Courbe linéaire
+2. **Répartition des utilisateurs** - Camembert (Gratuits, Essai, Premium, Promo, Admin)
+3. **Utilisation des fonctionnalités** - Barres horizontales
 
-### Formule de Revenus
+### Calcul des Revenus
 ```
 Revenus = (premium_paid × 27€) + (postpartum_paid × 8€)
 ```
+Les déblocages admin sont exclus du calcul.
 
 ## Tech Stack
-- **Frontend:** React, PWA, Shadcn/UI, Capacitor (Android)
+- **Frontend:** React, PWA, Shadcn/UI, Recharts, Capacitor
 - **Backend:** FastAPI, MongoDB
-- **Integrations:** Stripe, Resend, OpenAI (via Emergent LLM Key), APScheduler, Web Push API
+- **Integrations:** Stripe, Resend, OpenAI, APScheduler, Web Push API
 
 ## Recent Changes
 
 ### Session du 18/03/2026 (Complète)
-- ✅ **Restrictions Premium** - Différenciation gratuit/premium complète
-- ✅ **Essai gratuit 7 jours** - API et UI implémentés
-- ✅ **Notifications rappel fin d'essai** - J-1 et jour J avec emails
-- ✅ **Export CSV statistiques** - Téléchargement direct depuis dashboard admin
-- ✅ **Bouton "Tout ouvrir / Tout fermer"** - Paramètres, Post-partum, Grossesse 35+
-- ✅ **Statistiques corrigées** - Exclusion des déblocages admin des revenus/conversions
-- ✅ **UI Scheduler corrigée** - Boutons bien alignés dans le cadre
+- ✅ Restrictions Premium implémentées
+- ✅ Essai gratuit 7 jours
+- ✅ Notifications rappel fin d'essai
+- ✅ Export CSV statistiques
+- ✅ Bouton toggle sur 3 pages
+- ✅ Statistiques corrigées (hors admin)
+- ✅ **Graphiques temporels** (Recharts)
+- ✅ **Notifications push personnalisables par type**
+- ✅ **Traduction "Scheduler" → "Planificateur"**
+
+## API Endpoints
+- `GET /api/admin/chart-stats` - Données pour graphiques
+- `GET /api/admin/advanced-stats` - Stats avancées (hors admin)
+- `GET /api/admin/export-stats-csv` - Export CSV
+- `POST /api/payments/trial/start` - Démarrer essai
+- `GET /api/payments/trial/status` - Statut essai
 
 ## Backlog
 
 ### P1 - Haute priorité
 - [ ] Guide publication Google Play Store
 
-### P2 - Complétés ✅
+### P2/P3 - Complétés ✅
 - [x] Notifications push rappel fin d'essai
 - [x] Export CSV des statistiques
 - [x] Bouton toggle sur autres pages
 - [x] Correction statistiques (hors admin)
-- [x] Correction UI page Rappels
-
-### P3 - Future
-- [ ] Statistiques avec graphiques temporels
-- [ ] Notifications push personnalisables par type
-
-## Known Issues
-- Bannière "Spinning up servers" : script de masquage en place (artefact preview)
-- URL preview "femme-enceinte-app" - utiliser domaine personnalisé en production
+- [x] Graphiques temporels
+- [x] Notifications push personnalisables
 
 ## Credentials (Test)
 - **Admin:** cyrilalepsa@gmail.com / Cyc@dmin9630
-- **Test Essai:** test.free@example.com / Test1234! (essai activé)
+- **Test Essai:** test.free@example.com / Test1234!

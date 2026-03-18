@@ -204,7 +204,7 @@ export function RemindersTab() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           <h3 className="font-bold text-slate-700 flex items-center gap-2">
             <Clock className="w-5 h-5 text-purple-500" />
-            Scheduler
+            Planificateur
             <span className={`px-3 py-1 rounded-full text-xs font-medium ${
               scheduler.running ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
             }`}>

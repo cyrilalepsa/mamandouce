@@ -240,6 +240,85 @@ async def get_advanced_stats(admin: User = Depends(get_admin_user)):
     }
 
 
+
+@router.get("/admin/chart-stats")
+async def get_chart_stats(admin: User = Depends(get_admin_user)):
+    """Get statistics data for charts"""
+    from collections import defaultdict
+    
+    # Get all users
+    users = await db.users.find({}, {"_id": 0}).to_list(10000)
+    
+    # 1. Inscriptions sur les 30 derniers jours
+    registrations_by_day = defaultdict(int)
+    thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
+    
+    for user in users:
+        created_at = user.get("created_at", "")
+        if created_at:
+            try:
+                # Parser la date
+                if isinstance(created_at, str):
+                    date_obj = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                else:
+                    date_obj = created_at
+                
+                if date_obj >= thirty_days_ago:
+                    day_key = date_obj.strftime("%Y-%m-%d")
+                    registrations_by_day[day_key] += 1
+            except Exception:
+                pass
+    
+    # Remplir les jours manquants avec 0
+    registrations_30d = []
+    for i in range(30):
+        day = (thirty_days_ago + timedelta(days=i+1)).strftime("%Y-%m-%d")
+        registrations_30d.append({
+            "date": day,
+            "count": registrations_by_day.get(day, 0)
+        })
+    
+    # 2. Répartition des utilisateurs
+    trial_count = len([u for u in users if u.get("subscription_status") == "trial"])
+    premium_paid = len([u for u in users if u.get("subscription_status") == "premium" and u.get("premium_source") not in ["promo_code", "admin_granted"]])
+    premium_promo = len([u for u in users if u.get("subscription_status") == "premium" and u.get("premium_source") == "promo_code"])
+    premium_admin = len([u for u in users if u.get("subscription_status") == "premium" and u.get("premium_source") == "admin_granted"])
+    free_count = len([u for u in users if u.get("subscription_status") == "free"])
+    
+    user_distribution = []
+    if free_count > 0:
+        user_distribution.append({"name": "Gratuits", "value": free_count})
+    if trial_count > 0:
+        user_distribution.append({"name": "Essai", "value": trial_count})
+    if premium_paid > 0:
+        user_distribution.append({"name": "Premium", "value": premium_paid})
+    if premium_promo > 0:
+        user_distribution.append({"name": "Promo", "value": premium_promo})
+    if premium_admin > 0:
+        user_distribution.append({"name": "Admin", "value": premium_admin})
+    
+    # 3. Utilisation des fonctionnalités
+    favorites_count = await db.favorites.count_documents({})
+    food_scans_count = await db.food_scans.count_documents({})
+    birth_lists_count = await db.birth_lists.count_documents({})
+    recipes_shared = await db.recipes.count_documents({"is_shared": True})
+    messages_count = await db.admin_messages.count_documents({})
+    
+    feature_usage = [
+        {"name": "Scans", "value": food_scans_count},
+        {"name": "Favoris", "value": favorites_count},
+        {"name": "Listes", "value": birth_lists_count},
+        {"name": "Recettes", "value": recipes_shared},
+        {"name": "Messages", "value": messages_count},
+    ]
+    
+    return {
+        "registrations_30d": registrations_30d,
+        "user_distribution": user_distribution,
+        "feature_usage": feature_usage
+    }
+
+
 @router.get("/admin/export-stats-csv")
 async def export_stats_csv(admin: User = Depends(get_admin_user)):
     """Export all statistics as CSV file"""
