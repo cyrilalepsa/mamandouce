@@ -183,7 +183,7 @@ export function DashboardTab({ globalStats, codeStats, setActiveTab, messageStat
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-slate-500">Total</span>
+                  <span className="text-xs text-slate-500">Total (hors admin)</span>
                   <span className="text-xl font-bold text-amber-600">{advancedStats.revenue.estimated_total}€</span>
                 </div>
                 <div className="flex justify-between items-center">
@@ -191,9 +191,15 @@ export function DashboardTab({ globalStats, codeStats, setActiveTab, messageStat
                   <span className="text-sm font-semibold text-slate-700">{advancedStats.users.premium_paid}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-slate-500">Post-partum</span>
-                  <span className="text-sm font-semibold text-slate-700">{advancedStats.users.postpartum}</span>
+                  <span className="text-xs text-slate-500">Post-partum payants</span>
+                  <span className="text-sm font-semibold text-slate-700">{advancedStats.users.postpartum_paid || 0}</span>
                 </div>
+                {advancedStats.users.premium_admin > 0 && (
+                  <div className="flex justify-between items-center pt-1 border-t border-amber-200">
+                    <span className="text-xs text-slate-400">Déblocages admin</span>
+                    <span className="text-sm text-slate-400">{advancedStats.users.premium_admin}</span>
+                  </div>
+                )}
               </div>
             </Card>
           </div>

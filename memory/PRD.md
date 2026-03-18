@@ -38,6 +38,8 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 
 ### 6. Administration
 - Panel admin complet avec **statistiques avancées**
+  - Distinction entre vrais paiements et déblocages admin
+  - Revenus calculés uniquement sur les vrais paiements
 - **Export CSV des statistiques**
 - Export projet Android (ZIP/email)
 - Kit Business (business plan + carte de visite)
@@ -57,32 +59,19 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - Indicateur de connexion hors-ligne
 - Mode hors-ligne avec synchronisation automatique
 
-## Restrictions Premium/Gratuit
+## Statistiques Admin (Corrigées)
 
-### Fonctionnalités GRATUITES
-| Fonctionnalité | Limite |
-|---|---|
-| Scanner d'aliments | 5 scans/semaine |
-| Conseils hebdomadaires | Semaines 1-4 uniquement |
-| Évolution de l'embryon | Semaines 1-4 uniquement |
-| Calculateur de grossesse | Illimité |
-| Calendrier de fertilité | Illimité |
-| Liste de naissance | Illimité |
+### Revenus et Conversions
+Les statistiques excluent les déblocages admin :
+- **premium_paid** : Uniquement les vrais paiements Stripe
+- **premium_admin** : Déblocages par l'admin (non comptés)
+- **postpartum_paid** : Vrais achats post-partum
+- **postpartum_free** : Via parrainage ou admin
 
-### Fonctionnalités PREMIUM
-| Fonctionnalité | Accès |
-|---|---|
-| Scanner d'aliments | Illimité |
-| Conseils hebdomadaires | 41 semaines complètes |
-| Évolution de l'embryon | 40 semaines complètes |
-| Chatbot IA | Accès complet |
-| Sac de maternité | Accès complet |
-
-### Garanties
-1. **Essai gratuit 7 jours** - Tester toutes les fonctionnalités sans engagement
-2. **Satisfait ou remboursé 30 jours** - Remboursement sur simple demande
-3. **Paiement sécurisé** - Via Stripe
-4. **Remboursement fausse couche** - Au prorata des mois restants
+### Formule de Revenus
+```
+Revenus = (premium_paid × 27€) + (postpartum_paid × 8€)
+```
 
 ## Tech Stack
 - **Frontend:** React, PWA, Shadcn/UI, Capacitor (Android)
@@ -97,40 +86,8 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - ✅ **Notifications rappel fin d'essai** - J-1 et jour J avec emails
 - ✅ **Export CSV statistiques** - Téléchargement direct depuis dashboard admin
 - ✅ **Bouton "Tout ouvrir / Tout fermer"** - Paramètres, Post-partum, Grossesse 35+
-- ✅ **Statistiques avancées admin** - Conversions, revenus, utilisation features
-- ✅ **Mot de passe oublié** - Vérifié fonctionnel
-
-## Architecture
-```
-/app
-├── backend/
-│   ├── core/
-│   │   └── scheduler.py        # +Job rappels fin d'essai (toutes les heures)
-│   └── routes/
-│       ├── admin.py            # +endpoint /admin/export-stats-csv
-│       └── payments.py         # +endpoints /trial/start, /trial/status
-└── frontend/
-    └── src/
-        ├── components/
-        │   ├── ToggleAllSections.jsx
-        │   └── admin/
-        │       └── DashboardTab.jsx    # +Bouton Export CSV
-        └── pages/
-            ├── SettingsPage.js         # +Bouton toggle
-            ├── PostpartumPage.js       # +Bouton toggle
-            └── PregnancyAfter35Page.js # +Bouton toggle
-```
-
-## API Endpoints (Nouveaux)
-- `GET /api/admin/export-stats-csv` - Export statistiques en CSV
-- `GET /api/admin/advanced-stats` - Statistiques avancées (conversions, revenus)
-- `POST /api/payments/trial/start` - Démarrer l'essai gratuit
-- `GET /api/payments/trial/status` - Statut de l'essai
-
-## Scheduler Jobs
-- **send_due_reminders_job** - Toutes les minutes (rappels RDV)
-- **send_weekly_tips_push_job** - Tous les jours à 9h (conseils hebdo)
-- **send_trial_expiry_reminders_job** - Toutes les heures (rappels fin d'essai)
+- ✅ **Statistiques corrigées** - Exclusion des déblocages admin des revenus/conversions
+- ✅ **UI Scheduler corrigée** - Boutons bien alignés dans le cadre
 
 ## Backlog
 
@@ -141,9 +98,11 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - [x] Notifications push rappel fin d'essai
 - [x] Export CSV des statistiques
 - [x] Bouton toggle sur autres pages
+- [x] Correction statistiques (hors admin)
+- [x] Correction UI page Rappels
 
 ### P3 - Future
-- [ ] Statistiques plus détaillées (graphiques temporels)
+- [ ] Statistiques avec graphiques temporels
 - [ ] Notifications push personnalisables par type
 
 ## Known Issues

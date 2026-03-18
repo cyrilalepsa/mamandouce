@@ -141,10 +141,12 @@ async def get_advanced_stats(admin: User = Depends(get_admin_user)):
     
     # User distribution
     trial_count = 0
-    premium_paid = 0
+    premium_paid = 0  # Vrais paiements uniquement
     premium_promo = 0
+    premium_admin = 0  # Déblocages admin (non comptés dans revenus)
     free_count = 0
-    postpartum_count = 0
+    postpartum_paid = 0  # Vrais achats post-partum
+    postpartum_free = 0  # Post-partum gratuit (parrainage ou admin)
     
     for user in users:
         sub_status = user.get("subscription_status", "free")
@@ -153,24 +155,36 @@ async def get_advanced_stats(admin: User = Depends(get_admin_user)):
         if sub_status == "trial":
             trial_count += 1
         elif sub_status == "premium":
-            if premium_source == "promo_code":
+            if premium_source == "admin_granted":
+                premium_admin += 1
+            elif premium_source == "promo_code":
                 premium_promo += 1
             else:
                 premium_paid += 1
         else:
             free_count += 1
         
-        if user.get("postpartum_purchased") or user.get("postpartum_free_via_referral"):
-            postpartum_count += 1
+        # Compter post-partum
+        if user.get("postpartum_purchased"):
+            # Vérifier si c'est un vrai achat ou un déblocage admin
+            if premium_source != "admin_granted":
+                postpartum_paid += 1
+            else:
+                postpartum_free += 1
+        elif user.get("postpartum_free_via_referral"):
+            postpartum_free += 1
     
-    # Calculate conversion rates
+    # Calculate conversion rates (exclure les déblocages admin)
     total_users = len(users)
-    conversion_rate = (premium_paid / total_users * 100) if total_users > 0 else 0
+    # Taux de conversion = vrais paiements / (total - admins déblocés)
+    real_users = total_users - premium_admin
+    conversion_rate = (premium_paid / real_users * 100) if real_users > 0 else 0
     
-    # Trial conversion (users who were on trial and converted)
+    # Trial conversion (users who were on trial and converted with REAL payment)
     trial_conversions = await db.users.count_documents({
         "subscription_status": "premium",
-        "trial_used": True
+        "trial_used": True,
+        "premium_source": {"$ne": "admin_granted"}
     })
     trial_conversion_rate = (trial_conversions / trial_count * 100) if trial_count > 0 else 0
     
@@ -188,8 +202,9 @@ async def get_advanced_stats(admin: User = Depends(get_admin_user)):
     total_messages = await db.admin_messages.count_documents({})
     unread_messages = await db.admin_messages.count_documents({"is_read": False})
     
-    # Revenue estimate (premium * 27€ + postpartum * 8€)
-    estimated_revenue = (premium_paid * 27) + (postpartum_count * 8)
+    # Revenue estimate (VRAIS paiements uniquement)
+    # premium_paid * 27€ + postpartum_paid * 8€
+    estimated_revenue = (premium_paid * 27) + (postpartum_paid * 8)
     
     return {
         "users": {
@@ -197,8 +212,10 @@ async def get_advanced_stats(admin: User = Depends(get_admin_user)):
             "trial": trial_count,
             "premium_paid": premium_paid,
             "premium_promo": premium_promo,
+            "premium_admin": premium_admin,
             "free": free_count,
-            "postpartum": postpartum_count,
+            "postpartum_paid": postpartum_paid,
+            "postpartum_free": postpartum_free,
             "new_30_days": len(recent_users)
         },
         "conversion": {
@@ -255,27 +272,32 @@ async def export_stats_csv(admin: User = Depends(get_admin_user)):
     
     output.write("\n=== STATISTIQUES GLOBALES ===\n")
     
-    # Calculate stats
+    # Calculate stats - EXCLURE les déblocages admin des revenus
     total_users = len(users)
     trial_count = len([u for u in users if u.get("subscription_status") == "trial"])
-    premium_paid = len([u for u in users if u.get("subscription_status") == "premium" and u.get("premium_source") != "promo_code"])
+    premium_admin = len([u for u in users if u.get("subscription_status") == "premium" and u.get("premium_source") == "admin_granted"])
+    premium_paid = len([u for u in users if u.get("subscription_status") == "premium" and u.get("premium_source") not in ["promo_code", "admin_granted"]])
     premium_promo = len([u for u in users if u.get("subscription_status") == "premium" and u.get("premium_source") == "promo_code"])
     free_count = len([u for u in users if u.get("subscription_status") == "free"])
-    postpartum_count = len([u for u in users if u.get("postpartum_purchased") or u.get("postpartum_free_via_referral")])
+    postpartum_paid = len([u for u in users if u.get("postpartum_purchased") and u.get("premium_source") != "admin_granted"])
+    postpartum_free = len([u for u in users if u.get("postpartum_free_via_referral") or (u.get("postpartum_purchased") and u.get("premium_source") == "admin_granted")])
     
     output.write(f"Total utilisateurs,{total_users}\n")
     output.write(f"En essai,{trial_count}\n")
-    output.write(f"Premium payants,{premium_paid}\n")
+    output.write(f"Premium payants (vrais),{premium_paid}\n")
     output.write(f"Premium promo,{premium_promo}\n")
+    output.write(f"Premium admin (non comptabilises),{premium_admin}\n")
     output.write(f"Gratuits,{free_count}\n")
-    output.write(f"Post-partum,{postpartum_count}\n")
+    output.write(f"Post-partum payants,{postpartum_paid}\n")
+    output.write(f"Post-partum gratuits,{postpartum_free}\n")
     
-    # Conversion rate
-    conversion_rate = (premium_paid / total_users * 100) if total_users > 0 else 0
-    output.write(f"Taux de conversion,{round(conversion_rate, 1)}%\n")
+    # Conversion rate (exclure admin)
+    real_users = total_users - premium_admin
+    conversion_rate = (premium_paid / real_users * 100) if real_users > 0 else 0
+    output.write(f"Taux de conversion (hors admin),{round(conversion_rate, 1)}%\n")
     
-    # Revenue estimate
-    estimated_revenue = (premium_paid * 27) + (postpartum_count * 8)
+    # Revenue estimate (VRAIS paiements uniquement)
+    estimated_revenue = (premium_paid * 27) + (postpartum_paid * 8)
     output.write(f"Revenus estimes (EUR),{estimated_revenue}\n")
     
     output.write("\n=== UTILISATION FONCTIONNALITES ===\n")
