@@ -131,6 +131,98 @@ async def get_admin_stats(admin: User = Depends(get_admin_user)):
         "pending_foods": pending_foods
     }
 
+
+@router.get("/admin/advanced-stats")
+async def get_advanced_stats(admin: User = Depends(get_admin_user)):
+    """Get advanced statistics for admin dashboard"""
+    
+    # Get all users
+    users = await db.users.find({}, {"_id": 0}).to_list(10000)
+    
+    # User distribution
+    trial_count = 0
+    premium_paid = 0
+    premium_promo = 0
+    free_count = 0
+    postpartum_count = 0
+    
+    for user in users:
+        sub_status = user.get("subscription_status", "free")
+        premium_source = user.get("premium_source", "")
+        
+        if sub_status == "trial":
+            trial_count += 1
+        elif sub_status == "premium":
+            if premium_source == "promo_code":
+                premium_promo += 1
+            else:
+                premium_paid += 1
+        else:
+            free_count += 1
+        
+        if user.get("postpartum_purchased") or user.get("postpartum_free_via_referral"):
+            postpartum_count += 1
+    
+    # Calculate conversion rates
+    total_users = len(users)
+    conversion_rate = (premium_paid / total_users * 100) if total_users > 0 else 0
+    
+    # Trial conversion (users who were on trial and converted)
+    trial_conversions = await db.users.count_documents({
+        "subscription_status": "premium",
+        "trial_used": True
+    })
+    trial_conversion_rate = (trial_conversions / trial_count * 100) if trial_count > 0 else 0
+    
+    # Get registrations over time (last 30 days)
+    thirty_days_ago = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
+    recent_users = [u for u in users if u.get("created_at", "") > thirty_days_ago]
+    
+    # Get feature usage (count favorites, scans, etc.)
+    favorites_count = await db.favorites.count_documents({})
+    food_scans_count = await db.food_scans.count_documents({})
+    birth_lists_count = await db.birth_lists.count_documents({})
+    recipes_shared = await db.recipes.count_documents({"is_shared": True})
+    
+    # Messages stats
+    total_messages = await db.admin_messages.count_documents({})
+    unread_messages = await db.admin_messages.count_documents({"is_read": False})
+    
+    # Revenue estimate (premium * 27€ + postpartum * 8€)
+    estimated_revenue = (premium_paid * 27) + (postpartum_count * 8)
+    
+    return {
+        "users": {
+            "total": total_users,
+            "trial": trial_count,
+            "premium_paid": premium_paid,
+            "premium_promo": premium_promo,
+            "free": free_count,
+            "postpartum": postpartum_count,
+            "new_30_days": len(recent_users)
+        },
+        "conversion": {
+            "overall_rate": round(conversion_rate, 1),
+            "trial_conversions": trial_conversions,
+            "trial_rate": round(trial_conversion_rate, 1)
+        },
+        "features": {
+            "favorites": favorites_count,
+            "food_scans": food_scans_count,
+            "birth_lists": birth_lists_count,
+            "recipes_shared": recipes_shared
+        },
+        "messages": {
+            "total": total_messages,
+            "unread": unread_messages
+        },
+        "revenue": {
+            "estimated_total": estimated_revenue,
+            "currency": "EUR"
+        }
+    }
+
+
 # ==================== USER MANAGEMENT ====================
 
 @router.post("/admin/user/{user_id}/set-premium")

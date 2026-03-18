@@ -4,6 +4,7 @@ import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
 import { Gift, Shield, Bell, BellRing, CreditCard, Users, Key, ChevronDown } from 'lucide-react';
+import { ToggleAllSections } from '../components/ToggleAllSections';
 import {
   PromoCodeSection,
   AccountSection,
@@ -19,16 +20,15 @@ function CollapsibleSettingsSection({
   title, 
   icon: Icon, 
   children, 
-  defaultOpen = false,
+  isOpen,
+  onToggle,
   iconBg = "bg-gradient-to-br from-slate-100 to-slate-200",
   iconColor = "text-slate-600"
 }) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-
   return (
     <Card className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={onToggle}
         className="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
       >
         <div className="flex items-center gap-3">
@@ -61,6 +61,35 @@ function SettingsPage() {
   const [referralStatus, setReferralStatus] = useState(null);
   const [fullStatus, setFullStatus] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
+  
+  // Gestion des sections ouvertes/fermées
+  const [openSections, setOpenSections] = useState({
+    promo: false,
+    account: false,
+    security: false,
+    referral: false,
+    refund: false,
+    emailNotifs: false,
+    pushNotifs: false
+  });
+  
+  const toggleSection = (section) => {
+    setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
+  };
+  
+  const allOpen = Object.values(openSections).every(Boolean);
+  
+  const toggleAllSections = (open) => {
+    setOpenSections({
+      promo: open,
+      account: open,
+      security: open,
+      referral: open,
+      refund: open,
+      emailNotifs: open,
+      pushNotifs: open
+    });
+  };
 
   useEffect(() => {
     loadPreferences();
@@ -141,11 +170,20 @@ function SettingsPage() {
           </Card>
         ) : (
           <>
+            {/* Toggle All Button */}
+            <div className="flex justify-end">
+              <ToggleAllSections 
+                allOpen={allOpen} 
+                onToggle={toggleAllSections}
+              />
+            </div>
+            
             {/* Section Code Promo / Premium */}
             <CollapsibleSettingsSection
               title="Code promo"
               icon={Gift}
-              defaultOpen={false}
+              isOpen={openSections.promo}
+              onToggle={() => toggleSection('promo')}
               iconBg="bg-gradient-to-br from-amber-100 to-orange-100"
               iconColor="text-amber-600"
             >
@@ -160,7 +198,8 @@ function SettingsPage() {
             <CollapsibleSettingsSection
               title="Mon compte"
               icon={Key}
-              defaultOpen={false}
+              isOpen={openSections.account}
+              onToggle={() => toggleSection('account')}
               iconBg="bg-gradient-to-br from-blue-100 to-indigo-100"
               iconColor="text-blue-600"
             >
@@ -175,7 +214,8 @@ function SettingsPage() {
             <CollapsibleSettingsSection
               title="Sécurité (2FA)"
               icon={Shield}
-              defaultOpen={false}
+              isOpen={openSections.security}
+              onToggle={() => toggleSection('security')}
               iconBg="bg-gradient-to-br from-green-100 to-emerald-100"
               iconColor="text-green-600"
             >
@@ -186,7 +226,8 @@ function SettingsPage() {
             <CollapsibleSettingsSection
               title="Parrainage"
               icon={Users}
-              defaultOpen={false}
+              isOpen={openSections.referral}
+              onToggle={() => toggleSection('referral')}
               iconBg="bg-gradient-to-br from-purple-100 to-pink-100"
               iconColor="text-purple-600"
             >
@@ -200,7 +241,8 @@ function SettingsPage() {
             <CollapsibleSettingsSection
               title="Remboursement"
               icon={CreditCard}
-              defaultOpen={false}
+              isOpen={openSections.refund}
+              onToggle={() => toggleSection('refund')}
               iconBg="bg-gradient-to-br from-rose-100 to-red-100"
               iconColor="text-rose-600"
             >
@@ -211,7 +253,8 @@ function SettingsPage() {
             <CollapsibleSettingsSection
               title="Notifications Email"
               icon={Bell}
-              defaultOpen={false}
+              isOpen={openSections.emailNotifs}
+              onToggle={() => toggleSection('emailNotifs')}
               iconBg="bg-gradient-to-br from-sky-100 to-cyan-100"
               iconColor="text-sky-600"
             >
@@ -227,7 +270,8 @@ function SettingsPage() {
             <CollapsibleSettingsSection
               title="Notifications Push"
               icon={BellRing}
-              defaultOpen={false}
+              isOpen={openSections.pushNotifs}
+              onToggle={() => toggleSection('pushNotifs')}
               iconBg="bg-gradient-to-br from-violet-100 to-pink-100"
               iconColor="text-violet-600"
             >

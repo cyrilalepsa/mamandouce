@@ -200,6 +200,7 @@ export const api = {
     getCodes: () => axios.get(`${API}/admin/promo-codes`, getAuthHeaders()),
     getUsers: () => axios.get(`${API}/admin/users`, getAuthHeaders()),
     getStats: () => axios.get(`${API}/admin/stats`, getAuthHeaders()),
+    getAdvancedStats: () => axios.get(`${API}/admin/advanced-stats`, getAuthHeaders()),
     getPendingFoods: () => axios.get(`${API}/admin/pending-foods`, getAuthHeaders()),
     updateFoodStatus: (foodId, status) => axios.post(`${API}/admin/food-status/${foodId}?status=${status}`, {}, getAuthHeaders()),
     getMessages: () => axios.get(`${API}/admin/messages`, getAuthHeaders()),
@@ -211,7 +212,7 @@ export const api = {
     getRefundDocument: (userId) => `${API}/admin/refund-document/${userId}`,
     setUserPremium: (userId, premium) => axios.post(`${API}/admin/user/${userId}/set-premium?premium=${premium}`, {}, getAuthHeaders()),
     setUserPostpartum: (userId, enabled) => axios.post(`${API}/admin/user/${userId}/set-postpartum?enabled=${enabled}`, {}, getAuthHeaders()),
-    setUserRole: (userId, role) => axios.post(`${API}/admin/user/${userId}/set-role?role=${role}`, {}, getAuthHeaders()),
+    setUserRole: (userId, role) => axios.post(`${API}/admin/user/${userId}/set-role?role=${role}`, getAuthHeaders()),
     // Reminders Dashboard
     getRemindersDashboard: () => axios.get(`${API}/admin/reminders/dashboard`, getAuthHeaders()),
     getAllReminders: (status = 'all') => axios.get(`${API}/admin/reminders/all?status=${status}`, getAuthHeaders()),

@@ -1,7 +1,27 @@
+import { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
-import { Users, MessageSquare, Apple } from 'lucide-react';
+import { Users, MessageSquare, Apple, TrendingUp, Gift, Heart, BarChart3, Euro, RefreshCw } from 'lucide-react';
+import api from '../../utils/api';
 
 export function DashboardTab({ globalStats, codeStats, setActiveTab, messageStats }) {
+  const [advancedStats, setAdvancedStats] = useState(null);
+  const [loadingAdvanced, setLoadingAdvanced] = useState(true);
+
+  useEffect(() => {
+    loadAdvancedStats();
+  }, []);
+
+  const loadAdvancedStats = async () => {
+    try {
+      const response = await api.admin.getAdvancedStats();
+      setAdvancedStats(response.data);
+    } catch (error) {
+      console.error('Erreur chargement stats avancées:', error);
+    } finally {
+      setLoadingAdvanced(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Main Stats Cards */}
@@ -65,6 +85,98 @@ export function DashboardTab({ globalStats, codeStats, setActiveTab, messageStat
           </div>
         </Card>
       </div>
+
+      {/* Advanced Stats Section */}
+      {loadingAdvanced ? (
+        <Card className="bg-white rounded-xl p-4 text-center">
+          <RefreshCw className="w-5 h-5 animate-spin mx-auto text-slate-400" />
+          <p className="text-xs text-slate-500 mt-2">Chargement des statistiques...</p>
+        </Card>
+      ) : advancedStats && (
+        <>
+          {/* Conversion & Revenue */}
+          <div className="grid grid-cols-2 gap-3">
+            <Card className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-4 border border-emerald-200">
+              <div className="flex items-center gap-2 mb-3">
+                <TrendingUp className="w-5 h-5 text-emerald-600" />
+                <h3 className="text-sm font-bold text-slate-700">Conversions</h3>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-slate-500">Taux global</span>
+                  <span className="text-lg font-bold text-emerald-600">{advancedStats.conversion.overall_rate}%</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-slate-500">Essais → Premium</span>
+                  <span className="text-sm font-semibold text-slate-700">{advancedStats.conversion.trial_conversions}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-slate-500">En essai</span>
+                  <span className="text-sm font-semibold text-blue-600">{advancedStats.users.trial}</span>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-4 border border-amber-200">
+              <div className="flex items-center gap-2 mb-3">
+                <Euro className="w-5 h-5 text-amber-600" />
+                <h3 className="text-sm font-bold text-slate-700">Revenus estimés</h3>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-slate-500">Total</span>
+                  <span className="text-xl font-bold text-amber-600">{advancedStats.revenue.estimated_total}€</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-slate-500">Premium payants</span>
+                  <span className="text-sm font-semibold text-slate-700">{advancedStats.users.premium_paid}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-slate-500">Post-partum</span>
+                  <span className="text-sm font-semibold text-slate-700">{advancedStats.users.postpartum}</span>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Feature Usage */}
+          <Card className="bg-white rounded-xl p-4 border border-slate-100">
+            <div className="flex items-center gap-2 mb-3">
+              <BarChart3 className="w-5 h-5 text-purple-600" />
+              <h3 className="text-sm font-bold text-slate-700">Utilisation des fonctionnalités</h3>
+            </div>
+            <div className="grid grid-cols-4 gap-3 text-center">
+              <div className="p-2 bg-slate-50 rounded-lg">
+                <p className="text-lg font-bold text-purple-600">{advancedStats.features.food_scans}</p>
+                <p className="text-[10px] text-slate-500">Scans</p>
+              </div>
+              <div className="p-2 bg-slate-50 rounded-lg">
+                <p className="text-lg font-bold text-pink-600">{advancedStats.features.favorites}</p>
+                <p className="text-[10px] text-slate-500">Favoris</p>
+              </div>
+              <div className="p-2 bg-slate-50 rounded-lg">
+                <p className="text-lg font-bold text-sky-600">{advancedStats.features.birth_lists}</p>
+                <p className="text-[10px] text-slate-500">Listes naissance</p>
+              </div>
+              <div className="p-2 bg-slate-50 rounded-lg">
+                <p className="text-lg font-bold text-green-600">{advancedStats.features.recipes_shared}</p>
+                <p className="text-[10px] text-slate-500">Recettes partagées</p>
+              </div>
+            </div>
+          </Card>
+
+          {/* New Users */}
+          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-blue-600" />
+                <h3 className="text-sm font-bold text-slate-700">Nouveaux inscrits (30j)</h3>
+              </div>
+              <span className="text-2xl font-bold text-blue-600">{advancedStats.users.new_30_days}</span>
+            </div>
+          </Card>
+        </>
+      )}
 
       {/* Summary */}
       <Card className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-4 border border-pink-100">

@@ -8,24 +8,24 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 ### 1. Outils de Grossesse
 - Calculateur de date d'accouchement
 - Roue de grossesse interactive
-- Suivi embryonnaire semaine par semaine
-- Conseils hebdomadaires personnalisés
+- Suivi embryonnaire semaine par semaine (semaines 1-4 gratuites)
+- Conseils hebdomadaires personnalisés (semaines 1-4 gratuites)
 
 ### 2. Alimentation
-- Scanner d'aliments (vérification compatibilité grossesse)
+- Scanner d'aliments (5 scans/semaine gratuits)
 - Bibliothèque alimentaire complète
 - Recettes adaptées avec système de partage
 - Compteur de vues pour recettes partagées
 
 ### 3. Organisation
 - Liste de naissance partageable
-- Sac de maternité avec checklist
+- Sac de maternité avec checklist (Premium)
 - Favoris pour articles du sac de maternité
-- Section "Mes essentiels" - Vue rapide des articles favoris
+- Section "Mes essentiels"
 - Agenda des rendez-vous médicaux
 - Système de rappels par email ET push
 
-### 4. Post-partum
+### 4. Post-partum (Premium)
 - Guide complet post-accouchement
 - Suivi de reprise
 - Bouton "Tout ouvrir / Tout fermer" pour les sections
@@ -34,31 +34,18 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 - Chatbot IA (GPT-4o-mini)
 - Intégration Stripe pour abonnements
 - Système de codes promo et parrainage
-- **Essai gratuit 7 jours** (NEW)
+- **Essai gratuit 7 jours**
 
 ### 6. Administration
-- Panel admin complet
+- Panel admin complet avec **statistiques avancées**
 - Export projet Android (ZIP/email)
 - Kit Business (business plan + carte de visite)
 - Protection Super Admin
 
-### 7. Notifications Push Natives
-- Rappels de RDV médicaux (24h avant + jour même)
-- Conseils hebdomadaires de grossesse
-- Personnalisation complète dans les paramètres
-
-### 8. Personnalisation du Profil
-- Avatar personnalisable (6 couleurs de peau, 10 coiffures, hijab)
-- Nom d'affichage personnalisé
-- Avatar SVG dynamique
-
-### 9. Messagerie avec Photos
-- Joindre jusqu'à 3 photos par message
-- Support caméra et galerie sur mobile
-- Visualisation plein écran
-
-### 10. Grossesse après 35 ans
-Section dédiée avec fertilité, examens, risques, accompagnement
+### 7. UI/UX Avancée
+- Bouton "Tout ouvrir / Tout fermer" sur pages Paramètres et Post-partum
+- Indicateur de connexion hors-ligne
+- Mode hors-ligne avec synchronisation automatique
 
 ## Restrictions Premium/Gratuit
 
@@ -80,10 +67,8 @@ Section dédiée avec fertilité, examens, risques, accompagnement
 | Évolution de l'embryon | 40 semaines complètes |
 | Chatbot IA | Accès complet |
 | Sac de maternité | Accès complet |
-| Images embryon HD | Toutes les semaines |
-| Démarches administratives | Toutes les semaines |
 
-### Garanties (Page Tarification)
+### Garanties
 1. **Essai gratuit 7 jours** - Tester toutes les fonctionnalités sans engagement
 2. **Satisfait ou remboursé 30 jours** - Remboursement sur simple demande
 3. **Paiement sécurisé** - Via Stripe
@@ -96,66 +81,59 @@ Section dédiée avec fertilité, examens, risques, accompagnement
 
 ## Recent Changes
 
-### Session du 18/03/2026 (Suite)
-- ✅ **Essai gratuit 7 jours implémenté**
-  - API `/api/payments/trial/start` pour activer l'essai
-  - API `/api/payments/trial/status` pour vérifier le statut
-  - Intégration avec le statut d'abonnement global
-  - Protection contre réactivation de l'essai
-- ✅ **FAQ mise à jour** avec questions sur l'essai et le remboursement
-- ✅ **Bouton "Tout ouvrir / Tout fermer"** ajouté à la page post-partum
-- ✅ **Script anti-bannière renforcé** pour masquer "Spinning up servers"
-- ✅ **Composant ToggleAllSections créé** - Réutilisable pour autres pages
-
-### Session du 18/03/2026
-- ✅ **Restrictions Premium implémentées**
-- ✅ **Bug scanner corrigé**
-- ✅ **SubscriptionGate refactorisé** avec Context React
-- ✅ **Composant PremiumFeatureLock créé**
+### Session du 18/03/2026 (Complète)
+- ✅ **Restrictions Premium** - Différenciation gratuit/premium complète
+- ✅ **Essai gratuit 7 jours** - API et UI implémentés
+- ✅ **FAQ enrichie** - Questions sur essai et remboursement
+- ✅ **Bouton "Tout ouvrir / Tout fermer"** - Pages Paramètres et Post-partum
+- ✅ **Statistiques avancées admin** - Conversions, revenus, utilisation features
+- ✅ **Mode hors-ligne** - Indicateur et synchronisation (déjà présent)
+- ✅ **Mot de passe oublié** - Vérifié fonctionnel
 
 ## Architecture
 ```
 /app
 ├── backend/
-│   ├── routes/
-│   │   ├── payments.py     # Endpoints essai gratuit (NEW)
-│   │   ├── food.py         # Logique restriction scans
-│   │   └── referral.py     # Endpoint full-status avec trial
-│   └── models/schemas.py
+│   └── routes/
+│       ├── admin.py            # +endpoint /admin/advanced-stats
+│       ├── payments.py         # +endpoints /trial/start, /trial/status
+│       └── referral.py         # +trial status dans full-status
 └── frontend/
     └── src/
         ├── components/
-        │   ├── SubscriptionGate.jsx
-        │   ├── PremiumFeatureLock.jsx
-        │   └── ToggleAllSections.jsx  # (NEW)
+        │   ├── ToggleAllSections.jsx       # Composant réutilisable
+        │   ├── OfflineSyncIndicator.jsx    # Indicateur hors-ligne
+        │   └── admin/
+        │       └── DashboardTab.jsx        # +Stats avancées
         └── pages/
-            ├── PricingPage.js          # Essai gratuit + FAQ
-            └── PostpartumPage.js       # Bouton tout ouvrir/fermer
+            ├── SettingsPage.js             # +Bouton toggle
+            └── PostpartumPage.js           # +Bouton toggle
 ```
 
-## API Endpoints
-- `POST /api/payments/trial/start` - Activer l'essai gratuit de 7 jours
-- `GET /api/payments/trial/status` - Vérifier le statut de l'essai
-- `GET /api/subscription/full-status` - Retourne is_premium, is_trial_active, trial_days_remaining
+## API Endpoints (Nouveaux)
+- `GET /api/admin/advanced-stats` - Statistiques avancées (conversions, revenus, features)
+- `POST /api/payments/trial/start` - Démarrer l'essai gratuit
+- `GET /api/payments/trial/status` - Statut de l'essai
 
 ## Backlog
 
 ### P1 - Haute priorité
 - [ ] Guide publication Google Play Store
 
-### P2 - Complétés
-- [x] Résolution bannière "Spinning up servers" (script renforcé)
-- [x] Fonction "Tout ouvrir/Tout fermer" pour sections déroulantes
+### P2 - Complétés ✅
+- [x] Bouton "Tout ouvrir/Tout fermer" - Pages Paramètres et Post-partum
+- [x] Mode hors-ligne amélioré - Indicateur et synchronisation
+- [x] Statistiques d'utilisation - Dashboard admin complet
 
 ### P3 - Future
-- [ ] Mode hors-ligne amélioré
-- [ ] Statistiques d'utilisation
-- [ ] Ajouter bouton toggle à d'autres pages (Settings, etc.)
+- [ ] Ajouter toggle à d'autres pages si nécessaire
+- [ ] Notifications push pour rappel fin d'essai
+- [ ] Export CSV des statistiques
 
 ## Known Issues
-- Bannière "Spinning up servers" : script de masquage ajouté, mais peut persister dans certains cas (artefact preview)
-- L'URL de preview contient "femme-enceinte-app" - en production, utilisez un domaine personnalisé
+- Bannière "Spinning up servers" : script de masquage en place (artefact preview)
+- URL preview "femme-enceinte-app" - utiliser domaine personnalisé en production
 
 ## Credentials (Test)
 - **Admin:** cyrilalepsa@gmail.com / Cyc@dmin9630
-- **Test Gratuit:** test.free@example.com / Test1234! (essai activé)
+- **Test Essai:** test.free@example.com / Test1234! (essai activé)
