@@ -172,6 +172,7 @@ async def get_full_subscription_status(current_user: User = Depends(get_current_
     
     subscription_status = user_doc.get("subscription_status", "free")
     subscription_start = user_doc.get("subscription_start_date")
+    is_premium = subscription_status == "premium"
     
     # Calculer si éligible au post-partum (6 mois d'abonnement)
     postpartum_eligible = False
@@ -198,15 +199,28 @@ async def get_full_subscription_status(current_user: User = Depends(get_current_
         "status": "completed"
     })
     
+    # Compter les scans de cette semaine (pour utilisateurs gratuits)
+    scans_this_week = 0
+    if not is_premium:
+        from datetime import timedelta
+        week_start = datetime.now(timezone.utc) - timedelta(days=7)
+        scans_this_week = await db.food_scans.count_documents({
+            "user_id": current_user.id,
+            "scanned_at": {"$gte": week_start.isoformat()}
+        })
+    
     return {
         "subscription_status": subscription_status,
+        "is_premium": is_premium,
         "months_subscribed": months_subscribed,
         "postpartum_eligible": postpartum_eligible,
         "postpartum_unlocked": postpartum_unlocked,
         "postpartum_purchased": postpartum_purchased,
         "postpartum_free_via_referral": postpartum_free,
         "completed_referrals": completed_referrals,
-        "referrals_needed_for_free": max(0, 2 - completed_referrals)
+        "referrals_needed_for_free": max(0, 2 - completed_referrals),
+        "scans_this_week": scans_this_week,
+        "scans_limit": 5 if not is_premium else -1  # -1 = illimité
     }
 
 @router.post("/subscription/purchase-postpartum")

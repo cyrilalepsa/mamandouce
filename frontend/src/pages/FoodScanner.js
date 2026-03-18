@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { Camera, Search, ShieldCheck, ShieldAlert, ShieldX, AlertTriangle, Heart, X, Keyboard, Plus, Library } from 'lucide-react';
+import { Camera, Search, ShieldCheck, ShieldAlert, ShieldX, AlertTriangle, Heart, X, Keyboard, Plus, Library, Crown, Lock } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import api from '../utils/api';
 import { toast } from 'sonner';
@@ -27,9 +27,15 @@ function FoodScanner() {
   const [notFound, setNotFound] = useState(false);
   const html5QrCodeRef = useRef(null);
   const scannerRef = useRef(null);
+  
+  // Subscription state
+  const [isPremium, setIsPremium] = useState(false);
+  const [scansRemaining, setScansRemaining] = useState(5);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true);
 
   useEffect(() => {
     loadFavorites();
+    loadSubscriptionStatus();
     // Check if we should open the add modal
     if (location.state?.openAddModal) {
       setShowAddFoodModal(true);
@@ -38,6 +44,23 @@ function FoodScanner() {
       stopScanner();
     };
   }, [location.state]);
+
+  const loadSubscriptionStatus = async () => {
+    try {
+      const response = await api.subscription.getFullStatus();
+      const data = response.data;
+      setIsPremium(data.is_premium || data.subscription_status === 'premium');
+      if (!data.is_premium) {
+        setScansRemaining(Math.max(0, 5 - (data.scans_this_week || 0)));
+      } else {
+        setScansRemaining(-1); // Illimité
+      }
+    } catch (error) {
+      console.error('Erreur chargement abonnement:', error);
+    } finally {
+      setSubscriptionLoading(false);
+    }
+  };
 
   const loadFavorites = async () => {
     try {
@@ -95,14 +118,53 @@ function FoodScanner() {
   };
 
   const handleBarcodeScanned = async (code) => {
+    // Vérifier limite pour utilisateurs gratuits
+    if (!isPremium && scansRemaining <= 0) {
+      toast.error(
+        <div>
+          <p className="font-bold">Limite atteinte !</p>
+          <p>5 scans/semaine en version gratuite.</p>
+          <button 
+            onClick={() => navigate('/pricing')}
+            className="mt-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm"
+          >
+            Passer à Premium
+          </button>
+        </div>,
+        { duration: 5000 }
+      );
+      return;
+    }
+    
     setLoading(true);
     try {
       const response = await api.scan.barcode(code);
       setResult(response.data);
       setSearchResults([]);
       toast.success('Produit trouvé !');
+      // Décrémenter le compteur local
+      if (!isPremium) {
+        setScansRemaining(prev => Math.max(0, prev - 1));
+      }
     } catch (error) {
-      toast.error('Erreur lors du scan');
+      if (error.response?.status === 403) {
+        toast.error(
+          <div>
+            <p className="font-bold">Limite atteinte !</p>
+            <p>5 scans/semaine en version gratuite.</p>
+            <button 
+              onClick={() => navigate('/pricing')}
+              className="mt-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm"
+            >
+              Passer à Premium
+            </button>
+          </div>,
+          { duration: 5000 }
+        );
+        setScansRemaining(0);
+      } else {
+        toast.error('Erreur lors du scan');
+      }
     } finally {
       setLoading(false);
     }
@@ -143,6 +205,24 @@ function FoodScanner() {
     e.preventDefault();
     if (!searchQuery.trim()) return;
     
+    // Vérifier limite pour utilisateurs gratuits
+    if (!isPremium && scansRemaining <= 0) {
+      toast.error(
+        <div>
+          <p className="font-bold">Limite atteinte !</p>
+          <p>5 recherches/semaine en version gratuite.</p>
+          <button 
+            onClick={() => navigate('/pricing')}
+            className="mt-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm"
+          >
+            Passer à Premium
+          </button>
+        </div>,
+        { duration: 5000 }
+      );
+      return;
+    }
+    
     setLoading(true);
     setNotFound(false);
     try {
@@ -152,9 +232,31 @@ function FoodScanner() {
       if (response.data.length === 0) {
         setNotFound(true);
         setNewFoodData(prev => ({ ...prev, name: searchQuery }));
+      } else {
+        // Décrémenter le compteur local
+        if (!isPremium) {
+          setScansRemaining(prev => Math.max(0, prev - 1));
+        }
       }
     } catch (error) {
-      toast.error('Erreur lors de la recherche');
+      if (error.response?.status === 403) {
+        toast.error(
+          <div>
+            <p className="font-bold">Limite atteinte !</p>
+            <p>5 recherches/semaine en version gratuite.</p>
+            <button 
+              onClick={() => navigate('/pricing')}
+              className="mt-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm"
+            >
+              Passer à Premium
+            </button>
+          </div>,
+          { duration: 5000 }
+        );
+        setScansRemaining(0);
+      } else {
+        toast.error('Erreur lors de la recherche');
+      }
     } finally {
       setLoading(false);
     }
@@ -215,6 +317,42 @@ function FoodScanner() {
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
         <PageHeader title="Scanner d'aliments" />
+
+        {/* Scans Remaining Banner for free users */}
+        {!subscriptionLoading && !isPremium && (
+          <div className={`rounded-2xl p-3 flex items-center justify-between ${
+            scansRemaining > 0 ? 'bg-amber-50 border border-amber-200' : 'bg-red-50 border border-red-200'
+          }`}>
+            <div className="flex items-center gap-2">
+              {scansRemaining > 0 ? (
+                <AlertTriangle className="w-5 h-5 text-amber-500" />
+              ) : (
+                <Lock className="w-5 h-5 text-red-500" />
+              )}
+              <span className={`text-sm font-medium ${scansRemaining > 0 ? 'text-amber-700' : 'text-red-700'}`}>
+                {scansRemaining > 0 
+                  ? `${scansRemaining} scan${scansRemaining > 1 ? 's' : ''} restant${scansRemaining > 1 ? 's' : ''} cette semaine`
+                  : 'Limite atteinte cette semaine'
+                }
+              </span>
+            </div>
+            <button
+              onClick={() => navigate('/pricing')}
+              className="flex items-center gap-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-3 py-1.5 rounded-full hover:opacity-90 transition-opacity"
+            >
+              <Crown className="w-3 h-3" />
+              Premium
+            </button>
+          </div>
+        )}
+
+        {/* Premium badge */}
+        {!subscriptionLoading && isPremium && (
+          <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-3 flex items-center gap-2">
+            <Crown className="w-5 h-5 text-purple-600" />
+            <span className="text-sm font-medium text-purple-700">Scans illimités avec Premium</span>
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="flex gap-2">

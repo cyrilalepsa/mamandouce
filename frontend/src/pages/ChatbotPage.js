@@ -12,7 +12,9 @@ import {
   ChevronLeft,
   Bot,
   User,
-  Loader2
+  Loader2,
+  Crown,
+  Lock
 } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
@@ -28,11 +30,30 @@ function ChatbotPage() {
   const [sessions, setSessions] = useState([]);
   const [showSessions, setShowSessions] = useState(false);
   const messagesEndRef = useRef(null);
+  
+  // Subscription state
+  const [isPremium, setIsPremium] = useState(false);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true);
 
   useEffect(() => {
-    loadSuggestions();
-    loadSessions();
+    checkSubscription();
   }, []);
+
+  const checkSubscription = async () => {
+    try {
+      const response = await api.subscription.getFullStatus();
+      const isPrem = response.data.is_premium || response.data.subscription_status === 'premium';
+      setIsPremium(isPrem);
+      if (isPrem) {
+        loadSuggestions();
+        loadSessions();
+      }
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+    } finally {
+      setSubscriptionLoading(false);
+    }
+  };
 
   useEffect(() => {
     scrollToBottom();
@@ -41,6 +62,39 @@ function ChatbotPage() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  // Bloquer l'accès pour les utilisateurs gratuits
+  if (!subscriptionLoading && !isPremium) {
+    return (
+      <div className="min-h-screen gradient-bg p-6">
+        <div className="max-w-2xl mx-auto">
+          <PageHeader title="Assistant IA" />
+          
+          <Card className="bg-white rounded-3xl p-8 text-center mt-6">
+            <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-10 h-10 text-purple-500" />
+            </div>
+            <h1 className="text-2xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              Fonctionnalité Premium
+            </h1>
+            <p className="text-slate-500 mb-6">
+              L'assistant IA est réservé aux abonnées Premium. Posez toutes vos questions sur la grossesse !
+            </p>
+            <Button
+              onClick={() => navigate('/pricing')}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full px-8 py-3 text-lg font-semibold hover:opacity-90 transition-opacity"
+            >
+              <Crown className="w-5 h-5 mr-2" />
+              Découvrir Premium
+            </Button>
+            <p className="text-sm text-slate-400 mt-4">
+              Seulement 3€/mois • Annulation à tout moment
+            </p>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   const loadSuggestions = async () => {
     try {

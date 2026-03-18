@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { ArrowLeft, CheckSquare, Square, Plus, Send, Briefcase, Baby, Car, ChevronDown, ChevronUp, Heart } from 'lucide-react';
+import { ArrowLeft, CheckSquare, Square, Plus, Send, Briefcase, Baby, Car, ChevronDown, ChevronUp, Heart, Crown, Lock } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 
@@ -21,10 +21,78 @@ export default function MaternityBagPage() {
     'Pour bébé': false,
     'Pour le retour': false
   });
+  
+  // Subscription state
+  const [isPremium, setIsPremium] = useState(false);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true);
 
   useEffect(() => {
-    loadItems();
+    loadSubscriptionAndItems();
   }, []);
+
+  const loadSubscriptionAndItems = async () => {
+    try {
+      // Vérifier l'abonnement d'abord
+      const subResponse = await api.subscription.getFullStatus();
+      const isPrem = subResponse.data.is_premium || subResponse.data.subscription_status === 'premium';
+      setIsPremium(isPrem);
+      setSubscriptionLoading(false);
+      
+      // Si premium, charger les items
+      if (isPrem) {
+        const [bagResponse, favResponse] = await Promise.all([
+          api.postpartum.getMaternityBag(),
+          api.postpartum.getMaternityBagFavorites()
+        ]);
+        setItems(bagResponse.data.items || []);
+        setCustomItems(bagResponse.data.custom_items || []);
+        setFavorites(favResponse.data.favorites || []);
+      }
+    } catch (error) {
+      console.error('Erreur chargement:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Si pas premium, afficher page de blocage
+  if (!subscriptionLoading && !isPremium) {
+    return (
+      <div className="min-h-screen gradient-bg p-6">
+        <div className="max-w-2xl mx-auto">
+          <button 
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-slate-600 mb-6"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Retour
+          </button>
+          
+          <Card className="bg-white rounded-3xl p-8 text-center">
+            <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-10 h-10 text-purple-500" />
+            </div>
+            <h1 className="text-2xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              Fonctionnalité Premium
+            </h1>
+            <p className="text-slate-500 mb-6">
+              La check-list du sac de maternité est réservée aux abonnées Premium.
+            </p>
+            <Button
+              onClick={() => navigate('/pricing')}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full px-8 py-3 text-lg font-semibold hover:opacity-90 transition-opacity"
+            >
+              <Crown className="w-5 h-5 mr-2" />
+              Découvrir Premium
+            </Button>
+            <p className="text-sm text-slate-400 mt-4">
+              Seulement 3€/mois • Annulation à tout moment
+            </p>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   const loadItems = async () => {
     try {

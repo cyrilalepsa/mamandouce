@@ -39,6 +39,25 @@ class SearchHistoryItem(BaseModel):
 async def scan_barcode(barcode: str, current_user: User = Depends(get_current_user)):
     """Scan a barcode and get food information"""
     try:
+        # Vérifier les limites pour utilisateurs gratuits
+        user_doc = await db.users.find_one({"id": current_user.id}, {"_id": 0, "subscription_status": 1})
+        is_premium = user_doc.get("subscription_status") == "premium"
+        
+        if not is_premium:
+            # Compter les scans de cette semaine
+            from datetime import timedelta
+            week_start = datetime.now(timezone.utc) - timedelta(days=7)
+            scans_this_week = await db.food_scans.count_documents({
+                "user_id": current_user.id,
+                "scanned_at": {"$gte": week_start.isoformat()}
+            })
+            
+            if scans_this_week >= 5:
+                raise HTTPException(
+                    status_code=403, 
+                    detail="Limite de 5 scans par semaine atteinte. Passez à Premium pour des scans illimités !"
+                )
+        
         food_safety_db = await get_food_safety_database()
         product_info = food_safety_db.get(barcode, None)
         
@@ -63,6 +82,13 @@ async def scan_barcode(barcode: str, current_user: User = Depends(get_current_us
                         }
         
         if product_info:
+            # Enregistrer le scan
+            await db.food_scans.insert_one({
+                "user_id": current_user.id,
+                "barcode": barcode,
+                "scanned_at": datetime.now(timezone.utc).isoformat()
+            })
+            
             history = SearchHistoryItem(
                 user_id=current_user.id,
                 query=barcode,
@@ -73,6 +99,8 @@ async def scan_barcode(barcode: str, current_user: User = Depends(get_current_us
             await db.search_history.insert_one(history_dict)
         
         return product_info or {"barcode": barcode, "name": "Produit non trouvé", "safe_for_pregnancy": "unknown"}
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Erreur scan barcode: {str(e)}")
         return {"barcode": barcode, "name": "Erreur lors du scan", "safe_for_pregnancy": "unknown"}
@@ -80,6 +108,24 @@ async def scan_barcode(barcode: str, current_user: User = Depends(get_current_us
 @router.post("/scan/search")
 async def search_food(query: str, current_user: User = Depends(get_current_user)):
     """Search for food by name"""
+    # Vérifier les limites pour utilisateurs gratuits (même limite que les scans)
+    user_doc = await db.users.find_one({"id": current_user.id}, {"_id": 0, "subscription_status": 1})
+    is_premium = user_doc.get("subscription_status") == "premium"
+    
+    if not is_premium:
+        from datetime import timedelta
+        week_start = datetime.now(timezone.utc) - timedelta(days=7)
+        scans_this_week = await db.food_scans.count_documents({
+            "user_id": current_user.id,
+            "scanned_at": {"$gte": week_start.isoformat()}
+        })
+        
+        if scans_this_week >= 5:
+            raise HTTPException(
+                status_code=403, 
+                detail="Limite de 5 recherches par semaine atteinte. Passez à Premium pour des recherches illimitées !"
+            )
+    
     food_safety_db = await get_food_safety_database()
     results = []
     
@@ -88,6 +134,13 @@ async def search_food(query: str, current_user: User = Depends(get_current_user)
             results.append(value)
     
     if results:
+        # Enregistrer la recherche comme un scan
+        await db.food_scans.insert_one({
+            "user_id": current_user.id,
+            "query": query,
+            "scanned_at": datetime.now(timezone.utc).isoformat()
+        })
+        
         history = SearchHistoryItem(
             user_id=current_user.id,
             query=query,
