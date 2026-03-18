@@ -263,33 +263,59 @@ async def send_trial_expiry_reminders_job():
                     resend.Emails.send({
                         "from": f"MamanDouce <{SENDER_EMAIL}>",
                         "to": [user_email],
-                        "subject": "Votre essai Premium expire demain !",
+                        "reply_to": "support@cycafamily.com",
+                        "subject": "⏰ Votre essai Premium expire demain !",
+                        "tags": [
+                            {"name": "category", "value": "trial-reminder"},
+                            {"name": "app", "value": "mamandouce"}
+                        ],
                         "html": f"""
-                        <div style="font-family: 'Nunito', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                            <h1 style="color: #ec4899; text-align: center;">MamanDouce</h1>
-                            <h2 style="color: #334155;">Bonjour {user_name} !</h2>
-                            <p style="color: #64748b; font-size: 16px;">
-                                Votre essai gratuit Premium se termine demain.
-                            </p>
-                            <p style="color: #64748b; font-size: 16px;">
-                                Pour continuer à profiter de toutes les fonctionnalités :
-                            </p>
-                            <ul style="color: #64748b;">
-                                <li>Scanner d'aliments illimité</li>
-                                <li>Conseils des 41 semaines</li>
-                                <li>Chatbot IA personnel</li>
-                                <li>Sac de maternité complet</li>
-                            </ul>
-                            <div style="text-align: center; margin: 30px 0;">
-                                <a href="https://mamandouce.app/pricing" 
-                                   style="background: linear-gradient(135deg, #a855f7, #ec4899); color: white; padding: 15px 30px; border-radius: 30px; text-decoration: none; font-weight: bold;">
-                                    Passer à Premium - 27€ pour 9 mois
-                                </a>
-                            </div>
-                            <p style="color: #94a3b8; font-size: 14px; text-align: center;">
-                                Soit seulement 3€/mois • Satisfait ou remboursé 30 jours
-                            </p>
-                        </div>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f8f9fa;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; width: 100%;">
+                    <tr>
+                        <td align="center" style="background-color: #8b5cf6; padding: 30px 20px; border-radius: 20px 20px 0 0;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 28px;">MamanDouce</h1>
+                            <p style="color: #e9d5ff; margin: 10px 0 0 0;">Votre essai se termine bientôt</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #ffffff; padding: 40px 30px; border-radius: 0 0 20px 20px;">
+                            <h2 style="color: #334155; margin: 0 0 20px 0;">Bonjour {user_name} !</h2>
+                            <p style="color: #64748b; font-size: 16px; line-height: 1.6;">Votre essai gratuit Premium se termine <strong>demain</strong>.</p>
+                            <p style="color: #64748b; font-size: 16px; line-height: 1.6;">Pour continuer à profiter de toutes les fonctionnalités :</p>
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 20px 0;">
+                                <tr><td style="padding: 8px 0; color: #64748b;">✅ Scanner d'aliments illimité</td></tr>
+                                <tr><td style="padding: 8px 0; color: #64748b;">✅ Conseils des 41 semaines</td></tr>
+                                <tr><td style="padding: 8px 0; color: #64748b;">✅ Chatbot IA personnel</td></tr>
+                                <tr><td style="padding: 8px 0; color: #64748b;">✅ Sac de maternité complet</td></tr>
+                            </table>
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td align="center" style="padding: 20px 0;">
+                                        <a href="https://femme-enceinte-app.preview.emergentagent.com/pricing" target="_blank" style="background-color: #8b5cf6; border-radius: 30px; color: #ffffff; display: inline-block; font-size: 16px; font-weight: bold; padding: 16px 40px; text-decoration: none;">Passer à Premium - 27€ pour 9 mois</a>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p style="color: #94a3b8; font-size: 14px; text-align: center;">Soit seulement 3€/mois • Satisfait ou remboursé 30 jours</p>
+                            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+                            <p style="color: #9ca3af; font-size: 12px; text-align: center;">L'équipe MamanDouce 💕</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
                         """
                     })
                 except Exception as e:

@@ -488,60 +488,77 @@ async def forgot_password(request: ForgotPasswordRequest):
             
             resend.Emails.send({
                 "from": f"MamanDouce <{SENDER_EMAIL}>",
-                "to": request.email,
+                "to": [request.email],
+                "reply_to": "support@cycafamily.com",
                 "subject": "Réinitialisation de votre mot de passe MamanDouce",
+                "headers": {
+                    "X-Entity-Ref-ID": f"password-reset-{reset_token[:8]}",
+                },
+                "tags": [
+                    {"name": "category", "value": "password-reset"},
+                    {"name": "app", "value": "mamandouce"}
+                ],
                 "html": f"""
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>Réinitialisation de mot de passe</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f8f9fa;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f8f9fa;">
         <tr>
             <td align="center" style="padding: 40px 20px;">
                 <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; width: 100%;">
                     <!-- Header -->
                     <tr>
-                        <td align="center" style="background: #ec4899; padding: 30px 20px; border-radius: 20px 20px 0 0;">
-                            <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">MamanDouce</h1>
-                            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 14px;">Réinitialisation de mot de passe</p>
+                        <td align="center" style="background-color: #ec4899; padding: 30px 20px; border-radius: 20px 20px 0 0;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">MamanDouce</h1>
+                            <p style="color: #fce7f3; margin: 10px 0 0 0; font-size: 14px;">Réinitialisation de mot de passe</p>
                         </td>
                     </tr>
                     <!-- Content -->
                     <tr>
-                        <td style="background: white; padding: 40px 30px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                            <p style="color: #374151; font-size: 16px; margin: 0 0 20px 0;">Bonjour,</p>
-                            <p style="color: #374151; font-size: 16px; margin: 0 0 20px 0;">Vous avez demandé la réinitialisation de votre mot de passe.</p>
-                            <p style="color: #374151; font-size: 16px; margin: 0 0 30px 0;">Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe :</p>
+                        <td style="background-color: #ffffff; padding: 40px 30px; border-radius: 0 0 20px 20px;">
+                            <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">Bonjour,</p>
+                            <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">Vous avez demandé la réinitialisation de votre mot de passe sur MamanDouce.</p>
+                            <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe :</p>
                             
                             <!-- Button -->
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                                 <tr>
-                                    <td align="center" style="padding: 20px 0;">
-                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0">
-                                            <tr>
-                                                <td style="background: #ec4899; border-radius: 30px;">
-                                                    <a href="{reset_link}" target="_blank" style="display: block; padding: 16px 40px; color: white; text-decoration: none; font-weight: bold; font-size: 16px;">
-                                                        Réinitialiser mon mot de passe
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                    <td align="center" style="padding: 10px 0 30px 0;">
+                                        <!--[if mso]>
+                                        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{reset_link}" style="height:50px;v-text-anchor:middle;width:280px;" arcsize="50%" strokecolor="#ec4899" fillcolor="#ec4899">
+                                        <w:anchorlock/>
+                                        <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:16px;font-weight:bold;">Réinitialiser mon mot de passe</center>
+                                        </v:roundrect>
+                                        <![endif]-->
+                                        <!--[if !mso]><!-->
+                                        <a href="{reset_link}" target="_blank" style="background-color: #ec4899; border: 2px solid #ec4899; border-radius: 30px; color: #ffffff; display: inline-block; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; line-height: 50px; text-align: center; text-decoration: none; width: 280px; -webkit-text-size-adjust: none;">Réinitialiser mon mot de passe</a>
+                                        <!--<![endif]-->
                                     </td>
                                 </tr>
                             </table>
                             
-                            <p style="color: #6b7280; font-size: 14px; margin: 30px 0 10px 0;">Ce lien expire dans 1 heure.</p>
-                            <p style="color: #6b7280; font-size: 14px; margin: 0 0 30px 0;">Si vous n'avez pas demandé cette réinitialisation, ignorez simplement cet email.</p>
+                            <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 0 0 10px 0;">⏰ Ce lien expire dans <strong>1 heure</strong>.</p>
+                            <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 0 0 30px 0;">Si vous n'avez pas demandé cette réinitialisation, ignorez simplement cet email.</p>
                             
                             <!-- Fallback link -->
-                            <p style="color: #9ca3af; font-size: 12px; margin: 20px 0 0 0;">Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :</p>
-                            <p style="color: #ec4899; font-size: 12px; word-break: break-all; margin: 5px 0 0 0;">{reset_link}</p>
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f9fafb; border-radius: 10px;">
+                                <tr>
+                                    <td style="padding: 15px;">
+                                        <p style="color: #9ca3af; font-size: 12px; margin: 0 0 5px 0;">Si le bouton ne fonctionne pas, copiez ce lien :</p>
+                                        <p style="color: #ec4899; font-size: 11px; word-break: break-all; margin: 0;"><a href="{reset_link}" style="color: #ec4899;">{reset_link}</a></p>
+                                    </td>
+                                </tr>
+                            </table>
                             
                             <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-                            <p style="color: #9ca3af; font-size: 12px; text-align: center; margin: 0;">L'équipe MamanDouce</p>
+                            <p style="color: #9ca3af; font-size: 12px; text-align: center; margin: 0;">L'équipe MamanDouce 💕</p>
+                            <p style="color: #d1d5db; font-size: 10px; text-align: center; margin: 10px 0 0 0;">Cet email a été envoyé par MamanDouce • cycafamily.com</p>
                         </td>
                     </tr>
                 </table>
