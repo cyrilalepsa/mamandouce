@@ -268,3 +268,82 @@ async def process_refund(user_id: str, current_user: User = Depends(get_current_
         logger.error(f"Stripe refund error: {e}")
         raise HTTPException(status_code=500, detail=f"Erreur Stripe: {str(e)}")
 
+
+# ==================== ESSAI GRATUIT ====================
+
+@router.post("/trial/start")
+async def start_free_trial(current_user: User = Depends(get_current_user)):
+    """Démarrer l'essai gratuit de 7 jours"""
+    from datetime import timedelta
+    
+    # Vérifier si l'utilisateur a déjà utilisé son essai gratuit
+    user_doc = await db.users.find_one({"id": current_user.id}, {"_id": 0})
+    
+    if user_doc.get("trial_used"):
+        raise HTTPException(
+            status_code=400, 
+            detail="Vous avez déjà utilisé votre essai gratuit"
+        )
+    
+    if user_doc.get("subscription_status") == "premium":
+        raise HTTPException(
+            status_code=400, 
+            detail="Vous êtes déjà abonnée Premium"
+        )
+    
+    # Activer l'essai gratuit pour 7 jours
+    trial_end = datetime.now(timezone.utc) + timedelta(days=7)
+    
+    await db.users.update_one(
+        {"id": current_user.id},
+        {"$set": {
+            "subscription_status": "trial",
+            "trial_start_date": datetime.now(timezone.utc).isoformat(),
+            "trial_end_date": trial_end.isoformat(),
+            "trial_used": True
+        }}
+    )
+    
+    logger.info(f"Free trial started for {current_user.email}")
+    
+    return {
+        "success": True,
+        "message": "Votre essai gratuit de 7 jours a commencé !",
+        "trial_end_date": trial_end.isoformat()
+    }
+
+@router.get("/trial/status")
+async def get_trial_status(current_user: User = Depends(get_current_user)):
+    """Vérifier le statut de l'essai gratuit"""
+    user_doc = await db.users.find_one({"id": current_user.id}, {"_id": 0})
+    
+    trial_used = user_doc.get("trial_used", False)
+    trial_end_date = user_doc.get("trial_end_date")
+    subscription_status = user_doc.get("subscription_status", "free")
+    
+    is_trial_active = False
+    days_remaining = 0
+    
+    if subscription_status == "trial" and trial_end_date:
+        try:
+            end_date = datetime.fromisoformat(trial_end_date.replace('Z', '+00:00'))
+            now = datetime.now(timezone.utc)
+            if now < end_date:
+                is_trial_active = True
+                days_remaining = (end_date - now).days
+            else:
+                # Essai expiré - rétrograder en version gratuite
+                await db.users.update_one(
+                    {"id": current_user.id},
+                    {"$set": {"subscription_status": "free"}}
+                )
+        except Exception as e:
+            logger.error(f"Error parsing trial end date: {e}")
+    
+    return {
+        "trial_used": trial_used,
+        "is_trial_active": is_trial_active,
+        "days_remaining": days_remaining,
+        "trial_end_date": trial_end_date
+    }
+

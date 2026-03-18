@@ -147,6 +147,9 @@ export const api = {
     redeemCode: (code) => axios.post(`${API}/redeem-code`, { code }, getAuthHeaders()),
     getFullStatus: () => axios.get(`${API}/subscription/full-status`, getAuthHeaders()),
     purchasePostpartum: () => axios.post(`${API}/subscription/purchase-postpartum`, {}, getAuthHeaders()),
+    // Essai gratuit
+    startTrial: () => axios.post(`${API}/payments/trial/start`, {}, getAuthHeaders()),
+    getTrialStatus: () => axios.get(`${API}/payments/trial/status`, getAuthHeaders()),
   },
   referral: {
     getStatus: () => axios.get(`${API}/referral/status`, getAuthHeaders()),

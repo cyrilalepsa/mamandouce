@@ -170,10 +170,41 @@ function PricingPage() {
           </div>
         </Card>
 
+        {/* Essai gratuit */}
+        <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-5 border-2 border-emerald-200">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Gift className="w-7 h-7 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-emerald-800 mb-1" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                7 jours d'essai gratuit
+              </h3>
+              <p className="text-emerald-700 text-sm mb-2">
+                Testez toutes les fonctionnalités Premium sans engagement
+              </p>
+              <Button
+                onClick={() => navigate('/subscription/checkout?trial=true')}
+                data-testid="start-trial-button"
+                className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full px-6 py-2 font-bold"
+              >
+                Commencer l'essai gratuit
+              </Button>
+            </div>
+          </div>
+        </Card>
+
         {/* Garanties */}
         <Card className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
           <h3 className="text-lg font-bold text-slate-700 mb-4 text-center" style={{ fontFamily: 'Nunito, sans-serif' }}>Pourquoi choisir Premium ?</h3>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Gift className="w-6 h-6 text-white" />
+              </div>
+              <h4 className="font-bold text-slate-700 text-sm mb-1">Essai gratuit</h4>
+              <p className="text-xs text-slate-500">7 jours</p>
+            </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-300 rounded-full flex items-center justify-center mx-auto mb-2">
                 <Check className="w-6 h-6 text-white" />
@@ -217,6 +248,10 @@ function PricingPage() {
             <div className="px-4 pb-4 space-y-2 animate-fade-in">
               {[
                 {
+                  question: "Comment fonctionne l'essai gratuit de 7 jours ?",
+                  answer: "Vous accédez à toutes les fonctionnalités Premium pendant 7 jours sans payer. À la fin de l'essai, vous pouvez choisir de vous abonner (27€ pour 9 mois) ou continuer en version gratuite. Aucun engagement, aucune carte bancaire requise pour l'essai."
+                },
+                {
                   question: "Quelle est la différence entre Standard et Premium ?",
                   answer: "En Standard, vous avez accès aux conseils des 4 premières semaines et à 5 scans par semaine. En Premium, vous débloquez les 41 semaines de conseils, le scanner illimité et toutes les fonctionnalités avancées."
                 },
@@ -229,12 +264,16 @@ function PricingPage() {
                   answer: "Votre compte reste actif en version Standard. Si vous avez acheté le post-partum, vous gardez l'accès pendant 6 mois après l'accouchement."
                 },
                 {
-                  question: "Comment accéder au suivi post-partum ?",
-                  answer: "Vous pouvez acheter l'option (8€) à tout moment. Le contenu sera débloqué après avoir confirmé votre accouchement via l'icône bébé dans Profil → Informations de grossesse."
+                  question: "Comment fonctionne la garantie satisfait ou remboursé ?",
+                  answer: "Pendant 30 jours après votre achat, si vous n'êtes pas satisfaite (problème technique, fonctionnalité non conforme à vos attentes), contactez-nous via la messagerie et nous vous remboursons intégralement. Simple et sans justificatif."
                 },
                 {
                   question: "Puis-je être remboursée en cas de fausse couche ?",
-                  answer: "Oui, nous comprenons cette situation difficile. Envoyez une attestation médicale via les paramètres et nous vous remboursons au prorata des mois restants."
+                  answer: "Oui, nous comprenons cette situation difficile. Envoyez une attestation médicale via Paramètres → Situation difficile et nous vous remboursons au prorata des mois restants. Cette politique s'applique à tout moment, sans limite de durée."
+                },
+                {
+                  question: "Comment accéder au suivi post-partum ?",
+                  answer: "Vous pouvez acheter l'option (8€) à tout moment. Le contenu sera débloqué après avoir confirmé votre accouchement via l'icône bébé dans Profil → Informations de grossesse."
                 }
               ].map((faq, index) => (
                 <div key={index} className="border border-slate-200 rounded-xl overflow-hidden">

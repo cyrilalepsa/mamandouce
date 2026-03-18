@@ -172,7 +172,31 @@ async def get_full_subscription_status(current_user: User = Depends(get_current_
     
     subscription_status = user_doc.get("subscription_status", "free")
     subscription_start = user_doc.get("subscription_start_date")
-    is_premium = subscription_status == "premium"
+    
+    # Vérifier si l'essai est actif
+    is_trial_active = False
+    trial_days_remaining = 0
+    if subscription_status == "trial":
+        trial_end_date = user_doc.get("trial_end_date")
+        if trial_end_date:
+            try:
+                end_date = datetime.fromisoformat(trial_end_date.replace('Z', '+00:00'))
+                now = datetime.now(timezone.utc)
+                if now < end_date:
+                    is_trial_active = True
+                    trial_days_remaining = (end_date - now).days + 1
+                else:
+                    # Essai expiré - rétrograder en version gratuite
+                    await db.users.update_one(
+                        {"id": current_user.id},
+                        {"$set": {"subscription_status": "free"}}
+                    )
+                    subscription_status = "free"
+            except Exception:
+                pass
+    
+    # Premium si abonnement actif OU essai actif
+    is_premium = subscription_status == "premium" or is_trial_active
     
     # Calculer si éligible au post-partum (6 mois d'abonnement)
     postpartum_eligible = False
@@ -212,6 +236,9 @@ async def get_full_subscription_status(current_user: User = Depends(get_current_
     return {
         "subscription_status": subscription_status,
         "is_premium": is_premium,
+        "is_trial_active": is_trial_active,
+        "trial_days_remaining": trial_days_remaining,
+        "trial_used": user_doc.get("trial_used", False),
         "months_subscribed": months_subscribed,
         "postpartum_eligible": postpartum_eligible,
         "postpartum_unlocked": postpartum_unlocked,

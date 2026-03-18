@@ -13,10 +13,13 @@ function SubscriptionCheckout() {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [step, setStep] = useState(0);
   const [user, setUser] = useState(null);
+  const [trialStatus, setTrialStatus] = useState(null);
+  const [startingTrial, setStartingTrial] = useState(false);
   
   const packageType = searchParams.get('package') || 'annual';
   const product = searchParams.get('product');
   const isOnboarding = searchParams.get('onboarding') === 'true';
+  const isTrial = searchParams.get('trial') === 'true';
 
   const steps = [
     { label: 'Préparation...', icon: Check },
@@ -26,12 +29,50 @@ function SubscriptionCheckout() {
 
   useEffect(() => {
     loadUser();
+    loadTrialStatus();
+    
+    // Si démarrage d'essai gratuit
+    if (isTrial) {
+      handleStartTrial();
+      return;
+    }
     
     // Si pas en mode onboarding et un produit spécifique est demandé, lancer le checkout directement
     if (!isOnboarding && (product || packageType)) {
       handleDirectCheckout();
     }
   }, []);
+  
+  const loadTrialStatus = async () => {
+    try {
+      const response = await api.subscription.getTrialStatus();
+      setTrialStatus(response.data);
+    } catch (error) {
+      console.error('Erreur chargement statut essai:', error);
+    }
+  };
+  
+  const handleStartTrial = async () => {
+    setStartingTrial(true);
+    try {
+      const response = await api.subscription.startTrial();
+      if (response.data.success) {
+        toast.success(
+          <div>
+            <p className="font-bold">Essai gratuit activé !</p>
+            <p>Profitez de 7 jours Premium</p>
+          </div>
+        );
+        navigate('/', { replace: true });
+      }
+    } catch (error) {
+      const message = error.response?.data?.detail || "Erreur lors de l'activation";
+      toast.error(message);
+      navigate('/pricing', { replace: true });
+    } finally {
+      setStartingTrial(false);
+    }
+  };
 
   useEffect(() => {
     if (loading && !isOnboarding) {

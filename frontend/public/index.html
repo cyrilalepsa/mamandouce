@@ -126,39 +126,78 @@
             // Timeout de secours - cacher après 5 secondes max
             setTimeout(window.hideInitialLoader, 5000);
             
-            // Script agressif pour cacher la bannière Emergent "Spinning up Servers"
+            // Script ultra-agressif pour cacher TOUTES les bannières Emergent
             (function hideEmergentBanner() {
+                var keywords = ['spinning', 'wake up', 'waking', 'made with emergent', 'servers', 'starting'];
+                
+                function shouldHide(el) {
+                    if (!el || el.id === 'initial-loader' || el.id === 'root' || el.id === 'emergent-badge') return false;
+                    if (el.tagName === 'HTML' || el.tagName === 'BODY') return false;
+                    
+                    var text = (el.innerText || el.textContent || '').toLowerCase();
+                    var style = (el.getAttribute('style') || '').toLowerCase();
+                    
+                    // Vérifier le texte
+                    for (var i = 0; i < keywords.length; i++) {
+                        if (text.includes(keywords[i])) return true;
+                    }
+                    
+                    // Vérifier les éléments fixed en bas (sauf nos éléments)
+                    if (style.includes('fixed') && style.includes('bottom') && !el.closest('#root')) {
+                        return true;
+                    }
+                    
+                    return false;
+                }
+                
+                function hideElement(el) {
+                    el.style.cssText = 'display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;width:0!important;overflow:hidden!important;pointer-events:none!important;position:absolute!important;top:-9999px!important;left:-9999px!important;';
+                    el.setAttribute('aria-hidden', 'true');
+                }
+                
                 function hide() {
-                    // Chercher tous les éléments contenant "Spinning" ou "spinning"
-                    document.querySelectorAll('*').forEach(function(el) {
-                        if (el.id === 'initial-loader' || el.id === 'root') return;
-                        var text = el.innerText || el.textContent || '';
-                        if (text.toLowerCase().includes('spinning') || 
-                            text.toLowerCase().includes('wake up') ||
-                            text.toLowerCase().includes('made with emergent')) {
-                            if (el.tagName !== 'HTML' && el.tagName !== 'BODY') {
-                                el.style.cssText = 'display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;width:0!important;overflow:hidden!important;';
-                            }
+                    // Parcourir tous les éléments
+                    document.querySelectorAll('div, span, p, section, aside, footer').forEach(function(el) {
+                        if (shouldHide(el)) {
+                            hideElement(el);
                         }
                     });
-                    // Cacher spécifiquement les éléments fixes en bas de page (sauf le chatbot)
-                    document.querySelectorAll('div[style*="fixed"]').forEach(function(el) {
-                        var style = el.getAttribute('style') || '';
-                        var text = el.innerText || '';
-                        if ((style.includes('bottom') || text.toLowerCase().includes('spinning')) && 
-                            el.id !== 'initial-loader' && 
-                            !el.classList.contains('chat-bubble') &&
-                            !el.closest('#root')) {
-                            el.style.cssText = 'display:none!important;';
+                    
+                    // Cacher spécifiquement les iframes ou scripts Emergent
+                    document.querySelectorAll('iframe[src*="emergent"], script[src*="emergent"]').forEach(function(el) {
+                        if (el.id !== 'emergent-badge') {
+                            el.style.display = 'none';
                         }
                     });
                 }
-                // Exécuter immédiatement et périodiquement
+                
+                // Exécuter immédiatement
                 hide();
-                setInterval(hide, 500);
+                
+                // Exécuter périodiquement (toutes les 200ms pendant 10 secondes, puis toutes les 2 secondes)
+                var count = 0;
+                var fastInterval = setInterval(function() {
+                    hide();
+                    count++;
+                    if (count > 50) {
+                        clearInterval(fastInterval);
+                        setInterval(hide, 2000);
+                    }
+                }, 200);
+                
                 // Observer les mutations DOM
                 if (typeof MutationObserver !== 'undefined') {
-                    var observer = new MutationObserver(hide);
+                    var observer = new MutationObserver(function(mutations) {
+                        mutations.forEach(function(mutation) {
+                            mutation.addedNodes.forEach(function(node) {
+                                if (node.nodeType === 1 && shouldHide(node)) {
+                                    hideElement(node);
+                                }
+                            });
+                        });
+                        hide();
+                    });
+                    
                     if (document.body) {
                         observer.observe(document.body, { childList: true, subtree: true });
                     } else {

@@ -28,11 +28,13 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 ### 4. Post-partum
 - Guide complet post-accouchement
 - Suivi de reprise
+- Bouton "Tout ouvrir / Tout fermer" pour les sections
 
 ### 5. Premium Features
 - Chatbot IA (GPT-4o-mini)
 - Intégration Stripe pour abonnements
 - Système de codes promo et parrainage
+- **Essai gratuit 7 jours** (NEW)
 
 ### 6. Administration
 - Panel admin complet
@@ -58,7 +60,7 @@ MamanDouce est une application PWA complète d'accompagnement à la maternité, 
 ### 10. Grossesse après 35 ans
 Section dédiée avec fertilité, examens, risques, accompagnement
 
-## Restrictions Premium/Gratuit (NEW 18/03/2026)
+## Restrictions Premium/Gratuit
 
 ### Fonctionnalités GRATUITES
 | Fonctionnalité | Limite |
@@ -81,6 +83,12 @@ Section dédiée avec fertilité, examens, risques, accompagnement
 | Images embryon HD | Toutes les semaines |
 | Démarches administratives | Toutes les semaines |
 
+### Garanties (Page Tarification)
+1. **Essai gratuit 7 jours** - Tester toutes les fonctionnalités sans engagement
+2. **Satisfait ou remboursé 30 jours** - Remboursement sur simple demande
+3. **Paiement sécurisé** - Via Stripe
+4. **Remboursement fausse couche** - Au prorata des mois restants
+
 ## Tech Stack
 - **Frontend:** React, PWA, Shadcn/UI, Capacitor (Android)
 - **Backend:** FastAPI, MongoDB
@@ -88,66 +96,66 @@ Section dédiée avec fertilité, examens, risques, accompagnement
 
 ## Recent Changes
 
-### Session du 18/03/2026
-- ✅ **Restrictions Premium implémentées** - Différenciation claire entre utilisateurs gratuits et premium
-- ✅ **Bug scanner corrigé** - La page blanche pour utilisateurs gratuits est résolue
-- ✅ **SubscriptionGate refactorisé** - Utilise maintenant un Context React pour partager le statut d'abonnement
-- ✅ **Composant PremiumFeatureLock créé** - Composant réutilisable pour bloquer les fonctionnalités premium
-- ✅ **Nettoyage du code** - Suppression du fichier subscription.js inutilisé
+### Session du 18/03/2026 (Suite)
+- ✅ **Essai gratuit 7 jours implémenté**
+  - API `/api/payments/trial/start` pour activer l'essai
+  - API `/api/payments/trial/status` pour vérifier le statut
+  - Intégration avec le statut d'abonnement global
+  - Protection contre réactivation de l'essai
+- ✅ **FAQ mise à jour** avec questions sur l'essai et le remboursement
+- ✅ **Bouton "Tout ouvrir / Tout fermer"** ajouté à la page post-partum
+- ✅ **Script anti-bannière renforcé** pour masquer "Spinning up servers"
+- ✅ **Composant ToggleAllSections créé** - Réutilisable pour autres pages
 
-### Session du 17/03/2026
-- Compteur de vues pour recettes partagées
-- Favoris sac de maternité
-- Avatar personnalisable
-- Correction bug traduction automatique
-- Suppression/sélection multiple des messages
-- Point rouge notification messages non lus
+### Session du 18/03/2026
+- ✅ **Restrictions Premium implémentées**
+- ✅ **Bug scanner corrigé**
+- ✅ **SubscriptionGate refactorisé** avec Context React
+- ✅ **Composant PremiumFeatureLock créé**
 
 ## Architecture
 ```
 /app
 ├── backend/
 │   ├── routes/
+│   │   ├── payments.py     # Endpoints essai gratuit (NEW)
 │   │   ├── food.py         # Logique restriction scans
-│   │   ├── referral.py     # Endpoint full-status avec scans_this_week
-│   │   └── contact.py      # Suppression messages
+│   │   └── referral.py     # Endpoint full-status avec trial
 │   └── models/schemas.py
 └── frontend/
     └── src/
         ├── components/
-        │   ├── SubscriptionGate.jsx    # Context d'abonnement (refactorisé)
-        │   ├── PremiumFeatureLock.jsx  # Composant blocage premium (NEW)
-        │   └── ui/
+        │   ├── SubscriptionGate.jsx
+        │   ├── PremiumFeatureLock.jsx
+        │   └── ToggleAllSections.jsx  # (NEW)
         └── pages/
-            ├── FoodScanner.js          # Restrictions scans
-            ├── WeeklyTipsPage.js       # Restrictions semaines 1-4
-            ├── EmbryoTracker.js        # Restrictions semaines 1-4
-            ├── ChatbotPage.js          # Blocage complet
-            └── MaternityBagPage.js     # Blocage complet
+            ├── PricingPage.js          # Essai gratuit + FAQ
+            └── PostpartumPage.js       # Bouton tout ouvrir/fermer
 ```
 
 ## API Endpoints
-- `GET /api/subscription/full-status` - Retourne is_premium, scans_this_week, scans_limit
-- `POST /api/scan/barcode` - Vérifie limite scans, retourne 403 si dépassée
-- `POST /api/scan/search` - Vérifie limite scans, retourne 403 si dépassée
+- `POST /api/payments/trial/start` - Activer l'essai gratuit de 7 jours
+- `GET /api/payments/trial/status` - Vérifier le statut de l'essai
+- `GET /api/subscription/full-status` - Retourne is_premium, is_trial_active, trial_days_remaining
 
 ## Backlog
 
 ### P1 - Haute priorité
 - [ ] Guide publication Google Play Store
 
-### P2 - Moyenne priorité
-- [ ] Résolution bannière "Spinning up servers" (artefact preview)
-- [ ] Fonction "Tout ouvrir/Tout fermer" pour sections déroulantes
+### P2 - Complétés
+- [x] Résolution bannière "Spinning up servers" (script renforcé)
+- [x] Fonction "Tout ouvrir/Tout fermer" pour sections déroulantes
 
 ### P3 - Future
 - [ ] Mode hors-ligne amélioré
 - [ ] Statistiques d'utilisation
+- [ ] Ajouter bouton toggle à d'autres pages (Settings, etc.)
 
 ## Known Issues
-- Bannière "Spinning up servers" visible sur environnement preview uniquement (disparaîtra en production)
+- Bannière "Spinning up servers" : script de masquage ajouté, mais peut persister dans certains cas (artefact preview)
 - L'URL de preview contient "femme-enceinte-app" - en production, utilisez un domaine personnalisé
 
 ## Credentials (Test)
 - **Admin:** cyrilalepsa@gmail.com / Cyc@dmin9630
-- **Test Gratuit:** test.free@example.com / Test1234!
+- **Test Gratuit:** test.free@example.com / Test1234! (essai activé)

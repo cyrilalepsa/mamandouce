@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
+import { ToggleAllSections } from '../components/ToggleAllSections';
 
 // Import refactored components
 import {
@@ -47,6 +48,24 @@ export default function PostpartumPage() {
   
   // Favorites
   const [favorites, setFavorites] = useState([]);
+  
+  // Check if all sections are open
+  const allSectionsOpen = Object.values(expandedSections).every(Boolean);
+  
+  // Toggle all sections
+  const toggleAllSections = (open) => {
+    setExpandedSections({
+      appointments: open,
+      difficulties: open,
+      breastfeeding: open,
+      formula: open,
+      diapers: open,
+      babywearing: open,
+      diversification: open,
+      recipes: open,
+      precautions: open
+    });
+  };
   
   // Full subscription status
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
@@ -496,6 +515,14 @@ export default function PostpartumPage() {
             </p>
           </div>
         </Card>
+
+        {/* Toggle All Sections Button */}
+        <div className="flex justify-end">
+          <ToggleAllSections 
+            allOpen={allSectionsOpen} 
+            onToggle={toggleAllSections}
+          />
+        </div>
 
         {/* Collapsible Sections */}
         <div className="space-y-3">
