@@ -48,6 +48,30 @@ function PricingPage() {
           <PageHeader title="Abonnements" />
         </div>
 
+        {/* Essai gratuit - EN HAUT */}
+        <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-5 border-2 border-emerald-300 shadow-lg">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Gift className="w-7 h-7 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-emerald-800 mb-1" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                7 jours d'essai gratuit
+              </h3>
+              <p className="text-emerald-700 text-sm mb-2">
+                Testez toutes les fonctionnalités Premium sans engagement
+              </p>
+              <Button
+                onClick={() => navigate('/subscription/checkout?trial=true')}
+                data-testid="start-trial-button-top"
+                className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full px-6 py-2 font-bold"
+              >
+                Commencer l'essai gratuit
+              </Button>
+            </div>
+          </div>
+        </Card>
+
         {/* Hero Premium - Taille augmentée */}
         <Card className="bg-gradient-to-br from-sky-100 to-pink-100 rounded-2xl p-6 text-center border-0">
           <Crown className="w-12 h-12 text-amber-500 mx-auto mb-3" />
@@ -166,30 +190,6 @@ function PricingPage() {
                   Parrainez 2 amies et le post-partum est offert
                 </p>
               </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Essai gratuit */}
-        <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-5 border-2 border-emerald-200">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Gift className="w-7 h-7 text-white" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-bold text-emerald-800 mb-1" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                7 jours d'essai gratuit
-              </h3>
-              <p className="text-emerald-700 text-sm mb-2">
-                Testez toutes les fonctionnalités Premium sans engagement
-              </p>
-              <Button
-                onClick={() => navigate('/subscription/checkout?trial=true')}
-                data-testid="start-trial-button"
-                className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full px-6 py-2 font-bold"
-              >
-                Commencer l'essai gratuit
-              </Button>
             </div>
           </div>
         </Card>
