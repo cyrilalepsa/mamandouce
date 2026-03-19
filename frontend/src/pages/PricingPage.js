@@ -16,13 +16,14 @@ function PricingPage() {
     { text: 'Conseils des 4 premières semaines', included: true },
     { text: 'Accès CAF/Ameli/Mairie', included: true },
     { text: 'Calendrier de fertilité', included: true },
+    { text: 'RDV médicaux (1er trimestre)', included: true },
+    { text: 'Suivi de grossesse complet', included: false },
     { text: '41 semaines de conseils complets', included: false },
-    { text: 'Images évolution embryon', included: false },
     { text: 'Scanner illimité', included: false },
+    { text: 'Préparer l\'arrivée de bébé', included: false },
     { text: 'Check-list sac de maternité', included: false },
-    { text: 'Démarches administratives', included: false },
+    { text: 'Liste de naissance partageable', included: false },
     { text: 'Notifications email', included: false },
-    { text: 'Historique complet', included: false },
     { text: 'Support prioritaire', included: false }
   ];
   
@@ -30,13 +31,13 @@ function PricingPage() {
     { text: 'Calculateur de grossesse complet', included: true },
     { text: 'Scanner ILLIMITÉ de produits', included: true },
     { text: '41 semaines de conseils complets', included: true },
+    { text: 'Suivi de grossesse Maman & Bébé', included: true },
     { text: 'Accès CAF/Ameli/Mairie', included: true },
-    { text: '6 images évolution embryon/fœtus', included: true },
     { text: 'Calendrier de fertilité détaillé', included: true },
+    { text: 'Préparer l\'arrivée de bébé', included: true },
     { text: 'Check-list sac de maternité', included: true },
-    { text: 'Démarches administratives détaillées', included: true },
+    { text: 'Liste de naissance partageable', included: true },
     { text: 'Notifications email automatiques', included: true },
-    { text: 'Historique complet recherches', included: true },
     { text: 'Sans publicité', included: true },
     { text: 'Support prioritaire', included: true }
   ];
