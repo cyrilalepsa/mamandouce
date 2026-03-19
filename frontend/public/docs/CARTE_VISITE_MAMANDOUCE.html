@@ -29,7 +29,59 @@
         .subtitle {
             text-align: center;
             color: #64748b;
+            margin-bottom: 20px;
+        }
+        
+        /* Download buttons section */
+        .download-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
             margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 14px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .download-btn.pdf {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        
+        .download-btn.png-recto {
+            background: linear-gradient(135deg, #f472b6, #ec4899);
+            color: white;
+        }
+        
+        .download-btn.png-verso {
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            color: white;
+        }
+        
+        .download-btn.jpg {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
         }
         
         .cards-container {
@@ -184,10 +236,50 @@
             gap: 8px;
         }
         
+        /* Generated images section */
+        .generated-images {
+            max-width: 900px;
+            margin: 40px auto;
+            text-align: center;
+        }
+        
+        .generated-images h2 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .images-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .image-preview {
+            background: white;
+            padding: 15px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .image-preview img {
+            max-width: 340px;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .image-preview p {
+            margin-top: 10px;
+            font-weight: 600;
+            color: #475569;
+        }
+        
         /* Instructions d'impression */
         .print-instructions {
             max-width: 800px;
-            margin: 60px auto 0;
+            margin: 40px auto 0;
             background: white;
             padding: 30px;
             border-radius: 16px;
@@ -236,47 +328,12 @@
             color: #92400e;
         }
         
-        .download-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 30px;
-            flex-wrap: wrap;
-        }
-        
-        .download-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-weight: 600;
-            text-decoration: none;
-            font-family: 'Quicksand', sans-serif;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-        }
-        
-        .download-btn.pdf {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-        }
-        
-        .download-btn.png {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-        }
-        
         @media print {
             body {
                 background: white;
                 padding: 0;
             }
-            .print-instructions, .download-buttons {
+            .print-instructions, .download-section, .generated-images {
                 display: none;
             }
             .card {
@@ -289,6 +346,25 @@
 <body>
     <h1>Carte de Visite MamanDouce</h1>
     <p class="subtitle">Modèle prêt à imprimer - Format 85mm x 55mm</p>
+    
+    <!-- Download buttons -->
+    <div class="download-section">
+        <a href="/MamanDouce_CarteVisite_v2.pdf" download class="download-btn pdf">
+            📄 Télécharger PDF
+        </a>
+        <a href="/carte_recto_v2.png" download class="download-btn png-recto">
+            🖼️ PNG Recto
+        </a>
+        <a href="/carte_verso_v2.png" download class="download-btn png-verso">
+            🖼️ PNG Verso
+        </a>
+        <a href="/MamanDouce_Recto_v2.jpg" download class="download-btn jpg">
+            📷 JPEG Recto
+        </a>
+        <a href="/MamanDouce_Verso_v2.jpg" download class="download-btn jpg">
+            📷 JPEG Verso
+        </a>
+    </div>
     
     <div class="cards-container">
         <!-- RECTO -->
@@ -324,6 +400,21 @@
                         <span class="contact-item">📧 cyrilalepsa@gmail.com</span>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Generated images preview -->
+    <div class="generated-images">
+        <h2>📸 Aperçu des fichiers générés</h2>
+        <div class="images-grid">
+            <div class="image-preview">
+                <img src="/carte_recto_v2.png" alt="Carte de visite - Recto">
+                <p>Recto (PNG)</p>
+            </div>
+            <div class="image-preview">
+                <img src="/carte_verso_v2.png" alt="Carte de visite - Verso">
+                <p>Verso (PNG)</p>
             </div>
         </div>
     </div>
