@@ -47,11 +47,11 @@ function PremiumModal({ isOpen, onClose, feature }) {
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-green-500">✓</span>
-                Images évolution embryon
+                Suivi de grossesse complet
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-green-500">✓</span>
-                Démarches administratives
+                Préparer l'arrivée de bébé
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-green-500">✓</span>

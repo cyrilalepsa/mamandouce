@@ -77,10 +77,6 @@ export function PreconceptionSection() {
 export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
   const navigate = useNavigate();
   const { isPremium } = useSubscription();
-  
-  // Déterminer si on est au 1er trimestre (semaines 1-13)
-  const currentWeek = pregnancyProfile?.current_week || 1;
-  const isFirstTrimester = currentWeek <= 13;
 
   return (
     <div>
@@ -135,20 +131,18 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
       {/* Séparateur visuel */}
       <div className="border-t border-slate-100 my-4"></div>
 
-      {/* RDV (1er trimestre uniquement), Suivi de grossesse (Premium), Rappels */}
+      {/* RDV (gratuit), Suivi de grossesse (Premium), Rappels */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {/* RDV - Visible uniquement au 1er trimestre */}
-        {isFirstTrimester && (
-          <Card
-            onClick={() => navigate('/medical')}
-            data-testid="medical-nav"
-            className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-          >
-            <Stethoscope className="w-8 h-8 text-sky-500 mx-auto mb-2" />
-            <h3 className="text-sm font-bold text-slate-700">Rendez-vous</h3>
-            <p className="text-xs text-slate-500">1er trimestre</p>
-          </Card>
-        )}
+        {/* RDV - Accessible gratuitement */}
+        <Card
+          onClick={() => navigate('/medical')}
+          data-testid="medical-nav"
+          className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+        >
+          <Stethoscope className="w-8 h-8 text-sky-500 mx-auto mb-2" />
+          <h3 className="text-sm font-bold text-slate-700">Rendez-vous</h3>
+          <p className="text-xs text-slate-500">Suivi médical</p>
+        </Card>
 
         {/* Suivi grossesse - Premium uniquement */}
         {isPremium ? (
@@ -192,43 +186,101 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
   );
 }
 
-// Catégorie: Préparer l'arrivée de bébé (Premium uniquement)
+// Catégorie: Préparer l'arrivée de bébé (Premium uniquement avec aperçu attractif)
 export function BabyPreparationSection() {
   const navigate = useNavigate();
   const { isPremium } = useSubscription();
 
-  // Si pas premium, afficher un bloc verrouillé
+  // Si pas premium, afficher un aperçu attractif avec contenu flouté/verrouillé
   if (!isPremium) {
     return (
       <div>
         <h2 className="text-xl font-bold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
           <Gift className="w-5 h-5 text-purple-500" />
           Préparer l'arrivée de bébé
-          <Crown className="w-4 h-4 text-amber-500 ml-1" />
+          <span className="ml-2 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+            <Crown className="w-3 h-3" /> Premium
+          </span>
         </h2>
-        <Card
-          onClick={() => navigate('/pricing')}
-          data-testid="baby-prep-locked"
-          className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover"
-        >
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-slate-300 to-slate-400 rounded-2xl flex items-center justify-center flex-shrink-0">
-              <Lock className="w-8 h-8 text-white" />
+        
+        {/* Aperçu des cartes avec effet de flou partiel */}
+        <div className="grid grid-cols-2 gap-4 relative">
+          {/* Liste de naissance - aperçu */}
+          <Card
+            onClick={() => navigate('/pricing')}
+            className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 cursor-pointer card-hover text-center relative overflow-hidden"
+          >
+            <div className="absolute top-2 right-2 z-10">
+              <Lock className="w-4 h-4 text-purple-400" />
             </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-bold text-slate-600" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                Contenu Premium
-              </h3>
-              <p className="text-sm text-slate-500 mt-1">
-                Liste de naissance, sac maternité, vidéos et livres
-              </p>
-              <button className="mt-2 flex items-center gap-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-3 py-1.5 rounded-full">
-                <Crown className="w-3 h-3" />
-                Débloquer avec Premium
-              </button>
+            <ClipboardList className="w-10 h-10 text-pink-400 mx-auto mb-2" />
+            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Liste de naissance</h3>
+            <p className="text-xs text-slate-500 mt-1">À partager avec vos proches</p>
+          </Card>
+
+          {/* Sac de maternité - aperçu */}
+          <Card
+            onClick={() => navigate('/pricing')}
+            className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-purple-100 cursor-pointer card-hover text-center relative overflow-hidden"
+          >
+            <div className="absolute top-2 right-2 z-10">
+              <Lock className="w-4 h-4 text-purple-400" />
             </div>
-          </div>
-        </Card>
+            <Briefcase className="w-10 h-10 text-purple-500 mx-auto mb-2" />
+            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Sac de maternité</h3>
+            <p className="text-xs text-slate-500 mt-1">Check-list interactive</p>
+          </Card>
+
+          {/* Vidéos - aperçu */}
+          <Card
+            onClick={() => navigate('/pricing')}
+            className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 cursor-pointer card-hover text-center relative overflow-hidden"
+          >
+            <div className="absolute top-2 right-2 z-10">
+              <Lock className="w-4 h-4 text-purple-400" />
+            </div>
+            <Video className="w-10 h-10 text-red-500 mx-auto mb-2" />
+            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Vidéos</h3>
+            <p className="text-xs text-slate-500 mt-1">Préparation accouchement</p>
+          </Card>
+
+          {/* Les Maternelles - aperçu */}
+          <Card
+            onClick={() => navigate('/pricing')}
+            className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 cursor-pointer card-hover text-center relative overflow-hidden"
+          >
+            <div className="absolute top-2 right-2 z-10">
+              <Lock className="w-4 h-4 text-purple-400" />
+            </div>
+            <Youtube className="w-10 h-10 text-red-600 mx-auto mb-2" />
+            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Les Maternelles</h3>
+            <p className="text-xs text-slate-500 mt-1">Chaîne YouTube</p>
+          </Card>
+
+          {/* Livres - aperçu */}
+          <Card
+            onClick={() => navigate('/pricing')}
+            className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 cursor-pointer card-hover text-center col-span-2 relative overflow-hidden"
+          >
+            <div className="absolute top-2 right-2 z-10">
+              <Lock className="w-4 h-4 text-purple-400" />
+            </div>
+            <Book className="w-10 h-10 text-amber-600 mx-auto mb-2" />
+            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Livres utiles</h3>
+            <p className="text-xs text-slate-500 mt-1">Grossesse et bébé</p>
+          </Card>
+        </div>
+        
+        {/* Bouton débloquer */}
+        <div className="mt-4 text-center">
+          <button
+            onClick={() => navigate('/pricing')}
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5"
+          >
+            <Crown className="w-5 h-5" />
+            Débloquer avec Premium
+          </button>
+        </div>
       </div>
     );
   }

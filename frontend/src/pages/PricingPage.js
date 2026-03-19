@@ -16,7 +16,7 @@ function PricingPage() {
     { text: 'Conseils des 4 premières semaines', included: true },
     { text: 'Accès CAF/Ameli/Mairie', included: true },
     { text: 'Calendrier de fertilité', included: true },
-    { text: 'RDV médicaux (1er trimestre)', included: true },
+    { text: 'RDV médicaux (3 trimestres)', included: true },
     { text: 'Suivi de grossesse complet', included: false },
     { text: '41 semaines de conseils complets', included: false },
     { text: 'Scanner illimité', included: false },

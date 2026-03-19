@@ -113,8 +113,8 @@ function SubscriptionManage() {
                 <ul className="space-y-2 mb-6 text-white">
                   <li>✓ Scanner illimité</li>
                   <li>✓ 41 semaines de conseils</li>
-                  <li>✓ Images évolution embryon</li>
-                  <li>✓ Démarches administratives</li>
+                  <li>✓ Suivi de grossesse complet</li>
+                  <li>✓ Préparer l'arrivée de bébé</li>
                   <li>✓ Notifications email</li>
                 </ul>
                 <Button

@@ -247,11 +247,11 @@ function SubscriptionCheckout() {
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-white" />
-                  <span className="text-white">Images évolution embryon</span>
+                  <span className="text-white">Suivi de grossesse complet</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-white" />
-                  <span className="text-white">Check-list maternité</span>
+                  <span className="text-white">Préparer l'arrivée de bébé</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-white" />
