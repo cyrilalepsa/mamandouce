@@ -35,8 +35,8 @@ export function PreconceptionSection() {
           className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
         >
           <BookHeart className="w-10 h-10 text-pink-400 mx-auto mb-2" />
-          <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Conseils</h3>
-          <p className="text-xs text-slate-500 mt-1">Préparer sa grossesse</p>
+          <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Évolution et conseils</h3>
+          <p className="text-xs text-slate-500 mt-1">Semaine par semaine</p>
         </Card>
       </div>
       
@@ -77,6 +77,10 @@ export function PreconceptionSection() {
 export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
   const navigate = useNavigate();
   const { isPremium } = useSubscription();
+  
+  // Déterminer si on est au 1er trimestre (semaines 1-13)
+  const currentWeek = pregnancyProfile?.current_week || 1;
+  const isFirstTrimester = currentWeek <= 13;
 
   return (
     <div>
@@ -131,18 +135,35 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
       {/* Séparateur visuel */}
       <div className="border-t border-slate-100 my-4"></div>
 
-      {/* RDV (gratuit), Suivi de grossesse (Premium), Rappels */}
+      {/* RDV (1er trimestre gratuit, Premium après), Suivi de grossesse (Premium), Rappels */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {/* RDV - Accessible gratuitement */}
-        <Card
-          onClick={() => navigate('/medical')}
-          data-testid="medical-nav"
-          className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
-        >
-          <Stethoscope className="w-8 h-8 text-sky-500 mx-auto mb-2" />
-          <h3 className="text-sm font-bold text-slate-700">Rendez-vous</h3>
-          <p className="text-xs text-slate-500">Suivi médical</p>
-        </Card>
+        {/* RDV - Gratuit au 1er trimestre, Premium après */}
+        {isPremium || isFirstTrimester ? (
+          <Card
+            onClick={() => navigate('/medical')}
+            data-testid="medical-nav"
+            className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+          >
+            <Stethoscope className="w-8 h-8 text-sky-500 mx-auto mb-2" />
+            <h3 className="text-sm font-bold text-slate-700">Rendez-vous</h3>
+            <p className="text-xs text-slate-500">{isPremium ? 'Suivi médical' : '1er trimestre'}</p>
+          </Card>
+        ) : (
+          <Card
+            onClick={() => navigate('/pricing')}
+            data-testid="medical-nav-locked"
+            className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-200 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center relative"
+          >
+            <div className="absolute top-2 right-2">
+              <Crown className="w-4 h-4 text-amber-500" />
+            </div>
+            <Stethoscope className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+            <h3 className="text-sm font-bold text-slate-500">Rendez-vous</h3>
+            <p className="text-xs text-slate-400 flex items-center justify-center gap-1">
+              <Lock className="w-3 h-3" /> 2e & 3e trimestre
+            </p>
+          </Card>
+        )}
 
         {/* Suivi grossesse - Premium uniquement */}
         {isPremium ? (

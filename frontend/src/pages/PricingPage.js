@@ -13,32 +13,32 @@ function PricingPage() {
   const featuresStandard = [
     { text: 'Calculateur de grossesse basique', included: true },
     { text: '5 scans de produits par semaine', included: true },
-    { text: 'Conseils des 4 premières semaines', included: true },
+    { text: 'Évolution et conseils (4 semaines)', included: true },
     { text: 'Accès CAF/Ameli/Mairie', included: true },
     { text: 'Calendrier de fertilité', included: true },
-    { text: 'RDV médicaux (3 trimestres)', included: true },
+    { text: 'RDV médicaux (1er trimestre)', included: true },
     { text: 'Suivi de grossesse complet', included: false },
-    { text: '41 semaines de conseils complets', included: false },
+    { text: 'Évolution et conseils (41 semaines)', included: false },
     { text: 'Scanner illimité', included: false },
+    { text: 'RDV médicaux (2e & 3e trimestre)', included: false },
     { text: 'Préparer l\'arrivée de bébé', included: false },
     { text: 'Check-list sac de maternité', included: false },
     { text: 'Liste de naissance partageable', included: false },
-    { text: 'Notifications email', included: false },
     { text: 'Support prioritaire', included: false }
   ];
   
   const featuresPremium = [
     { text: 'Calculateur de grossesse complet', included: true },
     { text: 'Scanner ILLIMITÉ de produits', included: true },
-    { text: '41 semaines de conseils complets', included: true },
+    { text: 'Évolution et conseils (41 semaines)', included: true },
     { text: 'Suivi de grossesse Maman & Bébé', included: true },
+    { text: 'RDV médicaux (3 trimestres)', included: true },
     { text: 'Accès CAF/Ameli/Mairie', included: true },
     { text: 'Calendrier de fertilité détaillé', included: true },
     { text: 'Préparer l\'arrivée de bébé', included: true },
     { text: 'Check-list sac de maternité', included: true },
     { text: 'Liste de naissance partageable', included: true },
     { text: 'Notifications email automatiques', included: true },
-    { text: 'Sans publicité', included: true },
     { text: 'Support prioritaire', included: true }
   ];
 
