@@ -103,7 +103,7 @@ function PricingPage() {
                   {feature.included ? (
                     <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                   ) : (
-                    <X className="w-5 h-5 text-slate-300 flex-shrink-0 mt-0.5" />
+                    <Crown className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
                   )}
                   <span className={`${feature.included ? 'text-slate-700' : 'text-slate-400'}`}>
                     {feature.text}

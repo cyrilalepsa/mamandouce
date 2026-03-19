@@ -3,13 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { Stethoscope, Scan, TestTube, Baby, Activity, UserCog, Check, Calendar, Clock, AlertTriangle, ChevronDown, ChevronUp, Edit3, Save, X, Heart, Scale, Ruler, Bell, BellOff } from 'lucide-react';
+import { Stethoscope, Scan, TestTube, Baby, Activity, UserCog, Check, Calendar, Clock, AlertTriangle, ChevronDown, ChevronUp, Edit3, Save, X, Heart, Scale, Ruler, Bell, BellOff, Lock, Crown } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
+import { useSubscription } from '../components/SubscriptionGate';
 
 function MedicalAppointmentsPage() {
   const navigate = useNavigate();
+  const { isPremium } = useSubscription();
   const [appointments, setAppointments] = useState([]);
   const [currentWeek, setCurrentWeek] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -365,54 +367,73 @@ function MedicalAppointmentsPage() {
               const stats = getTrimesterStats(trimester);
               const isExpanded = expandedTrimesters[trimester];
               const trimesterColor = trimester === 1 ? 'sky' : trimester === 2 ? 'purple' : 'pink';
+              const isLocked = !isPremium && trimester > 1;
               
               return trimesters[trimester].length > 0 && (
                 <div key={trimester}>
                   {/* Collapsible Trimester Header */}
                   <button
-                    onClick={() => toggleTrimester(trimester)}
-                    className="w-full flex items-center gap-3 mb-3 p-3 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all"
+                    onClick={() => isLocked ? navigate('/pricing') : toggleTrimester(trimester)}
+                    className={`w-full flex items-center gap-3 mb-3 p-3 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all ${isLocked ? 'opacity-80' : ''}`}
                     data-testid={`toggle-trimestre-${trimester}`}
                   >
                     <span className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold ${
-                      trimester === 1 ? 'bg-sky-400' : trimester === 2 ? 'bg-purple-400' : 'bg-pink-400'
+                      isLocked ? 'bg-slate-400' : trimester === 1 ? 'bg-sky-400' : trimester === 2 ? 'bg-purple-400' : 'bg-pink-400'
                     }`}>
-                      T{trimester}
+                      {isLocked ? <Lock className="w-5 h-5" /> : `T${trimester}`}
                     </span>
                     <div className="flex-1 text-left">
-                      <h2 className="text-lg font-bold text-slate-600">
-                        {trimester === 1 ? '1er' : `${trimester}ème`} trimestre
-                      </h2>
-                      <p className="text-sm text-slate-500">
-                        {stats.completed}/{stats.total} rendez-vous complétés
+                      <div className="flex items-center gap-2">
+                        <h2 className={`text-lg font-bold ${isLocked ? 'text-slate-400' : 'text-slate-600'}`}>
+                          {trimester === 1 ? '1er' : `${trimester}ème`} trimestre
+                        </h2>
+                        {isLocked && (
+                          <span className="flex items-center gap-1 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">
+                            <Crown className="w-3 h-3" /> Premium
+                          </span>
+                        )}
+                      </div>
+                      <p className={`text-sm ${isLocked ? 'text-slate-400' : 'text-slate-500'}`}>
+                        {isLocked 
+                          ? 'Débloquez avec Premium pour voir ces rendez-vous' 
+                          : `${stats.completed}/${stats.total} rendez-vous complétés`
+                        }
                       </p>
                     </div>
-                    {/* Progress indicator */}
-                    <div className="flex items-center gap-2">
-                      <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full rounded-full transition-all duration-500 ${
-                            trimester === 1 ? 'bg-sky-400' : trimester === 2 ? 'bg-purple-400' : 'bg-pink-400'
-                          }`}
-                          style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }}
-                        />
+                    {/* Progress indicator or lock */}
+                    {isLocked ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-amber-600 font-medium">Voir</span>
+                        <ChevronDown className="w-5 h-5 text-slate-400" />
                       </div>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
-                        isExpanded 
-                          ? `bg-${trimesterColor}-100 text-${trimesterColor}-600` 
-                          : 'bg-slate-100 text-slate-400'
-                      }`}>
-                        {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full transition-all duration-500 ${
+                              trimester === 1 ? 'bg-sky-400' : trimester === 2 ? 'bg-purple-400' : 'bg-pink-400'
+                            }`}
+                            style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }}
+                          />
+                        </div>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                          isExpanded 
+                            ? `bg-${trimesterColor}-100 text-${trimesterColor}-600` 
+                            : 'bg-slate-100 text-slate-400'
+                        }`}>
+                          {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </button>
                   
-                  {/* Collapsible Content */}
-                  <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    isExpanded ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'
-                  }`}>
-                    <div className="space-y-3 mb-6">
-                      {trimesters[trimester].map((apt) => (
+                  {/* Collapsible Content - only show if not locked */}
+                  {!isLocked && (
+                    <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                      isExpanded ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'
+                    }`}>
+                      <div className="space-y-3 mb-6">
+                        {trimesters[trimester].map((apt) => (
                       <Card 
                         key={apt.id} 
                         className={`rounded-2xl p-4 border transition-all ${getStatusStyle(apt.status, apt.is_completed)}`}
@@ -792,6 +813,7 @@ function MedicalAppointmentsPage() {
                       ))}
                     </div>
                   </div>
+                  )}
                 </div>
               );
             })}
