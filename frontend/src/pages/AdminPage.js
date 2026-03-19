@@ -174,8 +174,21 @@ function AdminPage() {
         console.error(error);
       }
     } else {
-      // Mode utilisateur normal
-      navigate('/');
+      // Mode utilisateur gratuit - désactiver premium et postpartum
+      try {
+        const response = await api.auth.getMe();
+        const userId = response.data.id;
+        
+        // Désactiver premium et postpartum
+        await api.admin.setUserPremium(userId, false);
+        await api.admin.setUserPostpartum(userId, false);
+        
+        toast.success('Mode Utilisateur gratuit activé !');
+        navigate('/');
+      } catch (error) {
+        toast.error('Erreur lors de la désactivation');
+        console.error(error);
+      }
     }
   };
 
