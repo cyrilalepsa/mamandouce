@@ -36,18 +36,24 @@ export function SubscriptionGate({ children }) {
       const userResponse = await api.auth.getMe();
       const user = userResponse.data;
       
-      // Les admins ont accès à tout
-      if (user.role === 'admin') {
-        setIsAdmin(true);
-        setIsPremium(true);
-      }
+      // Les admins ont accès à tout SAUF s'ils testent en mode gratuit
+      const userIsAdmin = user.role === 'admin';
+      setIsAdmin(userIsAdmin);
 
       // Vérifier le statut d'abonnement
       const subResponse = await api.subscription.getFullStatus();
       const status = subResponse.data;
       
       setSubscriptionStatus(status);
-      setIsPremium(status.is_premium || user.role === 'admin');
+      
+      // Pour les admins : respecter leur statut premium actuel (permet de tester en mode gratuit)
+      // Pour les autres : vérifier is_premium
+      if (userIsAdmin) {
+        // L'admin peut se mettre en mode gratuit en désactivant son premium
+        setIsPremium(status.is_premium);
+      } else {
+        setIsPremium(status.is_premium);
+      }
       
     } catch (error) {
       console.error('Erreur vérification abonnement:', error);

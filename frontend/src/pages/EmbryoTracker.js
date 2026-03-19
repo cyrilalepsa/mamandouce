@@ -9,7 +9,7 @@ import { useSubscription } from '../components/SubscriptionGate';
 
 function EmbryoTracker() {
   const navigate = useNavigate();
-  const { isPremium, isAdmin, loading: subscriptionLoading } = useSubscription();
+  const { isPremium, loading: subscriptionLoading } = useSubscription();
   const [currentWeek, setCurrentWeek] = useState(1);
   const [embryoData, setEmbryoData] = useState(null);
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
@@ -34,7 +34,7 @@ function EmbryoTracker() {
         setPregnancyProfile(response.data);
         // Si l'utilisateur est gratuit et sa semaine actuelle > 4, mettre semaine 4
         const week = response.data.current_week;
-        if (!isPremium && !isAdmin && week > MAX_FREE_WEEK) {
+        if (!isPremium && week > MAX_FREE_WEEK) {
           setCurrentWeek(MAX_FREE_WEEK);
         } else {
           setCurrentWeek(week);
@@ -55,13 +55,13 @@ function EmbryoTracker() {
   };
 
   const handleWeekChange = (newWeek) => {
-    const maxWeek = (isPremium || isAdmin) ? 40 : MAX_FREE_WEEK;
+    const maxWeek = isPremium ? 40 : MAX_FREE_WEEK;
     if (newWeek >= 1 && newWeek <= maxWeek) {
       setCurrentWeek(newWeek);
     }
   };
   
-  const maxWeek = (isPremium || isAdmin) ? 40 : MAX_FREE_WEEK;
+  const maxWeek = isPremium ? 40 : MAX_FREE_WEEK;
 
   return (
     <div className="min-h-screen gradient-bg p-6">
@@ -93,7 +93,7 @@ function EmbryoTracker() {
 
         <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
           {/* Banner pour utilisateurs gratuits */}
-          {!subscriptionLoading && !isPremium && !isAdmin && (
+          {!subscriptionLoading && !isPremium && (
             <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Lock className="w-4 h-4 text-amber-500" />

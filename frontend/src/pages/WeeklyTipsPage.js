@@ -9,7 +9,7 @@ import { useSubscription } from '../components/SubscriptionGate';
 
 function WeeklyTipsPage() {
   const navigate = useNavigate();
-  const { isPremium, isAdmin, loading: subscriptionLoading } = useSubscription();
+  const { isPremium, loading: subscriptionLoading } = useSubscription();
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [currentTip, setCurrentTip] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState(1);
@@ -34,7 +34,7 @@ function WeeklyTipsPage() {
         setPregnancyProfile(response.data);
         // Si l'utilisateur est gratuit et sa semaine actuelle > 4, mettre semaine 4
         const currentWeek = response.data.current_week;
-        if (!isPremium && !isAdmin && currentWeek > 4) {
+        if (!isPremium && currentWeek > 4) {
           setSelectedWeek(4);
         } else {
           setSelectedWeek(currentWeek);
@@ -56,7 +56,7 @@ function WeeklyTipsPage() {
 
   const handleWeekSelect = (week) => {
     // Si l'utilisateur est gratuit et essaie de sélectionner une semaine > 4
-    if (!isPremium && !isAdmin && !FREE_WEEKS.includes(week)) {
+    if (!isPremium && !FREE_WEEKS.includes(week)) {
       return; // Ne rien faire - le bouton sera désactivé visuellement
     }
     setSelectedWeek(week);
@@ -101,7 +101,7 @@ function WeeklyTipsPage() {
           <h3 className="text-lg font-bold text-slate-700 mb-4" style={{ fontFamily: 'Nunito, sans-serif' }}>Sélectionner une semaine</h3>
           
           {/* Banner pour utilisateurs gratuits */}
-          {!subscriptionLoading && !isPremium && !isAdmin && (
+          {!subscriptionLoading && !isPremium && (
             <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Lock className="w-4 h-4 text-amber-500" />
@@ -119,7 +119,7 @@ function WeeklyTipsPage() {
           
           <div className="grid grid-cols-3 gap-2">
             {weeks.map((item) => {
-              const isLocked = !isPremium && !isAdmin && !FREE_WEEKS.includes(item.week);
+              const isLocked = !isPremium && !FREE_WEEKS.includes(item.week);
               return (
                 <button
                   key={item.week}

@@ -20,7 +20,7 @@ export function PremiumFeatureLock({
   inline = false,
   showUpgradeButton = true
 }) {
-  const { isPremium, isAdmin, loading } = useSubscription();
+  const { isPremium, loading } = useSubscription();
   const navigate = useNavigate();
 
   // Si chargement, afficher un placeholder
@@ -30,8 +30,8 @@ export function PremiumFeatureLock({
     );
   }
 
-  // Si premium ou admin, afficher le contenu
-  if (isPremium || isAdmin) {
+  // Si premium, afficher le contenu
+  if (isPremium) {
     return children;
   }
 

@@ -14,7 +14,7 @@ import { useSubscription } from '../components/SubscriptionGate';
 function FoodScanner() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isPremium: isPremiumContext, isAdmin, subscriptionStatus, loading: subscriptionLoading } = useSubscription();
+  const { isPremium, subscriptionStatus, loading: subscriptionLoading } = useSubscription();
   
   const [barcode, setBarcode] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,7 +32,6 @@ function FoodScanner() {
   const scannerRef = useRef(null);
   
   // Compute premium status from context
-  const isPremium = isPremiumContext || isAdmin;
   const scansThisWeek = subscriptionStatus?.scans_this_week || 0;
   const scansRemaining = isPremium ? -1 : Math.max(0, 5 - scansThisWeek);
 

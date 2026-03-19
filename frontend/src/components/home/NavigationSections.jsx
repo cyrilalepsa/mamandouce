@@ -132,13 +132,13 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
       {/* Évolution, RDV, Suivi de grossesse, Rappels */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card
-          onClick={() => navigate('/tips')}
+          onClick={() => navigate('/embryo')}
           data-testid="evolution-nav"
           className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
         >
           <TrendingUp className="w-8 h-8 text-teal-500 mx-auto mb-2" />
-          <h3 className="text-sm font-bold text-slate-700">Évolution</h3>
-          <p className="text-xs text-slate-500">et démarches</p>
+          <h3 className="text-sm font-bold text-slate-700">Évolution bébé</h3>
+          <p className="text-xs text-slate-500">Semaine par semaine</p>
         </Card>
 
         <Card
