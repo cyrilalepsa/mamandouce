@@ -218,9 +218,9 @@ export function BabyPreparationSection() {
       <div>
         <h2 className="text-xl font-bold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
           <Gift className="w-5 h-5 text-purple-500" />
-          Préparer l'arrivée de bébé
-          <span className="ml-2 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-            <Crown className="w-3 h-3" /> Premium
+          <span className="whitespace-nowrap">Préparer l'arrivée de bébé</span>
+          <span className="ml-auto w-7 h-7 bg-amber-400 rounded-full flex items-center justify-center">
+            <Crown className="w-4 h-4 text-white" />
           </span>
         </h2>
         
