@@ -23,20 +23,22 @@ export default function ExpandableNameCard({
     }
   }, [isExpanded, nameData.name, country, gender]);
   
-  // Fond blanc pour la carte de prénom
-  const cardBg = isDarkMode ? 'bg-slate-800' : 'bg-white';
+  // Couleurs selon le genre
   const borderColor = gender === 'girls' 
-    ? isDarkMode ? 'border-pink-700' : 'border-pink-200'
-    : isDarkMode ? 'border-blue-700' : 'border-blue-200';
+    ? isDarkMode ? 'border-pink-500' : 'border-pink-400'
+    : isDarkMode ? 'border-blue-500' : 'border-blue-400';
   const iconColor = gender === 'girls' 
     ? isDarkMode ? 'text-pink-400' : 'text-pink-500'
     : isDarkMode ? 'text-blue-400' : 'text-blue-500';
 
   return (
-    <div className={`${cardBg} ${borderColor} border rounded-xl overflow-hidden shadow-sm`}>
+    <div className="overflow-hidden rounded-xl shadow-sm">
+      {/* Partie haute avec contour coloré */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className={`w-full p-3 flex items-center gap-3 text-left ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-50'}`}
+        className={`w-full p-3 flex items-center gap-3 text-left border-2 ${borderColor} ${
+          isDarkMode ? 'bg-slate-800 hover:bg-slate-700' : 'bg-white hover:bg-slate-50'
+        } ${isExpanded ? 'rounded-t-xl' : 'rounded-xl'}`}
       >
         <User className={`w-5 h-5 ${iconColor}`} />
         <span className={`font-semibold ${isDarkMode ? 'text-slate-200' : 'text-slate-700'} flex-1`}>
@@ -63,8 +65,11 @@ export default function ExpandableNameCard({
         )}
       </button>
       
+      {/* Partie basse sans contour coloré */}
       {isExpanded && (
-        <div className={`px-3 pb-3 space-y-3`}>
+        <div className={`px-3 pb-3 pt-3 space-y-3 ${
+          isDarkMode ? 'bg-slate-800/50' : 'bg-white'
+        } rounded-b-xl`}>
           {/* Signification - Fond rose pastel comme Top 10 */}
           <div className={`p-3 rounded-lg ${
             isDarkMode ? 'bg-slate-700/50' : 'bg-gradient-to-r from-pink-50 to-rose-50'
