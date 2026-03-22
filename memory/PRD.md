@@ -1,110 +1,92 @@
 # MamanDouce - Product Requirements Document
 
-## Overview
-MamanDouce est une application PWA complète d'accompagnement à la maternité, ciblant les femmes francophones enceintes ou en projet de grossesse.
+## Original Problem Statement
+Application PWA de suivi de grossesse "MamanDouce" pour accompagner les futures mamans tout au long de leur grossesse avec des fonctionnalités premium et gratuites.
 
-## Core Features (Implemented)
+## User Personas
+- **Futures mamans** : Femmes enceintes cherchant un accompagnement personnalisé
+- **Utilisatrices premium** : Accès complet à toutes les fonctionnalités
+- **Utilisatrices gratuites** : Accès limité avec possibilité d'upgrade
 
-### 1. Outils de Grossesse
-- Calculateur de date d'accouchement
-- Roue de grossesse interactive
-- Suivi embryonnaire semaine par semaine (semaines 1-4 gratuites)
-- Conseils hebdomadaires personnalisés (semaines 1-4 gratuites)
+## Core Features
 
-### 2. Alimentation
-- Scanner d'aliments (5 scans/semaine gratuits, illimité Premium)
-- Bibliothèque alimentaire complète
-- Recettes adaptées avec système de partage
-- Compteur de vues pour recettes partagées
+### Implemented Features ✅
+1. **Authentification** - Inscription, connexion, mot de passe oublié
+2. **Calculateur de grossesse** - Dates clés, ovulation
+3. **Scanner alimentaire** - Vérification des aliments
+4. **Bibliothèque alimentaire** - Base de données des aliments
+5. **Rendez-vous médicaux** - Suivi par trimestre (T1 gratuit, T2-T3 premium)
+6. **Suivi de grossesse** - Premium uniquement
+7. **Liste de naissance** - Premium uniquement, partageable
+8. **Sac de maternité** - Checklist interactive, Premium
+9. **Chatbot IA** - Assistant virtuel
+10. **Notifications/Rappels** - Push notifications
+11. **Post-partum** - Conseils pour les 6 premiers mois
+12. **Grossesse après 35 ans** - Section dédiée
+13. **Carte de visite** - Téléchargeable HTML/PDF/JPEG
+14. **Admin Dashboard** - Gestion utilisateurs avec filtres Année/Mois
+15. **Liste des Prénoms** - Nouvelle fonctionnalité (22 Mars 2026)
+    - Navigation hiérarchique : Genre → Région → Pays → Lettre → Prénom
+    - 40 pays (Europe + Amérique)
+    - Chaque prénom avec signification et personnalité
+    - Restrictions : 3 pays gratuits (FR, US, ES) + lettres A-E
 
-### 3. Organisation
-- Liste de naissance partageable
-- Sac de maternité avec checklist (Premium)
-- Favoris pour articles du sac de maternité
-- Agenda des rendez-vous médicaux
-- Système de rappels par email ET push
-
-### 4. Post-partum (Premium)
-- Guide complet post-accouchement
-- Bouton "Tout ouvrir / Tout fermer" pour les sections
-
-### 5. Premium Features
-- Chatbot IA (GPT-4o-mini)
-- Intégration Stripe pour abonnements
-- Système de codes promo et parrainage
-- **Essai gratuit 7 jours** avec rappels automatiques
-
-### 6. Administration
-- Panel admin complet avec **statistiques avancées**
-  - Revenus calculés uniquement sur les vrais paiements (hors admin)
-- **Export CSV des statistiques**
-- **Graphiques temporels** : inscriptions 30j, répartition utilisateurs, utilisation features
-- Export projet Android (ZIP/email)
-- Kit Business
-
-### 7. Notifications Push Personnalisables
-- Conseils hebdomadaires
-- Rappels de rendez-vous (24h avant, jour même)
-- **Rappels fin d'essai** (J-1 et jour J)
-- **Promotions et actualités**
-- Personnalisation complète par type dans Paramètres
-
-### 8. UI/UX
-- Bouton "Tout ouvrir / Tout fermer" sur : Paramètres, Post-partum, Grossesse 35+
-- Mode hors-ligne avec synchronisation automatique
-- Interface en français (Planificateur au lieu de Scheduler)
-
-## Statistiques Admin
-
-### Graphiques Disponibles
-1. **Inscriptions (30 derniers jours)** - Courbe linéaire
-2. **Répartition des utilisateurs** - Camembert (Gratuits, Essai, Premium, Promo, Admin)
-3. **Utilisation des fonctionnalités** - Barres horizontales
-
-### Calcul des Revenus
-```
-Revenus = (premium_paid × 27€) + (postpartum_paid × 8€)
-```
-Les déblocages admin sont exclus du calcul.
+### Premium Features 👑
+- Suivi de grossesse complet
+- Rendez-vous médicaux T2 et T3
+- Préparer l'arrivée de bébé (Liste naissance, Sac maternité, Vidéos, Livres)
+- Liste des prénoms complète (tous pays + lettres F-Z)
 
 ## Tech Stack
-- **Frontend:** React, PWA, Shadcn/UI, Recharts, Capacitor
-- **Backend:** FastAPI, MongoDB
-- **Integrations:** Stripe, Resend, OpenAI, APScheduler, Web Push API
+- **Frontend**: React + Tailwind CSS + Shadcn/UI
+- **Backend**: FastAPI (Python)
+- **Database**: MongoDB
+- **Payments**: Stripe
+- **Emails**: Resend
+- **Deployment**: DigitalOcean App Platform (en cours)
 
-## Recent Changes
+## Deployment Status 🚧
+- **GitHub**: Repository public `cyrilalepsa/mamandouce`
+- **MongoDB Atlas**: Cluster0 configuré (gratuit)
+- **DigitalOcean**: Configuration prête, en attente de paiement
 
-### Session du 18/03/2026 (Complète)
-- ✅ Restrictions Premium implémentées
-- ✅ Essai gratuit 7 jours
-- ✅ Notifications rappel fin d'essai
-- ✅ Export CSV statistiques
-- ✅ Bouton toggle sur 3 pages
-- ✅ Statistiques corrigées (hors admin)
-- ✅ **Graphiques temporels** (Recharts)
-- ✅ **Notifications push personnalisables par type**
-- ✅ **Traduction "Scheduler" → "Planificateur"**
+### Variables d'environnement requises:
+**Backend:**
+- MONGO_URL=mongodb+srv://mamandouce:CycaFamily2026@cluster0.i0qqqwu.mongodb.net/MamanDouce?retryWrites=true&w=majority
+- DB_NAME=MamanDouce
+- CORS_ORIGINS=*
+- SECRET_KEY=mamandouce-production-secret-2026-cyca
+- RESEND_API_KEY=re_Y9zodfdk_A9fS6UxAA985a2nKjhUgJZ2Z
+- SENDER_EMAIL=noreply@cycafamily.com
+- STRIPE_API_KEY=sk_test_51TABGLPcuaKD7kzT9OwJsnhGROWSLNWUnWacCIUPjtIQbov84ihhFOed1oDi60EghbQcasscjLP4AS3ftUmN8AbJ00OgJtRpb6
 
-## API Endpoints
-- `GET /api/admin/chart-stats` - Données pour graphiques
-- `GET /api/admin/advanced-stats` - Stats avancées (hors admin)
-- `GET /api/admin/export-stats-csv` - Export CSV
-- `POST /api/payments/trial/start` - Démarrer essai
-- `GET /api/payments/trial/status` - Statut essai
+**Frontend:**
+- REACT_APP_BACKEND_URL=${APP_URL}
+- REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSibtrD8sjpARMWUVdjjeFNKOZZnVWwJoNkMzNONFw7UkqRikhoGbo00WYwHdF3o
 
-## Backlog
+## Prioritized Backlog
 
-### P1 - Haute priorité
-- [ ] Guide publication Google Play Store
+### P0 - Critical
+- [ ] Finaliser déploiement DigitalOcean (bloquer bancaire à résoudre)
 
-### P2/P3 - Complétés ✅
-- [x] Notifications push rappel fin d'essai
-- [x] Export CSV des statistiques
-- [x] Bouton toggle sur autres pages
-- [x] Correction statistiques (hors admin)
-- [x] Graphiques temporels
-- [x] Notifications push personnalisables
+### P1 - High Priority
+- [ ] Publier sur Google Play Store (bundle AAB)
+- [ ] Compléter la base de données des prénoms (autres pays)
 
-## Credentials (Test)
-- **Admin:** cyrilalepsa@gmail.com / Cyc@dmin9630
-- **Test Essai:** test.free@example.com / Test1234!
+### P2 - Medium Priority
+- [ ] Configurer domaine personnalisé cycafamily.com
+- [ ] Améliorer les données prénoms pour tous les pays européens
+
+### P3 - Low Priority / Enhancements
+- [ ] Refactoring MedicalAppointmentsPage.js (>800 lignes)
+- [ ] Ajouter plus de langues
+
+## Key Files Reference
+- `/app/frontend/src/pages/BabyNamesPage.js` - Page liste des prénoms
+- `/app/frontend/src/data/babyNames.js` - Base de données prénoms
+- `/app/frontend/src/components/home/NavigationSections.jsx` - Navigation sections
+- `/app/frontend/src/components/SubscriptionGate.jsx` - Gestion Premium/Gratuit
+- `/app/frontend/public/docs/CARTE_VISITE_MAMANDOUCE.html` - Carte de visite
+
+## Test Accounts
+- Email: test3@example.com / Password: test123 (utilisateur gratuit)

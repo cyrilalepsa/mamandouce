@@ -34,6 +34,7 @@ import GuidePage from './pages/GuidePage';
 import ChatbotPage from './pages/ChatbotPage';
 import TrackingPage from './pages/TrackingPage';
 import PregnancyAfter35Page from './pages/PregnancyAfter35Page';
+import BabyNamesPage from './pages/BabyNamesPage';
 import ChatBubble from './components/ChatBubble';
 import { PWAInstallBanner } from './components/PWAInstallBanner';
 import { Toaster } from './components/ui/sonner';
@@ -118,6 +119,7 @@ function App() {
               <Route path="/chatbot" element={<ProtectedRoute><ChatbotPage /></ProtectedRoute>} />
               <Route path="/tracking" element={<ProtectedRoute><TrackingPage /></ProtectedRoute>} />
               <Route path="/pregnancy-after-35" element={<ProtectedRoute><PregnancyAfter35Page /></ProtectedRoute>} />
+              <Route path="/baby-names" element={<ProtectedRoute><BabyNamesPage /></ProtectedRoute>} />
             </Routes>
           </BrowserRouter>
           <Toaster />

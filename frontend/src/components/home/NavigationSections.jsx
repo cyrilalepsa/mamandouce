@@ -4,7 +4,7 @@ import {
   Sparkles, Baby, Gift, Heart, Library,
   CalendarHeart, BookHeart, ScanBarcode, Apple, 
   History, Stethoscope, Bell, 
-  ClipboardList, Briefcase, Video, Youtube, Book, ChevronRight, LineChart, Lock, Crown
+  ClipboardList, Briefcase, Video, Youtube, Book, ChevronRight, LineChart, Lock, Crown, Users
 } from 'lucide-react';
 import { useSubscription } from '../SubscriptionGate';
 
@@ -203,6 +203,41 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
           <p className="text-xs text-slate-500">Notifications</p>
         </Card>
       </div>
+
+      {/* Séparateur */}
+      <div className="border-t border-slate-100 my-4"></div>
+
+      {/* Liste des prénoms - Partiellement gratuit */}
+      <Card
+        onClick={() => navigate('/baby-names')}
+        data-testid="baby-names-nav"
+        className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-violet-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-violet-400 to-purple-400 rounded-xl flex items-center justify-center flex-shrink-0">
+            <Users className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                Liste des Prénoms
+              </h3>
+              {!isPremium && (
+                <span className="flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                  <Crown className="w-3 h-3" /> Partiel
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {isPremium 
+                ? 'Europe & Amérique - Signification et personnalité'
+                : '3 pays gratuits, tous avec Premium'
+              }
+            </p>
+          </div>
+          <ChevronRight className="w-5 h-5 text-violet-400" />
+        </div>
+      </Card>
     </div>
   );
 }
