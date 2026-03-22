@@ -130,11 +130,11 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
 - ✅ **Partage individuel** : Bouton "Partager ce prénom" sur chaque fiche de prénom
 - ✅ **6 nouveaux pays ajoutés** : Ukraine 🇺🇦, Finlande 🇫🇮, Danemark 🇩🇰, Pérou 🇵🇪, Japon 🇯🇵, Maroc 🇲🇦
 - ✅ **2 nouvelles régions** : Asie 🌏 et Afrique 🌍 avec navigation dédiée
-- ✅ **Base de données France MODERNISÉE** : 310 prénoms tendance 2020-2025
-  - Suppression des prénoms anciens (Ursule, Gertrude, Philomène...)
-  - Ajout des prénoms modernes (Alba, Mila, Inaya, Liam, Nolan, Timéo...)
+- ✅ **Base de données France ENRICHIE** : 383 prénoms tendance 2020-2025
+  - Filles modernes : Alba, Alma, Amaya, Aria, Aya, Billie, Cassie, Eden, Ella, Elsa, Inaya, Ivy, Izia, Layla, Lia, Lili, Lyna, Marla, Marnie, Mina, Naïla, Naomi, Noor, Ora, Pia, Ruby, Sienna, Stella, Swann, Tessa, Yara, Zahra, Zora...
+  - Garçons modernes : Aaron, Adel, Aïdan, Ali, Aloïs, Ari, Aylan, Bilal, Esteban, Ewen, Ibrahim, Jaden, Kaïs, Kenzo, Kylian, Lyam, Marceau, Numa, Omar, Sohan, Tao, Tony, Younes, Zayn...
 - ✅ Mise à jour complète du backlog/future tasks (P0 à P4)
-- ✅ **Total : 28 pays avec données, 1400+ prénoms au total**
+- ✅ **Total : 28 pays avec données, 1500+ prénoms au total**
 
 ### 22 Mars 2026 - Session 3
 - ✅ Ajout de 6 nouveaux pays : Russie 🇷🇺, Suède 🇸🇪, Norvège 🇳🇴, Colombie 🇨🇴, Chili 🇨🇱
