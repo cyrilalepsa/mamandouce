@@ -27,13 +27,15 @@ Application PWA de suivi de grossesse "MamanDouce" pour accompagner les futures 
 14. **Admin Dashboard** - Gestion utilisateurs avec filtres Année/Mois
 15. **Liste des Prénoms** ✅ COMPLET
     - Navigation hiérarchique : Genre → Région → Pays → Lettre → Prénom
-    - **23 pays avec données complètes** :
-      - 🌍 Europe (14) : France, Espagne, Italie, Allemagne, Royaume-Uni, Portugal, Belgique, Suisse, Pays-Bas, Pologne, Irlande, Grèce, Russie, Suède, Norvège
-      - 🌎 Amérique (9) : États-Unis, Brésil, Canada, Mexique, Argentine, Colombie, Chili
+    - **28 pays avec données complètes** :
+      - 🌍 Europe (18) : France, Espagne, Italie, Allemagne, Royaume-Uni, Portugal, Belgique, Suisse, Pays-Bas, Pologne, Irlande, Grèce, Russie, Suède, Norvège, Ukraine, Finlande, Danemark
+      - 🌎 Amérique (8) : États-Unis, Brésil, Canada, Mexique, Argentine, Colombie, Chili, Pérou
+      - 🌏 Asie (1) : Japon
+      - 🌍 Afrique (1) : Maroc
     - **Barre de recherche** : Recherche rapide par nom
     - **Section Favoris** avec catégories Filles/Garçons
     - **Export HTML** : Télécharger ses favoris
-    - **Partage** ✅ : Partager ses favoris (Web Share API + fallback presse-papiers)
+    - **Partage** ✅ : Partager ses favoris ou un prénom individuel (Web Share API + fallback presse-papiers)
     - Restrictions : 3 pays gratuits (FR, US, ES) + lettres A-E
 
 ### Premium Features 👑
@@ -126,7 +128,10 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
 ### 22 Mars 2026 - Session 4
 - ✅ **Fonction Partage des favoris** : Bouton "Partager" utilisant Web Share API (mobile) avec fallback presse-papiers (desktop)
 - ✅ **Partage individuel** : Bouton "Partager ce prénom" sur chaque fiche de prénom
+- ✅ **6 nouveaux pays ajoutés** : Ukraine 🇺🇦, Finlande 🇫🇮, Danemark 🇩🇰, Pérou 🇵🇪, Japon 🇯🇵, Maroc 🇲🇦
+- ✅ **2 nouvelles régions** : Asie 🌏 et Afrique 🌍 avec navigation dédiée
 - ✅ Mise à jour complète du backlog/future tasks (P0 à P4)
+- ✅ **Total : 28 pays avec données complètes**
 
 ### 22 Mars 2026 - Session 3
 - ✅ Ajout de 6 nouveaux pays : Russie 🇷🇺, Suède 🇸🇪, Norvège 🇳🇴, Colombie 🇨🇴, Chili 🇨🇱
@@ -149,20 +154,21 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
 
 ## Statistiques Prénoms
 
-| Région | Pays disponibles | Total |
-|--------|------------------|-------|
-| 🌍 Europe | FR, ES, IT, DE, GB, PT, BE, CH, NL, PL, IE, GR, RU, SE, NO | 15 |
-| 🌎 Amérique | US, BR, CA, MX, AR, CO, CL | 7 |
-| **Total** | | **22 pays** |
+| Région | Pays avec données | Total |
+|--------|-------------------|-------|
+| 🌍 Europe | FR, ES, IT, DE, GB, PT, BE, CH, NL, PL, IE, GR, RU, SE, NO, UA, FI, DK | 18 |
+| 🌎 Amérique | US, BR, CA, MX, AR, CO, CL, PE | 8 |
+| 🌏 Asie | JP | 1 |
+| 🌍 Afrique | MA | 1 |
+| **Total** | | **28 pays** |
 
 ### Pays à ajouter (Future)
 | Région | Pays suggérés |
 |--------|---------------|
-| 🌍 Europe | Ukraine 🇺🇦, Finlande 🇫🇮, Danemark 🇩🇰, Autriche 🇦🇹, République Tchèque 🇨🇿 |
-| 🌎 Amérique | Pérou 🇵🇪, Venezuela 🇻🇪, Cuba 🇨🇺, Porto Rico 🇵🇷 |
-| 🌏 Asie | Japon 🇯🇵, Chine 🇨🇳, Inde 🇮🇳, Corée du Sud 🇰🇷, Vietnam 🇻🇳 |
-| 🌍 Afrique | Maroc 🇲🇦, Algérie 🇩🇿, Sénégal 🇸🇳, Côte d'Ivoire 🇨🇮 |
-| 🌏 Moyen-Orient | Liban 🇱🇧, Turquie 🇹🇷, Israël 🇮🇱 |
+| 🌍 Europe | Autriche 🇦🇹, République Tchèque 🇨🇿, Hongrie 🇭🇺, Roumanie 🇷🇴 |
+| 🌎 Amérique | Venezuela 🇻🇪, Cuba 🇨🇺, Porto Rico 🇵🇷 |
+| 🌏 Asie | Chine 🇨🇳, Inde 🇮🇳, Corée du Sud 🇰🇷, Vietnam 🇻🇳 |
+| 🌍 Afrique | Algérie 🇩🇿, Tunisie 🇹🇳, Égypte 🇪🇬, Sénégal 🇸🇳 |
 
 ---
 

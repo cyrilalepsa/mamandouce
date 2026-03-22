@@ -88,12 +88,18 @@ export default function BabyNamesPage() {
       return '🔍 Recherche';
     }
     if (selectedCountry) {
-      const allCountries = [...countries.europe, ...countries.america];
+      const allCountries = getAllCountries();
       const country = allCountries.find(c => c.code === selectedCountry);
       return `${country?.flag} ${country?.name}`;
     }
     if (selectedRegion) {
-      return selectedRegion === 'europe' ? '🌍 Europe' : '🌎 Amérique';
+      const regionNames = {
+        europe: '🌍 Europe',
+        america: '🌎 Amérique',
+        asia: '🌏 Asie',
+        africa: '🌍 Afrique'
+      };
+      return regionNames[selectedRegion] || selectedRegion;
     }
     if (selectedGender) {
       return selectedGender === 'girls' ? '👧 Prénoms Filles' : '👦 Prénoms Garçons';
@@ -569,12 +575,62 @@ Découvert sur MamanDouce - L'app des futures mamans`;
           <ChevronRight className="w-5 h-5 text-emerald-400" />
         </div>
       </button>
+
+      {/* Asie */}
+      <button
+        onClick={() => setSelectedRegion('asia')}
+        className="w-full bg-gradient-to-r from-rose-50 to-orange-50 rounded-2xl p-5 shadow-lg border border-rose-100 hover:shadow-xl transition-all hover:-translate-y-1 text-left"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 bg-gradient-to-br from-rose-400 to-orange-400 rounded-xl flex items-center justify-center">
+            <span className="text-2xl">🌏</span>
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-bold text-slate-700">Asie</h3>
+            <p className="text-sm text-slate-500">{countries.asia?.length || 0} pays</p>
+          </div>
+          <ChevronRight className="w-5 h-5 text-rose-400" />
+        </div>
+      </button>
+
+      {/* Afrique */}
+      <button
+        onClick={() => setSelectedRegion('africa')}
+        className="w-full bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl p-5 shadow-lg border border-amber-100 hover:shadow-xl transition-all hover:-translate-y-1 text-left"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 bg-gradient-to-br from-amber-400 to-yellow-400 rounded-xl flex items-center justify-center">
+            <span className="text-2xl">🌍</span>
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-bold text-slate-700">Afrique</h3>
+            <p className="text-sm text-slate-500">{countries.africa?.length || 0} pays</p>
+          </div>
+          <ChevronRight className="w-5 h-5 text-amber-400" />
+        </div>
+      </button>
     </div>
   );
 
   // Rendu de la liste des pays
   const renderCountryList = () => {
-    const countryList = selectedRegion === 'europe' ? countries.europe : countries.america;
+    let countryList;
+    switch (selectedRegion) {
+      case 'europe':
+        countryList = countries.europe;
+        break;
+      case 'america':
+        countryList = countries.america;
+        break;
+      case 'asia':
+        countryList = countries.asia || [];
+        break;
+      case 'africa':
+        countryList = countries.africa || [];
+        break;
+      default:
+        countryList = [];
+    }
     
     return (
       <div className="space-y-2">

@@ -45,6 +45,23 @@ export const countries = {
     { code: 'HT', name: 'Haïti', flag: '🇭🇹' },
     { code: 'JM', name: 'Jamaïque', flag: '🇯🇲' },
     { code: 'EC', name: 'Équateur', flag: '🇪🇨' },
+  ],
+  asia: [
+    { code: 'JP', name: 'Japon', flag: '🇯🇵' },
+    { code: 'CN', name: 'Chine', flag: '🇨🇳' },
+    { code: 'IN', name: 'Inde', flag: '🇮🇳' },
+    { code: 'KR', name: 'Corée du Sud', flag: '🇰🇷' },
+    { code: 'VN', name: 'Vietnam', flag: '🇻🇳' },
+    { code: 'TH', name: 'Thaïlande', flag: '🇹🇭' },
+    { code: 'PH', name: 'Philippines', flag: '🇵🇭' },
+  ],
+  africa: [
+    { code: 'MA', name: 'Maroc', flag: '🇲🇦' },
+    { code: 'DZ', name: 'Algérie', flag: '🇩🇿' },
+    { code: 'TN', name: 'Tunisie', flag: '🇹🇳' },
+    { code: 'EG', name: 'Égypte', flag: '🇪🇬' },
+    { code: 'SN', name: 'Sénégal', flag: '🇸🇳' },
+    { code: 'CI', name: 'Côte d\'Ivoire', flag: '🇨🇮' },
   ]
 };
 
@@ -2737,11 +2754,626 @@ export const babyNamesData = {
       ],
     },
   },
+
+  // UKRAINE
+  UA: {
+    girls: {
+      A: [
+        { name: 'Anastasia', meaning: 'Résurrection', personality: 'Forte et résiliente, Anastasia renaît de ses cendres.' },
+        { name: 'Alina', meaning: 'Lumière', personality: 'Radieuse et brillante, Alina éclaire son entourage.' },
+        { name: 'Anna', meaning: 'Grâce', personality: 'Gracieuse et élégante, Anna charme par sa simplicité.' },
+      ],
+      B: [
+        { name: 'Bohdana', meaning: 'Donnée par Dieu', personality: 'Bénie et reconnaissante, Bohdana apprécie la vie.' },
+      ],
+      D: [
+        { name: 'Daryna', meaning: 'Don de Dieu', personality: 'Généreuse et aimante, Daryna offre sans compter.' },
+        { name: 'Diana', meaning: 'Divine', personality: 'Majestueuse et noble, Diana inspire le respect.' },
+      ],
+      I: [
+        { name: 'Iryna', meaning: 'Paix', personality: 'Pacifique et sereine, Iryna apaise les tensions.' },
+        { name: 'Ivanna', meaning: 'Dieu est gracieux', personality: 'Spirituelle et bienveillante, Ivanna guide.' },
+      ],
+      K: [
+        { name: 'Kateryna', meaning: 'Pure', personality: 'Pure et innocente, Kateryna touche les cœurs.' },
+        { name: 'Khrystyna', meaning: 'Chrétienne', personality: 'Dévouée et fidèle, Khrystyna croit fermement.' },
+      ],
+      L: [
+        { name: 'Lesia', meaning: 'Protectrice', personality: 'Protectrice et courageuse, Lesia défend les siens.' },
+        { name: 'Larysa', meaning: 'Mouette', personality: 'Libre et indépendante, Larysa vole haut.' },
+      ],
+      M: [
+        { name: 'Maria', meaning: 'Aimée', personality: 'Aimante et maternelle, Maria prend soin de tous.' },
+        { name: 'Myroslava', meaning: 'Gloire et paix', personality: 'Glorieuse et paisible, Myroslava rayonne.' },
+      ],
+      N: [
+        { name: 'Natalia', meaning: 'Jour de naissance', personality: 'Joyeuse et festive, Natalia célèbre la vie.' },
+      ],
+      O: [
+        { name: 'Oksana', meaning: 'Hospitalière', personality: 'Accueillante et chaleureuse, Oksana ouvre sa porte.' },
+        { name: 'Olena', meaning: 'Lumière brillante', personality: 'Brillante et éclairée, Olena illumine.' },
+        { name: 'Olha', meaning: 'Sacrée', personality: 'Sacrée et respectée, Olha commande le respect.' },
+      ],
+      S: [
+        { name: 'Sofia', meaning: 'Sagesse', personality: 'Sage et réfléchie, Sofia conseille avec justesse.' },
+        { name: 'Svitlana', meaning: 'Lumière', personality: 'Lumineuse et positive, Svitlana brille.' },
+      ],
+      T: [
+        { name: 'Tetiana', meaning: 'Organisatrice', personality: 'Organisée et efficace, Tetiana gère tout.' },
+      ],
+      V: [
+        { name: 'Valentyna', meaning: 'Forte', personality: 'Forte et courageuse, Valentyna ne fléchit pas.' },
+        { name: 'Veronika', meaning: 'Porteuse de victoire', personality: 'Victorieuse et triomphante, Veronika gagne.' },
+        { name: 'Viktoria', meaning: 'Victoire', personality: 'Conquérante et ambitieuse, Viktoria réussit.' },
+      ],
+      Y: [
+        { name: 'Yaryna', meaning: 'Printemps', personality: 'Fraîche et renouvelée, Yaryna apporte l\'espoir.' },
+        { name: 'Yulia', meaning: 'Jeune', personality: 'Jeune d\'esprit et dynamique, Yulia inspire.' },
+      ],
+      Z: [
+        { name: 'Zoriana', meaning: 'Étoile du matin', personality: 'Étoilée et brillante, Zoriana guide dans la nuit.' },
+      ],
+    },
+    boys: {
+      A: [
+        { name: 'Andriy', meaning: 'Courageux', personality: 'Brave et vaillant, Andriy affronte les défis.' },
+        { name: 'Artem', meaning: 'Sain', personality: 'Vigoureux et en bonne santé, Artem est robuste.' },
+        { name: 'Oleksandr', meaning: 'Défenseur', personality: 'Protecteur et loyal, Oleksandr défend.' },
+      ],
+      B: [
+        { name: 'Bohdan', meaning: 'Donné par Dieu', personality: 'Béni et reconnaissant, Bohdan valorise la vie.' },
+      ],
+      D: [
+        { name: 'Dmytro', meaning: 'Terre mère', personality: 'Ancré et stable, Dmytro est fiable.' },
+        { name: 'Danylo', meaning: 'Dieu est juge', personality: 'Juste et équitable, Danylo arbitre.' },
+      ],
+      I: [
+        { name: 'Ivan', meaning: 'Dieu est gracieux', personality: 'Gracieux et bienveillant, Ivan pardonne.' },
+        { name: 'Ihor', meaning: 'Guerrier', personality: 'Combattant et fort, Ihor ne recule pas.' },
+      ],
+      K: [
+        { name: 'Kyrylo', meaning: 'Seigneur', personality: 'Noble et respecté, Kyrylo commande.' },
+      ],
+      M: [
+        { name: 'Maksym', meaning: 'Le plus grand', personality: 'Ambitieux et excellent, Maksym vise haut.' },
+        { name: 'Mykhailo', meaning: 'Qui est comme Dieu', personality: 'Spirituel et sage, Mykhailo inspire.' },
+        { name: 'Mykola', meaning: 'Victoire du peuple', personality: 'Populaire et aimé, Mykola rassemble.' },
+      ],
+      O: [
+        { name: 'Oleh', meaning: 'Saint', personality: 'Sacré et respecté, Oleh inspire la dévotion.' },
+      ],
+      P: [
+        { name: 'Pavlo', meaning: 'Petit', personality: 'Humble et modeste, Pavlo reste simple.' },
+        { name: 'Petro', meaning: 'Pierre', personality: 'Solide et inébranlable, Petro est un roc.' },
+      ],
+      R: [
+        { name: 'Roman', meaning: 'Romain', personality: 'Fort et structuré, Roman construit.' },
+        { name: 'Ruslan', meaning: 'Lion', personality: 'Féroce et courageux, Ruslan protège.' },
+      ],
+      S: [
+        { name: 'Serhiy', meaning: 'Serviteur', personality: 'Dévoué et fidèle, Serhiy sert.' },
+        { name: 'Stepan', meaning: 'Couronne', personality: 'Royal et noble, Stepan règne.' },
+      ],
+      T: [
+        { name: 'Taras', meaning: 'Fils de Taras', personality: 'Patriote et fier, Taras honore ses racines.' },
+      ],
+      V: [
+        { name: 'Vadym', meaning: 'Dirigeant', personality: 'Leader et influent, Vadym guide.' },
+        { name: 'Viktor', meaning: 'Conquérant', personality: 'Victorieux et triomphant, Viktor gagne.' },
+        { name: 'Volodymyr', meaning: 'Dirigeant du monde', personality: 'Puissant et sage, Volodymyr règne.' },
+      ],
+      Y: [
+        { name: 'Yaroslav', meaning: 'Gloire printanière', personality: 'Glorieux et renouvelé, Yaroslav inspire.' },
+        { name: 'Yuriy', meaning: 'Fermier', personality: 'Travailleur et humble, Yuriy cultive.' },
+      ],
+    },
+  },
+
+  // FINLANDE
+  FI: {
+    girls: {
+      A: [
+        { name: 'Aino', meaning: 'La seule', personality: 'Unique et spéciale, Aino se distingue.' },
+        { name: 'Anni', meaning: 'Grâce', personality: 'Gracieuse et douce, Anni charme.' },
+        { name: 'Aurora', meaning: 'Aurore', personality: 'Lumineuse comme l\'aurore boréale, Aurora éblouit.' },
+      ],
+      E: [
+        { name: 'Eevi', meaning: 'Vie', personality: 'Pleine de vie et d\'énergie, Eevi rayonne.' },
+        { name: 'Elina', meaning: 'Lumière', personality: 'Brillante et intelligente, Elina éclaire.' },
+        { name: 'Emma', meaning: 'Universelle', personality: 'Ouverte et accueillante, Emma inclut tout le monde.' },
+      ],
+      H: [
+        { name: 'Helmi', meaning: 'Perle', personality: 'Précieuse et rare, Helmi est un trésor.' },
+        { name: 'Hilla', meaning: 'Mûre arctique', personality: 'Délicate et sauvage, Hilla est authentique.' },
+      ],
+      I: [
+        { name: 'Iida', meaning: 'Travailleuse', personality: 'Diligente et appliquée, Iida excelle.' },
+        { name: 'Ilona', meaning: 'Lumière', personality: 'Radieuse et chaleureuse, Ilona réchauffe.' },
+      ],
+      K: [
+        { name: 'Kaisla', meaning: 'Roseau', personality: 'Flexible et résistante, Kaisla s\'adapte.' },
+        { name: 'Katri', meaning: 'Pure', personality: 'Pure et sincère, Katri est authentique.' },
+      ],
+      L: [
+        { name: 'Lumi', meaning: 'Neige', personality: 'Pure et cristalline, Lumi apaise.' },
+        { name: 'Linnea', meaning: 'Fleur de tilleul', personality: 'Délicate et naturelle, Linnea fleurit.' },
+      ],
+      M: [
+        { name: 'Milla', meaning: 'Gracieuse', personality: 'Élégante et raffinée, Milla enchante.' },
+        { name: 'Minea', meaning: 'Amour', personality: 'Aimante et tendre, Minea chérit.' },
+      ],
+      O: [
+        { name: 'Oona', meaning: 'Agneau', personality: 'Douce et innocente, Oona apaise.' },
+      ],
+      P: [
+        { name: 'Pihla', meaning: 'Sorbier', personality: 'Naturelle et ancrée, Pihla est terre-à-terre.' },
+      ],
+      S: [
+        { name: 'Saara', meaning: 'Princesse', personality: 'Royale et noble, Saara règne avec grâce.' },
+        { name: 'Siiri', meaning: 'Belle victoire', personality: 'Victorieuse et belle, Siiri triomphe.' },
+        { name: 'Sofia', meaning: 'Sagesse', personality: 'Sage et réfléchie, Sofia conseille.' },
+      ],
+      T: [
+        { name: 'Tuuli', meaning: 'Vent', personality: 'Libre et insaisissable, Tuuli voyage.' },
+      ],
+      V: [
+        { name: 'Venla', meaning: 'Voyageuse', personality: 'Aventurière et curieuse, Venla explore.' },
+        { name: 'Viivi', meaning: 'Vivante', personality: 'Pleine de vie, Viivi anime.' },
+      ],
+    },
+    boys: {
+      A: [
+        { name: 'Aaro', meaning: 'Montagne de force', personality: 'Fort et stable, Aaro est un pilier.' },
+        { name: 'Aleksi', meaning: 'Défenseur', personality: 'Protecteur et loyal, Aleksi défend.' },
+      ],
+      E: [
+        { name: 'Eemeli', meaning: 'Rival', personality: 'Compétitif et ambitieux, Eemeli excelle.' },
+        { name: 'Eetu', meaning: 'Gardien des richesses', personality: 'Prudent et sage, Eetu protège.' },
+        { name: 'Elias', meaning: 'Dieu est mon Dieu', personality: 'Spirituel et dévoué, Elias croit.' },
+      ],
+      H: [
+        { name: 'Heikki', meaning: 'Chef de maison', personality: 'Responsable et fiable, Heikki gère.' },
+      ],
+      J: [
+        { name: 'Joel', meaning: 'Dieu est Dieu', personality: 'Fidèle et constant, Joel persévère.' },
+        { name: 'Juhani', meaning: 'Dieu est gracieux', personality: 'Bienveillant et doux, Juhani pardonne.' },
+      ],
+      K: [
+        { name: 'Kalle', meaning: 'Homme libre', personality: 'Libre et indépendant, Kalle vit pleinement.' },
+      ],
+      L: [
+        { name: 'Lauri', meaning: 'Laurier', personality: 'Victorieux et couronné, Lauri triomphe.' },
+        { name: 'Leo', meaning: 'Lion', personality: 'Courageux et fier, Leo règne.' },
+      ],
+      M: [
+        { name: 'Matias', meaning: 'Don de Dieu', personality: 'Béni et reconnaissant, Matias apprécie.' },
+        { name: 'Mikael', meaning: 'Qui est comme Dieu', personality: 'Spirituel et sage, Mikael guide.' },
+      ],
+      N: [
+        { name: 'Niilo', meaning: 'Champion du peuple', personality: 'Populaire et aimé, Niilo rassemble.' },
+      ],
+      O: [
+        { name: 'Onni', meaning: 'Bonheur', personality: 'Joyeux et positif, Onni répand le bonheur.' },
+        { name: 'Otto', meaning: 'Richesse', personality: 'Prospère et généreux, Otto partage.' },
+      ],
+      P: [
+        { name: 'Paavo', meaning: 'Petit', personality: 'Humble et modeste, Paavo reste simple.' },
+      ],
+      T: [
+        { name: 'Toivo', meaning: 'Espoir', personality: 'Optimiste et positif, Toivo inspire l\'espoir.' },
+      ],
+      V: [
+        { name: 'Veeti', meaning: 'Forêt', personality: 'Naturel et calme, Veeti apaise.' },
+        { name: 'Vilho', meaning: 'Protecteur résolu', personality: 'Déterminé et protecteur, Vilho veille.' },
+      ],
+    },
+  },
+
+  // DANEMARK
+  DK: {
+    girls: {
+      A: [
+        { name: 'Alma', meaning: 'Nourricière', personality: 'Maternelle et aimante, Alma prend soin.' },
+        { name: 'Anna', meaning: 'Grâce', personality: 'Gracieuse et simple, Anna touche.' },
+        { name: 'Astrid', meaning: 'Belle divinité', personality: 'Divine et majestueuse, Astrid éblouit.' },
+      ],
+      C: [
+        { name: 'Clara', meaning: 'Claire', personality: 'Lumineuse et transparente, Clara éclaire.' },
+      ],
+      E: [
+        { name: 'Ella', meaning: 'Belle fée', personality: 'Magique et enchanteresse, Ella ensorcelle.' },
+        { name: 'Emma', meaning: 'Universelle', personality: 'Ouverte et inclusive, Emma accueille.' },
+      ],
+      F: [
+        { name: 'Freja', meaning: 'Dame noble', personality: 'Noble et royale, Freja commande le respect.' },
+        { name: 'Frida', meaning: 'Paix', personality: 'Paisible et sereine, Frida calme.' },
+      ],
+      I: [
+        { name: 'Ida', meaning: 'Travailleuse', personality: 'Diligente et appliquée, Ida excelle.' },
+        { name: 'Ingrid', meaning: 'Belle', personality: 'Belle intérieurement et extérieurement, Ingrid rayonne.' },
+      ],
+      K: [
+        { name: 'Karla', meaning: 'Femme libre', personality: 'Libre et indépendante, Karla vit.' },
+      ],
+      L: [
+        { name: 'Laura', meaning: 'Laurier', personality: 'Victorieuse et couronnée, Laura triomphe.' },
+        { name: 'Liv', meaning: 'Vie', personality: 'Pleine de vie et d\'énergie, Liv anime.' },
+        { name: 'Lærke', meaning: 'Alouette', personality: 'Joyeuse et chantante, Lærke égaye.' },
+      ],
+      M: [
+        { name: 'Maja', meaning: 'Perle', personality: 'Précieuse et rare, Maja est un trésor.' },
+        { name: 'Mathilde', meaning: 'Puissante au combat', personality: 'Forte et combative, Mathilde gagne.' },
+      ],
+      N: [
+        { name: 'Nanna', meaning: 'Courageuse', personality: 'Brave et audacieuse, Nanna ose.' },
+        { name: 'Nora', meaning: 'Honneur', personality: 'Honorable et digne, Nora inspire le respect.' },
+      ],
+      S: [
+        { name: 'Saga', meaning: 'Voyante', personality: 'Intuitive et sage, Saga perçoit.' },
+        { name: 'Sigrid', meaning: 'Belle victoire', personality: 'Victorieuse et belle, Sigrid triomphe.' },
+        { name: 'Sofia', meaning: 'Sagesse', personality: 'Sage et réfléchie, Sofia conseille.' },
+        { name: 'Signe', meaning: 'Nouvelle victoire', personality: 'Renouvelée et victorieuse, Signe renaît.' },
+      ],
+      V: [
+        { name: 'Victoria', meaning: 'Victoire', personality: 'Conquérante et ambitieuse, Victoria réussit.' },
+      ],
+    },
+    boys: {
+      A: [
+        { name: 'Adam', meaning: 'Terre', personality: 'Ancré et stable, Adam est fiable.' },
+        { name: 'Alexander', meaning: 'Défenseur', personality: 'Protecteur et fort, Alexander défend.' },
+        { name: 'Alfred', meaning: 'Conseiller elfique', personality: 'Sage et mystérieux, Alfred conseille.' },
+      ],
+      C: [
+        { name: 'Carl', meaning: 'Homme libre', personality: 'Libre et indépendant, Carl vit pleinement.' },
+        { name: 'Christian', meaning: 'Chrétien', personality: 'Fidèle et dévoué, Christian croit.' },
+      ],
+      E: [
+        { name: 'Emil', meaning: 'Rival', personality: 'Compétitif et ambitieux, Emil excelle.' },
+        { name: 'Erik', meaning: 'Dirigeant éternel', personality: 'Leader et visionnaire, Erik guide.' },
+      ],
+      F: [
+        { name: 'Frederik', meaning: 'Dirigeant pacifique', personality: 'Sage et pacifique, Frederik unit.' },
+      ],
+      H: [
+        { name: 'Henrik', meaning: 'Chef de maison', personality: 'Responsable et fiable, Henrik gère.' },
+        { name: 'Hugo', meaning: 'Esprit', personality: 'Intelligent et vif, Hugo pense.' },
+      ],
+      J: [
+        { name: 'Jonas', meaning: 'Colombe', personality: 'Pacifique et doux, Jonas apaise.' },
+      ],
+      K: [
+        { name: 'Kasper', meaning: 'Trésorier', personality: 'Prudent et sage, Kasper protège.' },
+      ],
+      L: [
+        { name: 'Lars', meaning: 'Laurier', personality: 'Victorieux et couronné, Lars triomphe.' },
+        { name: 'Lucas', meaning: 'Lumière', personality: 'Brillant et éclairant, Lucas guide.' },
+      ],
+      M: [
+        { name: 'Magnus', meaning: 'Grand', personality: 'Grand d\'esprit et de cœur, Magnus inspire.' },
+        { name: 'Mikkel', meaning: 'Qui est comme Dieu', personality: 'Spirituel et sage, Mikkel guide.' },
+      ],
+      N: [
+        { name: 'Nikolaj', meaning: 'Victoire du peuple', personality: 'Populaire et aimé, Nikolaj rassemble.' },
+      ],
+      O: [
+        { name: 'Oliver', meaning: 'Olivier', personality: 'Pacifique et durable, Oliver persiste.' },
+        { name: 'Oscar', meaning: 'Lance divine', personality: 'Guerrier et noble, Oscar combat.' },
+      ],
+      S: [
+        { name: 'Sebastian', meaning: 'Vénérable', personality: 'Respectable et digne, Sebastian inspire.' },
+        { name: 'Søren', meaning: 'Sévère', personality: 'Sérieux et discipliné, Søren structure.' },
+      ],
+      V: [
+        { name: 'Victor', meaning: 'Conquérant', personality: 'Victorieux et triomphant, Victor gagne.' },
+        { name: 'Valdemar', meaning: 'Célèbre dirigeant', personality: 'Renommé et respecté, Valdemar règne.' },
+      ],
+    },
+  },
+
+  // PÉROU
+  PE: {
+    girls: {
+      A: [
+        { name: 'Adriana', meaning: 'De l\'Adriatique', personality: 'Mystérieuse et profonde, Adriana fascine.' },
+        { name: 'Alejandra', meaning: 'Protectrice', personality: 'Protectrice et forte, Alejandra défend.' },
+        { name: 'Ana', meaning: 'Grâce', personality: 'Gracieuse et simple, Ana touche.' },
+      ],
+      C: [
+        { name: 'Camila', meaning: 'Servante du temple', personality: 'Dévouée et spirituelle, Camila sert.' },
+        { name: 'Carolina', meaning: 'Femme libre', personality: 'Libre et indépendante, Carolina vit.' },
+        { name: 'Catalina', meaning: 'Pure', personality: 'Pure et sincère, Catalina est authentique.' },
+      ],
+      D: [
+        { name: 'Daniela', meaning: 'Dieu est juge', personality: 'Juste et équitable, Daniela arbitre.' },
+      ],
+      F: [
+        { name: 'Fernanda', meaning: 'Aventurière courageuse', personality: 'Aventurière et brave, Fernanda explore.' },
+        { name: 'Flor', meaning: 'Fleur', personality: 'Délicate et belle, Flor embellit.' },
+      ],
+      G: [
+        { name: 'Gabriela', meaning: 'Force de Dieu', personality: 'Forte et spirituelle, Gabriela inspire.' },
+      ],
+      I: [
+        { name: 'Isabella', meaning: 'Dévouée à Dieu', personality: 'Dévouée et fidèle, Isabella croit.' },
+        { name: 'Inca', meaning: 'Princesse inca', personality: 'Royale et ancestrale, Inca honore.' },
+      ],
+      L: [
+        { name: 'Luciana', meaning: 'Lumière', personality: 'Brillante et éclairante, Luciana guide.' },
+        { name: 'Luz', meaning: 'Lumière', personality: 'Radieuse et positive, Luz illumine.' },
+      ],
+      M: [
+        { name: 'María', meaning: 'Aimée', personality: 'Aimante et maternelle, María chérit.' },
+        { name: 'Milagros', meaning: 'Miracles', personality: 'Miraculeuse et bénie, Milagros inspire.' },
+      ],
+      N: [
+        { name: 'Natalia', meaning: 'Jour de naissance', personality: 'Joyeuse et festive, Natalia célèbre.' },
+      ],
+      P: [
+        { name: 'Paola', meaning: 'Petite', personality: 'Humble et modeste, Paola reste simple.' },
+      ],
+      R: [
+        { name: 'Rosa', meaning: 'Rose', personality: 'Belle et délicate, Rosa embellit.' },
+      ],
+      S: [
+        { name: 'Sofía', meaning: 'Sagesse', personality: 'Sage et réfléchie, Sofía conseille.' },
+        { name: 'Sol', meaning: 'Soleil', personality: 'Radieuse et chaude, Sol réchauffe.' },
+      ],
+      V: [
+        { name: 'Valentina', meaning: 'Forte', personality: 'Forte et courageuse, Valentina combat.' },
+        { name: 'Valeria', meaning: 'Forte', personality: 'Puissante et déterminée, Valeria réussit.' },
+      ],
+    },
+    boys: {
+      A: [
+        { name: 'Alejandro', meaning: 'Défenseur', personality: 'Protecteur et loyal, Alejandro défend.' },
+        { name: 'Andrés', meaning: 'Courageux', personality: 'Brave et vaillant, Andrés affronte.' },
+        { name: 'Antonio', meaning: 'Inestimable', personality: 'Précieux et unique, Antonio est irremplaçable.' },
+      ],
+      C: [
+        { name: 'Carlos', meaning: 'Homme libre', personality: 'Libre et indépendant, Carlos vit.' },
+        { name: 'César', meaning: 'Chevelu', personality: 'Majestueux et impérial, César règne.' },
+      ],
+      D: [
+        { name: 'Diego', meaning: 'Enseignant', personality: 'Sage et patient, Diego enseigne.' },
+      ],
+      E: [
+        { name: 'Eduardo', meaning: 'Gardien prospère', personality: 'Protecteur et prospère, Eduardo veille.' },
+      ],
+      F: [
+        { name: 'Fernando', meaning: 'Voyageur courageux', personality: 'Aventurier et brave, Fernando explore.' },
+        { name: 'Francisco', meaning: 'Français', personality: 'Libre et franc, Francisco parle vrai.' },
+      ],
+      G: [
+        { name: 'Gabriel', meaning: 'Force de Dieu', personality: 'Fort et spirituel, Gabriel guide.' },
+      ],
+      J: [
+        { name: 'José', meaning: 'Dieu ajoutera', personality: 'Béni et reconnaissant, José apprécie.' },
+        { name: 'Juan', meaning: 'Dieu est gracieux', personality: 'Bienveillant et doux, Juan pardonne.' },
+      ],
+      L: [
+        { name: 'Luis', meaning: 'Guerrier célèbre', personality: 'Combattant et renommé, Luis triomphe.' },
+      ],
+      M: [
+        { name: 'Manuel', meaning: 'Dieu avec nous', personality: 'Spirituel et présent, Manuel accompagne.' },
+        { name: 'Marco', meaning: 'Guerrier', personality: 'Combattant et fort, Marco protège.' },
+        { name: 'Miguel', meaning: 'Qui est comme Dieu', personality: 'Spirituel et sage, Miguel guide.' },
+      ],
+      P: [
+        { name: 'Pablo', meaning: 'Petit', personality: 'Humble et modeste, Pablo reste simple.' },
+        { name: 'Pedro', meaning: 'Pierre', personality: 'Solide et inébranlable, Pedro est un roc.' },
+      ],
+      R: [
+        { name: 'Ricardo', meaning: 'Dirigeant puissant', personality: 'Puissant et sage, Ricardo règne.' },
+        { name: 'Rodrigo', meaning: 'Célèbre dirigeant', personality: 'Renommé et respecté, Rodrigo guide.' },
+      ],
+      S: [
+        { name: 'Santiago', meaning: 'Saint Jacques', personality: 'Pèlerin et spirituel, Santiago cherche.' },
+        { name: 'Sebastián', meaning: 'Vénérable', personality: 'Respectable et digne, Sebastián inspire.' },
+      ],
+    },
+  },
+
+  // JAPON
+  JP: {
+    girls: {
+      A: [
+        { name: 'Aiko', meaning: 'Enfant de l\'amour', personality: 'Aimante et tendre, Aiko chérit.' },
+        { name: 'Akiko', meaning: 'Enfant de l\'automne', personality: 'Douce et mélancolique, Akiko réfléchit.' },
+        { name: 'Asuka', meaning: 'Parfum de demain', personality: 'Optimiste et fraîche, Asuka espère.' },
+        { name: 'Ayumi', meaning: 'Pas, marche', personality: 'Progressive et déterminée, Ayumi avance.' },
+      ],
+      E: [
+        { name: 'Emi', meaning: 'Beauté bénie', personality: 'Belle et gracieuse, Emi enchante.' },
+      ],
+      H: [
+        { name: 'Hana', meaning: 'Fleur', personality: 'Délicate et belle, Hana fleurit.' },
+        { name: 'Haruka', meaning: 'Lointaine, printanière', personality: 'Rêveuse et douce, Haruka inspire.' },
+        { name: 'Hikari', meaning: 'Lumière', personality: 'Lumineuse et brillante, Hikari éclaire.' },
+        { name: 'Hinata', meaning: 'Vers le soleil', personality: 'Radieuse et positive, Hinata réchauffe.' },
+      ],
+      K: [
+        { name: 'Kaori', meaning: 'Parfum', personality: 'Délicate et mémorable, Kaori marque.' },
+        { name: 'Keiko', meaning: 'Enfant bénie', personality: 'Bénie et joyeuse, Keiko rayonne.' },
+        { name: 'Kokoro', meaning: 'Cœur, esprit', personality: 'Profonde et sincère, Kokoro touche.' },
+      ],
+      M: [
+        { name: 'Mai', meaning: 'Danse', personality: 'Gracieuse et élégante, Mai enchante.' },
+        { name: 'Maki', meaning: 'Véritable espoir', personality: 'Optimiste et vraie, Maki inspire.' },
+        { name: 'Midori', meaning: 'Vert', personality: 'Naturelle et fraîche, Midori apaise.' },
+        { name: 'Mika', meaning: 'Belle odeur', personality: 'Agréable et douce, Mika charme.' },
+        { name: 'Misaki', meaning: 'Belle floraison', personality: 'Épanouie et radieuse, Misaki brille.' },
+      ],
+      N: [
+        { name: 'Nana', meaning: 'Sept', personality: 'Chanceuse et bénie, Nana prospère.' },
+        { name: 'Naomi', meaning: 'Belle et honnête', personality: 'Sincère et belle, Naomi inspire.' },
+      ],
+      R: [
+        { name: 'Rei', meaning: 'Esprit, zéro', personality: 'Pure et spirituelle, Rei transcende.' },
+        { name: 'Rin', meaning: 'Dignité', personality: 'Digne et noble, Rin commande.' },
+      ],
+      S: [
+        { name: 'Sakura', meaning: 'Fleur de cerisier', personality: 'Éphémère et belle, Sakura marque.' },
+        { name: 'Sora', meaning: 'Ciel', personality: 'Libre et infinie, Sora rêve.' },
+      ],
+      Y: [
+        { name: 'Yuki', meaning: 'Neige', personality: 'Pure et sereine, Yuki apaise.' },
+        { name: 'Yumi', meaning: 'Arc, beauté', personality: 'Gracieuse et belle, Yumi enchante.' },
+        { name: 'Yuna', meaning: 'Douceur', personality: 'Douce et tendre, Yuna réconforte.' },
+      ],
+    },
+    boys: {
+      A: [
+        { name: 'Akira', meaning: 'Lumineux, intelligent', personality: 'Brillant et vif, Akira éclaire.' },
+        { name: 'Aoi', meaning: 'Bleu', personality: 'Calme et profond, Aoi apaise.' },
+      ],
+      D: [
+        { name: 'Daichi', meaning: 'Grande terre', personality: 'Stable et ancré, Daichi est solide.' },
+        { name: 'Daiki', meaning: 'Grande gloire', personality: 'Glorieux et ambitieux, Daiki vise haut.' },
+      ],
+      H: [
+        { name: 'Haruki', meaning: 'Brillance printanière', personality: 'Radieux et optimiste, Haruki inspire.' },
+        { name: 'Hayato', meaning: 'Faucon', personality: 'Vif et perçant, Hayato observe.' },
+        { name: 'Hiro', meaning: 'Généreux', personality: 'Généreux et noble, Hiro donne.' },
+        { name: 'Hiroshi', meaning: 'Généreux, prospère', personality: 'Prospère et bienveillant, Hiroshi partage.' },
+      ],
+      K: [
+        { name: 'Kaito', meaning: 'Mer et ciel', personality: 'Libre et infini, Kaito rêve.' },
+        { name: 'Kenji', meaning: 'Intelligent et fort', personality: 'Brillant et robuste, Kenji excelle.' },
+        { name: 'Kenta', meaning: 'Fort et sain', personality: 'Vigoureux et énergique, Kenta vit.' },
+        { name: 'Kota', meaning: 'Bonheur et grandeur', personality: 'Joyeux et ambitieux, Kota sourit.' },
+      ],
+      M: [
+        { name: 'Makoto', meaning: 'Sincérité', personality: 'Sincère et honnête, Makoto est vrai.' },
+        { name: 'Masashi', meaning: 'Juste et ambitieux', personality: 'Équitable et déterminé, Masashi réussit.' },
+      ],
+      N: [
+        { name: 'Naoki', meaning: 'Arbre honnête', personality: 'Droit et stable, Naoki est fiable.' },
+      ],
+      R: [
+        { name: 'Ren', meaning: 'Lotus', personality: 'Pur et spirituel, Ren s\'élève.' },
+        { name: 'Riku', meaning: 'Terre', personality: 'Ancré et stable, Riku est solide.' },
+        { name: 'Ryo', meaning: 'Rafraîchissant', personality: 'Frais et revigorant, Ryo inspire.' },
+      ],
+      S: [
+        { name: 'Satoshi', meaning: 'Sage, rapide', personality: 'Intelligent et vif, Satoshi comprend.' },
+        { name: 'Shota', meaning: 'Grand vol', personality: 'Ambitieux et libre, Shota s\'envole.' },
+        { name: 'Sora', meaning: 'Ciel', personality: 'Libre et infini, Sora rêve.' },
+      ],
+      T: [
+        { name: 'Takeshi', meaning: 'Guerrier, féroce', personality: 'Combattant et fort, Takeshi protège.' },
+        { name: 'Taro', meaning: 'Premier fils', personality: 'Responsable et aîné, Taro guide.' },
+      ],
+      Y: [
+        { name: 'Yuki', meaning: 'Neige, bonheur', personality: 'Pur et joyeux, Yuki rayonne.' },
+        { name: 'Yuto', meaning: 'Excellence et envol', personality: 'Excellent et ambitieux, Yuto s\'élève.' },
+      ],
+    },
+  },
+
+  // MAROC
+  MA: {
+    girls: {
+      A: [
+        { name: 'Amina', meaning: 'Digne de confiance', personality: 'Fiable et loyale, Amina rassure.' },
+        { name: 'Asma', meaning: 'Suprême', personality: 'Noble et élevée, Asma inspire.' },
+        { name: 'Asmae', meaning: 'Plus belle', personality: 'Belle et gracieuse, Asmae enchante.' },
+      ],
+      F: [
+        { name: 'Fatima', meaning: 'Celle qui sèvre', personality: 'Maternelle et forte, Fatima protège.' },
+        { name: 'Fatiha', meaning: 'Ouverture', personality: 'Accueillante et ouverte, Fatiha invite.' },
+      ],
+      H: [
+        { name: 'Hajar', meaning: 'Pierre précieuse', personality: 'Précieuse et rare, Hajar est unique.' },
+        { name: 'Hanae', meaning: 'Bonheur', personality: 'Joyeuse et positive, Hanae rayonne.' },
+      ],
+      I: [
+        { name: 'Imane', meaning: 'Foi', personality: 'Croyante et spirituelle, Imane guide.' },
+        { name: 'Ines', meaning: 'Chaste', personality: 'Pure et innocente, Ines touche.' },
+      ],
+      K: [
+        { name: 'Khadija', meaning: 'Née avant terme', personality: 'Forte et résiliente, Khadija persévère.' },
+        { name: 'Karima', meaning: 'Généreuse', personality: 'Généreuse et bienveillante, Karima donne.' },
+      ],
+      L: [
+        { name: 'Laila', meaning: 'Nuit', personality: 'Mystérieuse et profonde, Laila fascine.' },
+        { name: 'Latifa', meaning: 'Douce', personality: 'Douce et tendre, Latifa apaise.' },
+      ],
+      M: [
+        { name: 'Maryam', meaning: 'Aimée', personality: 'Aimante et dévouée, Maryam chérit.' },
+        { name: 'Meriem', meaning: 'Étoile de la mer', personality: 'Brillante et guide, Meriem éclaire.' },
+      ],
+      N: [
+        { name: 'Nadia', meaning: 'Espoir', personality: 'Optimiste et positive, Nadia inspire.' },
+        { name: 'Naima', meaning: 'Délice', personality: 'Agréable et douce, Naima charme.' },
+        { name: 'Nour', meaning: 'Lumière', personality: 'Lumineuse et radieuse, Nour brille.' },
+      ],
+      S: [
+        { name: 'Salma', meaning: 'Paisible', personality: 'Sereine et calme, Salma apaise.' },
+        { name: 'Samira', meaning: 'Compagne de veillée', personality: 'Sociable et joyeuse, Samira anime.' },
+        { name: 'Sara', meaning: 'Princesse', personality: 'Royale et noble, Sara règne.' },
+        { name: 'Sofia', meaning: 'Sagesse', personality: 'Sage et réfléchie, Sofia conseille.' },
+      ],
+      Y: [
+        { name: 'Yasmine', meaning: 'Fleur de jasmin', personality: 'Parfumée et délicate, Yasmine enchante.' },
+      ],
+      Z: [
+        { name: 'Zahra', meaning: 'Fleur', personality: 'Belle et épanouie, Zahra fleurit.' },
+        { name: 'Zineb', meaning: 'Belle plante', personality: 'Naturelle et belle, Zineb rayonne.' },
+      ],
+    },
+    boys: {
+      A: [
+        { name: 'Adam', meaning: 'Terre', personality: 'Ancré et premier, Adam fonde.' },
+        { name: 'Ahmed', meaning: 'Digne de louange', personality: 'Louable et respecté, Ahmed inspire.' },
+        { name: 'Ali', meaning: 'Élevé', personality: 'Noble et haut, Ali s\'élève.' },
+        { name: 'Amine', meaning: 'Fidèle', personality: 'Loyal et fiable, Amine protège.' },
+        { name: 'Ayoub', meaning: 'Patient', personality: 'Patient et endurant, Ayoub persévère.' },
+      ],
+      H: [
+        { name: 'Hamza', meaning: 'Lion', personality: 'Fort et courageux, Hamza protège.' },
+        { name: 'Hassan', meaning: 'Beau', personality: 'Beau et charmant, Hassan séduit.' },
+      ],
+      I: [
+        { name: 'Ibrahim', meaning: 'Père des nations', personality: 'Patriarche et sage, Ibrahim guide.' },
+        { name: 'Ilyas', meaning: 'Mon Dieu est Yahvé', personality: 'Spirituel et dévoué, Ilyas croit.' },
+        { name: 'Ismail', meaning: 'Dieu entend', personality: 'Écouté et béni, Ismail est favorisé.' },
+      ],
+      K: [
+        { name: 'Karim', meaning: 'Généreux', personality: 'Généreux et noble, Karim donne.' },
+        { name: 'Khalid', meaning: 'Éternel', personality: 'Durable et fort, Khalid persiste.' },
+      ],
+      M: [
+        { name: 'Mehdi', meaning: 'Guidé', personality: 'Guidé et sage, Mehdi suit le chemin.' },
+        { name: 'Mohamed', meaning: 'Loué', personality: 'Louable et respecté, Mohamed inspire.' },
+        { name: 'Mouad', meaning: 'Protégé', personality: 'Protégé et béni, Mouad est gardé.' },
+        { name: 'Mustapha', meaning: 'Choisi', personality: 'Élu et spécial, Mustapha est unique.' },
+      ],
+      O: [
+        { name: 'Omar', meaning: 'Vie longue', personality: 'Durable et sage, Omar vit longtemps.' },
+        { name: 'Othmane', meaning: 'Serpent', personality: 'Sage et prudent, Othmane observe.' },
+      ],
+      R: [
+        { name: 'Rachid', meaning: 'Bien guidé', personality: 'Sage et guidé, Rachid conseille.' },
+      ],
+      S: [
+        { name: 'Said', meaning: 'Heureux', personality: 'Joyeux et positif, Said sourit.' },
+        { name: 'Samir', meaning: 'Compagnon de veillée', personality: 'Sociable et agréable, Samir anime.' },
+      ],
+      Y: [
+        { name: 'Yassine', meaning: 'Riche', personality: 'Prospère et béni, Yassine réussit.' },
+        { name: 'Youssef', meaning: 'Dieu ajoutera', personality: 'Béni et favorisé, Youssef croît.' },
+      ],
+      Z: [
+        { name: 'Zakaria', meaning: 'Dieu se souvient', personality: 'Mémorable et béni, Zakaria est aimé.' },
+      ],
+    },
+  },
 };
 
 // Fonction pour obtenir tous les pays (plat)
 export const getAllCountries = () => {
-  return [...countries.europe, ...countries.america];
+  return [...countries.europe, ...countries.america, ...(countries.asia || []), ...(countries.africa || [])];
 };
 
 // Fonction pour vérifier si un contenu est gratuit
