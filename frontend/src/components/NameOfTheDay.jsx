@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Sparkles, Heart } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { frenchNames } from '../data/babyNamesFR';
 
 export default function NameOfTheDay({ isDarkMode = false }) {
@@ -11,17 +11,14 @@ export default function NameOfTheDay({ isDarkMode = false }) {
     // Combiner tous les prénoms
     const allNames = [];
     
-    // Ajouter les prénoms filles
     Object.values(frenchNames.girls).forEach(letterNames => {
       letterNames.forEach(name => allNames.push({ ...name, gender: 'girls' }));
     });
     
-    // Ajouter les prénoms garçons
     Object.values(frenchNames.boys).forEach(letterNames => {
       letterNames.forEach(name => allNames.push({ ...name, gender: 'boys' }));
     });
     
-    // Sélectionner basé sur le jour de l'année
     const index = dayOfYear % allNames.length;
     return allNames[index];
   }, []);
@@ -32,56 +29,29 @@ export default function NameOfTheDay({ isDarkMode = false }) {
 
   return (
     <div 
-      className={`rounded-2xl p-4 border transition-all ${
+      className={`rounded-xl px-3 py-2 border flex items-center gap-3 ${
         isDarkMode 
-          ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700' 
+          ? 'bg-slate-800/50 border-slate-700' 
           : isGirl 
-            ? 'bg-gradient-to-br from-pink-50 to-rose-100 border-pink-200' 
-            : 'bg-gradient-to-br from-blue-50 to-sky-100 border-blue-200'
+            ? 'bg-pink-50/80 border-pink-100' 
+            : 'bg-blue-50/80 border-blue-100'
       }`}
       data-testid="name-of-the-day"
     >
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className={`w-5 h-5 ${
-              isDarkMode ? 'text-yellow-400' : isGirl ? 'text-pink-500' : 'text-blue-500'
-            }`} />
-            <span className={`text-xs font-semibold uppercase tracking-wide ${
-              isDarkMode ? 'text-slate-400' : isGirl ? 'text-pink-600' : 'text-blue-600'
-            }`}>
-              Prénom du jour
-            </span>
-          </div>
-          
-          <h3 className={`text-2xl font-bold mb-1 ${
-            isDarkMode ? 'text-white' : 'text-slate-800'
-          }`}>
-            {isGirl ? '👧' : '👦'} {nameOfTheDay.name}
-          </h3>
-          
-          <p className={`text-sm mb-2 ${
-            isDarkMode ? 'text-pink-300' : isGirl ? 'text-pink-600' : 'text-blue-600'
-          }`}>
-            ✨ {nameOfTheDay.meaning}
-          </p>
-          
-          <p className={`text-xs italic ${
-            isDarkMode ? 'text-slate-400' : 'text-slate-600'
-          }`}>
-            {nameOfTheDay.personality}
-          </p>
-        </div>
-        
-        <div className={`p-2 rounded-full ${
-          isDarkMode 
-            ? 'bg-slate-700' 
-            : isGirl ? 'bg-pink-100' : 'bg-blue-100'
-        }`}>
-          <Heart className={`w-5 h-5 ${
-            isDarkMode ? 'text-pink-400' : isGirl ? 'text-pink-500' : 'text-blue-500'
-          }`} />
-        </div>
+      <Sparkles className={`w-4 h-4 flex-shrink-0 ${
+        isDarkMode ? 'text-yellow-400' : isGirl ? 'text-pink-400' : 'text-blue-400'
+      }`} />
+      
+      <div className="flex items-center gap-2 flex-1 min-w-0">
+        <span className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+          Prénom du jour
+        </span>
+        <span className={`font-semibold truncate ${isDarkMode ? 'text-slate-100' : 'text-slate-700'}`}>
+          {isGirl ? '👧' : '👦'} {nameOfTheDay.name}
+        </span>
+        <span className={`text-xs hidden sm:inline ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+          • {nameOfTheDay.meaning}
+        </span>
       </div>
     </div>
   );
