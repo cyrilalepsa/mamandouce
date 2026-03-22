@@ -259,7 +259,7 @@ function ColorSelector({ title, options, value, onChange }) {
   );
 }
 
-export function AvatarBuilder({ currentConfig, onSave, onCancel, onUseCamera }) {
+export function AvatarBuilder({ currentConfig, onSave, onCancel, onUseCamera, onUseGallery }) {
   const [config, setConfig] = useState(currentConfig || {
     faceShape: 'oval',
     skinTone: 'medium',
@@ -301,14 +301,27 @@ export function AvatarBuilder({ currentConfig, onSave, onCancel, onUseCamera }) 
           </div>
         </div>
 
-        {/* Bouton caméra */}
-        <button
-          onClick={onUseCamera}
-          className="w-full mb-4 flex items-center justify-center gap-2 py-3 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-colors"
-        >
-          <Camera className="w-5 h-5" />
-          <span className="text-sm font-medium">Utiliser une vraie photo</span>
-        </button>
+        {/* Boutons photo */}
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={onUseCamera}
+            className="flex-1 flex items-center justify-center gap-2 py-3 bg-pink-100 hover:bg-pink-200 rounded-xl text-pink-600 transition-colors"
+            data-testid="use-camera-button"
+          >
+            <Camera className="w-5 h-5" />
+            <span className="text-sm font-medium">Prendre photo</span>
+          </button>
+          <button
+            onClick={onUseGallery}
+            className="flex-1 flex items-center justify-center gap-2 py-3 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-colors"
+            data-testid="use-gallery-button"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span className="text-sm font-medium">Galerie</span>
+          </button>
+        </div>
 
         <div className="border-t border-slate-100 my-4" />
 

@@ -17,6 +17,7 @@ export function ProfileEditCard({ user, onUpdate }) {
   const [saving, setSaving] = useState(false);
   const [showAvatarBuilder, setShowAvatarBuilder] = useState(false);
   const fileInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
 
   const handleFileSelect = (e) => {
     const file = e.target.files?.[0];
@@ -232,6 +233,15 @@ export function ProfileEditCard({ user, onUpdate }) {
               className="hidden"
               data-testid="avatar-file-input"
             />
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="user"
+              onChange={handleFileSelect}
+              className="hidden"
+              data-testid="avatar-camera-input"
+            />
           </div>
 
           {/* Nom */}
@@ -273,6 +283,10 @@ export function ProfileEditCard({ user, onUpdate }) {
           onSave={handleAvatarBuilderSave}
           onCancel={() => setShowAvatarBuilder(false)}
           onUseCamera={() => {
+            setShowAvatarBuilder(false);
+            cameraInputRef.current?.click();
+          }}
+          onUseGallery={() => {
             setShowAvatarBuilder(false);
             fileInputRef.current?.click();
           }}
