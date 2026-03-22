@@ -27,7 +27,9 @@ Application PWA de suivi de grossesse "MamanDouce" pour accompagner les futures 
 14. **Admin Dashboard** - Gestion utilisateurs avec filtres Année/Mois
 15. **Liste des Prénoms** ✅ (22 Mars 2026)
     - Navigation hiérarchique : Genre → Région → Pays → Lettre → Prénom
-    - **8 pays avec données complètes** : France, États-Unis, Espagne, Italie, Allemagne, Royaume-Uni, Portugal, Brésil
+    - **17 pays avec données complètes** :
+      - 🌍 Europe : France, Espagne, Italie, Allemagne, Royaume-Uni, Portugal, Belgique, Suisse, Pays-Bas, Pologne, Irlande, Grèce
+      - 🌎 Amérique : États-Unis, Brésil, Canada, Mexique, Argentine
     - Chaque prénom avec signification et personnalité
     - **Section Favoris** avec catégories Filles/Garçons
     - Restrictions : 3 pays gratuits (FR, US, ES) + lettres A-E
@@ -78,28 +80,35 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
 
 ### P1 - High Priority
 - [ ] **Publier sur Google Play Store** - Générer le bundle AAB pour publication
-- [ ] **Ajouter plus de pays aux prénoms** - Compléter les données pour :
-  - Europe : Belgique, Suisse, Pays-Bas, Pologne, Suède, Norvège, Danemark, Irlande, Grèce, Russie
-  - Amérique : Canada, Mexique, Argentine, Colombie, Chili
+- [x] ~~Ajouter plus de pays aux prénoms~~ ✅ 17 pays maintenant disponibles
 
 ### P2 - Medium Priority
 - [ ] **Configurer domaine personnalisé** - cycafamily.com sur DigitalOcean
-- [ ] **Enrichir les prénoms existants** - Ajouter plus de prénoms par lettre pour les 8 pays actuels
-- [ ] **Recherche de prénoms** - Ajouter une barre de recherche dans la liste des prénoms
+- [ ] **Ajouter encore plus de pays** (optionnel) :
+  - Europe : Russie, Ukraine, Suède, Norvège, Danemark, Finlande
+  - Amérique : Colombie, Chili, Pérou, Venezuela
+- [ ] **Barre de recherche prénoms** - Recherche rapide par nom
 
 ### P3 - Low Priority / Enhancements
+- [ ] **Export favoris en PDF** - Permettre d'exporter la liste des prénoms favoris
 - [ ] **Refactoring** - Découper `MedicalAppointmentsPage.js` (>800 lignes) en sous-composants
 - [ ] **Multi-langues** - Ajouter support anglais/portugais
-- [ ] **Export favoris** - Permettre d'exporter la liste des prénoms favoris en PDF
+- [ ] **Statistiques prénoms** - Popularité et tendances par année
 
 ---
 
 ## Completed Work (Changelog)
 
-### 22 Mars 2026
+### 22 Mars 2026 - Session 2
+- ✅ Ajout de 9 nouveaux pays aux prénoms :
+  - Europe : Belgique 🇧🇪, Suisse 🇨🇭, Pays-Bas 🇳🇱, Pologne 🇵🇱, Irlande 🇮🇪, Grèce 🇬🇷
+  - Amérique : Canada 🇨🇦, Mexique 🇲🇽, Argentine 🇦🇷
+- ✅ **Total : 17 pays avec données complètes**
+
+### 22 Mars 2026 - Session 1
 - ✅ Ajout de la fonctionnalité "Liste des Prénoms"
 - ✅ Navigation hiérarchique (Genre → Région → Pays → Lettre → Prénom)
-- ✅ Base de données pour 8 pays : FR, US, ES, IT, DE, GB, PT, BR
+- ✅ Base de données initiale pour 8 pays : FR, US, ES, IT, DE, GB, PT, BR
 - ✅ Section Favoris avec catégories Filles/Garçons
 - ✅ Déplacement de la carte "Liste des Prénoms" au-dessus de "Rendez-vous"
 - ✅ Système de restriction Premium (3 pays gratuits + lettres A-E)
@@ -115,9 +124,19 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
 
 ---
 
+## Statistiques Prénoms
+
+| Région | Pays disponibles | Total |
+|--------|------------------|-------|
+| 🌍 Europe | FR, ES, IT, DE, GB, PT, BE, CH, NL, PL, IE, GR | 12 |
+| 🌎 Amérique | US, BR, CA, MX, AR | 5 |
+| **Total** | | **17 pays** |
+
+---
+
 ## Key Files Reference
 - `/app/frontend/src/pages/BabyNamesPage.js` - Page liste des prénoms
-- `/app/frontend/src/data/babyNames.js` - Base de données prénoms (8 pays)
+- `/app/frontend/src/data/babyNames.js` - Base de données prénoms (17 pays)
 - `/app/frontend/src/components/home/NavigationSections.jsx` - Navigation sections
 - `/app/frontend/src/components/SubscriptionGate.jsx` - Gestion Premium/Gratuit
 - `/app/frontend/public/docs/CARTE_VISITE_MAMANDOUCE.html` - Carte de visite
