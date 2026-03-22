@@ -211,8 +211,13 @@ export default function BabyNamesPage() {
     if (!countryData?.[selectedGender]) return <p className={`text-center ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Données non disponibles</p>;
 
     const genderData = countryData[selectedGender];
-    const gradientFrom = selectedGender === 'girls' ? 'from-pink-500' : 'from-blue-500';
-    const gradientTo = selectedGender === 'girls' ? 'to-rose-500' : 'to-sky-500';
+    // Couleurs plus douces pour les lettres
+    const letterBgColor = selectedGender === 'girls' 
+      ? isDarkMode ? 'bg-pink-800/60' : 'bg-gradient-to-br from-pink-200 to-rose-200'
+      : isDarkMode ? 'bg-blue-800/60' : 'bg-gradient-to-br from-blue-200 to-sky-200';
+    const letterTextColor = selectedGender === 'girls'
+      ? isDarkMode ? 'text-pink-200' : 'text-pink-700'
+      : isDarkMode ? 'text-blue-200' : 'text-blue-700';
 
     return (
       <div className="space-y-4">
@@ -234,7 +239,7 @@ export default function BabyNamesPage() {
                   onClick={(e) => { if (!isAccessible) { e.preventDefault(); navigate('/pricing'); } }}
                 >
                   <div className="flex items-center gap-3 w-full">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-white bg-gradient-to-br ${gradientFrom} ${gradientTo}`}>{letter}</div>
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold ${letterBgColor} ${letterTextColor}`}>{letter}</div>
                     <span className={`font-medium ${isDarkMode ? 'text-slate-200' : 'text-slate-700'}`}>{names.length} prénom{names.length > 1 ? 's' : ''}</span>
                     {!isAccessible && <div className="ml-auto flex items-center gap-1 text-amber-500 mr-2"><Lock className="w-4 h-4" /><Crown className="w-4 h-4" /></div>}
                   </div>

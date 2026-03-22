@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { User, Heart, ChevronDown, Share2 } from 'lucide-react';
+import { User, Heart, ChevronDown, ChevronUp, Share2, Sparkles } from 'lucide-react';
 import api from '../../utils/api';
 
 export default function ExpandableNameCard({ 
@@ -57,23 +57,45 @@ export default function ExpandableNameCard({
             }`} 
           />
         </button>
-        <ChevronDown className={`w-5 h-5 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'} transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+        {isExpanded ? (
+          <ChevronUp className={`w-5 h-5 ${isDarkMode ? 'text-violet-400' : 'text-violet-500'}`} />
+        ) : (
+          <ChevronDown className={`w-5 h-5 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`} />
+        )}
       </button>
       
       {isExpanded && (
-        <div className="px-3 pb-3 space-y-2">
-          <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-white'} rounded-lg p-3`}>
-            <p className={`text-xs font-medium ${isDarkMode ? 'text-slate-400' : 'text-slate-500'} uppercase tracking-wide mb-1`}>
-              Signification
-            </p>
+        <div className="px-3 pb-3 space-y-3">
+          {/* Signification - Design rose comme Top 10 */}
+          <div className={`p-3 rounded-lg ${
+            isDarkMode ? 'bg-slate-700/50' : 'bg-gradient-to-r from-pink-50 to-rose-50'
+          }`}>
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles className={`w-4 h-4 ${isDarkMode ? 'text-pink-400' : 'text-pink-500'}`} />
+              <span className={`text-xs font-semibold uppercase tracking-wide ${
+                isDarkMode ? 'text-pink-400' : 'text-pink-600'
+              }`}>
+                Signification
+              </span>
+            </div>
             <p className={`text-sm ${isDarkMode ? 'text-slate-200' : 'text-slate-700'}`}>{nameData.meaning}</p>
           </div>
-          <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-white'} rounded-lg p-3`}>
-            <p className={`text-xs font-medium ${isDarkMode ? 'text-slate-400' : 'text-slate-500'} uppercase tracking-wide mb-1`}>
-              Personnalité
-            </p>
+          
+          {/* Personnalité - Design violet comme Top 10 */}
+          <div className={`p-3 rounded-lg ${
+            isDarkMode ? 'bg-slate-700/50' : 'bg-gradient-to-r from-violet-50 to-indigo-50'
+          }`}>
+            <div className="flex items-center gap-2 mb-1">
+              <Heart className={`w-4 h-4 ${isDarkMode ? 'text-violet-400' : 'text-violet-500'}`} />
+              <span className={`text-xs font-semibold uppercase tracking-wide ${
+                isDarkMode ? 'text-violet-400' : 'text-violet-600'
+              }`}>
+                Personnalité
+              </span>
+            </div>
             <p className={`text-sm ${isDarkMode ? 'text-slate-200' : 'text-slate-700'}`}>{nameData.personality}</p>
           </div>
+          
           {onShare && (
             <button
               onClick={(e) => {
