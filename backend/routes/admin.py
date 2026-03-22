@@ -63,13 +63,23 @@ async def list_promo_codes(admin: User = Depends(get_admin_user)):
 
 # ==================== USERS ====================
 
+# Emails créés par le développeur pour les tests (à exclure des stats)
+DEV_TEST_EMAILS = [
+    "admin@mamandouce.com",
+    "marie.dupont@gmail.com",
+]
+
 def is_test_user(email: str) -> bool:
     """Check if user is a test/development user"""
     if not email:
         return False
     email_lower = email.lower()
-    # Test users: emails containing "test" or ending with @example.com
-    return "test" in email_lower or email_lower.endswith("@example.com")
+    # Test users: emails containing "test", ending with @example.com, or in dev list
+    if "test" in email_lower or email_lower.endswith("@example.com"):
+        return True
+    if email_lower in [e.lower() for e in DEV_TEST_EMAILS]:
+        return True
+    return False
 
 @router.get("/admin/users")
 async def get_admin_users(admin: User = Depends(get_admin_user)):
