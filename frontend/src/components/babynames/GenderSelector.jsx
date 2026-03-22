@@ -1,5 +1,6 @@
 import React from 'react';
 import { Heart, ChevronRight, Search, X } from 'lucide-react';
+import PopularityStats from './PopularityStats';
 
 export default function GenderSelector({ 
   favorites,
@@ -9,6 +10,7 @@ export default function GenderSelector({
   onSelectGender,
   onSelectFavorites,
   renderSearchResultCard,
+  onSelectPopularName,
   isDarkMode = false 
 }) {
   return (
@@ -116,6 +118,12 @@ export default function GenderSelector({
               <ChevronRight className="w-6 h-6 text-blue-400" />
             </div>
           </button>
+
+          {/* Statistiques de popularité */}
+          <PopularityStats 
+            onSelectName={onSelectPopularName}
+            isDarkMode={isDarkMode} 
+          />
         </>
       )}
     </div>

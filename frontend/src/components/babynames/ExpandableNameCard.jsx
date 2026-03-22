@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { User, Heart, ChevronDown, Share2 } from 'lucide-react';
+import api from '../../utils/api';
 
 export default function ExpandableNameCard({ 
   nameData, 
@@ -12,6 +13,15 @@ export default function ExpandableNameCard({
   isDarkMode = false 
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const hasTracked = useRef(false);
+  
+  // Track view when expanded
+  useEffect(() => {
+    if (isExpanded && !hasTracked.current) {
+      hasTracked.current = true;
+      api.nameStats.trackView(nameData.name, country, gender).catch(() => {});
+    }
+  }, [isExpanded, nameData.name, country, gender]);
   
   const bgColor = gender === 'girls' 
     ? isDarkMode ? 'bg-pink-900/30' : 'bg-pink-50'

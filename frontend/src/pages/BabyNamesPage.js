@@ -21,7 +21,8 @@ import {
   RegionSelector,
   GenderSelector,
   CountryList,
-  ExpandableNameCard
+  ExpandableNameCard,
+  PopularityStats
 } from '../components/babynames';
 import {
   Accordion,
@@ -380,6 +381,21 @@ export default function BabyNamesPage() {
           searchResults={searchResults}
           onSelectGender={setSelectedGender}
           onSelectFavorites={() => setSelectedGender('favorites')}
+          onSelectPopularName={(item) => {
+            if (item?.viewAll) {
+              setSelectedGender(item.gender);
+            } else if (item) {
+              // Navigate to the name's country
+              const region = Object.entries(countriesByRegion).find(([_, codes]) => 
+                codes.includes(item.country)
+              )?.[0];
+              if (region) {
+                setSelectedGender(item.gender);
+                setSelectedRegion(region);
+                setSelectedCountry(item.country);
+              }
+            }
+          }}
           renderSearchResultCard={(result, idx) => (
             <SearchResultCard
               key={`${result.name}-${result.countryCode}-${result.gender}-${idx}`}

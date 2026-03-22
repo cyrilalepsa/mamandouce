@@ -151,6 +151,12 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
   - BabyNamesPage.js : **1170 → 441 lignes** (réduction de 62%)
   - 10 composants extraits dans `/app/frontend/src/components/babynames/`
   - Code modulaire et maintenable
+- ✅ **STATISTIQUES DE POPULARITÉ** :
+  - API Backend `/api/babynames-stats` (tracking + top 10 + trending)
+  - Composant `PopularityStats.jsx` avec classement Top 10
+  - Tracking automatique des vues lors de l'expansion des prénoms
+  - Onglets Filles/Garçons avec compteur total de vues
+  - Navigation vers le pays du prénom cliqué
 
 ### 22 Mars 2026 - Session 5
 - ✅ **BASE MASSIVE FRANCE : 1003 prénoms français modernes !** 

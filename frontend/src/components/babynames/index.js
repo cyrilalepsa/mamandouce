@@ -9,3 +9,4 @@ export { default as RegionSelector, regions } from './RegionSelector';
 export { default as GenderSelector } from './GenderSelector';
 export { default as CountryList } from './CountryList';
 export { default as ExpandableNameCard } from './ExpandableNameCard';
+export { default as PopularityStats } from './PopularityStats';

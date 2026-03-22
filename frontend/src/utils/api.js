@@ -245,6 +245,12 @@ export const api = {
     merge: (favorites) => axios.post(`${API}/babynames-favorites/merge`, { favorites }, getAuthHeaders()),
     clear: () => axios.delete(`${API}/babynames-favorites`, getAuthHeaders()),
   },
+  
+  nameStats: {
+    trackView: (name, country, gender) => axios.post(`${API}/babynames-stats/view`, { name, country, gender }),
+    getTop: (limit = 10) => axios.get(`${API}/babynames-stats/top?limit=${limit}`),
+    getTrending: (days = 7, limit = 5) => axios.get(`${API}/babynames-stats/trending?days=${days}&limit=${limit}`),
+  },
 };
 
 export default api;
