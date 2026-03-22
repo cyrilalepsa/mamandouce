@@ -53,26 +53,56 @@ export function PushNotificationsSection({ preferences, setPreferences, onSave }
       }
 
       // Get VAPID public key
-      const { data: vapidData } = await api.get('/notifications/vapid-public-key');
-      const publicKey = vapidData.publicKey;
+      let publicKey;
+      try {
+        const { data: vapidData } = await api.get('/notifications/vapid-public-key');
+        publicKey = vapidData.publicKey;
+      } catch (vapidError) {
+        console.error('VAPID key error:', vapidError);
+        toast.error('Erreur de configuration du serveur');
+        setSubscribing(false);
+        return;
+      }
 
       // Subscribe to push
-      const registration = await navigator.serviceWorker.ready;
-      const sub = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey)
-      });
+      let sub;
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        sub = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(publicKey)
+        });
+      } catch (subError) {
+        console.error('Push subscribe error:', subError);
+        // Specific error messages
+        if (subError.name === 'NotAllowedError') {
+          toast.error('Notifications bloquées. Vérifiez les paramètres de votre navigateur.');
+        } else if (subError.name === 'AbortError') {
+          toast.error('L\'inscription a été interrompue. Réessayez.');
+        } else if (subError.message && subError.message.includes('gcm_sender_id')) {
+          toast.error('Configuration serveur manquante. Contactez le support.');
+        } else {
+          toast.error(`Erreur: ${subError.message || 'Impossible d\'activer les notifications'}`);
+        }
+        setSubscribing(false);
+        return;
+      }
 
       // Send subscription to server
-      await api.post('/notifications/subscribe', {
-        subscription: {
-          endpoint: sub.endpoint,
-          keys: {
-            p256dh: arrayBufferToBase64(sub.getKey('p256dh')),
-            auth: arrayBufferToBase64(sub.getKey('auth'))
+      try {
+        await api.post('/notifications/subscribe', {
+          subscription: {
+            endpoint: sub.endpoint,
+            keys: {
+              p256dh: arrayBufferToBase64(sub.getKey('p256dh')),
+              auth: arrayBufferToBase64(sub.getKey('auth'))
+            }
           }
-        }
-      });
+        });
+      } catch (serverError) {
+        console.error('Server subscribe error:', serverError);
+        // Still mark as enabled locally since the browser is subscribed
+      }
 
       setSubscription(sub);
       setPreferences(prev => ({ ...prev, push_enabled: true }));

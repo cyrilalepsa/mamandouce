@@ -8,7 +8,9 @@
       "title": "Top 10 prénoms amélioré",
       "message": "Le classement des prénoms les plus populaires est maintenant basé sur les vues uniques ! Chaque utilisatrice ne compte qu'une seule fois par prénom, pour un classement plus juste et représentatif.",
       "category": "improvement",
-      "notified": false
+      "notified": true,
+      "notified_at": "2026-03-22T23:27:01.263875+00:00",
+      "notified_by": "cyrilalepsa@gmail.com"
     },
     {
       "id": "name-card-design",

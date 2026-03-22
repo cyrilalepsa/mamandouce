@@ -9,6 +9,7 @@
   "theme_color": "#87CEEB",
   "orientation": "portrait-primary",
   "id": "/",
+  "gcm_sender_id": "103953800507",
   "icons": [
     {
       "src": "app-icon-512.png",
