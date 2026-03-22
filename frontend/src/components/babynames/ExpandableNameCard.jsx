@@ -66,10 +66,10 @@ export default function ExpandableNameCard({
       
       {isExpanded && (
         <div className="px-3 pb-3 space-y-3">
-          {/* Signification - Design rose comme Top 10 */}
+          {/* Signification - Fond blanc */}
           <div className={`p-3 rounded-lg ${
-            isDarkMode ? 'bg-slate-700/50' : 'bg-gradient-to-r from-pink-50 to-rose-50'
-          }`}>
+            isDarkMode ? 'bg-slate-800' : 'bg-white'
+          } shadow-sm`}>
             <div className="flex items-center gap-2 mb-1">
               <Sparkles className={`w-4 h-4 ${isDarkMode ? 'text-pink-400' : 'text-pink-500'}`} />
               <span className={`text-xs font-semibold uppercase tracking-wide ${
@@ -81,10 +81,10 @@ export default function ExpandableNameCard({
             <p className={`text-sm ${isDarkMode ? 'text-slate-200' : 'text-slate-700'}`}>{nameData.meaning}</p>
           </div>
           
-          {/* Personnalité - Design violet comme Top 10 */}
+          {/* Personnalité - Fond blanc */}
           <div className={`p-3 rounded-lg ${
-            isDarkMode ? 'bg-slate-700/50' : 'bg-gradient-to-r from-violet-50 to-indigo-50'
-          }`}>
+            isDarkMode ? 'bg-slate-800' : 'bg-white'
+          } shadow-sm`}>
             <div className="flex items-center gap-2 mb-1">
               <Heart className={`w-4 h-4 ${isDarkMode ? 'text-violet-400' : 'text-violet-500'}`} />
               <span className={`text-xs font-semibold uppercase tracking-wide ${
