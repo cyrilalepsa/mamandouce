@@ -55,7 +55,7 @@ export function PreconceptionSection() {
       title="En route vers la grossesse" 
       icon={Sparkles} 
       iconColor="text-amber-500"
-      defaultOpen={true}
+      defaultOpen={false}
     >
       <div className="grid grid-cols-2 gap-4">
         <Card
@@ -126,7 +126,7 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
       title="Grossesse" 
       icon={Baby} 
       iconColor="text-pink-500"
-      defaultOpen={true}
+      defaultOpen={false}
     >
 
       {/* Scanner, Bibliothèque, Favoris, Historique */}
