@@ -283,6 +283,48 @@ export default function BabyNamesPage() {
     }
   };
 
+  // Partager un prénom individuel
+  const shareIndividualName = async (nameData, gender, countryInfo) => {
+    const genderEmoji = gender === 'girls' ? '👧' : '👦';
+    const genderText = gender === 'girls' ? 'fille' : 'garçon';
+    
+    const shareText = `${genderEmoji} Prénom ${genderText} : ${nameData.name}
+
+${countryInfo?.flag || ''} Origine : ${countryInfo?.name || 'Internationale'}
+
+✨ Signification : ${nameData.meaning}
+
+💫 Personnalité : ${nameData.personality}
+
+Découvert sur MamanDouce - L'app des futures mamans`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${nameData.name} - Prénom ${genderText}`,
+          text: shareText,
+        });
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('Erreur de partage:', err);
+        }
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareText);
+        alert('Prénom copié dans le presse-papiers !');
+      } catch (err) {
+        const textArea = document.createElement('textarea');
+        textArea.value = shareText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Prénom copié dans le presse-papiers !');
+      }
+    }
+  };
+
   // Rendu de la sélection du genre
   const renderGenderSelection = () => (
     <div className="space-y-4">
@@ -637,16 +679,22 @@ export default function BabyNamesPage() {
                 {isAccessible && (
                   <AccordionContent className="px-4 pb-4">
                     <div className="space-y-3">
-                      {names.map((nameData, idx) => (
-                        <NameCard 
-                          key={idx}
-                          nameData={nameData}
-                          gender={selectedGender}
-                          country={selectedCountry}
-                          isFavorite={isFavorite(nameData.name, selectedCountry, selectedGender)}
-                          onToggleFavorite={() => toggleFavorite(nameData.name, selectedCountry, selectedGender)}
-                        />
-                      ))}
+                      {names.map((nameData, idx) => {
+                        const allCountries = getAllCountries();
+                        const countryInfo = allCountries.find(c => c.code === selectedCountry);
+                        return (
+                          <NameCard 
+                            key={idx}
+                            nameData={nameData}
+                            gender={selectedGender}
+                            country={selectedCountry}
+                            countryInfo={countryInfo}
+                            isFavorite={isFavorite(nameData.name, selectedCountry, selectedGender)}
+                            onToggleFavorite={() => toggleFavorite(nameData.name, selectedCountry, selectedGender)}
+                            onShare={() => shareIndividualName(nameData, selectedGender, countryInfo)}
+                          />
+                        );
+                      })}
                     </div>
                   </AccordionContent>
                 )}
@@ -681,7 +729,7 @@ export default function BabyNamesPage() {
   };
 
   // Composant carte de prénom
-  const NameCard = ({ nameData, gender, country, isFavorite, onToggleFavorite }) => {
+  const NameCard = ({ nameData, gender, country, countryInfo, isFavorite, onToggleFavorite, onShare }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const bgColor = gender === 'girls' ? 'bg-pink-50' : 'bg-blue-50';
     const borderColor = gender === 'girls' ? 'border-pink-100' : 'border-blue-100';
@@ -725,6 +773,18 @@ export default function BabyNamesPage() {
               </p>
               <p className="text-sm text-slate-700">{nameData.personality}</p>
             </div>
+            {/* Bouton Partager */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onShare();
+              }}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-lg py-2 px-3 text-sm font-medium shadow hover:shadow-md transition-all"
+              data-testid="share-individual-name-btn"
+            >
+              <Share2 className="w-4 h-4" />
+              Partager ce prénom
+            </button>
           </div>
         )}
       </div>
@@ -872,6 +932,18 @@ export default function BabyNamesPage() {
               </p>
               <p className="text-sm text-slate-700">{nameData.personality}</p>
             </div>
+            {/* Bouton Partager */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                shareIndividualName(nameData, gender, country);
+              }}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-lg py-2 px-3 text-sm font-medium shadow hover:shadow-md transition-all"
+              data-testid="share-favorite-name-btn"
+            >
+              <Share2 className="w-4 h-4" />
+              Partager ce prénom
+            </button>
           </div>
         )}
       </div>

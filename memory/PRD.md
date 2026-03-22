@@ -78,23 +78,46 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
 ## Prioritized Backlog
 
 ### P0 - Critical (Bloquant)
-- [ ] **Finaliser déploiement DigitalOcean** - Résoudre le blocage bancaire
+- [ ] **Finaliser déploiement DigitalOcean** - Résoudre le blocage bancaire pour mettre l'app en ligne
 
 ### P1 - High Priority
-- [ ] **Publier sur Google Play Store** - Générer le bundle AAB depuis la PWA
+- [ ] **Publier sur Google Play Store** - Générer le bundle AAB depuis la PWA avec TWA (Trusted Web Activity)
 - [x] ~~Ajouter plus de pays aux prénoms~~ ✅ 23 pays disponibles
 - [x] ~~Barre de recherche prénoms~~ ✅ Recherche globale implémentée
 - [x] ~~Export favoris~~ ✅ Export HTML implémenté
 - [x] ~~Partage favoris~~ ✅ Partage via Web Share API
+- [x] ~~Partage individuel prénom~~ ✅ Bouton partage sur chaque fiche prénom
 
 ### P2 - Medium Priority
 - [ ] **Configurer domaine personnalisé** - cycafamily.com sur DigitalOcean
-- [ ] **Ajouter encore plus de pays** (optionnel) : Ukraine, Finlande, Danemark, Pérou, Venezuela
+- [ ] **Apple App Store** - Publier sur iOS via PWA ou wrapper natif
+- [ ] **Ajouter encore plus de pays** : Ukraine 🇺🇦, Finlande 🇫🇮, Danemark 🇩🇰, Pérou 🇵🇪, Venezuela 🇻🇪, Japon 🇯🇵, Chine 🇨🇳, Inde 🇮🇳
+- [ ] **Améliorer SEO** - Meta tags, sitemap, robots.txt pour référencement Google
 
 ### P3 - Low Priority / Enhancements
-- [ ] **Refactoring** - Découper `MedicalAppointmentsPage.js` (>800 lignes)
-- [ ] **Multi-langues** - Support anglais/portugais
-- [ ] **Statistiques prénoms** - Popularité et tendances
+- [ ] **Refactoring code**
+  - Découper `MedicalAppointmentsPage.js` (>800 lignes) en sous-composants
+  - Découper `BabyNamesPage.js` (>900 lignes) : `NameCard.jsx`, `FavoritesList.jsx`, `SearchBar.jsx`
+- [ ] **Multi-langues** - Support anglais/portugais/espagnol avec i18n
+- [ ] **Statistiques prénoms** - Popularité et tendances par année/pays
+- [ ] **Mode sombre** - Dark mode pour toute l'application
+- [ ] **Synchronisation cloud** - Sauvegarder favoris dans le compte utilisateur (pas seulement localStorage)
+- [ ] **Notifications push** - Rappels de rendez-vous, conseils quotidiens
+- [ ] **Comparateur de prénoms** - Comparer 2-3 prénoms côte à côte
+- [ ] **Prénoms composés** - Générateur de prénoms composés (Marie-Anne, Jean-Pierre...)
+- [ ] **Filtres avancés** - Par longueur, par lettre finale, par sonorité
+- [ ] **Audio prononciation** - Écouter la prononciation des prénoms
+- [ ] **Origine étymologique** - Détails sur l'histoire et l'origine de chaque prénom
+- [ ] **Célébrités** - Personnalités célèbres portant ce prénom
+
+### P4 - Future Ideas (Idées à explorer)
+- [ ] **IA suggestion** - Suggérer des prénoms basés sur les favoris de l'utilisateur
+- [ ] **Compatibilité prénom/nom** - Vérifier la sonorité prénom + nom de famille
+- [ ] **Calendrier des saints** - Fête associée à chaque prénom
+- [ ] **Forum communauté** - Discussions entre futures mamans
+- [ ] **Partenariats** - Marques bébé, assurances maternité
+- [ ] **Monétisation** - Publicités non-intrusives pour version gratuite
+- [ ] **Analytics** - Tableau de bord des prénoms les plus recherchés
 
 ---
 
@@ -102,7 +125,8 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
 
 ### 22 Mars 2026 - Session 4
 - ✅ **Fonction Partage des favoris** : Bouton "Partager" utilisant Web Share API (mobile) avec fallback presse-papiers (desktop)
-- ✅ Mise à jour du backlog
+- ✅ **Partage individuel** : Bouton "Partager ce prénom" sur chaque fiche de prénom
+- ✅ Mise à jour complète du backlog/future tasks (P0 à P4)
 
 ### 22 Mars 2026 - Session 3
 - ✅ Ajout de 6 nouveaux pays : Russie 🇷🇺, Suède 🇸🇪, Norvège 🇳🇴, Colombie 🇨🇴, Chili 🇨🇱
@@ -130,6 +154,15 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
 | 🌍 Europe | FR, ES, IT, DE, GB, PT, BE, CH, NL, PL, IE, GR, RU, SE, NO | 15 |
 | 🌎 Amérique | US, BR, CA, MX, AR, CO, CL | 7 |
 | **Total** | | **22 pays** |
+
+### Pays à ajouter (Future)
+| Région | Pays suggérés |
+|--------|---------------|
+| 🌍 Europe | Ukraine 🇺🇦, Finlande 🇫🇮, Danemark 🇩🇰, Autriche 🇦🇹, République Tchèque 🇨🇿 |
+| 🌎 Amérique | Pérou 🇵🇪, Venezuela 🇻🇪, Cuba 🇨🇺, Porto Rico 🇵🇷 |
+| 🌏 Asie | Japon 🇯🇵, Chine 🇨🇳, Inde 🇮🇳, Corée du Sud 🇰🇷, Vietnam 🇻🇳 |
+| 🌍 Afrique | Maroc 🇲🇦, Algérie 🇩🇿, Sénégal 🇸🇳, Côte d'Ivoire 🇨🇮 |
+| 🌏 Moyen-Orient | Liban 🇱🇧, Turquie 🇹🇷, Israël 🇮🇱 |
 
 ---
 
