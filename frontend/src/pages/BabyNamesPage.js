@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Baby, Crown, Lock, ChevronDown, ChevronRight, Heart, User, Sparkles, Star, Trash2, Search, X, FileDown } from 'lucide-react';
+import { ArrowLeft, Baby, Crown, Lock, ChevronDown, ChevronRight, Heart, User, Sparkles, Star, Trash2, Search, X, FileDown, Share2 } from 'lucide-react';
 import { useSubscription } from '../components/SubscriptionGate';
 import { 
   countries, 
@@ -219,6 +219,68 @@ export default function BabyNamesPage() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  // Partager les favoris
+  const shareFavorites = async () => {
+    const girlsFavorites = favorites.filter(f => f.endsWith('-girls'));
+    const boysFavorites = favorites.filter(f => f.endsWith('-boys'));
+
+    // Construire le texte de partage
+    let shareText = "❤️ Mes Prénoms Favoris - MamanDouce\n\n";
+
+    if (girlsFavorites.length > 0) {
+      shareText += "👧 Prénoms Filles:\n";
+      girlsFavorites.forEach(fav => {
+        const details = getFavoriteDetails(fav);
+        if (details) {
+          shareText += `• ${details.name} (${details.country?.flag} ${details.country?.name}) - ${details.meaning}\n`;
+        }
+      });
+      shareText += "\n";
+    }
+
+    if (boysFavorites.length > 0) {
+      shareText += "👦 Prénoms Garçons:\n";
+      boysFavorites.forEach(fav => {
+        const details = getFavoriteDetails(fav);
+        if (details) {
+          shareText += `• ${details.name} (${details.country?.flag} ${details.country?.name}) - ${details.meaning}\n`;
+        }
+      });
+    }
+
+    shareText += "\n✨ Découvrez MamanDouce pour trouver le prénom parfait!";
+
+    // Vérifier si l'API Web Share est disponible (mobile)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Mes Prénoms Favoris - MamanDouce',
+          text: shareText,
+        });
+      } catch (err) {
+        // L'utilisateur a annulé le partage, pas d'action nécessaire
+        if (err.name !== 'AbortError') {
+          console.error('Erreur de partage:', err);
+        }
+      }
+    } else {
+      // Fallback: copier dans le presse-papiers
+      try {
+        await navigator.clipboard.writeText(shareText);
+        alert('Liste copiée dans le presse-papiers ! Vous pouvez maintenant la coller où vous voulez.');
+      } catch (err) {
+        // Dernier fallback pour les anciens navigateurs
+        const textArea = document.createElement('textarea');
+        textArea.value = shareText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Liste copiée dans le presse-papiers !');
+      }
+    }
   };
 
   // Rendu de la sélection du genre
@@ -705,15 +767,25 @@ export default function BabyNamesPage() {
           </div>
         ) : (
           <>
-            {/* Bouton d'export */}
-            <button
-              onClick={exportFavoritesPDF}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl py-3 px-4 font-medium shadow-lg hover:shadow-xl transition-all"
-              data-testid="export-favorites-btn"
-            >
-              <FileDown className="w-5 h-5" />
-              Télécharger mes favoris
-            </button>
+            {/* Boutons d'actions */}
+            <div className="flex gap-2">
+              <button
+                onClick={shareFavorites}
+                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-xl py-3 px-4 font-medium shadow-lg hover:shadow-xl transition-all"
+                data-testid="share-favorites-btn"
+              >
+                <Share2 className="w-5 h-5" />
+                Partager
+              </button>
+              <button
+                onClick={exportFavoritesPDF}
+                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl py-3 px-4 font-medium shadow-lg hover:shadow-xl transition-all"
+                data-testid="export-favorites-btn"
+              >
+                <FileDown className="w-5 h-5" />
+                Télécharger
+              </button>
+            </div>
 
             {/* Section Filles */}
             {girlsFavorites.length > 0 && (

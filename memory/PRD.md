@@ -33,6 +33,7 @@ Application PWA de suivi de grossesse "MamanDouce" pour accompagner les futures 
     - **Barre de recherche** : Recherche rapide par nom
     - **Section Favoris** avec catégories Filles/Garçons
     - **Export HTML** : Télécharger ses favoris
+    - **Partage** ✅ : Partager ses favoris (Web Share API + fallback presse-papiers)
     - Restrictions : 3 pays gratuits (FR, US, ES) + lettres A-E
 
 ### Premium Features 👑
@@ -80,10 +81,11 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
 - [ ] **Finaliser déploiement DigitalOcean** - Résoudre le blocage bancaire
 
 ### P1 - High Priority
-- [ ] **Publier sur Google Play Store** - Générer le bundle AAB
+- [ ] **Publier sur Google Play Store** - Générer le bundle AAB depuis la PWA
 - [x] ~~Ajouter plus de pays aux prénoms~~ ✅ 23 pays disponibles
 - [x] ~~Barre de recherche prénoms~~ ✅ Recherche globale implémentée
 - [x] ~~Export favoris~~ ✅ Export HTML implémenté
+- [x] ~~Partage favoris~~ ✅ Partage via Web Share API
 
 ### P2 - Medium Priority
 - [ ] **Configurer domaine personnalisé** - cycafamily.com sur DigitalOcean
@@ -97,6 +99,10 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
 ---
 
 ## Completed Work (Changelog)
+
+### 22 Mars 2026 - Session 4
+- ✅ **Fonction Partage des favoris** : Bouton "Partager" utilisant Web Share API (mobile) avec fallback presse-papiers (desktop)
+- ✅ Mise à jour du backlog
 
 ### 22 Mars 2026 - Session 3
 - ✅ Ajout de 6 nouveaux pays : Russie 🇷🇺, Suède 🇸🇪, Norvège 🇳🇴, Colombie 🇨🇴, Chili 🇨🇱
