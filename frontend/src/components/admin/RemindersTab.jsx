@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { Bell, Clock, Mail, Smartphone, CheckCircle, XCircle, AlertCircle, RefreshCw, Trash2, Play, Users, Download, AlertTriangle, ShieldAlert } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'sonner';
+import { NewsNotificationsSection } from './NewsNotificationsSection';
 
 export function RemindersTab() {
   const [dashboard, setDashboard] = useState(null);
@@ -402,6 +403,9 @@ export function RemindersTab() {
           </div>
         )}
       </Card>
+
+      {/* Section Notifications Nouveautés */}
+      <NewsNotificationsSection />
     </div>
   );
 }

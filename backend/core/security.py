@@ -43,6 +43,27 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         raise HTTPException(status_code=401, detail="Utilisateur non trouvé")
     return User(**user)
 
+async def get_current_user_optional(credentials: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer(auto_error=False))):
+    """Get current user if authenticated, otherwise return None (for optional auth)"""
+    from models.schemas import User
+    
+    if credentials is None:
+        return None
+    
+    token = credentials.credentials
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            return None
+    except JWTError:
+        return None
+    
+    user = await db.users.find_one({"email": email}, {"_id": 0})
+    if user is None:
+        return None
+    return User(**user)
+
 async def get_admin_user(current_user: "User" = Depends(get_current_user)):
     """Verify that the current user is an admin"""
     from .config import ADMIN_EMAIL

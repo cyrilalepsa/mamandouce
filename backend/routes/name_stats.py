@@ -2,12 +2,12 @@
 Baby Names Statistics routes
 Tracks views and provides popularity statistics
 """
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
 from core.database import db
-from core.security import get_current_user
+from core.security import get_current_user_optional
 from models.schemas import User
 
 router = APIRouter(prefix="/babynames-stats", tags=["Baby Names Statistics"])
@@ -40,10 +40,38 @@ COUNTRY_FLAGS = {
 }
 
 @router.post("/view")
-async def track_name_view(data: NameView):
-    """Track when a user views/expands a name"""
+async def track_name_view(data: NameView, request: Request, current_user: Optional[User] = Depends(get_current_user_optional)):
+    """Track when a user views/expands a name - 1 view per user per name (unique)"""
     try:
-        # Upsert: increment view count or create new record
+        # Determine unique viewer identifier
+        if current_user:
+            viewer_id = current_user.email
+        else:
+            # For non-logged users, use IP + session-like identifier
+            client_ip = request.client.host if request.client else "unknown"
+            viewer_id = f"anon_{client_ip}"
+        
+        # Create unique key for this viewer + name combination
+        unique_key = f"{viewer_id}_{data.name}_{data.country}_{data.gender}"
+        
+        # Check if this viewer has already viewed this name
+        existing_view = await db.name_views_unique.find_one({"unique_key": unique_key})
+        
+        if existing_view:
+            # Already viewed - don't count again
+            return {"success": True, "counted": False, "message": "Already viewed"}
+        
+        # Record this unique view
+        await db.name_views_unique.insert_one({
+            "unique_key": unique_key,
+            "viewer_id": viewer_id,
+            "name": data.name,
+            "country": data.country,
+            "gender": data.gender,
+            "viewed_at": datetime.now(timezone.utc)
+        })
+        
+        # Increment the global view count
         await db.name_stats.update_one(
             {
                 "name": data.name,
@@ -57,7 +85,8 @@ async def track_name_view(data: NameView):
             },
             upsert=True
         )
-        return {"success": True}
+        
+        return {"success": True, "counted": True}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -230,6 +230,9 @@ export const api = {
     // Business Kit
     getBusinessKitInfo: () => axios.get(`${API}/admin/business-kit/info`, getAuthHeaders()),
     sendBusinessKitEmail: () => axios.post(`${API}/admin/business-kit/send-email`, {}, getAuthHeaders()),
+    // News Notifications
+    sendNewsNotification: (data) => axios.post(`${API}/admin/send-news-notification`, data, getAuthHeaders()),
+    getNewsNotifications: () => axios.get(`${API}/admin/news-notifications`, getAuthHeaders()),
   },
   
   chatbot: {

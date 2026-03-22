@@ -1684,3 +1684,154 @@ async def get_business_kit_info(admin: User = Depends(get_admin_user)):
         "files": files,
         "email_available": RESEND_API_KEY is not None
     }
+
+
+
+# ==================== NOTIFICATIONS NOUVEAUTÉS ====================
+
+from pydantic import BaseModel
+from typing import Literal
+
+class NewsNotificationRequest(BaseModel):
+    title: str
+    message: str
+    channel: Literal["email", "push", "both"]
+    target: Literal["all", "premium", "free"]
+
+@router.post("/admin/send-news-notification")
+async def send_news_notification(data: NewsNotificationRequest, admin: User = Depends(get_admin_user)):
+    """Send notification about app updates to users"""
+    try:
+        # Get target users based on selection
+        query = {}
+        if data.target == "premium":
+            query["subscription_status"] = "premium"
+        elif data.target == "free":
+            query["$or"] = [
+                {"subscription_status": {"$exists": False}},
+                {"subscription_status": "free"}
+            ]
+        
+        # Exclude test users
+        query["$and"] = query.get("$and", [])
+        query["$and"].append({
+            "$and": [
+                {"email": {"$not": {"$regex": "test", "$options": "i"}}},
+                {"email": {"$not": {"$regex": "@example.com", "$options": "i"}}}
+            ]
+        })
+        
+        users = await db.users.find(query, {"_id": 0, "email": 1, "name": 1, "push_subscription": 1}).to_list(10000)
+        
+        email_sent = 0
+        email_failed = 0
+        push_sent = 0
+        push_failed = 0
+        
+        # Send emails
+        if data.channel in ["email", "both"] and resend and RESEND_API_KEY:
+            for user in users:
+                if user.get("email"):
+                    try:
+                        resend.Emails.send({
+                            "from": SENDER_EMAIL,
+                            "to": user["email"],
+                            "subject": f"🎉 {data.title} - MamanDouce",
+                            "html": f"""
+                            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                                <div style="background: linear-gradient(135deg, #ec4899, #8b5cf6); padding: 30px; border-radius: 20px; text-align: center;">
+                                    <h1 style="color: white; margin: 0; font-size: 28px;">🎀 MamanDouce</h1>
+                                    <p style="color: rgba(255,255,255,0.9); margin-top: 10px;">Nouveautés pour vous !</p>
+                                </div>
+                                
+                                <div style="padding: 30px; background: #fff;">
+                                    <h2 style="color: #1e293b; margin-bottom: 20px;">{data.title}</h2>
+                                    <p style="color: #475569; line-height: 1.6; font-size: 16px;">
+                                        Bonjour {user.get('name', 'future maman')} ! 👋
+                                    </p>
+                                    <p style="color: #475569; line-height: 1.6; font-size: 16px;">
+                                        {data.message}
+                                    </p>
+                                    <div style="text-align: center; margin-top: 30px;">
+                                        <a href="https://mamandouce.app" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; padding: 15px 30px; border-radius: 30px; text-decoration: none; font-weight: bold;">
+                                            Découvrir maintenant
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div style="text-align: center; padding: 20px; color: #94a3b8; font-size: 12px;">
+                                    <p>MamanDouce - Votre compagnon de grossesse 🌸</p>
+                                </div>
+                            </div>
+                            """
+                        })
+                        email_sent += 1
+                    except Exception as e:
+                        logger.error(f"Email failed to {user['email']}: {e}")
+                        email_failed += 1
+        
+        # Send push notifications
+        if data.channel in ["push", "both"] and WEBPUSH_AVAILABLE and VAPID_PRIVATE_KEY:
+            for user in users:
+                subscription = user.get("push_subscription")
+                if subscription:
+                    try:
+                        webpush(
+                            subscription_info=subscription,
+                            data=json.dumps({
+                                "title": f"🎉 {data.title}",
+                                "body": data.message,
+                                "icon": "/logo192.png",
+                                "badge": "/logo192.png",
+                                "url": "/"
+                            }),
+                            vapid_private_key=VAPID_PRIVATE_KEY,
+                            vapid_claims={"sub": f"mailto:{VAPID_CLAIMS_EMAIL}"}
+                        )
+                        push_sent += 1
+                    except WebPushException as e:
+                        logger.error(f"Push failed: {e}")
+                        push_failed += 1
+                    except Exception as e:
+                        logger.error(f"Push error: {e}")
+                        push_failed += 1
+        
+        # Save notification to history
+        await db.news_notifications.insert_one({
+            "title": data.title,
+            "message": data.message,
+            "channel": data.channel,
+            "target": data.target,
+            "sent_at": datetime.now(timezone.utc),
+            "sent_by": admin.email,
+            "stats": {
+                "email_sent": email_sent,
+                "email_failed": email_failed,
+                "push_sent": push_sent,
+                "push_failed": push_failed,
+                "total_users": len(users)
+            }
+        })
+        
+        return {
+            "success": True,
+            "stats": {
+                "total_users": len(users),
+                "email_sent": email_sent,
+                "email_failed": email_failed,
+                "push_sent": push_sent,
+                "push_failed": push_failed
+            }
+        }
+    except Exception as e:
+        logger.error(f"News notification error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/admin/news-notifications")
+async def get_news_notifications(admin: User = Depends(get_admin_user)):
+    """Get history of sent news notifications"""
+    notifications = await db.news_notifications.find(
+        {}, {"_id": 0}
+    ).sort("sent_at", -1).limit(50).to_list(50)
+    
+    return {"notifications": notifications}
