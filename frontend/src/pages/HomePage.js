@@ -5,6 +5,8 @@ import { toast } from 'sonner';
 import AppTitle from '../components/AppTitle';
 import FertilityCalendar from '../components/FertilityCalendar';
 import { AvatarPreview } from '../components/profile/AvatarBuilder';
+import NameOfTheDay from '../components/NameOfTheDay';
+import { useTheme } from '../contexts/ThemeContext';
 import {
   AgendaCard,
   PregnancyStatusCard,
@@ -19,6 +21,7 @@ import {
 const ADMIN_EMAIL = 'cyrilalepsa@gmail.com';
 
 function HomePage() {
+  const { isDarkMode } = useTheme();
   const [userName, setUserName] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [userAvatar, setUserAvatar] = useState('');
@@ -251,6 +254,9 @@ function HomePage() {
               pregnancyProfile={pregnancyProfile}
             />
           )}
+
+          {/* Prénom du jour */}
+          <NameOfTheDay isDarkMode={isDarkMode} />
 
           {/* Sections de navigation */}
           <PreconceptionSection />

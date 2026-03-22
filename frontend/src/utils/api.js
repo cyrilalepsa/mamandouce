@@ -238,6 +238,13 @@ export const api = {
     deleteSession: (sessionId) => axios.delete(`${API}/chatbot/session/${sessionId}`, getAuthHeaders()),
     getSuggestions: () => axios.get(`${API}/chatbot/suggestions`),
   },
+  
+  favorites: {
+    get: () => axios.get(`${API}/babynames-favorites`, getAuthHeaders()),
+    sync: (favorites) => axios.post(`${API}/babynames-favorites`, { favorites }, getAuthHeaders()),
+    merge: (favorites) => axios.post(`${API}/babynames-favorites/merge`, { favorites }, getAuthHeaders()),
+    clear: () => axios.delete(`${API}/babynames-favorites`, getAuthHeaders()),
+  },
 };
 
 export default api;

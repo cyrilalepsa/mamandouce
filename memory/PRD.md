@@ -125,6 +125,30 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
 
 ## Completed Work (Changelog)
 
+### 22 Mars 2026 - Session 6
+- ✅ **SEO AMÉLIORÉ** : 
+  - robots.txt créé
+  - sitemap.xml créé
+  - Meta tags Open Graph et Twitter ajoutés
+  - Keywords SEO ajoutés
+- ✅ **MODE SOMBRE** :
+  - ThemeContext créé (`/app/frontend/src/contexts/ThemeContext.jsx`)
+  - Toggle dans Paramètres > Apparence
+  - Styles CSS dark mode ajoutés
+- ✅ **FILTRES AVANCÉS PRÉNOMS** :
+  - Par longueur (Court 1-4, Moyen 5-7, Long 8+)
+  - Par terminaison (A, E, I, O, N, S)
+  - Par origine (arabe, breton, celtique, grec, hébraïque, latin, germanique, slave)
+  - Composant `/app/frontend/src/components/babynames/NameFilters.jsx`
+- ✅ **SYNC CLOUD FAVORIS** :
+  - API Backend `/api/babynames-favorites` (GET, POST, POST /merge, DELETE)
+  - Bouton sync cloud dans header de BabyNamesPage
+  - Sauvegarde automatique des favoris dans MongoDB
+- ✅ **PRÉNOM DU JOUR** :
+  - Composant `/app/frontend/src/components/NameOfTheDay.jsx`
+  - Affiché sur la page d'accueil
+  - Change chaque jour automatiquement
+
 ### 22 Mars 2026 - Session 5
 - ✅ **BASE MASSIVE FRANCE : 1003 prénoms français modernes !** 
   - 582 prénoms féminins (A-Z complet)
@@ -186,6 +210,10 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
 - `/app/frontend/src/pages/BabyNamesPage.js` - Page prénoms (recherche + export)
 - `/app/frontend/src/data/babyNames.js` - Base de données principale (tous pays)
 - `/app/frontend/src/data/babyNamesFR.js` - **Base massive France (1003 prénoms)**
+- `/app/frontend/src/components/babynames/` - **Composants refactorisés** (NameCard, SearchBar, NameFilters, FavoritesList)
+- `/app/frontend/src/components/NameOfTheDay.jsx` - **Prénom du jour**
+- `/app/frontend/src/contexts/ThemeContext.jsx` - **Mode sombre**
+- `/app/backend/routes/favorites.py` - **API sync cloud favoris**
 - `/app/frontend/src/components/home/NavigationSections.jsx` - Navigation
 - `/app/frontend/src/components/SubscriptionGate.jsx` - Premium/Gratuit
 

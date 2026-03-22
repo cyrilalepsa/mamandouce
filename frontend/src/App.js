@@ -4,6 +4,7 @@ import '@/App.css';
 import ErrorBoundary from './components/ErrorBoundary';
 import { SubscriptionGate } from './components/SubscriptionGate';
 import { OfflineSyncIndicator } from './components/OfflineSyncIndicator';
+import { ThemeProvider } from './contexts/ThemeContext';
 import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import PregnancyCalculator from './pages/PregnancyCalculator';
@@ -86,6 +87,7 @@ function App() {
 
   return (
     <ErrorBoundary>
+      <ThemeProvider>
         <div className="App">
           <BrowserRouter>
             <Routes>
@@ -127,6 +129,7 @@ function App() {
           <PWAInstallBanner />
           <OfflineSyncIndicator />
         </div>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }

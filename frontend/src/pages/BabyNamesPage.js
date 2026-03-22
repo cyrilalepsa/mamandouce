@@ -1,7 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Baby, Crown, Lock, ChevronDown, ChevronRight, Heart, User, Sparkles, Star, Trash2, Search, X, FileDown, Share2 } from 'lucide-react';
+import { ArrowLeft, Baby, Crown, Lock, ChevronDown, ChevronRight, Heart, User, Sparkles, Star, Trash2, Search, X, FileDown, Share2, Cloud, CloudOff, RefreshCw } from 'lucide-react';
 import { useSubscription } from '../components/SubscriptionGate';
+import { useTheme } from '../contexts/ThemeContext';
+import { toast } from 'sonner';
+import api from '../utils/api';
 import { 
   countries, 
   babyNamesData, 
@@ -11,6 +14,7 @@ import {
   isContentFree,
   getAllCountries
 } from '../data/babyNames';
+import { NameFilters, filterNames } from '../components/babynames';
 import {
   Accordion,
   AccordionContent,
@@ -21,6 +25,7 @@ import {
 export default function BabyNamesPage() {
   const navigate = useNavigate();
   const { isPremium } = useSubscription();
+  const { isDarkMode } = useTheme();
   const [selectedGender, setSelectedGender] = useState(null); // 'girls', 'boys', 'favorites' ou 'search'
   const [selectedRegion, setSelectedRegion] = useState(null); // 'europe' ou 'america'
   const [selectedCountry, setSelectedCountry] = useState(null);
@@ -29,6 +34,71 @@ export default function BabyNamesPage() {
     const saved = localStorage.getItem('babyNamesFavorites');
     return saved ? JSON.parse(saved) : [];
   });
+  
+  // État pour les filtres avancés
+  const [filters, setFilters] = useState({ length: '', ending: '', origin: '' });
+  const [showFilters, setShowFilters] = useState(false);
+  
+  // État pour la sync cloud
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState(null);
+  const [cloudSyncEnabled, setCloudSyncEnabled] = useState(() => {
+    return localStorage.getItem('cloudSyncEnabled') === 'true';
+  });
+
+  // Charger les favoris depuis le cloud au démarrage
+  useEffect(() => {
+    if (cloudSyncEnabled) {
+      loadFromCloud();
+    }
+  }, [cloudSyncEnabled]);
+
+  // Sync cloud functions
+  const loadFromCloud = async () => {
+    try {
+      setIsSyncing(true);
+      const response = await api.favorites.get();
+      if (response.data.favorites && response.data.favorites.length > 0) {
+        // Merge avec les favoris locaux
+        const cloudFavs = new Set(response.data.favorites);
+        const localFavs = new Set(favorites);
+        const merged = [...new Set([...cloudFavs, ...localFavs])];
+        setFavorites(merged);
+        localStorage.setItem('babyNamesFavorites', JSON.stringify(merged));
+        setLastSyncTime(new Date());
+        toast.success('Favoris synchronisés depuis le cloud');
+      }
+    } catch (err) {
+      console.error('Erreur sync cloud:', err);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const saveToCloud = async (newFavorites) => {
+    if (!cloudSyncEnabled) return;
+    try {
+      setIsSyncing(true);
+      await api.favorites.sync(newFavorites);
+      setLastSyncTime(new Date());
+    } catch (err) {
+      console.error('Erreur sauvegarde cloud:', err);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const toggleCloudSync = () => {
+    const newValue = !cloudSyncEnabled;
+    setCloudSyncEnabled(newValue);
+    localStorage.setItem('cloudSyncEnabled', newValue.toString());
+    if (newValue) {
+      loadFromCloud();
+      toast.success('Synchronisation cloud activée');
+    } else {
+      toast.info('Synchronisation cloud désactivée');
+    }
+  };
 
   // Sauvegarder les favoris
   const toggleFavorite = (name, country, gender) => {
@@ -38,6 +108,8 @@ export default function BabyNamesPage() {
       : [...favorites, key];
     setFavorites(newFavorites);
     localStorage.setItem('babyNamesFavorites', JSON.stringify(newFavorites));
+    // Sync to cloud
+    saveToCloud(newFavorites);
   };
 
   const isFavorite = (name, country, gender) => {
@@ -679,20 +751,35 @@ Découvert sur MamanDouce - L'app des futures mamans`;
   // Rendu des prénoms par lettre pour un pays
   const renderNamesByLetter = () => {
     const countryData = babyNamesData[selectedCountry];
-    if (!countryData) return <p className="text-slate-500 text-center">Données non disponibles</p>;
+    if (!countryData) return <p className={`${isDarkMode ? 'text-slate-400' : 'text-slate-500'} text-center`}>Données non disponibles</p>;
 
     const genderData = countryData[selectedGender];
-    if (!genderData) return <p className="text-slate-500 text-center">Données non disponibles</p>;
+    if (!genderData) return <p className={`${isDarkMode ? 'text-slate-400' : 'text-slate-500'} text-center`}>Données non disponibles</p>;
 
     const genderColor = selectedGender === 'girls' ? 'pink' : 'blue';
     const gradientFrom = selectedGender === 'girls' ? 'from-pink-500' : 'from-blue-500';
     const gradientTo = selectedGender === 'girls' ? 'to-rose-500' : 'to-sky-500';
 
     return (
-      <div className="space-y-2">
+      <div className="space-y-4">
+        {/* Filtres avancés */}
+        <NameFilters
+          filters={filters}
+          setFilters={setFilters}
+          isOpen={showFilters}
+          setIsOpen={setShowFilters}
+          isDarkMode={isDarkMode}
+        />
+        
         <Accordion type="multiple" className="space-y-2">
           {alphabet.map((letter) => {
-            const names = genderData[letter] || [];
+            let names = genderData[letter] || [];
+            
+            // Appliquer les filtres
+            if (filters.length || filters.ending || filters.origin) {
+              names = filterNames(names, filters);
+            }
+            
             const isFree = isContentFree(selectedCountry, letter);
             const isAccessible = isPremium || isFree;
 
@@ -1016,33 +1103,54 @@ Découvert sur MamanDouce - L'app des futures mamans`;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className={`min-h-screen ${isDarkMode ? 'bg-slate-900' : 'bg-gradient-to-b from-slate-50 to-white'}`}>
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-100">
+      <div className={`sticky top-0 z-50 ${isDarkMode ? 'bg-slate-900/80' : 'bg-white/80'} backdrop-blur-lg border-b ${isDarkMode ? 'border-slate-700' : 'border-slate-100'}`}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
             <button
               onClick={goBack}
-              className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+              className={`p-2 ${isDarkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'} rounded-full transition-colors`}
               data-testid="back-button"
             >
-              <ArrowLeft className="w-5 h-5 text-slate-600" />
+              <ArrowLeft className={`w-5 h-5 ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`} />
             </button>
             <div className="flex-1">
-              <h1 className="text-lg font-bold text-slate-800" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              <h1 className={`text-lg font-bold ${isDarkMode ? 'text-slate-100' : 'text-slate-800'}`} style={{ fontFamily: 'Nunito, sans-serif' }}>
                 {getTitle()}
               </h1>
               {selectedGender && selectedGender !== 'favorites' && !selectedCountry && (
-                <p className="text-xs text-slate-500">
+                <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                   {selectedGender === 'girls' ? 'Prénoms féminins' : 'Prénoms masculins'}
                 </p>
               )}
               {selectedGender === 'favorites' && (
-                <p className="text-xs text-slate-500">
+                <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                   Vos prénoms préférés
                 </p>
               )}
             </div>
+            
+            {/* Bouton Sync Cloud */}
+            <button
+              onClick={toggleCloudSync}
+              className={`p-2 rounded-full transition-colors ${
+                cloudSyncEnabled 
+                  ? isDarkMode ? 'bg-emerald-900/50 text-emerald-400' : 'bg-emerald-100 text-emerald-600'
+                  : isDarkMode ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'
+              }`}
+              title={cloudSyncEnabled ? 'Sync cloud activée' : 'Activer la sync cloud'}
+              data-testid="cloud-sync-toggle"
+            >
+              {isSyncing ? (
+                <RefreshCw className="w-4 h-4 animate-spin" />
+              ) : cloudSyncEnabled ? (
+                <Cloud className="w-4 h-4" />
+              ) : (
+                <CloudOff className="w-4 h-4" />
+              )}
+            </button>
+            
             {isPremium && (
               <div className="flex items-center gap-1 bg-gradient-to-r from-amber-400 to-orange-400 text-white px-2 py-1 rounded-full">
                 <Crown className="w-3 h-3" />

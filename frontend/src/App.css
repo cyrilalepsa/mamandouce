@@ -62,3 +62,62 @@ button, input, select, textarea {
 button:active {
   transform: scale(0.98);
 }
+
+/* Dark Mode Styles */
+.dark .App {
+  background: #0f172a;
+}
+
+.dark .gradient-bg {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%);
+}
+
+.dark .bg-white {
+  background-color: #1e293b !important;
+}
+
+.dark .bg-slate-50 {
+  background-color: #334155 !important;
+}
+
+.dark .text-slate-700,
+.dark .text-slate-800,
+.dark .text-slate-900 {
+  color: #e2e8f0 !important;
+}
+
+.dark .text-slate-500,
+.dark .text-slate-600 {
+  color: #94a3b8 !important;
+}
+
+.dark .border-slate-100,
+.dark .border-slate-200 {
+  border-color: #334155 !important;
+}
+
+.dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #64748b;
+}
+
+/* Cards in dark mode */
+.dark .bg-pink-50,
+.dark .bg-blue-50,
+.dark .bg-green-50,
+.dark .bg-yellow-50,
+.dark .bg-purple-50 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}

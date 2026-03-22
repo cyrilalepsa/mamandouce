@@ -3,8 +3,9 @@ import { Card } from '../components/ui/card';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
-import { Gift, Shield, Bell, BellRing, CreditCard, Users, Key, ChevronDown } from 'lucide-react';
+import { Gift, Shield, Bell, BellRing, CreditCard, Users, Key, ChevronDown, Moon, Sun } from 'lucide-react';
 import { ToggleAllSections } from '../components/ToggleAllSections';
+import { useTheme } from '../contexts/ThemeContext';
 import {
   PromoCodeSection,
   AccountSection,
@@ -49,6 +50,7 @@ function CollapsibleSettingsSection({
 }
 
 function SettingsPage() {
+  const { isDarkMode, toggleDarkMode } = useTheme();
   const [preferences, setPreferences] = useState({
     email_notifications: true,
     weekly_tips: true,
@@ -64,6 +66,7 @@ function SettingsPage() {
   
   // Gestion des sections ouvertes/fermées
   const [openSections, setOpenSections] = useState({
+    appearance: false,
     promo: false,
     account: false,
     security: false,
@@ -81,6 +84,7 @@ function SettingsPage() {
   
   const toggleAllSections = (open) => {
     setOpenSections({
+      appearance: open,
       promo: open,
       account: open,
       security: open,
@@ -177,6 +181,43 @@ function SettingsPage() {
                 onToggle={toggleAllSections}
               />
             </div>
+            
+            {/* Section Apparence - Mode sombre */}
+            <CollapsibleSettingsSection
+              title="Apparence"
+              icon={isDarkMode ? Moon : Sun}
+              isOpen={openSections.appearance}
+              onToggle={() => toggleSection('appearance')}
+              iconBg={isDarkMode ? "bg-gradient-to-br from-slate-700 to-slate-800" : "bg-gradient-to-br from-yellow-100 to-orange-100"}
+              iconColor={isDarkMode ? "text-yellow-400" : "text-orange-500"}
+            >
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                  <div>
+                    <p className="font-medium text-slate-700 dark:text-slate-200">Mode sombre</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Activer le thème sombre pour l'application</p>
+                  </div>
+                  <button
+                    onClick={toggleDarkMode}
+                    data-testid="dark-mode-toggle"
+                    className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors ${
+                      isDarkMode ? 'bg-pink-500' : 'bg-slate-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
+                        isDarkMode ? 'translate-x-8' : 'translate-x-1'
+                      }`}
+                    />
+                    {isDarkMode ? (
+                      <Moon className="absolute left-1.5 w-4 h-4 text-slate-600" />
+                    ) : (
+                      <Sun className="absolute right-1.5 w-4 h-4 text-yellow-500" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </CollapsibleSettingsSection>
             
             {/* Section Code Promo / Premium */}
             <CollapsibleSettingsSection
