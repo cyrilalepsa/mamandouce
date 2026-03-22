@@ -211,9 +211,10 @@ export default function BabyNamesPage() {
     if (!countryData?.[selectedGender]) return <p className={`text-center ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Données non disponibles</p>;
 
     const genderData = countryData[selectedGender];
-    // Lettres avec fond neutre/blanc
-    const letterBgColor = isDarkMode ? 'bg-slate-700' : 'bg-white border border-slate-200';
-    const letterTextColor = isDarkMode ? 'text-slate-200' : 'text-slate-600';
+    // Lettres avec fond coloré selon le genre et texte BLANC
+    const letterBgColor = selectedGender === 'girls' 
+      ? isDarkMode ? 'bg-pink-600' : 'bg-gradient-to-br from-pink-400 to-rose-400'
+      : isDarkMode ? 'bg-blue-600' : 'bg-gradient-to-br from-blue-400 to-sky-400';
 
     return (
       <div className="space-y-4">
@@ -235,17 +236,13 @@ export default function BabyNamesPage() {
                   onClick={(e) => { if (!isAccessible) { e.preventDefault(); navigate('/pricing'); } }}
                 >
                   <div className="flex items-center gap-3 w-full">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold ${letterBgColor} ${letterTextColor}`}>{letter}</div>
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-white ${letterBgColor}`}>{letter}</div>
                     <span className={`font-medium ${isDarkMode ? 'text-slate-200' : 'text-slate-700'}`}>{names.length} prénom{names.length > 1 ? 's' : ''}</span>
                     {!isAccessible && <div className="ml-auto flex items-center gap-1 text-amber-500 mr-2"><Lock className="w-4 h-4" /><Crown className="w-4 h-4" /></div>}
                   </div>
                 </AccordionTrigger>
                 {isAccessible && (
-                  <AccordionContent className={`px-4 pb-4 ${
-                    selectedGender === 'girls' 
-                      ? isDarkMode ? 'bg-pink-900/20' : 'bg-gradient-to-b from-pink-50 to-rose-50' 
-                      : isDarkMode ? 'bg-blue-900/20' : 'bg-gradient-to-b from-blue-50 to-sky-50'
-                  }`}>
+                  <AccordionContent className="px-4 pb-4">
                     <div className="space-y-3 pt-2">
                       {names.map((nameData, idx) => {
                         const countryInfo = getAllCountries().find(c => c.code === selectedCountry);
