@@ -323,10 +323,6 @@ export function UsersTab({ users, testUsers = [], userStats, loadUsers }) {
     setExpandedMonths(prev => ({ ...prev, [key]: !prev[key] }));
   };
   
-  // Ouvrir automatiquement l'année et le mois courants
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth();
-  
   return (
     <div className="space-y-6">
       {/* Stats - uniquement les vrais utilisateurs */}
@@ -441,7 +437,7 @@ export function UsersTab({ users, testUsers = [], userStats, loadUsers }) {
         ) : (
           <div className="space-y-3 max-h-[600px] overflow-y-auto">
             {sortedYears.map((year) => {
-              const isYearExpanded = expandedYears[year] !== undefined ? expandedYears[year] : (parseInt(year) === currentYear);
+              const isYearExpanded = expandedYears[year] === true;
               const monthsInYear = Object.keys(grouped[year]).sort((a, b) => b - a);
               const totalUsersInYear = monthsInYear.reduce((sum, month) => sum + grouped[year][month].length, 0);
               
@@ -471,9 +467,7 @@ export function UsersTab({ users, testUsers = [], userStats, loadUsers }) {
                     <div className="p-2 space-y-2">
                       {monthsInYear.map((month) => {
                         const monthKey = `${year}-${month}`;
-                        const isMonthExpanded = expandedMonths[monthKey] !== undefined 
-                          ? expandedMonths[monthKey] 
-                          : (parseInt(year) === currentYear && parseInt(month) === currentMonth);
+                        const isMonthExpanded = expandedMonths[monthKey] === true;
                         const usersInMonth = grouped[year][month];
                         
                         return (

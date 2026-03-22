@@ -18,7 +18,9 @@
       "title": "Nouveau design des fiches prénoms",
       "message": "Les fiches de prénoms ont été entièrement redessinées avec un effet nuage doux et chaleureux. La signification et la personnalité sont maintenant affichées dans de jolies bulles colorées !",
       "category": "design",
-      "notified": false
+      "notified": true,
+      "notified_at": "2026-03-22T23:54:49.155911+00:00",
+      "notified_by": "cyrilalepsa@gmail.com"
     },
     {
       "id": "test-users-separation",
