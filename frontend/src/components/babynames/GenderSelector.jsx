@@ -10,7 +10,6 @@ export default function GenderSelector({
   onSelectGender,
   onSelectFavorites,
   renderSearchResultCard,
-  onSelectPopularName,
   isDarkMode = false 
 }) {
   return (
@@ -121,7 +120,6 @@ export default function GenderSelector({
 
           {/* Statistiques de popularité */}
           <PopularityStats 
-            onSelectName={onSelectPopularName}
             isDarkMode={isDarkMode} 
           />
         </>
