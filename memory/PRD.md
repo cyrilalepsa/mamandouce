@@ -25,13 +25,14 @@ Application PWA de suivi de grossesse "MamanDouce" pour accompagner les futures 
 12. **Grossesse après 35 ans** - Section dédiée
 13. **Carte de visite** - Téléchargeable HTML/PDF/JPEG
 14. **Admin Dashboard** - Gestion utilisateurs avec filtres Année/Mois
-15. **Liste des Prénoms** ✅ (22 Mars 2026)
+15. **Liste des Prénoms** ✅ COMPLET
     - Navigation hiérarchique : Genre → Région → Pays → Lettre → Prénom
-    - **17 pays avec données complètes** :
-      - 🌍 Europe : France, Espagne, Italie, Allemagne, Royaume-Uni, Portugal, Belgique, Suisse, Pays-Bas, Pologne, Irlande, Grèce
-      - 🌎 Amérique : États-Unis, Brésil, Canada, Mexique, Argentine
-    - Chaque prénom avec signification et personnalité
+    - **23 pays avec données complètes** :
+      - 🌍 Europe (14) : France, Espagne, Italie, Allemagne, Royaume-Uni, Portugal, Belgique, Suisse, Pays-Bas, Pologne, Irlande, Grèce, Russie, Suède, Norvège
+      - 🌎 Amérique (9) : États-Unis, Brésil, Canada, Mexique, Argentine, Colombie, Chili
+    - **Barre de recherche** : Recherche rapide par nom
     - **Section Favoris** avec catégories Filles/Garçons
+    - **Export HTML** : Télécharger ses favoris
     - Restrictions : 3 pays gratuits (FR, US, ES) + lettres A-E
 
 ### Premium Features 👑
@@ -76,51 +77,43 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
 ## Prioritized Backlog
 
 ### P0 - Critical (Bloquant)
-- [ ] **Finaliser déploiement DigitalOcean** - Résoudre le blocage bancaire et créer l'application
+- [ ] **Finaliser déploiement DigitalOcean** - Résoudre le blocage bancaire
 
 ### P1 - High Priority
-- [ ] **Publier sur Google Play Store** - Générer le bundle AAB pour publication
-- [x] ~~Ajouter plus de pays aux prénoms~~ ✅ 17 pays maintenant disponibles
+- [ ] **Publier sur Google Play Store** - Générer le bundle AAB
+- [x] ~~Ajouter plus de pays aux prénoms~~ ✅ 23 pays disponibles
+- [x] ~~Barre de recherche prénoms~~ ✅ Recherche globale implémentée
+- [x] ~~Export favoris~~ ✅ Export HTML implémenté
 
 ### P2 - Medium Priority
 - [ ] **Configurer domaine personnalisé** - cycafamily.com sur DigitalOcean
-- [ ] **Ajouter encore plus de pays** (optionnel) :
-  - Europe : Russie, Ukraine, Suède, Norvège, Danemark, Finlande
-  - Amérique : Colombie, Chili, Pérou, Venezuela
-- [ ] **Barre de recherche prénoms** - Recherche rapide par nom
+- [ ] **Ajouter encore plus de pays** (optionnel) : Ukraine, Finlande, Danemark, Pérou, Venezuela
 
 ### P3 - Low Priority / Enhancements
-- [ ] **Export favoris en PDF** - Permettre d'exporter la liste des prénoms favoris
-- [ ] **Refactoring** - Découper `MedicalAppointmentsPage.js` (>800 lignes) en sous-composants
-- [ ] **Multi-langues** - Ajouter support anglais/portugais
-- [ ] **Statistiques prénoms** - Popularité et tendances par année
+- [ ] **Refactoring** - Découper `MedicalAppointmentsPage.js` (>800 lignes)
+- [ ] **Multi-langues** - Support anglais/portugais
+- [ ] **Statistiques prénoms** - Popularité et tendances
 
 ---
 
 ## Completed Work (Changelog)
 
+### 22 Mars 2026 - Session 3
+- ✅ Ajout de 6 nouveaux pays : Russie 🇷🇺, Suède 🇸🇪, Norvège 🇳🇴, Colombie 🇨🇴, Chili 🇨🇱
+- ✅ **Barre de recherche globale** : Recherche instantanée parmi tous les prénoms
+- ✅ **Export HTML des favoris** : Bouton "Télécharger mes favoris"
+- ✅ **Total : 23 pays avec données complètes**
+
 ### 22 Mars 2026 - Session 2
-- ✅ Ajout de 9 nouveaux pays aux prénoms :
-  - Europe : Belgique 🇧🇪, Suisse 🇨🇭, Pays-Bas 🇳🇱, Pologne 🇵🇱, Irlande 🇮🇪, Grèce 🇬🇷
-  - Amérique : Canada 🇨🇦, Mexique 🇲🇽, Argentine 🇦🇷
-- ✅ **Total : 17 pays avec données complètes**
+- ✅ Ajout de 9 pays : Belgique, Suisse, Pays-Bas, Pologne, Irlande, Grèce, Canada, Mexique, Argentine
 
 ### 22 Mars 2026 - Session 1
-- ✅ Ajout de la fonctionnalité "Liste des Prénoms"
-- ✅ Navigation hiérarchique (Genre → Région → Pays → Lettre → Prénom)
-- ✅ Base de données initiale pour 8 pays : FR, US, ES, IT, DE, GB, PT, BR
+- ✅ Fonctionnalité "Liste des Prénoms" complète
 - ✅ Section Favoris avec catégories Filles/Garçons
-- ✅ Déplacement de la carte "Liste des Prénoms" au-dessus de "Rendez-vous"
-- ✅ Système de restriction Premium (3 pays gratuits + lettres A-E)
+- ✅ Base de données initiale pour 8 pays
 
 ### Sessions précédentes
-- ✅ Carte de visite avec téléchargement HTML/PDF/JPEG
-- ✅ Switch Admin → Mode Gratuit pour tests
-- ✅ Verrouillage Premium de "Préparer l'arrivée de bébé"
-- ✅ Restrictions des RDV médicaux T2/T3 pour utilisateurs gratuits
-- ✅ Ajout de couronnes sur PricingPage et HomePage
-- ✅ Filtre Année/Mois dans Admin → Utilisateurs
-- ✅ Configuration MongoDB Atlas et DigitalOcean App Platform
+- ✅ Carte de visite, Switch Admin, Restrictions Premium, Admin filters, DigitalOcean config
 
 ---
 
@@ -128,18 +121,17 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
 
 | Région | Pays disponibles | Total |
 |--------|------------------|-------|
-| 🌍 Europe | FR, ES, IT, DE, GB, PT, BE, CH, NL, PL, IE, GR | 12 |
-| 🌎 Amérique | US, BR, CA, MX, AR | 5 |
-| **Total** | | **17 pays** |
+| 🌍 Europe | FR, ES, IT, DE, GB, PT, BE, CH, NL, PL, IE, GR, RU, SE, NO | 15 |
+| 🌎 Amérique | US, BR, CA, MX, AR, CO, CL | 7 |
+| **Total** | | **22 pays** |
 
 ---
 
 ## Key Files Reference
-- `/app/frontend/src/pages/BabyNamesPage.js` - Page liste des prénoms
-- `/app/frontend/src/data/babyNames.js` - Base de données prénoms (17 pays)
-- `/app/frontend/src/components/home/NavigationSections.jsx` - Navigation sections
-- `/app/frontend/src/components/SubscriptionGate.jsx` - Gestion Premium/Gratuit
-- `/app/frontend/public/docs/CARTE_VISITE_MAMANDOUCE.html` - Carte de visite
+- `/app/frontend/src/pages/BabyNamesPage.js` - Page prénoms (recherche + export)
+- `/app/frontend/src/data/babyNames.js` - Base de données (22 pays)
+- `/app/frontend/src/components/home/NavigationSections.jsx` - Navigation
+- `/app/frontend/src/components/SubscriptionGate.jsx` - Premium/Gratuit
 
 ## Test Accounts
-- Email: test4@example.com / Password: test123 (utilisateur gratuit)
+- Email: test4@example.com / Password: test123
