@@ -139,7 +139,6 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
   - Par longueur (Court 1-4, Moyen 5-7, Long 8+)
   - Par terminaison (A, E, I, O, N, S)
   - Par origine (arabe, breton, celtique, grec, hébraïque, latin, germanique, slave)
-  - Composant `/app/frontend/src/components/babynames/NameFilters.jsx`
 - ✅ **SYNC CLOUD FAVORIS** :
   - API Backend `/api/babynames-favorites` (GET, POST, POST /merge, DELETE)
   - Bouton sync cloud dans header de BabyNamesPage
@@ -148,6 +147,10 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
   - Composant `/app/frontend/src/components/NameOfTheDay.jsx`
   - Affiché sur la page d'accueil
   - Change chaque jour automatiquement
+- ✅ **REFACTORING BABYNAMES** :
+  - BabyNamesPage.js : **1170 → 441 lignes** (réduction de 62%)
+  - 10 composants extraits dans `/app/frontend/src/components/babynames/`
+  - Code modulaire et maintenable
 
 ### 22 Mars 2026 - Session 5
 - ✅ **BASE MASSIVE FRANCE : 1003 prénoms français modernes !** 
