@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Baby, Crown, Lock, ChevronDown, ChevronRight, Heart, User, Sparkles } from 'lucide-react';
+import { ArrowLeft, Baby, Crown, Lock, ChevronDown, ChevronRight, Heart, User, Sparkles, Star, Trash2 } from 'lucide-react';
 import { useSubscription } from '../components/SubscriptionGate';
 import { 
   countries, 
@@ -8,7 +8,8 @@ import {
   freeCountries, 
   freeLetters, 
   alphabet,
-  isContentFree 
+  isContentFree,
+  getAllCountries
 } from '../data/babyNames';
 import {
   Accordion,
@@ -20,7 +21,7 @@ import {
 export default function BabyNamesPage() {
   const navigate = useNavigate();
   const { isPremium } = useSubscription();
-  const [selectedGender, setSelectedGender] = useState(null); // 'girls' ou 'boys'
+  const [selectedGender, setSelectedGender] = useState(null); // 'girls', 'boys' ou 'favorites'
   const [selectedRegion, setSelectedRegion] = useState(null); // 'europe' ou 'america'
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [favorites, setFavorites] = useState(() => {
@@ -42,6 +43,28 @@ export default function BabyNamesPage() {
     return favorites.includes(`${name}-${country}-${gender}`);
   };
 
+  // Obtenir les détails d'un prénom favori
+  const getFavoriteDetails = (favoriteKey) => {
+    const [name, countryCode, gender] = favoriteKey.split('-');
+    const countryData = babyNamesData[countryCode];
+    if (!countryData) return null;
+    
+    const genderData = countryData[gender];
+    if (!genderData) return null;
+    
+    // Chercher le prénom dans toutes les lettres
+    for (const letter of alphabet) {
+      const names = genderData[letter] || [];
+      const found = names.find(n => n.name === name);
+      if (found) {
+        const allCountries = getAllCountries();
+        const country = allCountries.find(c => c.code === countryCode);
+        return { ...found, country, gender, countryCode };
+      }
+    }
+    return null;
+  };
+
   // Retour en arrière dans la navigation
   const goBack = () => {
     if (selectedCountry) {
@@ -57,6 +80,9 @@ export default function BabyNamesPage() {
 
   // Obtenir le titre actuel
   const getTitle = () => {
+    if (selectedGender === 'favorites') {
+      return '❤️ Mes Favoris';
+    }
     if (selectedCountry) {
       const allCountries = [...countries.europe, ...countries.america];
       const country = allCountries.find(c => c.code === selectedCountry);
@@ -78,6 +104,25 @@ export default function BabyNamesPage() {
         Découvrez notre collection de prénoms du monde entier avec leur signification et personnalité.
       </p>
       
+      {/* Carte Favoris */}
+      {favorites.length > 0 && (
+        <button
+          onClick={() => setSelectedGender('favorites')}
+          className="w-full bg-gradient-to-r from-red-50 to-rose-50 rounded-2xl p-5 shadow-lg border border-red-200 hover:shadow-xl transition-all hover:-translate-y-1 text-left"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-gradient-to-br from-red-400 to-rose-400 rounded-2xl flex items-center justify-center">
+              <Heart className="w-7 h-7 text-white fill-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-slate-700">Mes Favoris</h3>
+              <p className="text-sm text-slate-500 mt-0.5">{favorites.length} prénom{favorites.length > 1 ? 's' : ''} sauvegardé{favorites.length > 1 ? 's' : ''}</p>
+            </div>
+            <ChevronRight className="w-6 h-6 text-red-400" />
+          </div>
+        </button>
+      )}
+
       {/* Carte Filles */}
       <button
         onClick={() => setSelectedGender('girls')}
@@ -376,9 +421,137 @@ export default function BabyNamesPage() {
     );
   };
 
+  // Rendu de la section Favoris avec catégories Filles/Garçons
+  const renderFavorites = () => {
+    const girlsFavorites = favorites.filter(f => f.endsWith('-girls'));
+    const boysFavorites = favorites.filter(f => f.endsWith('-boys'));
+
+    const renderFavoriteCard = (favoriteKey) => {
+      const details = getFavoriteDetails(favoriteKey);
+      if (!details) return null;
+
+      const bgColor = details.gender === 'girls' ? 'bg-pink-50' : 'bg-blue-50';
+      const borderColor = details.gender === 'girls' ? 'border-pink-100' : 'border-blue-100';
+      const iconColor = details.gender === 'girls' ? 'text-pink-400' : 'text-blue-400';
+
+      return (
+        <FavoriteNameCard
+          key={favoriteKey}
+          nameData={details}
+          gender={details.gender}
+          country={details.country}
+          onRemove={() => toggleFavorite(details.name, details.countryCode, details.gender)}
+        />
+      );
+    };
+
+    return (
+      <div className="space-y-6">
+        {favorites.length === 0 ? (
+          <div className="text-center py-12">
+            <Heart className="w-16 h-16 text-slate-200 mx-auto mb-4" />
+            <p className="text-slate-500">Aucun prénom en favori</p>
+            <p className="text-sm text-slate-400 mt-2">
+              Explorez les prénoms et cliquez sur ❤️ pour les sauvegarder
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Section Filles */}
+            {girlsFavorites.length > 0 && (
+              <div>
+                <h2 className="flex items-center gap-2 text-lg font-bold text-slate-700 mb-3">
+                  <span className="text-xl">👧</span>
+                  Prénoms Filles
+                  <span className="ml-auto text-sm font-normal text-pink-500">
+                    {girlsFavorites.length} favori{girlsFavorites.length > 1 ? 's' : ''}
+                  </span>
+                </h2>
+                <div className="space-y-2">
+                  {girlsFavorites.map(renderFavoriteCard)}
+                </div>
+              </div>
+            )}
+
+            {/* Section Garçons */}
+            {boysFavorites.length > 0 && (
+              <div>
+                <h2 className="flex items-center gap-2 text-lg font-bold text-slate-700 mb-3">
+                  <span className="text-xl">👦</span>
+                  Prénoms Garçons
+                  <span className="ml-auto text-sm font-normal text-blue-500">
+                    {boysFavorites.length} favori{boysFavorites.length > 1 ? 's' : ''}
+                  </span>
+                </h2>
+                <div className="space-y-2">
+                  {boysFavorites.map(renderFavoriteCard)}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    );
+  };
+
+  // Composant carte de prénom favori (avec bouton supprimer)
+  const FavoriteNameCard = ({ nameData, gender, country, onRemove }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const bgColor = gender === 'girls' ? 'bg-pink-50' : 'bg-blue-50';
+    const borderColor = gender === 'girls' ? 'border-pink-100' : 'border-blue-100';
+    const iconColor = gender === 'girls' ? 'text-pink-400' : 'text-blue-400';
+
+    return (
+      <div className={`${bgColor} ${borderColor} border rounded-xl overflow-hidden`}>
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full p-3 flex items-center gap-3 text-left"
+        >
+          <User className={`w-5 h-5 ${iconColor}`} />
+          <div className="flex-1">
+            <span className="font-semibold text-slate-700">{nameData.name}</span>
+            {country && (
+              <span className="ml-2 text-xs text-slate-400">
+                {country.flag} {country.name}
+              </span>
+            )}
+          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove();
+            }}
+            className="p-1 hover:bg-red-100 rounded-full transition-colors"
+          >
+            <Trash2 className="w-4 h-4 text-red-400 hover:text-red-600" />
+          </button>
+          <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+        </button>
+        
+        {isExpanded && (
+          <div className="px-3 pb-3 space-y-2">
+            <div className="bg-white rounded-lg p-3">
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+                Signification
+              </p>
+              <p className="text-sm text-slate-700">{nameData.meaning}</p>
+            </div>
+            <div className="bg-white rounded-lg p-3">
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+                Personnalité
+              </p>
+              <p className="text-sm text-slate-700">{nameData.personality}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // Déterminer le contenu à afficher
   const renderContent = () => {
     if (!selectedGender) return renderGenderSelection();
+    if (selectedGender === 'favorites') return renderFavorites();
     if (!selectedRegion) return renderRegionSelection();
     if (!selectedCountry) return renderCountryList();
     return renderNamesByLetter();
@@ -401,9 +574,14 @@ export default function BabyNamesPage() {
               <h1 className="text-lg font-bold text-slate-800" style={{ fontFamily: 'Nunito, sans-serif' }}>
                 {getTitle()}
               </h1>
-              {selectedGender && !selectedCountry && (
+              {selectedGender && selectedGender !== 'favorites' && !selectedCountry && (
                 <p className="text-xs text-slate-500">
                   {selectedGender === 'girls' ? 'Prénoms féminins' : 'Prénoms masculins'}
+                </p>
+              )}
+              {selectedGender === 'favorites' && (
+                <p className="text-xs text-slate-500">
+                  Vos prénoms préférés
                 </p>
               )}
             </div>
