@@ -292,10 +292,16 @@ function UserCard({ user, index, loadUsers }) {
   );
 }
 
-export function UsersTab({ users, userStats, loadUsers }) {
+export function UsersTab({ users, testUsers = [], userStats, loadUsers }) {
   const [expandedYears, setExpandedYears] = useState({});
   const [expandedMonths, setExpandedMonths] = useState({});
   const [filterStatus, setFilterStatus] = useState('all'); // all, premium, free, trial
+  const [showTestUsers, setShowTestUsers] = useState(false);
+  
+  // Vérifier si on est en environnement de développement/preview
+  const isDevelopment = window.location.hostname.includes('preview') || 
+                        window.location.hostname.includes('localhost') ||
+                        window.location.hostname.includes('127.0.0.1');
   
   // Filtrer les utilisateurs selon le statut
   const filteredUsers = users.filter(user => {
@@ -323,7 +329,7 @@ export function UsersTab({ users, userStats, loadUsers }) {
   
   return (
     <div className="space-y-6">
-      {/* Stats */}
+      {/* Stats - uniquement les vrais utilisateurs */}
       <div className="grid grid-cols-4 gap-3">
         <Card className="bg-white rounded-2xl p-4 text-center">
           <Users className="w-7 h-7 text-sky-500 mx-auto mb-2" />
@@ -346,6 +352,62 @@ export function UsersTab({ users, userStats, loadUsers }) {
           <p className="text-xs text-slate-500">Gratuit</p>
         </Card>
       </div>
+
+      {/* Carte des utilisateurs de test - uniquement en développement */}
+      {isDevelopment && testUsers.length > 0 && (
+        <Card className="bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-dashed border-orange-300 rounded-3xl p-4">
+          <button
+            onClick={() => setShowTestUsers(!showTestUsers)}
+            className="w-full flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-orange-400 rounded-xl flex items-center justify-center">
+                <span className="text-white text-lg">🧪</span>
+              </div>
+              <div className="text-left">
+                <p className="font-bold text-orange-700">Utilisateurs de test</p>
+                <p className="text-xs text-orange-500">
+                  {testUsers.length} compte{testUsers.length > 1 ? 's' : ''} test (non comptés dans les stats)
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs bg-orange-200 text-orange-700 px-2 py-1 rounded-full font-medium">
+                Dev Only
+              </span>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${showTestUsers ? 'bg-orange-200 text-orange-700' : 'bg-orange-100 text-orange-400'}`}>
+                {showTestUsers ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+              </div>
+            </div>
+          </button>
+          
+          {showTestUsers && (
+            <div className="mt-4 space-y-2 max-h-[300px] overflow-y-auto">
+              {testUsers.map((user, idx) => (
+                <div 
+                  key={user.id || idx}
+                  className="bg-white/80 border border-orange-200 rounded-xl p-3 flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center">
+                      <span className="text-orange-600 font-bold text-xs">
+                        {(user.name || user.email || '?')[0].toUpperCase()}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-slate-700 text-sm">{user.name || 'Sans nom'}</p>
+                      <p className="text-xs text-slate-500">{user.email}</p>
+                    </div>
+                  </div>
+                  <span className="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full">
+                    Test
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+      )}
 
       {/* Users List with filters */}
       <Card className="bg-white rounded-3xl p-6">

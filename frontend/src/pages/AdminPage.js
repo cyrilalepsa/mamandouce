@@ -42,6 +42,7 @@ function AdminPage() {
   
   // Utilisateurs
   const [users, setUsers] = useState([]);
+  const [testUsers, setTestUsers] = useState([]);
   const [userStats, setUserStats] = useState({ total: 0, premium: 0, beta_tester: 0, free: 0 });
 
   // Messages
@@ -123,6 +124,7 @@ function AdminPage() {
     try {
       const response = await api.admin.getUsers();
       setUsers(response.data.users || []);
+      setTestUsers(response.data.test_users || []);
       setUserStats(response.data.stats || { total: 0, premium: 0, beta_tester: 0, free: 0 });
     } catch (error) {
       console.error('Erreur chargement utilisateurs:', error);
@@ -319,6 +321,7 @@ function AdminPage() {
         {activeTab === 'users' && (
           <UsersTab 
             users={users}
+            testUsers={testUsers}
             userStats={userStats}
             loadUsers={loadUsers}
           />

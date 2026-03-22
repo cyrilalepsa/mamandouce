@@ -63,40 +63,70 @@ async def list_promo_codes(admin: User = Depends(get_admin_user)):
 
 # ==================== USERS ====================
 
+def is_test_user(email: str) -> bool:
+    """Check if user is a test/development user"""
+    if not email:
+        return False
+    email_lower = email.lower()
+    # Test users: emails containing "test" or ending with @example.com
+    return "test" in email_lower or email_lower.endswith("@example.com")
+
 @router.get("/admin/users")
 async def get_admin_users(admin: User = Depends(get_admin_user)):
     """Get all registered users with their status"""
     users = await db.users.find({}, {"_id": 0, "hashed_password": 0}).sort("created_at", -1).to_list(1000)
     
+    real_users = []
+    test_users = []
+    
     for user in users:
         sub_status = user.get("subscription_status", "free")
         premium_source = user.get("premium_source", "")
+        email = user.get("email", "")
         
         if sub_status == "premium":
             user["display_status"] = "beta_tester" if premium_source == "promo_code" else "premium"
         else:
             user["display_status"] = "free"
+        
+        # Separate test users from real users
+        if is_test_user(email):
+            user["is_test_user"] = True
+            test_users.append(user)
+        else:
+            user["is_test_user"] = False
+            real_users.append(user)
     
+    # Stats only count real users
     stats = {
-        "total": len(users),
-        "premium": len([u for u in users if u.get("display_status") == "premium"]),
-        "beta_tester": len([u for u in users if u.get("display_status") == "beta_tester"]),
-        "free": len([u for u in users if u.get("display_status") == "free"])
+        "total": len(real_users),
+        "premium": len([u for u in real_users if u.get("display_status") == "premium"]),
+        "beta_tester": len([u for u in real_users if u.get("display_status") == "beta_tester"]),
+        "free": len([u for u in real_users if u.get("display_status") == "free"]),
+        "test_users_count": len(test_users)
     }
     
-    return {"users": users, "stats": stats}
+    return {"users": real_users, "test_users": test_users, "stats": stats}
 
 @router.get("/admin/stats")
 async def get_admin_stats(admin: User = Depends(get_admin_user)):
     """Get global statistics for admin dashboard"""
-    # Count users by status
-    users = await db.users.find({}, {"_id": 0, "subscription_status": 1, "premium_source": 1}).to_list(10000)
+    # Count users by status (excluding test users)
+    users = await db.users.find({}, {"_id": 0, "subscription_status": 1, "premium_source": 1, "email": 1}).to_list(10000)
     
     premium_count = 0
     beta_count = 0
     free_count = 0
+    test_count = 0
     
     for user in users:
+        email = user.get("email", "")
+        
+        # Skip test users in main stats
+        if is_test_user(email):
+            test_count += 1
+            continue
+            
         sub_status = user.get("subscription_status", "free")
         premium_source = user.get("premium_source", "")
         
@@ -107,6 +137,8 @@ async def get_admin_stats(admin: User = Depends(get_admin_user)):
                 premium_count += 1
         else:
             free_count += 1
+    
+    real_users_count = len(users) - test_count
     
     # Get visit stats
     visits_doc = await db.site_stats.find_one({"type": "visits"}, {"_id": 0})
@@ -120,13 +152,14 @@ async def get_admin_stats(admin: User = Depends(get_admin_user)):
     
     return {
         "users": {
-            "total": len(users),
+            "total": real_users_count,
             "premium": premium_count,
             "beta_tester": beta_count,
-            "free": free_count
+            "free": free_count,
+            "test_users": test_count
         },
         "visits": visits_doc.get("count", 0) if visits_doc else 0,
-        "registrations": registrations_doc.get("count", 0) if registrations_doc else len(users),
+        "registrations": registrations_doc.get("count", 0) if registrations_doc else real_users_count,
         "unread_messages": unread_messages,
         "pending_foods": pending_foods
     }
