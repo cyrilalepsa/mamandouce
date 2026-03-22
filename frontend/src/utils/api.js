@@ -233,6 +233,10 @@ export const api = {
     // News Notifications
     sendNewsNotification: (data) => axios.post(`${API}/admin/send-news-notification`, data, getAuthHeaders()),
     getNewsNotifications: () => axios.get(`${API}/admin/news-notifications`, getAuthHeaders()),
+    // Changelog
+    getChangelog: () => axios.get(`${API}/admin/changelog`, getAuthHeaders()),
+    markFeatureNotified: (featureId) => axios.post(`${API}/admin/changelog/mark-notified/${featureId}`, {}, getAuthHeaders()),
+    addChangelogFeature: (data) => axios.post(`${API}/admin/changelog/add`, data, getAuthHeaders()),
   },
   
   chatbot: {

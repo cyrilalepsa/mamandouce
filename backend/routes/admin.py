@@ -1835,3 +1835,93 @@ async def get_news_notifications(admin: User = Depends(get_admin_user)):
     ).sort("sent_at", -1).limit(50).to_list(50)
     
     return {"notifications": notifications}
+
+
+# ==================== CHANGELOG / NOUVEAUTÉS ====================
+
+import os
+
+CHANGELOG_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "changelog.json")
+
+def load_changelog():
+    """Load changelog from JSON file"""
+    try:
+        with open(CHANGELOG_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        logger.error(f"Error loading changelog: {e}")
+        return {"version": "1.0.0", "features": []}
+
+def save_changelog(data):
+    """Save changelog to JSON file"""
+    try:
+        with open(CHANGELOG_PATH, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        return True
+    except Exception as e:
+        logger.error(f"Error saving changelog: {e}")
+        return False
+
+@router.get("/admin/changelog")
+async def get_changelog(admin: User = Depends(get_admin_user)):
+    """Get list of app updates/features for notification"""
+    changelog = load_changelog()
+    
+    # Separate notified and not notified
+    not_notified = [f for f in changelog.get("features", []) if not f.get("notified", False)]
+    already_notified = [f for f in changelog.get("features", []) if f.get("notified", False)]
+    
+    return {
+        "version": changelog.get("version", "1.0.0"),
+        "last_updated": changelog.get("last_updated"),
+        "pending": not_notified,
+        "notified": already_notified
+    }
+
+@router.post("/admin/changelog/mark-notified/{feature_id}")
+async def mark_feature_notified(feature_id: str, admin: User = Depends(get_admin_user)):
+    """Mark a feature as notified after sending notification"""
+    changelog = load_changelog()
+    
+    for feature in changelog.get("features", []):
+        if feature.get("id") == feature_id:
+            feature["notified"] = True
+            feature["notified_at"] = datetime.now(timezone.utc).isoformat()
+            feature["notified_by"] = admin.email
+            break
+    
+    if save_changelog(changelog):
+        return {"success": True}
+    raise HTTPException(status_code=500, detail="Erreur lors de la sauvegarde")
+
+class AddFeatureRequest(BaseModel):
+    title: str
+    message: str
+    category: str = "feature"
+
+@router.post("/admin/changelog/add")
+async def add_changelog_feature(data: AddFeatureRequest, admin: User = Depends(get_admin_user)):
+    """Add a new feature to the changelog"""
+    changelog = load_changelog()
+    
+    # Generate ID from title
+    import re
+    feature_id = re.sub(r'[^a-z0-9]+', '-', data.title.lower()).strip('-')
+    
+    new_feature = {
+        "id": feature_id,
+        "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "title": data.title,
+        "message": data.message,
+        "category": data.category,
+        "notified": False,
+        "added_by": admin.email
+    }
+    
+    # Add to beginning of list
+    changelog["features"].insert(0, new_feature)
+    changelog["last_updated"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    if save_changelog(changelog):
+        return {"success": True, "feature": new_feature}
+    raise HTTPException(status_code=500, detail="Erreur lors de la sauvegarde")
