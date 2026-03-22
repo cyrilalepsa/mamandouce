@@ -1,23 +1,62 @@
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { Card } from '../ui/card';
 import { 
   Sparkles, Baby, Gift, Heart, Library,
   CalendarHeart, BookHeart, ScanBarcode, Apple, 
   History, Stethoscope, Bell, 
-  ClipboardList, Briefcase, Video, Youtube, Book, ChevronRight, LineChart, Lock, Crown, Users
+  ClipboardList, Briefcase, Video, Youtube, Book, ChevronRight, ChevronDown, LineChart, Lock, Crown, Users
 } from 'lucide-react';
 import { useSubscription } from '../SubscriptionGate';
+
+// Composant réutilisable pour les sections déroulantes
+function CollapsibleSection({ title, icon: Icon, iconColor, children, defaultOpen = false }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  
+  // Si title est un composant React, on l'affiche directement
+  const isCustomTitle = typeof title !== 'string';
+  
+  return (
+    <div className="mb-4">
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between py-3 px-1 group"
+      >
+        {isCustomTitle ? (
+          <h2 className="text-xl font-bold text-slate-600 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+            {title}
+          </h2>
+        ) : (
+          <h2 className="text-xl font-bold text-slate-600 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+            {Icon && <Icon className={`w-5 h-5 ${iconColor}`} />}
+            {title}
+          </h2>
+        )}
+        <ChevronDown 
+          className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
+        />
+      </button>
+      
+      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className="pt-2">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // Catégorie: En route vers la grossesse
 export function PreconceptionSection() {
   const navigate = useNavigate();
 
   return (
-    <div>
-      <h2 className="text-xl font-bold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-        <Sparkles className="w-5 h-5 text-amber-500" />
-        En route vers la grossesse
-      </h2>
+    <CollapsibleSection 
+      title="En route vers la grossesse" 
+      icon={Sparkles} 
+      iconColor="text-amber-500"
+      defaultOpen={true}
+    >
       <div className="grid grid-cols-2 gap-4">
         <Card
           onClick={() => navigate('/calculator')}
@@ -69,7 +108,7 @@ export function PreconceptionSection() {
           Consultez un professionnel de santé avant toute prise de médicaments ou compléments.
         </p>
       </div>
-    </div>
+    </CollapsibleSection>
   );
 }
 
@@ -83,11 +122,12 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
   const isFirstTrimester = currentWeek <= 13;
 
   return (
-    <div>
-      <h2 className="text-xl font-bold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-        <Baby className="w-5 h-5 text-pink-500" />
-        Grossesse
-      </h2>
+    <CollapsibleSection 
+      title="Grossesse" 
+      icon={Baby} 
+      iconColor="text-pink-500"
+      defaultOpen={true}
+    >
 
       {/* Scanner, Bibliothèque, Favoris, Historique */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
@@ -235,7 +275,7 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
           <p className="text-xs text-slate-500">Notifications</p>
         </Card>
       </div>
-    </div>
+    </CollapsibleSection>
   );
 }
 
@@ -244,17 +284,28 @@ export function BabyPreparationSection() {
   const navigate = useNavigate();
   const { isPremium } = useSubscription();
 
+  // Header personnalisé pour cette section (avec badge Premium)
+  const CustomHeader = () => (
+    <div className="flex items-center gap-2">
+      <Gift className="w-5 h-5 text-purple-500" />
+      <span className="whitespace-nowrap">Préparer l'arrivée de bébé</span>
+      {!isPremium && (
+        <span className="ml-2 w-6 h-6 bg-amber-400 rounded-full flex items-center justify-center">
+          <Crown className="w-3 h-3 text-white" />
+        </span>
+      )}
+    </div>
+  );
+
   // Si pas premium, afficher un aperçu attractif avec contenu flouté/verrouillé
   if (!isPremium) {
     return (
-      <div>
-        <h2 className="text-xl font-bold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-          <Gift className="w-5 h-5 text-purple-500" />
-          <span className="whitespace-nowrap">Préparer l'arrivée de bébé</span>
-          <span className="ml-auto w-7 h-7 bg-amber-400 rounded-full flex items-center justify-center">
-            <Crown className="w-4 h-4 text-white" />
-          </span>
-        </h2>
+      <CollapsibleSection 
+        title={<CustomHeader />}
+        icon={() => null}
+        iconColor=""
+        defaultOpen={false}
+      >
         
         {/* Aperçu des cartes avec effet de flou partiel */}
         <div className="grid grid-cols-2 gap-4 relative">
@@ -334,16 +385,17 @@ export function BabyPreparationSection() {
             Débloquer avec Premium
           </button>
         </div>
-      </div>
+      </CollapsibleSection>
     );
   }
 
   return (
-    <div>
-      <h2 className="text-xl font-bold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-        <Gift className="w-5 h-5 text-purple-500" />
-        Préparer l'arrivée de bébé
-      </h2>
+    <CollapsibleSection 
+      title="Préparer l'arrivée de bébé" 
+      icon={Gift} 
+      iconColor="text-purple-500"
+      defaultOpen={false}
+    >
       <div className="grid grid-cols-2 gap-4">
         <Card
           onClick={() => navigate('/birth-list')}
@@ -413,7 +465,7 @@ export function BabyPreparationSection() {
           </Card>
         </a>
       </div>
-    </div>
+    </CollapsibleSection>
   );
 }
 
