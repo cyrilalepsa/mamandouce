@@ -99,17 +99,35 @@ export function PushNotificationsSection({ preferences, setPreferences, onSave }
             }
           }
         });
+        
+        setSubscription(sub);
+        setPreferences(prev => ({ ...prev, push_enabled: true }));
+        toast.success('Notifications push activées !');
       } catch (serverError) {
         console.error('Server subscribe error:', serverError);
-        // Still mark as enabled locally since the browser is subscribed
+        // La souscription navigateur a réussi, mais pas l'envoi au serveur
+        // On active quand même localement
+        setSubscription(sub);
+        setPreferences(prev => ({ ...prev, push_enabled: true }));
+        
+        if (serverError.message && serverError.message.includes('Network')) {
+          toast.warning('Notifications activées localement. Synchronisation serveur en attente.');
+        } else {
+          toast.success('Notifications push activées !');
+        }
       }
-
-      setSubscription(sub);
-      setPreferences(prev => ({ ...prev, push_enabled: true }));
-      toast.success('Notifications push activées !');
     } catch (error) {
       console.error('Error subscribing to push:', error);
-      toast.error('Erreur lors de l\'activation des notifications');
+      
+      // Messages d'erreur plus précis
+      const errorMsg = error.message || error.toString();
+      if (errorMsg.includes('Network') || errorMsg.includes('fetch')) {
+        toast.error('Erreur réseau. Vérifiez votre connexion internet.');
+      } else if (errorMsg.includes('denied') || errorMsg.includes('blocked')) {
+        toast.error('Notifications bloquées par le navigateur.');
+      } else {
+        toast.error(`Erreur: ${errorMsg}`);
+      }
     } finally {
       setSubscribing(false);
     }
