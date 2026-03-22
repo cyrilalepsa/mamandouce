@@ -130,11 +130,11 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51TABGLPcuaKD7kzTSEtw3Y51HQpV1y5UMMXSib
 - ✅ **Partage individuel** : Bouton "Partager ce prénom" sur chaque fiche de prénom
 - ✅ **6 nouveaux pays ajoutés** : Ukraine 🇺🇦, Finlande 🇫🇮, Danemark 🇩🇰, Pérou 🇵🇪, Japon 🇯🇵, Maroc 🇲🇦
 - ✅ **2 nouvelles régions** : Asie 🌏 et Afrique 🌍 avec navigation dédiée
-- ✅ **Base de données France MASSIVE** : 629 prénoms français (était ~150)
-  - Filles : ~350 prénoms de A à Z
-  - Garçons : ~280 prénoms de A à Z
+- ✅ **Base de données France MODERNISÉE** : 310 prénoms tendance 2020-2025
+  - Suppression des prénoms anciens (Ursule, Gertrude, Philomène...)
+  - Ajout des prénoms modernes (Alba, Mila, Inaya, Liam, Nolan, Timéo...)
 - ✅ Mise à jour complète du backlog/future tasks (P0 à P4)
-- ✅ **Total : 28 pays avec données, 2000+ prénoms au total**
+- ✅ **Total : 28 pays avec données, 1400+ prénoms au total**
 
 ### 22 Mars 2026 - Session 3
 - ✅ Ajout de 6 nouveaux pays : Russie 🇷🇺, Suède 🇸🇪, Norvège 🇳🇴, Colombie 🇨🇴, Chili 🇨🇱
