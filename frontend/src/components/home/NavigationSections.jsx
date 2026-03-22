@@ -474,11 +474,12 @@ export function PostpartumSection() {
   const navigate = useNavigate();
 
   return (
-    <div>
-      <h2 className="text-xl font-bold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-        <Heart className="w-5 h-5 text-rose-500" />
-        Suivi post-partum
-      </h2>
+    <CollapsibleSection 
+      title="Suivi post-partum" 
+      icon={Heart} 
+      iconColor="text-rose-500"
+      defaultOpen={false}
+    >
       <Card
         onClick={() => navigate('/postpartum')}
         data-testid="postpartum-nav"
@@ -495,18 +496,19 @@ export function PostpartumSection() {
           <ChevronRight className="w-6 h-6 text-rose-400" />
         </div>
       </Card>
-    </div>
+    </CollapsibleSection>
   );
 }
 
 // Catégorie: Services et ressources
 export function ServicesSection() {
   return (
-    <div>
-      <h2 className="text-xl font-bold text-slate-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-        <Library className="w-5 h-5 text-blue-500" />
-        Services et ressources
-      </h2>
+    <CollapsibleSection 
+      title="Services et ressources" 
+      icon={Library} 
+      iconColor="text-blue-500"
+      defaultOpen={false}
+    >
       <div className="flex flex-wrap gap-3 justify-center">
         <a
           href="https://www.caf.fr"
@@ -547,6 +549,6 @@ export function ServicesSection() {
           <span className="font-semibold text-slate-700">Mairies proches</span>
         </a>
       </div>
-    </div>
+    </CollapsibleSection>
   );
 }
