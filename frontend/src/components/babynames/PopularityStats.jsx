@@ -193,10 +193,10 @@ export default function PopularityStats({
                   }`}>
                     {nameDetails ? (
                       <div className="space-y-3">
-                        {/* Signification - Fond blanc */}
+                        {/* Signification - Fond rose pastel */}
                         <div className={`p-3 rounded-lg ${
-                          isDarkMode ? 'bg-slate-800' : 'bg-white border border-slate-100'
-                        } shadow-sm`}>
+                          isDarkMode ? 'bg-slate-600/50' : 'bg-gradient-to-r from-pink-50 to-rose-50'
+                        }`}>
                           <div className="flex items-center gap-2 mb-1">
                             <Sparkles className={`w-4 h-4 ${isDarkMode ? 'text-pink-400' : 'text-pink-500'}`} />
                             <span className={`text-xs font-semibold uppercase tracking-wide ${
@@ -210,10 +210,10 @@ export default function PopularityStats({
                           </p>
                         </div>
 
-                        {/* Personnalité - Fond blanc */}
+                        {/* Personnalité - Fond violet pastel */}
                         <div className={`p-3 rounded-lg ${
-                          isDarkMode ? 'bg-slate-800' : 'bg-white border border-slate-100'
-                        } shadow-sm`}>
+                          isDarkMode ? 'bg-slate-600/50' : 'bg-gradient-to-r from-violet-50 to-purple-50'
+                        }`}>
                           <div className="flex items-center gap-2 mb-1">
                             <Heart className={`w-4 h-4 ${isDarkMode ? 'text-violet-400' : 'text-violet-500'}`} />
                             <span className={`text-xs font-semibold uppercase tracking-wide ${

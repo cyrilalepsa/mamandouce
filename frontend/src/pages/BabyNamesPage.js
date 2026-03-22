@@ -245,8 +245,12 @@ export default function BabyNamesPage() {
                   </div>
                 </AccordionTrigger>
                 {isAccessible && (
-                  <AccordionContent className="px-4 pb-4">
-                    <div className="space-y-3">
+                  <AccordionContent className={`px-4 pb-4 ${
+                    selectedGender === 'girls' 
+                      ? isDarkMode ? 'bg-pink-900/20' : 'bg-gradient-to-b from-pink-50 to-rose-50' 
+                      : isDarkMode ? 'bg-blue-900/20' : 'bg-gradient-to-b from-blue-50 to-sky-50'
+                  }`}>
+                    <div className="space-y-3 pt-2">
                       {names.map((nameData, idx) => {
                         const countryInfo = getAllCountries().find(c => c.code === selectedCountry);
                         return (
