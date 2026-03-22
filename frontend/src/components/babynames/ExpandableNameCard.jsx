@@ -23,22 +23,27 @@ export default function ExpandableNameCard({
     }
   }, [isExpanded, nameData.name, country, gender]);
   
-  // Couleurs selon le genre
-  const borderColor = gender === 'girls' 
-    ? isDarkMode ? 'border-pink-500' : 'border-pink-400'
-    : isDarkMode ? 'border-blue-500' : 'border-blue-400';
+  // Couleurs douces nuage selon le genre
+  const cloudBg = gender === 'girls' 
+    ? isDarkMode 
+      ? 'bg-gradient-to-br from-pink-900/40 via-rose-800/30 to-pink-900/20' 
+      : 'bg-gradient-to-br from-pink-100/80 via-rose-50 to-white'
+    : isDarkMode 
+      ? 'bg-gradient-to-br from-blue-900/40 via-sky-800/30 to-blue-900/20' 
+      : 'bg-gradient-to-br from-blue-100/80 via-sky-50 to-white';
+  
   const iconColor = gender === 'girls' 
-    ? isDarkMode ? 'text-pink-400' : 'text-pink-500'
-    : isDarkMode ? 'text-blue-400' : 'text-blue-500';
+    ? isDarkMode ? 'text-pink-400' : 'text-pink-400'
+    : isDarkMode ? 'text-blue-400' : 'text-blue-400';
 
   return (
-    <div className="overflow-hidden rounded-xl shadow-sm">
-      {/* Partie haute avec contour coloré */}
+    <div className="overflow-hidden rounded-2xl shadow-sm">
+      {/* Partie haute avec effet nuage doux */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className={`w-full p-3 flex items-center gap-3 text-left border-2 ${borderColor} ${
-          isDarkMode ? 'bg-slate-800 hover:bg-slate-700' : 'bg-white hover:bg-slate-50'
-        } ${isExpanded ? 'rounded-t-xl' : 'rounded-xl'}`}
+        className={`w-full p-4 flex items-center gap-3 text-left ${cloudBg} ${
+          isExpanded ? 'rounded-t-2xl' : 'rounded-2xl'
+        } transition-all duration-200`}
       >
         <User className={`w-5 h-5 ${iconColor}`} />
         <span className={`font-semibold ${isDarkMode ? 'text-slate-200' : 'text-slate-700'} flex-1`}>
@@ -65,13 +70,13 @@ export default function ExpandableNameCard({
         )}
       </button>
       
-      {/* Partie basse sans contour coloré */}
+      {/* Partie basse */}
       {isExpanded && (
-        <div className={`px-3 pb-3 pt-3 space-y-3 ${
+        <div className={`px-4 pb-4 pt-3 space-y-3 ${
           isDarkMode ? 'bg-slate-800/50' : 'bg-white'
-        } rounded-b-xl`}>
-          {/* Signification - Fond rose pastel comme Top 10 */}
-          <div className={`p-3 rounded-lg ${
+        } rounded-b-2xl`}>
+          {/* Signification - Fond rose pastel */}
+          <div className={`p-3 rounded-xl ${
             isDarkMode ? 'bg-slate-700/50' : 'bg-gradient-to-r from-pink-50 to-rose-50'
           }`}>
             <div className="flex items-center gap-2 mb-1">
@@ -85,8 +90,8 @@ export default function ExpandableNameCard({
             <p className={`text-sm ${isDarkMode ? 'text-slate-200' : 'text-slate-700'}`}>{nameData.meaning}</p>
           </div>
           
-          {/* Personnalité - Fond violet pastel comme Top 10 */}
-          <div className={`p-3 rounded-lg ${
+          {/* Personnalité - Fond violet pastel */}
+          <div className={`p-3 rounded-xl ${
             isDarkMode ? 'bg-slate-700/50' : 'bg-gradient-to-r from-violet-50 to-purple-50'
           }`}>
             <div className="flex items-center gap-2 mb-1">
@@ -106,7 +111,7 @@ export default function ExpandableNameCard({
                 e.stopPropagation();
                 onShare();
               }}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-lg py-2 px-3 text-sm font-medium shadow hover:shadow-md transition-all"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-xl py-2.5 px-3 text-sm font-medium shadow hover:shadow-md transition-all"
               data-testid="share-individual-name-btn"
             >
               <Share2 className="w-4 h-4" />
