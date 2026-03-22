@@ -211,13 +211,9 @@ export default function BabyNamesPage() {
     if (!countryData?.[selectedGender]) return <p className={`text-center ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Données non disponibles</p>;
 
     const genderData = countryData[selectedGender];
-    // Couleurs plus douces pour les lettres
-    const letterBgColor = selectedGender === 'girls' 
-      ? isDarkMode ? 'bg-pink-800/60' : 'bg-gradient-to-br from-pink-200 to-rose-200'
-      : isDarkMode ? 'bg-blue-800/60' : 'bg-gradient-to-br from-blue-200 to-sky-200';
-    const letterTextColor = selectedGender === 'girls'
-      ? isDarkMode ? 'text-pink-200' : 'text-pink-700'
-      : isDarkMode ? 'text-blue-200' : 'text-blue-700';
+    // Lettres avec fond neutre/blanc
+    const letterBgColor = isDarkMode ? 'bg-slate-700' : 'bg-white border border-slate-200';
+    const letterTextColor = isDarkMode ? 'text-slate-200' : 'text-slate-600';
 
     return (
       <div className="space-y-4">
