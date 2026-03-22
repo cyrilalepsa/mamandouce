@@ -52,14 +52,44 @@ export function PushNotificationsSection({ preferences, setPreferences, onSave }
         return;
       }
 
-      // Get VAPID public key
+      // Get VAPID public key - avec retry et timeout
       let publicKey;
       try {
-        const { data: vapidData } = await api.get('/notifications/vapid-public-key');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/notifications/vapid-public-key`, {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        const vapidData = await response.json();
         publicKey = vapidData.publicKey;
+        
+        if (!publicKey) {
+          throw new Error('Clé VAPID vide');
+        }
       } catch (vapidError) {
         console.error('VAPID key error:', vapidError);
-        toast.error('Erreur de configuration du serveur');
+        if (vapidError.name === 'AbortError') {
+          toast.error('Délai dépassé. Vérifiez votre connexion.');
+        } else {
+          toast.error('Erreur serveur. Réessayez dans quelques instants.');
+        }
+        setSubscribing(false);
+        return;
+      }
+
+      // Check service worker
+      let registration;
+      try {
+        registration = await navigator.serviceWorker.ready;
+      } catch (swError) {
+        console.error('Service worker error:', swError);
+        toast.error('Service worker non disponible. Rechargez la page.');
         setSubscribing(false);
         return;
       }
@@ -67,7 +97,6 @@ export function PushNotificationsSection({ preferences, setPreferences, onSave }
       // Subscribe to push
       let sub;
       try {
-        const registration = await navigator.serviceWorker.ready;
         sub = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(publicKey)
