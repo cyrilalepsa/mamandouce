@@ -289,8 +289,9 @@ async def get_chart_stats(admin: User = Depends(get_admin_user)):
     """Get statistics data for charts"""
     from collections import defaultdict
     
-    # Get all users
-    users = await db.users.find({}, {"_id": 0}).to_list(10000)
+    # Get all users (excluding test users)
+    all_users = await db.users.find({}, {"_id": 0}).to_list(10000)
+    users = [u for u in all_users if not is_test_user(u.get("email", ""))]
     
     # 1. Inscriptions sur les 30 derniers jours
     registrations_by_day = defaultdict(int)
@@ -325,20 +326,20 @@ async def get_chart_stats(admin: User = Depends(get_admin_user)):
     trial_count = len([u for u in users if u.get("subscription_status") == "trial"])
     premium_paid = len([u for u in users if u.get("subscription_status") == "premium" and u.get("premium_source") not in ["promo_code", "admin_granted"]])
     premium_promo = len([u for u in users if u.get("subscription_status") == "premium" and u.get("premium_source") == "promo_code"])
-    premium_admin = len([u for u in users if u.get("subscription_status") == "premium" and u.get("premium_source") == "admin_granted"])
-    free_count = len([u for u in users if u.get("subscription_status") == "free"])
+    premium_beta = len([u for u in users if u.get("subscription_status") == "premium" and u.get("premium_source") == "admin_granted"])
+    free_count = len([u for u in users if u.get("subscription_status") in ["free", None, ""] or not u.get("subscription_status")])
     
     user_distribution = []
     if free_count > 0:
-        user_distribution.append({"name": "Gratuits", "value": free_count})
+        user_distribution.append({"name": "Gratuit", "value": free_count})
     if trial_count > 0:
         user_distribution.append({"name": "Essai", "value": trial_count})
     if premium_paid > 0:
         user_distribution.append({"name": "Premium", "value": premium_paid})
     if premium_promo > 0:
-        user_distribution.append({"name": "Promo", "value": premium_promo})
-    if premium_admin > 0:
-        user_distribution.append({"name": "Admin", "value": premium_admin})
+        user_distribution.append({"name": "Code Promo", "value": premium_promo})
+    if premium_beta > 0:
+        user_distribution.append({"name": "Bêta", "value": premium_beta})
     
     # 3. Utilisation des fonctionnalités
     favorites_count = await db.favorites.count_documents({})
@@ -346,11 +347,16 @@ async def get_chart_stats(admin: User = Depends(get_admin_user)):
     birth_lists_count = await db.birth_lists.count_documents({})
     recipes_shared = await db.recipes.count_documents({"is_shared": True})
     messages_count = await db.admin_messages.count_documents({})
+    # Nouvelles fonctionnalités
+    name_views_count = await db.name_stats.count_documents({})
+    name_unique_views = await db.name_views_unique.count_documents({})
+    cloud_favorites = await db.users.count_documents({"favorites": {"$exists": True, "$ne": []}})
     
     feature_usage = [
-        {"name": "Scans", "value": food_scans_count},
-        {"name": "Favoris", "value": favorites_count},
-        {"name": "Listes", "value": birth_lists_count},
+        {"name": "Prénoms vus", "value": name_unique_views},
+        {"name": "Favoris cloud", "value": cloud_favorites},
+        {"name": "Scans aliments", "value": food_scans_count},
+        {"name": "Listes naissance", "value": birth_lists_count},
         {"name": "Recettes", "value": recipes_shared},
         {"name": "Messages", "value": messages_count},
     ]
