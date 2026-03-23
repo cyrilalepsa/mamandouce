@@ -179,8 +179,9 @@ async def get_admin_stats(admin: User = Depends(get_admin_user)):
 async def get_advanced_stats(admin: User = Depends(get_admin_user)):
     """Get advanced statistics for admin dashboard"""
     
-    # Get all users
-    users = await db.users.find({}, {"_id": 0}).to_list(10000)
+    # Get all users (excluding test users)
+    all_users = await db.users.find({}, {"_id": 0}).to_list(10000)
+    users = [u for u in all_users if not is_test_user(u.get("email", ""))]
     
     # User distribution
     trial_count = 0
@@ -364,8 +365,51 @@ async def get_chart_stats(admin: User = Depends(get_admin_user)):
     return {
         "registrations_30d": registrations_30d,
         "user_distribution": user_distribution,
-        "feature_usage": feature_usage
+        "feature_usage": feature_usage,
+        "monthly_stats": await get_monthly_registration_stats()
     }
+
+async def get_monthly_registration_stats():
+    """Get registration statistics grouped by month"""
+    from collections import defaultdict
+    
+    all_users = await db.users.find({}, {"_id": 0, "email": 1, "created_at": 1}).to_list(10000)
+    users = [u for u in all_users if not is_test_user(u.get("email", ""))]
+    
+    monthly_data = defaultdict(int)
+    
+    for user in users:
+        created_at = user.get("created_at")
+        if created_at:
+            try:
+                if isinstance(created_at, str):
+                    date_obj = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                else:
+                    date_obj = created_at
+                
+                month_key = date_obj.strftime("%Y-%m")
+                monthly_data[month_key] += 1
+            except Exception:
+                pass
+    
+    # Convert to list and sort
+    month_names = {
+        "01": "Jan", "02": "Fév", "03": "Mar", "04": "Avr",
+        "05": "Mai", "06": "Juin", "07": "Juil", "08": "Août",
+        "09": "Sep", "10": "Oct", "11": "Nov", "12": "Déc"
+    }
+    
+    result = []
+    for month_key in sorted(monthly_data.keys()):
+        year, month = month_key.split("-")
+        month_label = f"{month_names.get(month, month)} {year[-2:]}"
+        result.append({
+            "month": month_label,
+            "inscriptions": monthly_data[month_key]
+        })
+    
+    # Keep only last 12 months
+    return result[-12:] if len(result) > 12 else result
 
 
 @router.get("/admin/export-stats-csv")
