@@ -63,7 +63,9 @@ function AdminPage() {
   const checkAdmin = async () => {
     try {
       const response = await api.auth.me();
-      if (response.data.role === 'admin') {
+      const ADMIN_EMAIL = "cyrilalepsa@gmail.com";
+      // Check role OR email for admin access
+      if (response.data.role === 'admin' || response.data.email === ADMIN_EMAIL) {
         setIsAdmin(true);
         loadAllData();
       } else {

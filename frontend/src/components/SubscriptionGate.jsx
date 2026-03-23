@@ -37,7 +37,8 @@ export function SubscriptionGate({ children }) {
       const user = userResponse.data;
       
       // Les admins ont accès à tout SAUF s'ils testent en mode gratuit
-      const userIsAdmin = user.role === 'admin';
+      const ADMIN_EMAIL = "cyrilalepsa@gmail.com";
+      const userIsAdmin = user.role === 'admin' || user.email === ADMIN_EMAIL;
       setIsAdmin(userIsAdmin);
 
       // Vérifier le statut d'abonnement
