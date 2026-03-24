@@ -62,6 +62,12 @@ function AdminPage() {
 
   const checkAdmin = async () => {
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/auth');
+        return;
+      }
+      
       const response = await api.auth.me();
       const ADMIN_EMAIL = "cyrilalepsa@gmail.com";
       // Check role OR email for admin access
@@ -73,7 +79,29 @@ function AdminPage() {
         setLoading(false);
       }
     } catch (error) {
-      navigate('/auth');
+      console.error('Admin check error:', error);
+      // Only redirect if it's a 401 (unauthorized), not network errors
+      if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/auth');
+      } else {
+        // Retry once after a short delay for network errors
+        setTimeout(async () => {
+          try {
+            const response = await api.auth.me();
+            const ADMIN_EMAIL = "cyrilalepsa@gmail.com";
+            if (response.data.role === 'admin' || response.data.email === ADMIN_EMAIL) {
+              setIsAdmin(true);
+              loadAllData();
+            } else {
+              setIsAdmin(false);
+              setLoading(false);
+            }
+          } catch (retryError) {
+            navigate('/auth');
+          }
+        }, 1000);
+      }
     }
   };
 

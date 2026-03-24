@@ -15,13 +15,23 @@ const getAuthHeaders = () => ({
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    // Ne pas rediriger si c'est une erreur réseau temporaire
+    if (!error.response) {
+      console.warn('Network error - not redirecting');
+      return Promise.reject(error);
+    }
+    
+    if (error.response?.status === 401) {
       // Token expiré ou invalide - déconnecter l'utilisateur
-      localStorage.removeItem('token');
-      if (window.location.pathname !== '/auth' && window.location.pathname !== '/pricing') {
-        window.location.href = '/auth';
+      const token = localStorage.getItem('token');
+      if (token) {
+        localStorage.removeItem('token');
+        if (window.location.pathname !== '/auth' && window.location.pathname !== '/pricing' && window.location.pathname !== '/') {
+          window.location.href = '/auth';
+        }
       }
     }
+    // Ne pas rediriger sur 403 - juste rejeter l'erreur
     return Promise.reject(error);
   }
 );
