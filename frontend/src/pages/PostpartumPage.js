@@ -69,14 +69,30 @@ export default function PostpartumPage() {
   
   // Full subscription status
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+  
+  // Super admin check
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const ADMIN_EMAIL = "cyrilalepsa@gmail.com";
 
   useEffect(() => {
+    checkSuperAdmin();
     loadContent();
     loadPostpartumStatus();
     loadSubscriptionStatus();
     loadFavorites();
     sendDueReminders();
   }, []);
+  
+  const checkSuperAdmin = async () => {
+    try {
+      const response = await api.auth.me();
+      if (response.data.email === ADMIN_EMAIL || response.data.role === 'admin') {
+        setIsSuperAdmin(true);
+      }
+    } catch (error) {
+      // Silently fail
+    }
+  };
 
   const loadContent = async () => {
     try {
@@ -148,9 +164,9 @@ export default function PostpartumPage() {
     }
   };
 
-  // Déterminer l'accès
-  const hasPostpartumAccess = postpartumStatus?.postpartum_unlocked;
-  const hasGivenBirth = postpartumStatus?.actual_birth_date;
+  // Déterminer l'accès - Super admin a accès à tout
+  const hasPostpartumAccess = postpartumStatus?.postpartum_unlocked || isSuperAdmin;
+  const hasGivenBirth = postpartumStatus?.actual_birth_date || isSuperAdmin;
   const canViewFullContent = hasPostpartumAccess && hasGivenBirth;
 
   const toggleSection = (section) => {

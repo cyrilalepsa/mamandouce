@@ -47,11 +47,9 @@ export function SubscriptionGate({ children }) {
       
       setSubscriptionStatus(status);
       
-      // Pour les admins : respecter leur statut premium actuel (permet de tester en mode gratuit)
-      // Pour les autres : vérifier is_premium
+      // Super admin a TOUJOURS accès premium complet
       if (userIsAdmin) {
-        // L'admin peut se mettre en mode gratuit en désactivant son premium
-        setIsPremium(status.is_premium);
+        setIsPremium(true); // Admin = Premium automatique
       } else {
         setIsPremium(status.is_premium);
       }
