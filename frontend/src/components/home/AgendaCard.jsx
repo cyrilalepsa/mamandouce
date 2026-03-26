@@ -192,25 +192,40 @@ export function AgendaCard({
             </div>
           </div>
 
-          {/* Nidation estimée si rapports enregistrés */}
-          {getNextImplantation && getNextImplantation() && (
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-200">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-400 rounded-xl flex items-center justify-center">
-                  <Baby className="w-5 h-5 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-slate-500 font-semibold">Nidation estimée</p>
-                  <p className="text-base font-bold text-amber-600">
-                    Du {formatDateShort(getNextImplantation().early)} au {formatDateShort(getNextImplantation().late)}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    Basé sur le rapport du {formatDateShort(getNextImplantation().rapportDate)}
-                  </p>
+          {/* Nidation estimée si rapports enregistrés DANS LA FENÊTRE DE FERTILITÉ */}
+          {(() => {
+            const implantation = getNextImplantation && getNextImplantation();
+            if (!implantation || !agendaData) return null;
+            
+            // Vérifier si le rapport est dans la fenêtre de fertilité
+            const rapportDate = new Date(implantation.rapportDate);
+            const fertileStart = new Date(agendaData.fertileStart);
+            const fertileEnd = new Date(agendaData.fertileEnd);
+            
+            // Le rapport doit être entre fertileStart et fertileEnd pour afficher la nidation
+            const isInFertileWindow = rapportDate >= fertileStart && rapportDate <= fertileEnd;
+            
+            if (!isInFertileWindow) return null;
+            
+            return (
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-400 rounded-xl flex items-center justify-center">
+                    <Baby className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-slate-500 font-semibold">Nidation estimée</p>
+                    <p className="text-base font-bold text-amber-600">
+                      Du {formatDateShort(implantation.early)} au {formatDateShort(implantation.late)}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      Basé sur le rapport du {formatDateShort(implantation.rapportDate)} (période fertile)
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Rapports enregistrés */}
           {rapportDates && rapportDates.length > 0 && (
