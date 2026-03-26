@@ -5,6 +5,8 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { SubscriptionGate } from './components/SubscriptionGate';
 import { OfflineSyncIndicator } from './components/OfflineSyncIndicator';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { checkFirstVisitLanguage } from './i18n';
+import { toast } from 'sonner';
 import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import PregnancyCalculator from './pages/PregnancyCalculator';
@@ -53,6 +55,19 @@ function App() {
       setIsAuthenticated(true);
     }
     setLoading(false);
+    
+    // Vérifier si c'est la première visite et afficher la langue détectée
+    const detectedLang = checkFirstVisitLanguage();
+    if (detectedLang) {
+      setTimeout(() => {
+        toast.info(`${detectedLang.flag} ${detectedLang.name}`, {
+          description: detectedLang.code === 'fr' 
+            ? 'Langue détectée automatiquement' 
+            : 'Language detected automatically',
+          duration: 4000
+        });
+      }, 1500);
+    }
     
     // Cacher le loader initial HTML quand React est prêt
     if (window.hideInitialLoader) {

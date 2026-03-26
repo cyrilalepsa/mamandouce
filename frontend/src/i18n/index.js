@@ -36,6 +36,16 @@ const getSavedLanguage = () => {
   return null;
 };
 
+// Vérifier si c'est la première visite
+const isFirstVisit = () => {
+  return !localStorage.getItem('mamandouce_language_detected');
+};
+
+// Marquer la détection comme faite
+const markLanguageDetected = () => {
+  localStorage.setItem('mamandouce_language_detected', 'true');
+};
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -68,7 +78,18 @@ export const changeLanguage = (languageCode) => {
 
 // Fonction pour obtenir la langue actuelle
 export const getCurrentLanguage = () => {
-  return i18n.language || 'fr';
+  return i18n.language?.split('-')[0] || 'fr';
+};
+
+// Fonction pour vérifier si c'est la première visite et obtenir la langue détectée
+export const checkFirstVisitLanguage = () => {
+  if (isFirstVisit()) {
+    const detectedLang = getCurrentLanguage();
+    const langInfo = languages.find(l => l.code === detectedLang);
+    markLanguageDetected();
+    return langInfo || languages[0];
+  }
+  return null;
 };
 
 export default i18n;

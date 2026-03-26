@@ -1,19 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { ArrowLeft, CheckSquare, Square, Plus, Send, Briefcase, Baby, Car, ChevronDown, ChevronUp, Heart, Crown, Lock } from 'lucide-react';
+import { ArrowLeft, CheckSquare, Square, Plus, Send, Briefcase, Baby, Car, ChevronDown, ChevronUp, Heart, Crown, Lock, FileText, Clock, AlertCircle, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { getMaternityBagForLanguage } from '../data/maternityBagByCountry';
 import api from '../utils/api';
 import { toast } from 'sonner';
 
 export default function MaternityBagPage() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language?.split('-')[0] || 'fr';
+  
+  // Données localisées
+  const localData = useMemo(() => getMaternityBagForLanguage(currentLang), [currentLang]);
+  
   const [items, setItems] = useState([]);
   const [customItems, setCustomItems] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSuggestion, setShowSuggestion] = useState(false);
+  const [showLocalInfo, setShowLocalInfo] = useState(true);
   const [newItem, setNewItem] = useState('');
   const [newCategory, setNewCategory] = useState('Pour maman');
   const [expandedCategories, setExpandedCategories] = useState({
@@ -237,11 +246,100 @@ export default function MaternityBagPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-              Sac de maternité
+              {t('babyPrep.maternityBag', 'Sac de maternité')}
             </h1>
-            <p className="text-sm text-slate-500">Préparez votre valise pour le jour J</p>
+            <p className="text-sm text-slate-500">{t('babyPrep.interactiveChecklist', 'Préparez votre valise pour le jour J')}</p>
           </div>
         </div>
+
+        {/* Informations localisées */}
+        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-4 border border-blue-100">
+          <button 
+            onClick={() => setShowLocalInfo(!showLocalInfo)}
+            className="w-full flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                <Globe className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-bold text-slate-700">{localData.flag} {localData.country}</h3>
+                <p className="text-xs text-slate-500">
+                  <Clock className="w-3 h-3 inline mr-1" />
+                  {t('calculator.daysUnit', 'Séjour')}: {localData.hospitalStay.duration}
+                </p>
+              </div>
+            </div>
+            <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${showLocalInfo ? 'rotate-180' : ''}`} />
+          </button>
+          
+          {showLocalInfo && (
+            <div className="mt-4 space-y-4">
+              {/* Documents requis */}
+              <div>
+                <h4 className="font-semibold text-slate-700 flex items-center gap-2 mb-2">
+                  <FileText className="w-4 h-4 text-blue-500" />
+                  Documents
+                </h4>
+                <div className="space-y-1">
+                  {localData.documents.map((doc, idx) => (
+                    <div key={idx} className={`text-sm flex items-center gap-2 ${doc.required ? 'text-slate-700' : 'text-slate-500'}`}>
+                      <span className={`w-2 h-2 rounded-full ${doc.required ? 'bg-red-400' : 'bg-slate-300'}`}></span>
+                      <span className="font-medium">{doc.name}</span>
+                      {doc.required && <span className="text-xs text-red-500">*</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Durée de séjour */}
+              <div className="bg-white/50 rounded-xl p-3">
+                <h4 className="font-semibold text-slate-700 flex items-center gap-2 mb-2">
+                  <Clock className="w-4 h-4 text-indigo-500" />
+                  {t('calculator.daysRemaining', 'Durée de séjour')}
+                </h4>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="bg-green-50 rounded-lg p-2 text-center">
+                    <span className="text-green-700 font-medium">{localData.hospitalStay.durationNatural}</span>
+                    <p className="text-xs text-green-600">Voie basse</p>
+                  </div>
+                  <div className="bg-purple-50 rounded-lg p-2 text-center">
+                    <span className="text-purple-700 font-medium">{localData.hospitalStay.durationCesarean}</span>
+                    <p className="text-xs text-purple-600">Césarienne</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Conseils locaux */}
+              <div>
+                <h4 className="font-semibold text-slate-700 flex items-center gap-2 mb-2">
+                  <AlertCircle className="w-4 h-4 text-amber-500" />
+                  {t('scanner.recommendation', 'Conseils')}
+                </h4>
+                <ul className="text-xs text-slate-600 space-y-1">
+                  {localData.tips.map((tip, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="text-amber-400 mt-0.5">•</span>
+                      {tip}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              {/* Marques locales */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-pink-50 rounded-lg p-2">
+                  <p className="text-xs font-medium text-pink-700 mb-1">🧷 {t('library.other', 'Couches')}</p>
+                  <p className="text-xs text-pink-600">{localData.brands.diapers.slice(0, 3).join(', ')}</p>
+                </div>
+                <div className="bg-sky-50 rounded-lg p-2">
+                  <p className="text-xs font-medium text-sky-700 mb-1">🧴 {t('scanner.ingredients', 'Soins')}</p>
+                  <p className="text-xs text-sky-600">{localData.brands.care.slice(0, 3).join(', ')}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </Card>
 
         {/* Progress */}
         <Card className="bg-gradient-to-r from-pink-100 to-sky-100 rounded-3xl p-5">

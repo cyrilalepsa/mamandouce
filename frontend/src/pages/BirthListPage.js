@@ -1,26 +1,59 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { Gift, Plus, Trash2, Share2, Copy, Check, ExternalLink, ShoppingBag } from 'lucide-react';
+import { Gift, Plus, Trash2, Share2, Copy, Check, ExternalLink, ShoppingBag, Globe } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { useTranslation } from 'react-i18next';
+import { getStoresForLanguage } from '../data/storesByCountry';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
 
-const STORES = [
-  { id: 'orchestra', name: 'Orchestra', color: 'from-orange-500 to-orange-400', url: 'https://www.orchestra.fr' },
-  { id: 'vertbaudet', name: 'Vertbaudet', color: 'from-green-500 to-green-400', url: 'https://www.vertbaudet.fr' },
-  { id: 'amazon', name: 'Amazon', color: 'from-amber-500 to-amber-400', url: 'https://www.amazon.fr' },
-  { id: 'aubert', name: 'Aubert', color: 'from-blue-500 to-blue-400', url: 'https://www.aubert.com' },
-  { id: 'kiabi', name: 'Kiabi', color: 'from-pink-500 to-pink-400', url: 'https://www.kiabi.com' },
-  { id: 'autre', name: 'Autre', color: 'from-slate-500 to-slate-400', url: '' }
-];
+// Les magasins seront chargés dynamiquement selon la langue
+const getStores = (langCode) => {
+  const countryData = getStoresForLanguage(langCode);
+  return countryData.stores.map((store, index) => ({
+    id: store.name.toLowerCase().replace(/\s+/g, '-'),
+    name: store.name,
+    color: getStoreColor(index),
+    url: store.url,
+    description: store.description,
+    popular: store.popular
+  }));
+};
+
+const getStoreColor = (index) => {
+  const colors = [
+    'from-orange-500 to-orange-400',
+    'from-green-500 to-green-400',
+    'from-amber-500 to-amber-400',
+    'from-blue-500 to-blue-400',
+    'from-pink-500 to-pink-400',
+    'from-purple-500 to-purple-400',
+    'from-slate-500 to-slate-400'
+  ];
+  return colors[index % colors.length];
+};
 
 function BirthListPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language?.split('-')[0] || 'fr';
+  
+  // Magasins dynamiques selon le pays
+  const STORES = useMemo(() => {
+    const stores = getStores(currentLang);
+    // Ajouter "Autre" à la fin
+    stores.push({ id: 'autre', name: t('library.other', 'Autre'), color: 'from-slate-500 to-slate-400', url: '' });
+    return stores;
+  }, [currentLang, t]);
+  
+  // Infos du pays
+  const countryData = useMemo(() => getStoresForLanguage(currentLang), [currentLang]);
+  
   const [list, setList] = useState(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +62,7 @@ function BirthListPage() {
   const [copied, setCopied] = useState(false);
   const [newItem, setNewItem] = useState({
     name: '',
-    store: 'orchestra',
+    store: STORES[0]?.id || 'autre',
     url: '',
     price: '',
     quantity: 1,

@@ -1,69 +1,97 @@
 import React, { useMemo } from 'react';
 import { Sparkles } from 'lucide-react';
-import { getSaintOfTheDay } from '../data/saintsCalendar';
+import { useTranslation } from 'react-i18next';
+import { getNameOfTheDay, getNameDayMessage } from '../data/namesByCountry';
 import { frenchNames } from '../data/babyNamesFR';
 import { NewBadge } from './NewBadge';
 
 export default function NameOfTheDay({ isDarkMode = false }) {
-  // Obtenir le prénom fêté aujourd'hui selon le calendrier des saints
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language?.split('-')[0] || 'fr';
+  
+  // Obtenir le prénom fêté aujourd'hui selon le pays
   const nameOfTheDay = useMemo(() => {
-    const saint = getSaintOfTheDay();
+    const today = new Date();
+    const nameData = getNameOfTheDay(today, currentLang);
     
-    if (!saint) return null;
-    
-    // Chercher le prénom dans notre base de données pour avoir plus d'infos
-    let nameInfo = null;
-    let gender = 'girls'; // Par défaut
-    
-    // Chercher dans les prénoms filles
-    for (const letterNames of Object.values(frenchNames.girls)) {
-      const found = letterNames.find(n => 
-        n.name.toLowerCase() === saint.name.toLowerCase() ||
-        saint.variants.some(v => v.toLowerCase() === n.name.toLowerCase())
-      );
-      if (found) {
-        nameInfo = found;
-        gender = 'girls';
-        break;
+    // Si pas de données pour ce pays/cette date
+    if (!nameData || !nameData.names || nameData.names.length === 0) {
+      // Pour l'anglais, pas de tradition équivalente
+      if (currentLang === 'en') {
+        return null;
       }
+      return null;
     }
     
-    // Si pas trouvé, chercher dans les prénoms garçons
-    if (!nameInfo) {
-      for (const letterNames of Object.values(frenchNames.boys)) {
+    const primaryName = nameData.names[0];
+    
+    // Pour le français, chercher des infos supplémentaires sur le prénom
+    if (currentLang === 'fr' && frenchNames) {
+      let nameInfo = null;
+      let gender = 'neutral';
+      
+      // Chercher dans les prénoms filles
+      for (const letterNames of Object.values(frenchNames.girls || {})) {
         const found = letterNames.find(n => 
-          n.name.toLowerCase() === saint.name.toLowerCase() ||
-          saint.variants.some(v => v.toLowerCase() === n.name.toLowerCase())
+          n.name.toLowerCase() === primaryName.toLowerCase()
         );
         if (found) {
           nameInfo = found;
-          gender = 'boys';
+          gender = 'girls';
           break;
         }
       }
+      
+      // Si pas trouvé, chercher dans les prénoms garçons
+      if (!nameInfo) {
+        for (const letterNames of Object.values(frenchNames.boys || {})) {
+          const found = letterNames.find(n => 
+            n.name.toLowerCase() === primaryName.toLowerCase()
+          );
+          if (found) {
+            nameInfo = found;
+            gender = 'boys';
+            break;
+          }
+        }
+      }
+      
+      if (nameInfo) {
+        return {
+          name: primaryName,
+          meaning: nameInfo.meaning,
+          celebration: nameData.celebration,
+          gender: gender,
+          allNames: nameData.names
+        };
+      }
     }
     
-    // Si on a trouvé des infos dans notre base
-    if (nameInfo) {
-      return {
-        name: saint.name,
-        meaning: nameInfo.meaning,
-        gender: gender
-      };
-    }
-    
-    // Sinon, retourner juste le nom du saint
+    // Retour par défaut
     return {
-      name: saint.name,
-      meaning: saint.variants.length > 0 ? `Variantes : ${saint.variants.slice(0, 3).join(', ')}` : "Prénom fêté aujourd'hui",
-      gender: 'neutral'
+      name: primaryName,
+      meaning: nameData.celebration,
+      celebration: nameData.celebration,
+      gender: 'neutral',
+      allNames: nameData.names
     };
-  }, []);
+  }, [currentLang]);
+
+  // Pour l'anglais où il n'y a pas de tradition
+  if (!nameOfTheDay && currentLang === 'en') {
+    return null;
+  }
 
   if (!nameOfTheDay) return null;
 
   const isGirl = nameOfTheDay.gender === 'girls';
   const isNeutral = nameOfTheDay.gender === 'neutral';
+  
+  // Message localisé
+  const celebrationMessage = getNameDayMessage(currentLang);
+  const displayNames = nameOfTheDay.allNames.length > 1 
+    ? nameOfTheDay.allNames.slice(0, 2).join(', ')
+    : nameOfTheDay.name;
 
   return (
     <div 
@@ -84,11 +112,11 @@ export default function NameOfTheDay({ isDarkMode = false }) {
       
       <div className="flex items-center gap-2 flex-1 min-w-0">
         <span className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-          Fête du jour
+          {t('home.nameOfTheDay', 'Fête du jour')}
         </span>
         <NewBadge badgeId="name-of-day" size="xs" />
         <span className={`font-semibold truncate ${isDarkMode ? 'text-slate-100' : 'text-slate-700'}`}>
-          🎉 {nameOfTheDay.name}
+          🎉 {displayNames}
         </span>
         <span className={`text-xs hidden sm:inline ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
           • {nameOfTheDay.meaning}
