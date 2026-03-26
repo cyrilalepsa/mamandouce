@@ -1,5 +1,39 @@
+import { useState } from 'react';
 import { Card } from '../ui/card';
-import { Check, Play, ExternalLink, AlertTriangle } from 'lucide-react';
+import { Check, Play, ExternalLink, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
+
+function AccordionSection({ title, icon, color, defaultOpen = false, children }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  
+  const colorClasses = {
+    pink: "bg-gradient-to-r from-pink-100 to-rose-100 text-pink-800 border-pink-200",
+    sky: "bg-gradient-to-r from-sky-100 to-cyan-100 text-sky-800 border-sky-200",
+    amber: "bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 border-amber-200",
+    red: "bg-gradient-to-r from-red-100 to-rose-100 text-red-800 border-red-200",
+    purple: "bg-gradient-to-r from-purple-100 to-violet-100 text-purple-800 border-purple-200",
+  };
+  
+  return (
+    <div className="mb-4">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`w-full p-4 rounded-2xl border ${colorClasses[color]} flex items-center justify-between transition-all duration-200 hover:shadow-md`}
+      >
+        <div className="flex items-center gap-3">
+          <div className="text-2xl">{icon}</div>
+          <h3 className="font-bold text-left">{title}</h3>
+        </div>
+        {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+      </button>
+      
+      {isOpen && (
+        <div className="mt-3 space-y-3 pl-2 border-l-4 border-slate-200 ml-4 animate-fade-in">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function BreastfeedingSection({ breastfeeding }) {
   if (!breastfeeding) return null;
@@ -8,24 +42,25 @@ export function BreastfeedingSection({ breastfeeding }) {
     <div className="space-y-4">
       <h2 className="text-lg font-bold text-slate-700">{breastfeeding.title || "Guide de l'allaitement"}</h2>
       <p className="text-sm text-slate-600">{breastfeeding.description}</p>
+      <p className="text-sm text-slate-500 mb-4">Cliquez sur une section pour voir les détails</p>
       
       {/* Bénéfices */}
-      <Card className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl p-4 shadow-sm">
-        <h3 className="font-bold text-slate-700 mb-3">Les bienfaits de l'allaitement</h3>
-        <div className="grid grid-cols-1 gap-2">
-          {breastfeeding.benefits?.map((benefit, i) => (
-            <div key={i} className="flex items-start gap-2 text-sm">
-              <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-              <span className="text-slate-600">{benefit}</span>
-            </div>
-          ))}
-        </div>
-      </Card>
+      <AccordionSection title="Les bienfaits de l'allaitement" icon="💝" color="pink" defaultOpen={true}>
+        <Card className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl p-4 shadow-sm">
+          <div className="grid grid-cols-1 gap-2">
+            {breastfeeding.benefits?.map((benefit, i) => (
+              <div key={i} className="flex items-start gap-2 text-sm">
+                <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                <span className="text-slate-600">{benefit}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </AccordionSection>
       
       {/* Positions */}
       {breastfeeding.positions && Array.isArray(breastfeeding.positions) && breastfeeding.positions[0]?.name && (
-        <>
-          <h3 className="font-bold text-slate-700">Les positions d'allaitement</h3>
+        <AccordionSection title="Les positions d'allaitement" icon="🤱" color="sky">
           {breastfeeding.positions.map((pos, index) => (
             <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
               <h4 className="font-bold text-slate-700 mb-2">{pos.name}</h4>
@@ -38,25 +73,25 @@ export function BreastfeedingSection({ breastfeeding }) {
               )}
             </Card>
           ))}
-        </>
+        </AccordionSection>
       )}
       
       {/* Conseils */}
-      <Card className="bg-amber-50 rounded-2xl p-4 border border-amber-200">
-        <h3 className="font-bold text-amber-800 mb-3">Conseils pratiques</h3>
-        <ul className="space-y-2">
-          {breastfeeding.tips?.map((tip, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm text-amber-900">
-              <span>💡</span><span>{tip}</span>
-            </li>
-          ))}
-        </ul>
-      </Card>
+      <AccordionSection title="Conseils pratiques" icon="💡" color="amber">
+        <Card className="bg-amber-50 rounded-2xl p-4 border border-amber-200">
+          <ul className="space-y-2">
+            {breastfeeding.tips?.map((tip, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-amber-900">
+                <span>💡</span><span>{tip}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </AccordionSection>
       
       {/* Problèmes et solutions */}
       {breastfeeding.problems_solutions && (
-        <>
-          <h3 className="font-bold text-slate-700">Problèmes fréquents et solutions</h3>
+        <AccordionSection title="Problèmes fréquents et solutions" icon="🔧" color="red">
           {breastfeeding.problems_solutions.map((item, index) => (
             <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm border-l-4 border-pink-400">
               <h4 className="font-bold text-slate-700 mb-2">{item.problem}</h4>
@@ -73,19 +108,20 @@ export function BreastfeedingSection({ breastfeeding }) {
               )}
             </Card>
           ))}
-        </>
+        </AccordionSection>
       )}
       
       {/* Ressources */}
       {breastfeeding.resources && (
-        <Card className="bg-sky-50 rounded-2xl p-4 border border-sky-200">
-          <h3 className="font-bold text-sky-800 mb-2">Ressources utiles</h3>
-          <ul className="text-sm text-sky-700 space-y-1">
-            {breastfeeding.resources.map((res, i) => (
-              <li key={i}>📞 {res}</li>
-            ))}
-          </ul>
-        </Card>
+        <AccordionSection title="Ressources utiles" icon="📞" color="purple">
+          <Card className="bg-sky-50 rounded-2xl p-4 border border-sky-200">
+            <ul className="text-sm text-sky-700 space-y-1">
+              {breastfeeding.resources.map((res, i) => (
+                <li key={i}>📞 {res}</li>
+              ))}
+            </ul>
+          </Card>
+        </AccordionSection>
       )}
       
       {/* Vidéo générale */}

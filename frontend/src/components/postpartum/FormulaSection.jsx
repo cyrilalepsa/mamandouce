@@ -1,5 +1,39 @@
+import { useState } from 'react';
 import { Card } from '../ui/card';
-import { Play, ExternalLink, AlertTriangle } from 'lucide-react';
+import { Play, ExternalLink, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
+
+function AccordionSection({ title, icon, color, defaultOpen = false, children }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  
+  const colorClasses = {
+    sky: "bg-gradient-to-r from-sky-100 to-cyan-100 text-sky-800 border-sky-200",
+    green: "bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-200",
+    amber: "bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 border-amber-200",
+    red: "bg-gradient-to-r from-red-100 to-rose-100 text-red-800 border-red-200",
+    purple: "bg-gradient-to-r from-purple-100 to-violet-100 text-purple-800 border-purple-200",
+  };
+  
+  return (
+    <div className="mb-4">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`w-full p-4 rounded-2xl border ${colorClasses[color]} flex items-center justify-between transition-all duration-200 hover:shadow-md`}
+      >
+        <div className="flex items-center gap-3">
+          <div className="text-2xl">{icon}</div>
+          <h3 className="font-bold text-left">{title}</h3>
+        </div>
+        {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+      </button>
+      
+      {isOpen && (
+        <div className="mt-3 space-y-3 pl-2 border-l-4 border-slate-200 ml-4 animate-fade-in">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function FormulaSection({ formula }) {
   if (!formula) return null;
@@ -8,74 +42,82 @@ export function FormulaSection({ formula }) {
     <div className="space-y-4">
       <h2 className="text-lg font-bold text-slate-700">{formula.title || "Guide du biberon"}</h2>
       <p className="text-sm text-slate-600">{formula.description || formula.info}</p>
+      <p className="text-sm text-slate-500 mb-4">Cliquez sur une section pour voir les détails</p>
       
       {/* Préparation */}
       {formula.preparation && (
-        <Card className="bg-gradient-to-r from-sky-50 to-cyan-50 rounded-2xl p-4 shadow-sm">
-          <h3 className="font-bold text-slate-700 mb-3">Préparation du biberon</h3>
-          <ol className="text-sm text-slate-600 space-y-2">
-            {formula.preparation.steps?.map((step, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <span className="bg-sky-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0">{i+1}</span>
-                <span>{step}</span>
-              </li>
-            ))}
-          </ol>
-          {formula.preparation.video_url && (
-            <a href={formula.preparation.video_url} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-sm font-semibold hover:bg-red-200 mt-3">
-              <Play className="w-4 h-4" />Voir en vidéo
-            </a>
-          )}
-        </Card>
+        <AccordionSection title="Préparation du biberon" icon="🍼" color="sky" defaultOpen={true}>
+          <Card className="bg-gradient-to-r from-sky-50 to-cyan-50 rounded-2xl p-4 shadow-sm">
+            <ol className="text-sm text-slate-600 space-y-2">
+              {formula.preparation.steps?.map((step, i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <span className="bg-sky-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0">{i+1}</span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+            {formula.preparation.video_url && (
+              <a href={formula.preparation.video_url} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-2 rounded-full text-sm font-semibold hover:bg-red-200 mt-3">
+                <Play className="w-4 h-4" />Voir en vidéo
+              </a>
+            )}
+          </Card>
+        </AccordionSection>
       )}
       
       {/* Types de lait */}
-      <h3 className="font-bold text-slate-700">Types de lait infantile</h3>
-      {formula.types?.map((type, index) => (
-        <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">{type.icon || '🍼'}</span>
-              <h4 className="font-bold text-slate-700">{type.name}</h4>
-            </div>
-            <span className="bg-sky-100 text-sky-700 px-2 py-1 rounded-full text-xs font-semibold">{type.age}</span>
-          </div>
-          <p className="text-sm text-slate-600">{type.description}</p>
-        </Card>
-      ))}
+      {formula.types && formula.types.length > 0 && (
+        <AccordionSection title="Types de lait infantile" icon="🥛" color="purple">
+          {formula.types?.map((type, index) => (
+            <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">{type.icon || '🍼'}</span>
+                  <h4 className="font-bold text-slate-700">{type.name}</h4>
+                </div>
+                <span className="bg-sky-100 text-sky-700 px-2 py-1 rounded-full text-xs font-semibold">{type.age}</span>
+              </div>
+              <p className="text-sm text-slate-600">{type.description}</p>
+            </Card>
+          ))}
+        </AccordionSection>
+      )}
       
       {/* Quantités par âge */}
       {formula.quantities && (
-        <Card className="bg-green-50 rounded-2xl p-4 border border-green-200">
-          <h3 className="font-bold text-green-800 mb-3">Quantités selon l'âge</h3>
-          <div className="space-y-2">
-            {formula.quantities.map((q, i) => (
-              <div key={i} className="flex justify-between items-center text-sm bg-white rounded-lg p-2">
-                <span className="font-semibold text-slate-700">{q.age}</span>
-                <span className="text-slate-600">{q.quantity} × {q.frequency}</span>
-              </div>
-            ))}
-          </div>
-        </Card>
+        <AccordionSection title="Quantités selon l'âge" icon="📊" color="green">
+          <Card className="bg-green-50 rounded-2xl p-4 border border-green-200">
+            <div className="space-y-2">
+              {formula.quantities.map((q, i) => (
+                <div key={i} className="flex justify-between items-center text-sm bg-white rounded-lg p-2">
+                  <span className="font-semibold text-slate-700">{q.age}</span>
+                  <span className="text-slate-600">{q.quantity} × {q.frequency}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </AccordionSection>
       )}
       
       {/* Conseils */}
-      <Card className="bg-amber-50 rounded-2xl p-4 border border-amber-200">
-        <h3 className="font-bold text-amber-800 mb-3">Conseils pratiques</h3>
-        <ul className="space-y-2">
-          {formula.tips?.map((tip, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm text-amber-900">
-              <span>💡</span><span>{tip}</span>
-            </li>
-          ))}
-        </ul>
-      </Card>
+      {formula.tips && formula.tips.length > 0 && (
+        <AccordionSection title="Conseils pratiques" icon="💡" color="amber">
+          <Card className="bg-amber-50 rounded-2xl p-4 border border-amber-200">
+            <ul className="space-y-2">
+              {formula.tips?.map((tip, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-amber-900">
+                  <span>💡</span><span>{tip}</span>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </AccordionSection>
+      )}
       
       {/* Problèmes et solutions */}
       {formula.problems_solutions && (
-        <>
-          <h3 className="font-bold text-slate-700">Problèmes fréquents</h3>
+        <AccordionSection title="Problèmes fréquents" icon="🔧" color="red">
           {formula.problems_solutions.map((item, index) => (
             <Card key={index} className="bg-white rounded-2xl p-4 shadow-sm border-l-4 border-sky-400">
               <h4 className="font-bold text-slate-700 mb-2">{item.problem}</h4>
@@ -92,7 +134,7 @@ export function FormulaSection({ formula }) {
               )}
             </Card>
           ))}
-        </>
+        </AccordionSection>
       )}
       
       {/* Vidéo générale */}
