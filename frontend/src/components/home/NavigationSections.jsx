@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, createContext, useContext } from 'react';
 import { Card } from '../ui/card';
+import { useTranslation } from 'react-i18next';
 import { 
   Sparkles, Baby, Gift, Heart, Library,
   CalendarHeart, BookHeart, ScanBarcode, Apple, 
@@ -35,13 +36,7 @@ export function PinnedSectionsProvider({ children }) {
         : [...prev, sectionId];
       
       localStorage.setItem('mamandouce_pinned_sections', JSON.stringify(newPinned));
-      
-      if (newPinned.includes(sectionId)) {
-        toast.success('Section épinglée ! Elle restera toujours ouverte.');
-      } else {
-        toast.info('Section désépinglée.');
-      }
-      
+      // Les toasts sont gérés dans CollapsibleSection pour avoir accès aux traductions
       return newPinned;
     });
   };
@@ -61,6 +56,7 @@ export function usePinnedSections() {
 
 // Composant réutilisable pour les sections déroulantes
 function CollapsibleSection({ title, icon: Icon, iconColor, children, defaultOpen = false, sectionId }) {
+  const { t } = useTranslation();
   const { isPinned, togglePin } = usePinnedSections();
   const pinned = sectionId ? isPinned(sectionId) : false;
   const [isOpen, setIsOpen] = useState(defaultOpen || pinned);
@@ -78,10 +74,21 @@ function CollapsibleSection({ title, icon: Icon, iconColor, children, defaultOpe
   const handleToggle = () => {
     // Si épinglée, on ne peut pas fermer (sauf si on désépingle)
     if (pinned && isOpen) {
-      toast.info('Cette section est épinglée. Cliquez sur 📌 pour la désépingler.');
+      toast.info(t('home.pinnedCantClose', 'Cette section est épinglée. Cliquez sur 📌 pour la désépingler.'));
       return;
     }
     setIsOpen(!isOpen);
+  };
+  
+  const handlePin = () => {
+    const wasPinned = pinned;
+    togglePin(sectionId);
+    // Le message toast est géré ici au lieu du provider pour avoir accès à t()
+    if (!wasPinned) {
+      toast.success(t('home.sectionPinned', 'Section épinglée ! Elle restera toujours ouverte.'));
+    } else {
+      toast.info(t('home.sectionUnpinned', 'Section désépinglée.'));
+    }
   };
   
   return (
@@ -111,13 +118,13 @@ function CollapsibleSection({ title, icon: Icon, iconColor, children, defaultOpe
         {/* Bouton épingler */}
         {sectionId && (
           <button
-            onClick={() => togglePin(sectionId)}
+            onClick={handlePin}
             className={`p-2 rounded-full transition-all ${
               pinned 
                 ? 'bg-pink-100 text-pink-600 hover:bg-pink-200' 
                 : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600'
             }`}
-            title={pinned ? 'Désépingler cette section' : 'Épingler cette section (toujours ouverte)'}
+            title={pinned ? t('home.unpinSection', 'Désépingler cette section') : t('home.pinSection', 'Épingler cette section (toujours ouverte)')}
           >
             {pinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
           </button>
@@ -132,7 +139,7 @@ function CollapsibleSection({ title, icon: Icon, iconColor, children, defaultOpe
           <button
             onClick={() => {
               if (pinned) {
-                toast.info('Cette section est épinglée. Cliquez sur 📌 pour la désépingler.');
+                toast.info(t('home.pinnedCantClose', 'Cette section est épinglée. Cliquez sur 📌 pour la désépingler.'));
                 return;
               }
               setIsOpen(false);
@@ -144,7 +151,7 @@ function CollapsibleSection({ title, icon: Icon, iconColor, children, defaultOpe
             }`}
           >
             <ChevronDown className="w-4 h-4 rotate-180" />
-            <span className="text-sm font-semibold">{pinned ? 'Section épinglée' : 'Fermer'}</span>
+            <span className="text-sm font-semibold">{pinned ? t('home.sectionPinnedLabel', 'Section épinglée') : t('common.close', 'Fermer')}</span>
           </button>
         </div>
       </div>

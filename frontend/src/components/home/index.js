@@ -9,3 +9,4 @@ export {
   PinnedSectionsProvider 
 } from './NavigationSections';
 export { TopBar } from './TopBar';
+export { PinTipBanner, PinTooltip } from './PinTip';

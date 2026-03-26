@@ -17,7 +17,8 @@ import {
   BabyPreparationSection,
   PostpartumSection,
   ServicesSection,
-  PinnedSectionsProvider
+  PinnedSectionsProvider,
+  PinTipBanner
 } from '../components/home';
 
 const ADMIN_EMAIL = 'cyrilalepsa@gmail.com';
@@ -289,6 +290,7 @@ function HomePage() {
 
           {/* Sections de navigation */}
           <PinnedSectionsProvider>
+            <PinTipBanner />
             <PreconceptionSection />
             <PregnancySection 
               hasPregnancyProfile={hasPregnancyProfile} 

@@ -4,10 +4,11 @@ import { Card } from '../components/ui/card';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
-import { Gift, Shield, Bell, BellRing, CreditCard, Users, Key, ChevronDown, Moon, Sun, Sparkles, History } from 'lucide-react';
+import { Gift, Shield, Bell, BellRing, CreditCard, Users, Key, ChevronDown, Moon, Sun, Sparkles, History, Globe } from 'lucide-react';
 import { ToggleAllSections } from '../components/ToggleAllSections';
 import { useTheme } from '../contexts/ThemeContext';
 import { getLatestVersion } from '../data/appUpdates';
+import { useTranslation } from 'react-i18next';
 import {
   PromoCodeSection,
   AccountSection,
@@ -15,7 +16,8 @@ import {
   RefundSection,
   NotificationsSection,
   TwoFactorSection,
-  PushNotificationsSection
+  PushNotificationsSection,
+  LanguageSelector
 } from '../components/settings';
 
 // Composant CollapsibleSection pour les paramètres
@@ -54,6 +56,7 @@ function CollapsibleSettingsSection({
 function SettingsPage() {
   const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useTheme();
+  const { t } = useTranslation();
   const [preferences, setPreferences] = useState({
     email_notifications: true,
     weekly_tips: true,
@@ -69,6 +72,7 @@ function SettingsPage() {
   
   // Gestion des sections ouvertes/fermées
   const [openSections, setOpenSections] = useState({
+    language: false,
     appearance: false,
     promo: false,
     account: false,
@@ -87,6 +91,7 @@ function SettingsPage() {
   
   const toggleAllSections = (open) => {
     setOpenSections({
+      language: open,
       appearance: open,
       promo: open,
       account: open,
@@ -184,6 +189,18 @@ function SettingsPage() {
                 onToggle={toggleAllSections}
               />
             </div>
+            
+            {/* Section Langue */}
+            <CollapsibleSettingsSection
+              title={t('settings.language')}
+              icon={Globe}
+              isOpen={openSections.language}
+              onToggle={() => toggleSection('language')}
+              iconBg="bg-gradient-to-br from-emerald-100 to-teal-100"
+              iconColor="text-emerald-600"
+            >
+              <LanguageSelector />
+            </CollapsibleSettingsSection>
             
             {/* Section Apparence - Mode sombre */}
             <CollapsibleSettingsSection

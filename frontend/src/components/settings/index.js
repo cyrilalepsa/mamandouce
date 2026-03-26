@@ -7,3 +7,4 @@ export { TwoFactorSection } from './TwoFactorSection';
 export { PregnancyInfoSection } from './PregnancyInfoSection';
 export { AccountStatusSection } from './AccountStatusSection';
 export { PushNotificationsSection } from './PushNotificationsSection';
+export { LanguageSelector } from './LanguageSelector';
