@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Cloud, Feather } from 'lucide-react';
+import { Cloud, Feather, PartyPopper } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import AppTitle from '../components/AppTitle';
@@ -7,6 +7,7 @@ import FertilityCalendar from '../components/FertilityCalendar';
 import { AvatarPreview } from '../components/profile/AvatarBuilder';
 import NameOfTheDay from '../components/NameOfTheDay';
 import { useTheme } from '../contexts/ThemeContext';
+import { isNameCelebratedToday, getSaintOfTheDay } from '../data/saintsCalendar';
 import {
   AgendaCard,
   PregnancyStatusCard,
@@ -232,6 +233,19 @@ function HomePage() {
               </span>
               <span className="text-pink-400 ml-2">❤️</span>
             </h2>
+            
+            {/* Message Bonne Fête si le prénom de l'utilisateur est fêté aujourd'hui */}
+            {isNameCelebratedToday(displayName || userName) && (
+              <div className="mt-3 bg-gradient-to-r from-amber-100 via-yellow-100 to-orange-100 rounded-2xl px-4 py-3 border-2 border-amber-300 shadow-lg animate-bounce-slow">
+                <div className="flex items-center justify-center gap-2">
+                  <PartyPopper className="w-5 h-5 text-amber-600" />
+                  <span className="text-lg font-bold text-amber-700" style={{ fontFamily: "'Caveat', cursive" }}>
+                    🎉 Bonne fête {displayName || userName} ! 🎉
+                  </span>
+                  <PartyPopper className="w-5 h-5 text-amber-600" />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Agenda interactif */}

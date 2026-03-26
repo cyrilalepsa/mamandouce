@@ -102,6 +102,19 @@ code {
   animation: slide-up 0.3s ease-out;
 }
 
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
 
 /* Cacher la bannière Wake up servers d'Emergent */
 div[style*="position: fixed"][style*="bottom: 0"],
