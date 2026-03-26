@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import api from '../utils/api';
 import { Cloud, Feather } from 'lucide-react';
 import AppTitle from '../components/AppTitle';
+import { useTranslation } from 'react-i18next';
 import { 
   isBiometricAvailable,
   authenticateWithBiometric, 
@@ -28,6 +29,7 @@ import {
 } from '../components/auth';
 
 function AuthPage({ setIsAuthenticated }) {
+  const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '', name: '' });
