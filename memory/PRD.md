@@ -30,7 +30,9 @@ Application PWA de suivi de grossesse "MamanDouce" pour accompagner les futures 
 17. **Système "Quoi de neuf ?"** - Pop-up nouveautés, badges NEW, historique des mises à jour
 18. **Recettes personnalisées** - Création et partage individuel
 19. **Menus déroulants** - Bouton "Fermer" en bas de toutes les cartes
-20. **Épinglage des catégories** ✅ NEW - Garder une section toujours ouverte sur la page d'accueil
+20. **Épinglage des catégories** ✅ - Garder une section toujours ouverte sur la page d'accueil
+21. **Multi-langues** ✅ NEW - 6 langues supportées (FR, EN, ES, PT, IT, DE)
+22. **Bannière d'aide épinglage** ✅ NEW - Guide les nouvelles utilisatrices vers la fonctionnalité d'épinglage
 
 ### Premium Features 👑
 - Suivi de grossesse complet
@@ -39,12 +41,13 @@ Application PWA de suivi de grossesse "MamanDouce" pour accompagner les futures 
 - Liste des prénoms complète (tous pays + lettres F-Z)
 
 ## Tech Stack
-- **Frontend**: React + Tailwind CSS + Shadcn/UI
+- **Frontend**: React + Tailwind CSS + Shadcn/UI + i18next
 - **Backend**: FastAPI (Python)
 - **Database**: MongoDB Atlas
 - **Payments**: Stripe
 - **Emails**: Resend
 - **Deployment**: Railway (Production)
+- **i18n**: i18next + react-i18next + i18next-browser-languagedetector
 
 ## Deployment Status ✅
 - **GitHub**: Repository `cyrilalepsa/mamandouce`
@@ -62,13 +65,14 @@ Application PWA de suivi de grossesse "MamanDouce" pour accompagner les futures 
 ### P0 - Critical (Bloquant)
 - ✅ ~~Finaliser déploiement Railway~~ FAIT
 - ✅ ~~Épinglage des catégories~~ FAIT (26 Mars 2026)
+- ✅ ~~Multi-langues~~ FAIT (26 Mars 2026)
 
 ### P1 - High Priority
 - [ ] **Publier sur Google Play Store** - Générer le bundle AAB depuis la PWA avec TWA (Trusted Web Activity)
 
 ### P2 - Medium Priority
 - [ ] **Apple App Store** - Publier sur iOS via PWA ou wrapper natif
-- [ ] **Multi-langues** - Support anglais/portugais/espagnol avec i18n
+- [ ] **Traduire plus de composants** - Étendre les traductions à toute l'application
 
 ### P3 - Low Priority / Enhancements
 - [ ] **Audio prononciation** - Écouter la prononciation des prénoms
@@ -87,13 +91,24 @@ Application PWA de suivi de grossesse "MamanDouce" pour accompagner les futures 
 ## Completed Work (Changelog)
 
 ### 26 Mars 2026 - Session Actuelle
+- ✅ **MULTI-LANGUES (i18n)** :
+  - Installation: i18next, react-i18next, i18next-browser-languagedetector
+  - 6 langues: Français 🇫🇷, English 🇬🇧, Español 🇪🇸, Português 🇵🇹, Italiano 🇮🇹, Deutsch 🇩🇪
+  - Fichiers de traduction dans `/app/frontend/src/i18n/locales/`
+  - Sélecteur de langue avec drapeaux dans Paramètres
+  - Sauvegarde de la préférence dans localStorage (`mamandouce_language`)
+  
+- ✅ **BANNIÈRE D'AIDE ÉPINGLAGE** :
+  - Composant `PinTipBanner` dans `/app/frontend/src/components/home/PinTip.jsx`
+  - Affichée uniquement aux nouveaux utilisateurs
+  - Disparaît après clic sur "Compris!"
+  - Sauvegardée dans localStorage (`mamandouce_pin_tip_seen`)
+
 - ✅ **ÉPINGLAGE DES CATÉGORIES** :
   - `PinnedSectionsProvider` wrapper les sections dans HomePage
   - Ajout de `sectionId` aux 5 sections (preconception, pregnancy, baby-preparation, postpartum, services)
   - Bouton Pin/PinOff pour chaque section
-  - Sauvegarde des préférences dans localStorage (`mamandouce_pinned_sections`)
-  - Toast de confirmation lors de l'épinglage/désépinglage
-  - Les sections épinglées restent toujours ouvertes
+  - Messages traduits selon la langue choisie
 
 ### Sessions Précédentes (Mars 2026)
 - ✅ Déploiement Railway complet (Backend + Frontend)
@@ -109,17 +124,39 @@ Application PWA de suivi de grossesse "MamanDouce" pour accompagner les futures 
 ---
 
 ## Key Files Reference
-- `/app/frontend/src/pages/HomePage.js` - Page d'accueil (avec PinnedSectionsProvider)
-- `/app/frontend/src/components/home/NavigationSections.jsx` - Sections de navigation (épinglage)
-- `/app/frontend/src/components/home/index.js` - Exports des composants home
+
+### i18n (Multi-langues)
+- `/app/frontend/src/i18n/index.js` - Configuration i18next
+- `/app/frontend/src/i18n/locales/fr.json` - Traductions françaises
+- `/app/frontend/src/i18n/locales/en.json` - Traductions anglaises
+- `/app/frontend/src/i18n/locales/es.json` - Traductions espagnoles
+- `/app/frontend/src/i18n/locales/pt.json` - Traductions portugaises
+- `/app/frontend/src/i18n/locales/it.json` - Traductions italiennes
+- `/app/frontend/src/i18n/locales/de.json` - Traductions allemandes
+- `/app/frontend/src/components/settings/LanguageSelector.jsx` - Sélecteur de langue
+
+### Épinglage
+- `/app/frontend/src/components/home/NavigationSections.jsx` - Sections avec épinglage
+- `/app/frontend/src/components/home/PinTip.jsx` - Bannière d'aide
+
+### Autres
+- `/app/frontend/src/pages/HomePage.js` - Page d'accueil
+- `/app/frontend/src/pages/SettingsPage.js` - Page paramètres
 - `/app/frontend/src/data/saintsCalendar.js` - Calendrier des Saints
-- `/app/frontend/src/data/appUpdates.js` - Historique des mises à jour
-- `/app/frontend/src/components/WhatsNewModal.jsx` - Modal nouveautés
-- `/app/backend/routes/admin.py` - Routes admin (email/message)
-- `/app/backend/routes/postpartum.py` - Routes post-partum (recettes)
+- `/app/backend/routes/admin.py` - Routes admin
 
 ## Test Accounts
 - Email: test4@example.com / Password: test123
 
 ## Important Notes for Deployment
 ⚠️ Après chaque modification de code, l'utilisateur doit cliquer sur **"Save to GitHub"** dans le chat Emergent pour déclencher le build Railway.
+
+## Languages Supported
+| Code | Langue | Drapeau |
+|------|--------|---------|
+| fr | Français | 🇫🇷 |
+| en | English | 🇬🇧 |
+| es | Español | 🇪🇸 |
+| pt | Português | 🇵🇹 |
+| it | Italiano | 🇮🇹 |
+| de | Deutsch | 🇩🇪 |
