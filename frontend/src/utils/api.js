@@ -225,6 +225,7 @@ export const api = {
     setUserPostpartum: (userId, enabled) => axios.post(`${API}/admin/user/${userId}/set-postpartum?enabled=${enabled}`, {}, getAuthHeaders()),
     setUserRole: (userId, role) => axios.post(`${API}/admin/user/${userId}/set-role?role=${role}`, getAuthHeaders()),
     sendEmailToUser: (userId, subject, message) => axios.post(`${API}/admin/user/${userId}/send-email`, { subject, message }, getAuthHeaders()),
+    sendMessageToUser: (userId, message) => axios.post(`${API}/admin/messages/send-to-user/${userId}`, { reply: message }, getAuthHeaders()),
     // Reminders Dashboard
     getRemindersDashboard: () => axios.get(`${API}/admin/reminders/dashboard`, getAuthHeaders()),
     getAllReminders: (status = 'all') => axios.get(`${API}/admin/reminders/all?status=${status}`, getAuthHeaders()),

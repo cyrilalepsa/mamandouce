@@ -895,6 +895,86 @@ async def reply_to_message(message_id: str, request: AdminReplyRequest, admin: U
         "message": "Réponse envoyée" + (" et email envoyé" if email_sent else "") + (" et notification push envoyée" if push_sent else "")
     }
 
+@router.post("/admin/messages/send-to-user/{user_id}")
+async def send_message_to_user(user_id: str, request: AdminReplyRequest, admin: User = Depends(get_admin_user)):
+    """Envoyer un message à un utilisateur depuis l'admin (initier une conversation)"""
+    import uuid
+    
+    # Trouver l'utilisateur
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="Utilisatrice non trouvée")
+    
+    user_email = user.get("email")
+    user_name = user.get("name", "Utilisatrice")
+    
+    # Créer le message dans la base
+    message_id = str(uuid.uuid4())
+    message_data = {
+        "id": message_id,
+        "user_id": user_id,
+        "user_email": user_email,
+        "user_name": user_name,
+        "subject": "Message de l'équipe MamanDouce",
+        "message": "",  # Message vide car c'est l'admin qui initie
+        "admin_reply": request.reply,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "replied_at": datetime.now(timezone.utc).isoformat(),
+        "is_read": True,  # L'admin l'a déjà lu puisqu'il l'envoie
+        "initiated_by_admin": True  # Flag pour identifier les messages initiés par l'admin
+    }
+    
+    await db.admin_messages.insert_one(message_data)
+    
+    # Envoyer email
+    email_sent = False
+    if resend and RESEND_API_KEY and user_email:
+        try:
+            resend.emails.send({
+                "from": f"MamanDouce <{SENDER_EMAIL}>",
+                "to": user_email,
+                "subject": "Nouveau message de MamanDouce",
+                "html": f"""
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <div style="background: linear-gradient(135deg, #ec4899, #8b5cf6); padding: 20px; border-radius: 15px; text-align: center;">
+                        <h1 style="color: white; margin: 0;">🌸 MamanDouce</h1>
+                    </div>
+                    <div style="padding: 30px 20px;">
+                        <p style="color: #374151;">Bonjour {user_name.split()[0] if user_name else 'Chère utilisatrice'},</p>
+                        <p style="color: #374151;">Vous avez reçu un message de l'équipe MamanDouce :</p>
+                        <div style="background: linear-gradient(135deg, #fdf2f8, #f5f3ff); padding: 15px; border-radius: 10px; border-left: 4px solid #ec4899; margin: 20px 0;">
+                            <p style="color: #374151; margin: 0; white-space: pre-line;">{request.reply}</p>
+                        </div>
+                        <p style="color: #374151; margin-top: 30px;">Vous pouvez répondre à ce message directement depuis l'application MamanDouce, dans la section "Mon profil" → "Mes messages".</p>
+                        <p style="color: #9ca3af; font-size: 12px; margin-top: 20px;">L'équipe MamanDouce 💕</p>
+                    </div>
+                </div>
+                """
+            })
+            email_sent = True
+        except Exception as e:
+            logger.error(f"Error sending message email: {e}")
+    
+    # Envoyer notification push
+    push_sent = False
+    try:
+        push_sent = await send_push_notification_to_user(
+            user_email,
+            "Nouveau message 💌",
+            "Vous avez reçu un message de l'équipe MamanDouce",
+            "/profile"
+        )
+    except Exception as e:
+        logger.error(f"Error sending push: {e}")
+    
+    return {
+        "success": True,
+        "message_id": message_id,
+        "email_sent": email_sent,
+        "push_sent": push_sent,
+        "message": f"Message envoyé à {user_email}"
+    }
+
 # ==================== HELPER FUNCTIONS ====================
 
 async def send_push_notification_to_user(user_email: str, title: str, body: str, url: str = "/profile"):

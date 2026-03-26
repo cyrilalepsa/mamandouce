@@ -56,9 +56,12 @@ const getMonthName = (monthIndex) => {
 function UserCard({ user, index, loadUsers }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
   const [emailSubject, setEmailSubject] = useState('');
   const [emailMessage, setEmailMessage] = useState('');
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [internalMessage, setInternalMessage] = useState('');
+  const [sendingMessage, setSendingMessage] = useState(false);
   
   const statusBadge = getStatusBadge(user.display_status);
   const StatusIcon = statusBadge.icon;
@@ -84,6 +87,28 @@ function UserCard({ user, index, loadUsers }) {
       toast.error(error.response?.data?.detail || 'Erreur lors de l\'envoi');
     } finally {
       setSendingEmail(false);
+    }
+  };
+  
+  const handleSendMessage = async () => {
+    if (!internalMessage.trim()) {
+      toast.error('Veuillez écrire un message');
+      return;
+    }
+    
+    setSendingMessage(true);
+    try {
+      const response = await api.admin.sendMessageToUser(user.id, internalMessage);
+      const extras = [];
+      if (response.data.email_sent) extras.push('email');
+      if (response.data.push_sent) extras.push('notification');
+      toast.success(`Message envoyé à ${user.email}` + (extras.length ? ` (+ ${extras.join(' & ')})` : ''));
+      setShowMessageModal(false);
+      setInternalMessage('');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erreur lors de l\'envoi');
+    } finally {
+      setSendingMessage(false);
     }
   };
   
@@ -321,6 +346,16 @@ function UserCard({ user, index, loadUsers }) {
               <Mail className="w-3 h-3 mr-1 inline" />
               Email
             </Button>
+            
+            {/* Bouton envoyer message interne */}
+            <Button
+              onClick={() => setShowMessageModal(true)}
+              data-testid={`send-message-${index}`}
+              className="bg-pink-100 text-pink-700 hover:bg-pink-200 rounded-lg px-3 py-1.5 text-xs font-semibold"
+            >
+              <Send className="w-3 h-3 mr-1 inline" />
+              Message
+            </Button>
           </div>
         </div>
       )}
@@ -379,6 +414,61 @@ function UserCard({ user, index, loadUsers }) {
               className="bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:opacity-90 rounded-xl px-4"
             >
               {sendingEmail ? (
+                <>Envoi...</>
+              ) : (
+                <>
+                  <Send className="w-4 h-4 mr-1 inline" />
+                  Envoyer
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+    )}
+    
+    {/* Modal d'envoi de message interne */}
+    {showMessageModal && (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-2xl w-full max-w-md shadow-xl animate-fade-in">
+          <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+            <div>
+              <h3 className="font-bold text-slate-700">Envoyer un message</h3>
+              <p className="text-xs text-slate-500">À : {user.name || user.email}</p>
+              <p className="text-[10px] text-pink-500">Visible dans "Mes messages" + Email + Notification</p>
+            </div>
+            <button 
+              onClick={() => setShowMessageModal(false)}
+              className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200"
+            >
+              <X className="w-4 h-4 text-slate-600" />
+            </button>
+          </div>
+          
+          <div className="p-4">
+            <label className="block text-xs font-semibold text-slate-600 mb-1">Votre message</label>
+            <textarea
+              value={internalMessage}
+              onChange={(e) => setInternalMessage(e.target.value)}
+              placeholder="Écrivez votre message ici..."
+              rows={6}
+              className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm"
+            />
+          </div>
+          
+          <div className="p-4 border-t border-slate-100 flex gap-2 justify-end">
+            <Button
+              onClick={() => setShowMessageModal(false)}
+              className="bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-xl px-4"
+            >
+              Annuler
+            </Button>
+            <Button
+              onClick={handleSendMessage}
+              disabled={sendingMessage}
+              className="bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:opacity-90 rounded-xl px-4"
+            >
+              {sendingMessage ? (
                 <>Envoi...</>
               ) : (
                 <>
