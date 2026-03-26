@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
-import { CalendarDays, Settings, Save, CalendarRange, Egg, Heart, Droplets, Baby } from 'lucide-react';
+import { CalendarDays, Settings, Save, CalendarRange, Egg, Heart, Droplets, Baby, Info } from 'lucide-react';
 
 export function AgendaCard({ 
   agendaData,
@@ -172,6 +172,30 @@ export function AgendaCard({
                   Du {formatDateShort(agendaData.fertileStart)} au {formatDateShort(agendaData.fertileEnd)}
                 </p>
                 <p className="text-xs text-slate-500">Période la plus favorable à la conception</p>
+              </div>
+            </div>
+            
+            {/* Conseil test d'ovulation */}
+            <div className="mt-3 pt-3 border-t border-emerald-100">
+              <div className="flex items-start gap-2">
+                <span className="text-lg">💡</span>
+                <div className="flex-1">
+                  <p className="text-xs text-emerald-700 font-medium">
+                    Pensez au <span className="font-bold">test d'ovulation Clearblue Digital</span> pour plus de précision (réutilisable) !
+                  </p>
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    💰 Astuce : Préférez les grandes pharmacies, souvent moins chères.
+                  </p>
+                </div>
+                <a 
+                  href="https://fr.clearblue.com/tests-ovulation" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex-shrink-0 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow border border-emerald-200"
+                  title="En savoir plus sur le test Clearblue"
+                >
+                  <Info className="w-4 h-4 text-emerald-600" />
+                </a>
               </div>
             </div>
           </div>
