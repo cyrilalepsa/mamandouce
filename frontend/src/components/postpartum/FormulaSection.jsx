@@ -29,6 +29,15 @@ function AccordionSection({ title, icon, color, defaultOpen = false, children })
       {isOpen && (
         <div className="mt-3 space-y-3 pl-2 border-l-4 border-slate-200 ml-4 animate-fade-in">
           {children}
+          
+          {/* Bouton fermer en bas */}
+          <button
+            onClick={() => setIsOpen(false)}
+            className={`w-full p-3 rounded-xl border ${colorClasses[color]} flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-md mt-4`}
+          >
+            <ChevronUp className="w-4 h-4" />
+            <span className="text-sm font-semibold">Fermer</span>
+          </button>
         </div>
       )}
     </div>

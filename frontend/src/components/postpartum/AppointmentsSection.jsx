@@ -176,6 +176,15 @@ function PeriodAccordion({ title, appointments, icon, color, defaultOpen = false
           {appointments.map((apt, index) => (
             <AppointmentCard key={index} apt={apt} index={index} />
           ))}
+          
+          {/* Bouton fermer en bas */}
+          <button
+            onClick={() => setIsOpen(false)}
+            className={`w-full p-3 rounded-xl border ${colorClasses[color]} flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-md mt-4`}
+          >
+            <ChevronUp className="w-4 h-4" />
+            <span className="text-sm font-semibold">Fermer</span>
+          </button>
         </div>
       )}
     </div>
