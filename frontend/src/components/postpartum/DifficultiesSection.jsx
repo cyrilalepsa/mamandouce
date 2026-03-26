@@ -115,6 +115,15 @@ export function DifficultiesSection({ difficulties }) {
                   <ExternalLink className="w-4 h-4" />
                 </a>
               )}
+              
+              {/* Bouton fermer en bas */}
+              <button
+                onClick={() => setExpandedDifficulty(null)}
+                className="w-full p-3 rounded-xl bg-amber-100 hover:bg-amber-200 flex items-center justify-center gap-2 transition-all duration-200 text-amber-700"
+              >
+                <ChevronUp className="w-4 h-4" />
+                <span className="text-sm font-semibold">Fermer</span>
+              </button>
             </div>
           )}
         </Card>

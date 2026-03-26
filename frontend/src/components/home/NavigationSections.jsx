@@ -40,6 +40,15 @@ function CollapsibleSection({ title, icon: Icon, iconColor, children, defaultOpe
       <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="pt-2">
           {children}
+          
+          {/* Bouton fermer en bas */}
+          <button
+            onClick={() => setIsOpen(false)}
+            className="w-full mt-4 p-3 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center gap-2 transition-all duration-200 text-slate-600"
+          >
+            <ChevronDown className="w-4 h-4 rotate-180" />
+            <span className="text-sm font-semibold">Fermer</span>
+          </button>
         </div>
       </div>
     </div>

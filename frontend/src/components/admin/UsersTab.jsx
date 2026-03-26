@@ -357,6 +357,15 @@ function UserCard({ user, index, loadUsers }) {
               Message
             </Button>
           </div>
+          
+          {/* Bouton fermer en bas */}
+          <button
+            onClick={() => setIsExpanded(false)}
+            className="w-full mt-4 p-3 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center gap-2 transition-all duration-200 text-slate-600"
+          >
+            <ChevronUp className="w-4 h-4" />
+            <span className="text-sm font-semibold">Fermer</span>
+          </button>
         </div>
       )}
     </div>

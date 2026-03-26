@@ -46,6 +46,15 @@ export function CollapsibleSection({
       {isOpen && (
         <div className="px-4 pb-4 space-y-4 animate-fade-in border-t border-slate-100 pt-4">
           {children}
+          
+          {/* Bouton fermer en bas */}
+          <button
+            onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}
+            className="w-full p-3 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center gap-2 transition-all duration-200 text-slate-600"
+          >
+            <ChevronUp className="w-4 h-4" />
+            <span className="text-sm font-semibold">Fermer</span>
+          </button>
         </div>
       )}
     </Card>

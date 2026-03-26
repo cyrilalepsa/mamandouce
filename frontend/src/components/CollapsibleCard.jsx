@@ -52,6 +52,15 @@ export function CollapsibleCard({
       }`}>
         <div className="px-4 pb-4 pt-2 border-t border-slate-100">
           {children}
+          
+          {/* Bouton fermer en bas */}
+          <button
+            onClick={() => setIsOpen(false)}
+            className="w-full mt-4 p-3 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center gap-2 transition-all duration-200 text-slate-600"
+          >
+            <ChevronUp className="w-4 h-4" />
+            <span className="text-sm font-semibold">Fermer</span>
+          </button>
         </div>
       </div>
     </Card>

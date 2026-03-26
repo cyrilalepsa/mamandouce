@@ -432,6 +432,15 @@ export default function MaternityBagPage() {
                       </button>
                     </div>
                   ))}
+                  
+                  {/* Bouton fermer en bas */}
+                  <button
+                    onClick={() => setExpandedCategories(prev => ({ ...prev, [category]: false }))}
+                    className={`w-full mt-3 p-3 rounded-xl ${style.bg} hover:opacity-80 flex items-center justify-center gap-2 transition-all duration-200 ${style.text}`}
+                  >
+                    <ChevronUp className="w-4 h-4" />
+                    <span className="text-sm font-semibold">Fermer</span>
+                  </button>
                 </div>
               </div>
             </Card>

@@ -791,6 +791,15 @@ export function RecipesSection({ babyRecipes, favorites, onFavoritesChange }) {
                             </div>
                           </div>
                         ))}
+                        
+                        {/* Bouton fermer en bas */}
+                        <button
+                          onClick={() => toggleCategoryExpand(category)}
+                          className={`w-full mt-2 p-3 rounded-xl ${categoryColors[category] || 'bg-slate-100 text-slate-700'} hover:opacity-80 flex items-center justify-center gap-2 transition-all duration-200`}
+                        >
+                          <ChevronUp className="w-4 h-4" />
+                          <span className="text-sm font-semibold">Fermer</span>
+                        </button>
                       </div>
                     </div>
                   </div>
