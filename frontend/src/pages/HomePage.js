@@ -262,12 +262,26 @@ function HomePage() {
             getNextImplantation={getNextImplantation}
           />
 
-          {/* Statut de grossesse */}
-          {hasPregnancyProfile && (
-            <PregnancyStatusCard
-              pregnancyProfile={pregnancyProfile}
-            />
-          )}
+          {/* Statut de grossesse - Seulement si un rapport est dans la fenêtre de fertilité */}
+          {hasPregnancyProfile && (() => {
+            // Vérifier si un rapport est dans la fenêtre de fertilité
+            if (!agendaData || rapportDates.length === 0) return null;
+            
+            const hasRapportInFertileWindow = rapportDates.some(rapportDate => {
+              const rapport = new Date(rapportDate);
+              const fertileStart = new Date(agendaData.fertileStart);
+              const fertileEnd = new Date(agendaData.fertileEnd);
+              return rapport >= fertileStart && rapport <= fertileEnd;
+            });
+            
+            if (!hasRapportInFertileWindow) return null;
+            
+            return (
+              <PregnancyStatusCard
+                pregnancyProfile={pregnancyProfile}
+              />
+            );
+          })()}
 
           {/* Prénom du jour */}
           <NameOfTheDay isDarkMode={isDarkMode} />
