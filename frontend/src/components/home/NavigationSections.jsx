@@ -6,7 +6,7 @@ import {
   Sparkles, Baby, Gift, Heart, Library,
   CalendarHeart, BookHeart, ScanBarcode, Apple, 
   History, Stethoscope, Bell, 
-  ClipboardList, Briefcase, Video, Youtube, Book, ChevronRight, ChevronDown, LineChart, Lock, Crown, Users, Pin, PinOff
+  ClipboardList, Briefcase, Video, Youtube, Book, ChevronRight, ChevronDown, LineChart, Lock, Crown, Users, Pin, PinOff, Phone
 } from 'lucide-react';
 import { useSubscription } from '../SubscriptionGate';
 import { toast } from 'sonner';
@@ -162,10 +162,11 @@ function CollapsibleSection({ title, icon: Icon, iconColor, children, defaultOpe
 // Catégorie: En route vers la grossesse
 export function PreconceptionSection() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <CollapsibleSection 
-      title="En route vers la grossesse" 
+      title={t('sections.preconception', 'En route vers la grossesse')}
       icon={Sparkles} 
       iconColor="text-amber-500"
       defaultOpen={false}
@@ -178,8 +179,8 @@ export function PreconceptionSection() {
           className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
         >
           <CalendarHeart className="w-10 h-10 text-sky-400 mx-auto mb-2" />
-          <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Calculateur</h3>
-          <p className="text-xs text-slate-500 mt-1">Ovulation et dates clés</p>
+          <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('pregnancy.calculator', 'Calculateur')}</h3>
+          <p className="text-xs text-slate-500 mt-1">{t('pregnancy.ovulationAndDates', 'Ovulation et dates clés')}</p>
         </Card>
 
         <Card
@@ -188,8 +189,8 @@ export function PreconceptionSection() {
           className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
         >
           <BookHeart className="w-10 h-10 text-pink-400 mx-auto mb-2" />
-          <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Évolution et conseils</h3>
-          <p className="text-xs text-slate-500 mt-1">Semaine par semaine</p>
+          <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('pregnancy.tipsAndEvolution', 'Évolution et conseils')}</h3>
+          <p className="text-xs text-slate-500 mt-1">{t('pregnancy.weekByWeek', 'Semaine par semaine')}</p>
         </Card>
       </div>
       
@@ -205,10 +206,10 @@ export function PreconceptionSection() {
           </div>
           <div className="flex-1">
             <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-              Grossesse après 35 ans
+              {t('pregnancy.after35', 'Grossesse après 35 ans')}
             </h3>
             <p className="text-xs text-slate-500 mt-1">
-              Conseils, examens et accompagnement spécialisé
+              {t('pregnancy.after35Desc', 'Conseils, examens et accompagnement spécialisé')}
             </p>
           </div>
           <ChevronRight className="w-5 h-5 text-slate-400" />
@@ -218,8 +219,7 @@ export function PreconceptionSection() {
       {/* Avertissement médical */}
       <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
         <p className="text-xs text-amber-700">
-          <strong>Information :</strong> Les conseils fournis sont à titre informatif et ne remplacent pas l'avis d'un médecin. 
-          Consultez un professionnel de santé avant toute prise de médicaments ou compléments.
+          <strong>{t('common.info', 'Information')} :</strong> {t('medicalWarning', 'Les conseils fournis sont à titre informatif et ne remplacent pas l\'avis d\'un médecin. Consultez un professionnel de santé avant toute prise de médicaments ou compléments.')}
         </p>
       </div>
     </CollapsibleSection>
@@ -230,6 +230,7 @@ export function PreconceptionSection() {
 export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
   const navigate = useNavigate();
   const { isPremium } = useSubscription();
+  const { t } = useTranslation();
   
   // Déterminer si on est au 1er trimestre (semaines 1-13)
   const currentWeek = pregnancyProfile?.current_week || 1;
@@ -237,7 +238,7 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
 
   return (
     <CollapsibleSection 
-      title="Grossesse" 
+      title={t('sections.pregnancy', 'Grossesse')}
       icon={Baby} 
       iconColor="text-pink-500"
       defaultOpen={false}
@@ -252,8 +253,8 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
           className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
         >
           <ScanBarcode className="w-8 h-8 text-green-500 mx-auto mb-2" />
-          <h3 className="text-sm font-bold text-slate-700">Scanner</h3>
-          <p className="text-xs text-slate-500">Aliments</p>
+          <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.scanner', 'Scanner')}</h3>
+          <p className="text-xs text-slate-500">{t('pregnancy.foods', 'Aliments')}</p>
         </Card>
 
         <Card
@@ -262,8 +263,8 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
           className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
         >
           <Apple className="w-8 h-8 text-red-400 mx-auto mb-2" />
-          <h3 className="text-sm font-bold text-slate-700">Bibliothèque</h3>
-          <p className="text-xs text-slate-500">Aliments</p>
+          <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.library', 'Bibliothèque')}</h3>
+          <p className="text-xs text-slate-500">{t('pregnancy.foods', 'Aliments')}</p>
         </Card>
 
         <Card
@@ -272,8 +273,8 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
           className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
         >
           <Heart className="w-8 h-8 text-pink-400 mx-auto mb-2" />
-          <h3 className="text-sm font-bold text-slate-700">Favoris</h3>
-          <p className="text-xs text-slate-500">Sauvegardés</p>
+          <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.favorites', 'Favoris')}</h3>
+          <p className="text-xs text-slate-500">{t('pregnancy.saved', 'Sauvegardés')}</p>
         </Card>
 
         <Card
@@ -282,8 +283,8 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
           className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
         >
           <History className="w-8 h-8 text-purple-400 mx-auto mb-2" />
-          <h3 className="text-sm font-bold text-slate-700">Historique</h3>
-          <p className="text-xs text-slate-500">Recherches</p>
+          <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.history', 'Historique')}</h3>
+          <p className="text-xs text-slate-500">{t('pregnancy.searches', 'Recherches')}</p>
         </Card>
       </div>
 
@@ -303,18 +304,18 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                Liste des Prénoms
+                {t('pregnancy.babyNames', 'Liste des Prénoms')}
               </h3>
               {!isPremium && (
                 <span className="flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-xs font-medium">
-                  <Crown className="w-3 h-3" /> Partiel
+                  <Crown className="w-3 h-3" /> {t('premium.partial', 'Partiel')}
                 </span>
               )}
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
               {isPremium 
-                ? 'Europe & Amérique - Signification et personnalité'
-                : '3 pays gratuits, tous avec Premium'
+                ? t('premium.allCountries', 'Europe & Amérique - Signification et personnalité')
+                : t('premium.freeCountries', '3 pays gratuits, tous avec Premium')
               }
             </p>
           </div>
@@ -332,8 +333,8 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
             className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
           >
             <Stethoscope className="w-8 h-8 text-sky-500 mx-auto mb-2" />
-            <h3 className="text-sm font-bold text-slate-700">Rendez-vous</h3>
-            <p className="text-xs text-slate-500">{isPremium ? 'Suivi médical' : '1er trimestre'}</p>
+            <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.appointments', 'Rendez-vous')}</h3>
+            <p className="text-xs text-slate-500">{isPremium ? t('pregnancy.medicalFollowUp', 'Suivi médical') : t('pregnancy.firstTrimester', '1er trimestre')}</p>
           </Card>
         ) : (
           <Card
@@ -345,7 +346,7 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
               <Crown className="w-4 h-4 text-amber-500" />
             </div>
             <Stethoscope className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-            <h3 className="text-sm font-bold text-slate-500">Rendez-vous</h3>
+            <h3 className="text-sm font-bold text-slate-500">{t('pregnancy.appointments', 'Rendez-vous')}</h3>
             <p className="text-xs text-slate-400 flex items-center justify-center gap-1">
               <Lock className="w-3 h-3" /> 2e & 3e trimestre
             </p>
@@ -360,8 +361,8 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
             className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-pink-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
           >
             <LineChart className="w-8 h-8 text-pink-500 mx-auto mb-2" />
-            <h3 className="text-sm font-bold text-slate-700">Suivi grossesse</h3>
-            <p className="text-xs text-slate-500">Maman & Bébé</p>
+            <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.pregnancyTracking', 'Suivi grossesse')}</h3>
+            <p className="text-xs text-slate-500">{t('pregnancy.momAndBaby', 'Maman & Bébé')}</p>
           </Card>
         ) : (
           <Card
@@ -373,9 +374,9 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
               <Crown className="w-4 h-4 text-amber-500" />
             </div>
             <LineChart className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-            <h3 className="text-sm font-bold text-slate-500">Suivi grossesse</h3>
+            <h3 className="text-sm font-bold text-slate-500">{t('pregnancy.pregnancyTracking', 'Suivi grossesse')}</h3>
             <p className="text-xs text-slate-400 flex items-center justify-center gap-1">
-              <Lock className="w-3 h-3" /> Premium
+              <Lock className="w-3 h-3" /> {t('premium.title', 'Premium')}
             </p>
           </Card>
         )}
@@ -386,8 +387,8 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
           className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
         >
           <Bell className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-          <h3 className="text-sm font-bold text-slate-700">Rappels</h3>
-          <p className="text-xs text-slate-500">Notifications</p>
+          <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.reminders', 'Rappels')}</h3>
+          <p className="text-xs text-slate-500">{t('pregnancy.notifications', 'Notifications')}</p>
         </Card>
       </div>
     </CollapsibleSection>
@@ -398,12 +399,13 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
 export function BabyPreparationSection() {
   const navigate = useNavigate();
   const { isPremium } = useSubscription();
+  const { t } = useTranslation();
 
   // Header personnalisé pour cette section (avec badge Premium)
   const CustomHeader = () => (
     <div className="flex items-center gap-2">
       <Gift className="w-5 h-5 text-purple-500" />
-      <span className="whitespace-nowrap">Préparer l'arrivée de bébé</span>
+      <span className="whitespace-nowrap">{t('sections.babyPreparation', 'Préparer l\'arrivée de bébé')}</span>
       {!isPremium && (
         <span className="ml-2 w-6 h-6 bg-amber-400 rounded-full flex items-center justify-center">
           <Crown className="w-3 h-3 text-white" />
@@ -434,8 +436,8 @@ export function BabyPreparationSection() {
               <Lock className="w-4 h-4 text-purple-400" />
             </div>
             <ClipboardList className="w-10 h-10 text-pink-400 mx-auto mb-2" />
-            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Liste de naissance</h3>
-            <p className="text-xs text-slate-500 mt-1">À partager avec vos proches</p>
+            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('babyPrep.birthList', 'Liste de naissance')}</h3>
+            <p className="text-xs text-slate-500 mt-1">{t('babyPrep.toShare', 'À partager avec vos proches')}</p>
           </Card>
 
           {/* Sac de maternité - aperçu */}
@@ -447,8 +449,8 @@ export function BabyPreparationSection() {
               <Lock className="w-4 h-4 text-purple-400" />
             </div>
             <Briefcase className="w-10 h-10 text-purple-500 mx-auto mb-2" />
-            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Sac de maternité</h3>
-            <p className="text-xs text-slate-500 mt-1">Check-list interactive</p>
+            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('babyPrep.maternityBag', 'Sac de maternité')}</h3>
+            <p className="text-xs text-slate-500 mt-1">{t('babyPrep.interactiveChecklist', 'Check-list interactive')}</p>
           </Card>
 
           {/* Vidéos - aperçu */}
@@ -460,8 +462,8 @@ export function BabyPreparationSection() {
               <Lock className="w-4 h-4 text-purple-400" />
             </div>
             <Video className="w-10 h-10 text-red-500 mx-auto mb-2" />
-            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Vidéos</h3>
-            <p className="text-xs text-slate-500 mt-1">Préparation accouchement</p>
+            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('babyPrep.videos', 'Vidéos')}</h3>
+            <p className="text-xs text-slate-500 mt-1">{t('babyPrep.birthPreparation', 'Préparation accouchement')}</p>
           </Card>
 
           {/* Les Maternelles - aperçu */}
@@ -473,8 +475,8 @@ export function BabyPreparationSection() {
               <Lock className="w-4 h-4 text-purple-400" />
             </div>
             <Youtube className="w-10 h-10 text-red-600 mx-auto mb-2" />
-            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Les Maternelles</h3>
-            <p className="text-xs text-slate-500 mt-1">Chaîne YouTube</p>
+            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('babyPrep.maternelles', 'Les Maternelles')}</h3>
+            <p className="text-xs text-slate-500 mt-1">{t('babyPrep.youtubeChannel', 'Chaîne YouTube')}</p>
           </Card>
 
           {/* Livres - aperçu */}
@@ -486,8 +488,8 @@ export function BabyPreparationSection() {
               <Lock className="w-4 h-4 text-purple-400" />
             </div>
             <Book className="w-10 h-10 text-amber-600 mx-auto mb-2" />
-            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Livres utiles</h3>
-            <p className="text-xs text-slate-500 mt-1">Grossesse et bébé</p>
+            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('babyPrep.usefulBooks', 'Livres utiles')}</h3>
+            <p className="text-xs text-slate-500 mt-1">{t('babyPrep.pregnancyAndBaby', 'Grossesse et bébé')}</p>
           </Card>
         </div>
         
@@ -498,7 +500,7 @@ export function BabyPreparationSection() {
             className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5"
           >
             <Crown className="w-5 h-5" />
-            Débloquer avec Premium
+            {t('babyPrep.unlockWithPremium', 'Débloquer avec Premium')}
           </button>
         </div>
       </CollapsibleSection>
@@ -507,7 +509,7 @@ export function BabyPreparationSection() {
 
   return (
     <CollapsibleSection 
-      title="Préparer l'arrivée de bébé" 
+      title={t('sections.babyPreparation', 'Préparer l\'arrivée de bébé')}
       icon={Gift} 
       iconColor="text-purple-500"
       defaultOpen={false}
@@ -520,8 +522,8 @@ export function BabyPreparationSection() {
           className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
         >
           <ClipboardList className="w-10 h-10 text-pink-400 mx-auto mb-2" />
-          <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Liste de naissance</h3>
-          <p className="text-xs text-slate-500 mt-1">À partager</p>
+          <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('babyPrep.birthList', 'Liste de naissance')}</h3>
+          <p className="text-xs text-slate-500 mt-1">{t('babyPrep.toShare', 'À partager')}</p>
         </Card>
 
         <Card
@@ -530,8 +532,8 @@ export function BabyPreparationSection() {
           className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-purple-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
         >
           <Briefcase className="w-10 h-10 text-purple-500 mx-auto mb-2" />
-          <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Sac de maternité</h3>
-          <p className="text-xs text-slate-500 mt-1">Check-list interactive</p>
+          <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('babyPrep.maternityBag', 'Sac de maternité')}</h3>
+          <p className="text-xs text-slate-500 mt-1">{t('babyPrep.interactiveChecklist', 'Check-list interactive')}</p>
         </Card>
 
         <a
@@ -545,8 +547,8 @@ export function BabyPreparationSection() {
             className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center h-full"
           >
             <Video className="w-10 h-10 text-red-500 mx-auto mb-2" />
-            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Vidéos</h3>
-            <p className="text-xs text-slate-500 mt-1">Préparation accouchement</p>
+            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('babyPrep.videos', 'Vidéos')}</h3>
+            <p className="text-xs text-slate-500 mt-1">{t('babyPrep.birthPreparation', 'Préparation accouchement')}</p>
           </Card>
         </a>
 
@@ -561,8 +563,8 @@ export function BabyPreparationSection() {
             className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center h-full"
           >
             <Youtube className="w-10 h-10 text-red-600 mx-auto mb-2" />
-            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Les Maternelles</h3>
-            <p className="text-xs text-slate-500 mt-1">Chaîne YouTube</p>
+            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('babyPrep.maternelles', 'Les Maternelles')}</h3>
+            <p className="text-xs text-slate-500 mt-1">{t('babyPrep.youtubeChannel', 'Chaîne YouTube')}</p>
           </Card>
         </a>
 
@@ -577,8 +579,8 @@ export function BabyPreparationSection() {
             className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center h-full"
           >
             <Book className="w-10 h-10 text-amber-600 mx-auto mb-2" />
-            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Livres utiles</h3>
-            <p className="text-xs text-slate-500 mt-1">Grossesse et bébé</p>
+            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('babyPrep.usefulBooks', 'Livres utiles')}</h3>
+            <p className="text-xs text-slate-500 mt-1">{t('babyPrep.pregnancyAndBaby', 'Grossesse et bébé')}</p>
           </Card>
         </a>
       </div>
@@ -589,10 +591,11 @@ export function BabyPreparationSection() {
 // Catégorie: Suivi Post-partum
 export function PostpartumSection() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <CollapsibleSection 
-      title="Suivi post-partum" 
+      title={t('sections.postpartum', 'Suivi post-partum')}
       icon={Heart} 
       iconColor="text-rose-500"
       defaultOpen={false}
@@ -608,8 +611,8 @@ export function PostpartumSection() {
             <Baby className="w-8 h-8 text-white" />
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Les 6 premiers mois avec bébé</h3>
-            <p className="text-sm text-slate-500 mt-1">Conseils, rendez-vous, allaitement, couches et précautions</p>
+            <h3 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('postpartum.first6Months', 'Les 6 premiers mois avec bébé')}</h3>
+            <p className="text-sm text-slate-500 mt-1">{t('postpartum.desc', 'Conseils, rendez-vous, allaitement, couches et précautions')}</p>
           </div>
           <ChevronRight className="w-6 h-6 text-rose-400" />
         </div>
@@ -618,55 +621,98 @@ export function PostpartumSection() {
   );
 }
 
-// Catégorie: Services et ressources
+// Catégorie: Services et ressources - Dynamique selon la langue
 export function ServicesSection() {
+  const { t, i18n } = useTranslation();
+  const { getServicesForLanguage, serviceColors } = require('../../data/servicesByCountry');
+  
+  const currentLang = i18n.language?.split('-')[0] || 'fr';
+  const countryData = getServicesForLanguage(currentLang);
+  
+  // Mapping des icônes
+  const iconMap = {
+    building: Library,
+    heart: Heart,
+    mapPin: Gift,
+    phone: Phone,
+    baby: Baby
+  };
+
   return (
     <CollapsibleSection 
-      title="Services et ressources" 
+      title={t('sections.services', 'Services et ressources')}
       icon={Library} 
       iconColor="text-blue-500"
       defaultOpen={false}
       sectionId="services"
     >
-      <div className="flex flex-wrap gap-3 justify-center">
-        <a
-          href="https://www.caf.fr"
-          target="_blank"
-          rel="noopener noreferrer"
-          data-testid="caf-button"
-          className="flex items-center gap-3 bg-white rounded-full px-5 py-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer transition-all hover:-translate-y-0.5 no-underline"
-        >
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-400 rounded-full flex items-center justify-center">
-            <Library className="w-5 h-5 text-white" />
-          </div>
-          <span className="font-semibold text-slate-700">CAF</span>
-        </a>
-
-        <a
-          href="https://www.ameli.fr"
-          target="_blank"
-          rel="noopener noreferrer"
-          data-testid="ameli-button"
-          className="flex items-center gap-3 bg-white rounded-full px-5 py-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer transition-all hover:-translate-y-0.5 no-underline"
-        >
-          <div className="w-10 h-10 bg-gradient-to-br from-sky-500 to-sky-400 rounded-full flex items-center justify-center">
-            <Heart className="w-5 h-5 text-white" />
-          </div>
-          <span className="font-semibold text-slate-700">Ameli</span>
-        </a>
-
-        <a
-          href="https://www.google.com/maps/search/mairie/"
-          target="_blank"
-          rel="noopener noreferrer"
-          data-testid="maps-button"
-          className="flex items-center gap-3 bg-white rounded-full px-5 py-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer transition-all hover:-translate-y-0.5 no-underline"
-        >
-          <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-400 rounded-full flex items-center justify-center">
-            <Gift className="w-5 h-5 text-white" />
-          </div>
-          <span className="font-semibold text-slate-700">Mairies proches</span>
-        </a>
+      {/* Indicateur du pays */}
+      <div className="flex items-center justify-center gap-2 mb-4 text-sm text-slate-500">
+        <span>{countryData.flag}</span>
+        <span>{countryData.country}</span>
+      </div>
+      
+      {/* Services principaux (3 premiers) */}
+      <div className="flex flex-wrap gap-3 justify-center mb-4">
+        {countryData.services.slice(0, 3).map((service) => {
+          const IconComponent = iconMap[service.icon] || Library;
+          const colors = serviceColors[service.color] || serviceColors.blue;
+          
+          return (
+            <a
+              key={service.id}
+              href={service.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid={`service-${service.id}`}
+              className="flex items-center gap-3 bg-white rounded-full px-5 py-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer transition-all hover:-translate-y-0.5 no-underline"
+            >
+              <div className={`w-10 h-10 ${colors.bg} rounded-full flex items-center justify-center`}>
+                <IconComponent className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-left">
+                <span className="font-semibold text-slate-700 block">{service.name}</span>
+                <span className="text-xs text-slate-500">{service.description}</span>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+      
+      {/* Urgences et site officiel (2 derniers) */}
+      <div className="grid grid-cols-2 gap-3">
+        {countryData.services.slice(3).map((service) => {
+          const IconComponent = iconMap[service.icon] || Library;
+          const colors = serviceColors[service.color] || serviceColors.blue;
+          const isEmergency = service.id === 'emergency';
+          
+          return (
+            <a
+              key={service.id}
+              href={service.url}
+              target={isEmergency ? "_self" : "_blank"}
+              rel="noopener noreferrer"
+              data-testid={`service-${service.id}`}
+              className={`flex items-center gap-3 rounded-2xl px-4 py-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border cursor-pointer transition-all hover:-translate-y-0.5 no-underline ${
+                isEmergency 
+                  ? 'bg-gradient-to-br from-red-50 to-orange-50 border-red-200 hover:shadow-red-100' 
+                  : 'bg-gradient-to-br from-pink-50 to-purple-50 border-pink-200 hover:shadow-pink-100'
+              }`}
+            >
+              <div className={`w-10 h-10 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                <IconComponent className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-left min-w-0">
+                <span className={`font-semibold block truncate ${isEmergency ? 'text-red-700' : 'text-pink-700'}`}>
+                  {service.name}
+                </span>
+                <span className={`text-xs truncate block ${isEmergency ? 'text-red-600' : 'text-pink-600'}`}>
+                  {service.description}
+                </span>
+              </div>
+            </a>
+          );
+        })}
       </div>
     </CollapsibleSection>
   );
