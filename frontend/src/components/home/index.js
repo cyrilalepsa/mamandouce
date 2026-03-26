@@ -5,6 +5,7 @@ export {
   PregnancySection, 
   BabyPreparationSection, 
   PostpartumSection, 
-  ServicesSection 
+  ServicesSection,
+  PinnedSectionsProvider 
 } from './NavigationSections';
 export { TopBar } from './TopBar';

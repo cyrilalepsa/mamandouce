@@ -16,7 +16,8 @@ import {
   PregnancySection,
   BabyPreparationSection,
   PostpartumSection,
-  ServicesSection
+  ServicesSection,
+  PinnedSectionsProvider
 } from '../components/home';
 
 const ADMIN_EMAIL = 'cyrilalepsa@gmail.com';
@@ -287,14 +288,16 @@ function HomePage() {
           <NameOfTheDay isDarkMode={isDarkMode} />
 
           {/* Sections de navigation */}
-          <PreconceptionSection />
-          <PregnancySection 
-            hasPregnancyProfile={hasPregnancyProfile} 
-            pregnancyProfile={pregnancyProfile} 
-          />
-          <BabyPreparationSection />
-          <PostpartumSection />
-          <ServicesSection />
+          <PinnedSectionsProvider>
+            <PreconceptionSection />
+            <PregnancySection 
+              hasPregnancyProfile={hasPregnancyProfile} 
+              pregnancyProfile={pregnancyProfile} 
+            />
+            <BabyPreparationSection />
+            <PostpartumSection />
+            <ServicesSection />
+          </PinnedSectionsProvider>
 
         </div>
       </div>

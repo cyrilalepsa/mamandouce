@@ -162,6 +162,7 @@ export function PreconceptionSection() {
       icon={Sparkles} 
       iconColor="text-amber-500"
       defaultOpen={false}
+      sectionId="preconception"
     >
       <div className="grid grid-cols-2 gap-4">
         <Card
@@ -233,6 +234,7 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
       icon={Baby} 
       iconColor="text-pink-500"
       defaultOpen={false}
+      sectionId="pregnancy"
     >
 
       {/* Scanner, Bibliothèque, Favoris, Historique */}
@@ -411,6 +413,7 @@ export function BabyPreparationSection() {
         icon={() => null}
         iconColor=""
         defaultOpen={false}
+        sectionId="baby-preparation"
       >
         
         {/* Aperçu des cartes avec effet de flou partiel */}
@@ -501,6 +504,7 @@ export function BabyPreparationSection() {
       icon={Gift} 
       iconColor="text-purple-500"
       defaultOpen={false}
+      sectionId="baby-preparation"
     >
       <div className="grid grid-cols-2 gap-4">
         <Card
@@ -585,6 +589,7 @@ export function PostpartumSection() {
       icon={Heart} 
       iconColor="text-rose-500"
       defaultOpen={false}
+      sectionId="postpartum"
     >
       <Card
         onClick={() => navigate('/postpartum')}
@@ -614,6 +619,7 @@ export function ServicesSection() {
       icon={Library} 
       iconColor="text-blue-500"
       defaultOpen={false}
+      sectionId="services"
     >
       <div className="flex flex-wrap gap-3 justify-center">
         <a
