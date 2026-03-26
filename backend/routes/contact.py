@@ -90,7 +90,7 @@ async def get_my_messages(current_user: User = Depends(get_current_user)):
         {"_id": 0}
     ).sort("created_at", -1).to_list(50)
     
-    # Count unread replies
+    # Count unread replies (including messages initiated by admin)
     unread_count = len([m for m in messages if m.get("admin_reply") and not m.get("user_read_reply")])
     
     return {"messages": messages, "unread_replies": unread_count}

@@ -921,6 +921,7 @@ async def send_message_to_user(user_id: str, request: AdminReplyRequest, admin: 
         "created_at": datetime.now(timezone.utc).isoformat(),
         "replied_at": datetime.now(timezone.utc).isoformat(),
         "is_read": True,  # L'admin l'a déjà lu puisqu'il l'envoie
+        "user_read_reply": False,  # L'utilisateur n'a pas encore lu (affiche le point rouge)
         "initiated_by_admin": True  # Flag pour identifier les messages initiés par l'admin
     }
     
