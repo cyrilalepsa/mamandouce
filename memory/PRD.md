@@ -28,8 +28,11 @@ Authentification, Calculateur, Scanner alimentaire, Bibliothèque, RDV médicaux
 20. **Multi-langues (6 langues)** - FR, EN, ES, PT, IT, DE
 21. **Bannière d'aide épinglage** - Guide nouvelles utilisatrices
 22. **Services localisés** - CAF/NHS/INPS selon langue
-23. **Traductions étendues** ✅ NEW - Auth, calculateur, scanner, bibliothèque, prénoms
-24. **Détection auto langue** ✅ NEW - Détecte la langue du navigateur
+23. **Traductions étendues** ✅ - Auth, calculateur, scanner, bibliothèque, prénoms
+24. **Détection auto langue** ✅ - Détecte la langue du navigateur
+25. **Prénom du jour localisé** ✅ NEW - Calendrier des saints par pays (FR, ES, PT, IT, DE)
+26. **Magasins liste naissance** ✅ NEW - Enseignes adaptées par pays (Vertbaudet FR, John Lewis UK, etc.)
+27. **Sac de maternité localisé** ✅ NEW - Documents, durée séjour, marques par pays
 
 ---
 
@@ -80,10 +83,15 @@ Authentification, Calculateur, Scanner alimentaire, Bibliothèque, RDV médicaux
 ### ✅ DONE
 - ~~P0: Déploiement Railway~~
 - ~~P0: Épinglage catégories~~
+- ~~P0: Vérification visuelle composants localisés~~ (26/03/2026)
 - ~~P2: Multi-langues~~
 - ~~P2: Services localisés~~
 - ~~P2: Traductions étendues~~
+- ~~P2: Finalisation fichiers i18n~~
 - ~~Amélioration: Détection auto langue~~
+- ~~Amélioration: Prénom du jour par pays~~
+- ~~Amélioration: Magasins liste naissance par pays~~
+- ~~Amélioration: Sac de maternité par pays~~
 
 ### P1 - High Priority
 - [ ] **Publication Google Play Store** - Générer AAB avec TWA
@@ -105,8 +113,11 @@ Authentification, Calculateur, Scanner alimentaire, Bibliothèque, RDV médicaux
 - `/app/frontend/src/i18n/locales/*.json` - 6 fichiers de traduction
 - `/app/frontend/src/components/settings/LanguageSelector.jsx`
 
-### Services
+### Données localisées
 - `/app/frontend/src/data/servicesByCountry.js` - Services par pays
+- `/app/frontend/src/data/namesByCountry.js` - Calendrier des prénoms
+- `/app/frontend/src/data/storesByCountry.js` - Magasins liste naissance
+- `/app/frontend/src/data/maternityBagByCountry.js` - Infos sac maternité
 
 ### Navigation
 - `/app/frontend/src/components/home/NavigationSections.jsx`
