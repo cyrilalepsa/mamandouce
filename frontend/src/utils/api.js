@@ -201,6 +201,12 @@ export const api = {
     shareRecipes: (recipeNames) => axios.post(`${API}/postpartum/share-recipes`, { recipe_names: recipeNames }, getAuthHeaders()),
     getSharedRecipes: (shareCode) => axios.get(`${API}/postpartum/shared/${shareCode}`),
     getMyShares: () => axios.get(`${API}/postpartum/my-shares`, getAuthHeaders()),
+    // Custom recipes
+    createRecipe: (recipe) => axios.post(`${API}/postpartum/recipes/create`, recipe, getAuthHeaders()),
+    getMyRecipes: () => axios.get(`${API}/postpartum/recipes/my-recipes`, getAuthHeaders()),
+    deleteRecipe: (recipeId) => axios.delete(`${API}/postpartum/recipes/${recipeId}`, getAuthHeaders()),
+    shareRecipe: (recipeId) => axios.post(`${API}/postpartum/recipes/${recipeId}/share`, {}, getAuthHeaders()),
+    getSingleSharedRecipe: (shareCode) => axios.get(`${API}/postpartum/recipe/shared/${shareCode}`),
     // Maternity bag favorites
     getMaternityBagFavorites: () => axios.get(`${API}/maternity-bag/favorites`, getAuthHeaders()),
     toggleMaternityBagFavorite: (itemName) => axios.post(`${API}/maternity-bag/favorites/toggle`, { item_name: itemName }, getAuthHeaders()),

@@ -2147,3 +2147,151 @@ async def get_my_shares(current_user: User = Depends(get_current_user)):
         })
     
     return {"shares": result}
+
+# ==================== CUSTOM RECIPES ====================
+
+class CustomRecipeRequest(BaseModel):
+    name: str
+    category: str
+    age: str
+    ingredients: List[str]
+    steps: List[str]
+    tips: str = None
+    video_url: str = None
+
+@router.post("/postpartum/recipes/create")
+async def create_custom_recipe(recipe: CustomRecipeRequest, current_user: User = Depends(get_current_user)):
+    """Créer une recette personnalisée"""
+    import uuid
+    
+    # Vérifier que le nom n'existe pas déjà
+    existing = await db.custom_recipes.find_one({
+        "user_id": current_user.id,
+        "name": recipe.name
+    })
+    
+    if existing:
+        raise HTTPException(status_code=400, detail="Vous avez déjà une recette avec ce nom")
+    
+    recipe_data = {
+        "id": str(uuid.uuid4()),
+        "user_id": current_user.id,
+        "user_name": current_user.name or current_user.email.split('@')[0],
+        "name": recipe.name,
+        "category": recipe.category,
+        "age": recipe.age,
+        "ingredients": recipe.ingredients,
+        "steps": recipe.steps,
+        "tips": recipe.tips,
+        "video_url": recipe.video_url,
+        "is_custom": True,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "shares_count": 0
+    }
+    
+    await db.custom_recipes.insert_one(recipe_data)
+    
+    return {
+        "success": True,
+        "recipe_id": recipe_data["id"],
+        "message": f"Recette '{recipe.name}' créée avec succès !"
+    }
+
+@router.get("/postpartum/recipes/my-recipes")
+async def get_my_custom_recipes(current_user: User = Depends(get_current_user)):
+    """Récupérer mes recettes personnalisées"""
+    recipes = await db.custom_recipes.find(
+        {"user_id": current_user.id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return {"recipes": recipes}
+
+@router.delete("/postpartum/recipes/{recipe_id}")
+async def delete_custom_recipe(recipe_id: str, current_user: User = Depends(get_current_user)):
+    """Supprimer une recette personnalisée"""
+    result = await db.custom_recipes.delete_one({
+        "id": recipe_id,
+        "user_id": current_user.id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Recette non trouvée")
+    
+    return {"success": True, "message": "Recette supprimée"}
+
+@router.post("/postpartum/recipes/{recipe_id}/share")
+async def share_single_recipe(recipe_id: str, current_user: User = Depends(get_current_user)):
+    """Partager une recette individuelle (personnalisée ou standard)"""
+    
+    # Chercher d'abord dans les recettes personnalisées
+    custom_recipe = await db.custom_recipes.find_one({"id": recipe_id}, {"_id": 0})
+    
+    recipe_data = None
+    is_custom = False
+    
+    if custom_recipe:
+        recipe_data = custom_recipe
+        is_custom = True
+    else:
+        # Chercher dans les recettes standard par nom
+        all_recipes = POSTPARTUM_CONTENT.get("baby_recipes", {}).get("recipes", [])
+        for r in all_recipes:
+            if r.get("name") == recipe_id:
+                recipe_data = r
+                break
+    
+    if not recipe_data:
+        raise HTTPException(status_code=404, detail="Recette non trouvée")
+    
+    # Générer un code de partage unique
+    share_code = secrets.token_urlsafe(8)
+    
+    share_data = {
+        "code": share_code,
+        "user_id": current_user.id,
+        "user_name": current_user.name or current_user.email.split('@')[0],
+        "recipe": recipe_data,
+        "is_custom": is_custom,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "views": 0
+    }
+    
+    await db.single_recipe_shares.insert_one(share_data)
+    
+    # Incrémenter le compteur de partages si c'est une recette custom
+    if is_custom:
+        await db.custom_recipes.update_one(
+            {"id": recipe_id},
+            {"$inc": {"shares_count": 1}}
+        )
+    
+    return {
+        "success": True,
+        "share_code": share_code,
+        "recipe_name": recipe_data.get("name"),
+        "message": f"Recette '{recipe_data.get('name')}' prête à partager !"
+    }
+
+@router.get("/postpartum/recipe/shared/{share_code}")
+async def get_single_shared_recipe(share_code: str):
+    """Récupérer une recette partagée individuellement (endpoint public)"""
+    share = await db.single_recipe_shares.find_one({"code": share_code})
+    
+    if not share:
+        raise HTTPException(status_code=404, detail="Lien de partage invalide ou expiré")
+    
+    # Incrémenter les vues
+    await db.single_recipe_shares.update_one(
+        {"code": share_code},
+        {"$inc": {"views": 1}}
+    )
+    
+    return {
+        "shared_by": share.get("user_name", "Une maman"),
+        "recipe": share.get("recipe"),
+        "is_custom": share.get("is_custom", False),
+        "views": share.get("views", 0) + 1,
+        "shared_at": share.get("created_at")
+    }
+
