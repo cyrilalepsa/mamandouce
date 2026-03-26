@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
-import { Users, Sparkles, Star, Crown, Baby, Shield, ShieldOff, Lock, ChevronDown, ChevronUp, Calendar, Filter } from 'lucide-react';
+import { Input } from '../ui/input';
+import { Users, Sparkles, Star, Crown, Baby, Shield, ShieldOff, Lock, ChevronDown, ChevronUp, Calendar, Filter, Mail, Send, X } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'sonner';
 
@@ -54,6 +55,10 @@ const getMonthName = (monthIndex) => {
 // Composant pour afficher un utilisateur individuel (dépliable)
 function UserCard({ user, index, loadUsers }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailMessage, setEmailMessage] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
   
   const statusBadge = getStatusBadge(user.display_status);
   const StatusIcon = statusBadge.icon;
@@ -62,7 +67,28 @@ function UserCard({ user, index, loadUsers }) {
   const isAdmin = user.role === 'admin';
   const isSuperAdmin = user.email === SUPER_ADMIN_EMAIL;
   
+  const handleSendEmail = async () => {
+    if (!emailSubject.trim() || !emailMessage.trim()) {
+      toast.error('Veuillez remplir le sujet et le message');
+      return;
+    }
+    
+    setSendingEmail(true);
+    try {
+      await api.admin.sendEmailToUser(user.id, emailSubject, emailMessage);
+      toast.success(`Email envoyé à ${user.email}`);
+      setShowEmailModal(false);
+      setEmailSubject('');
+      setEmailMessage('');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erreur lors de l\'envoi');
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+  
   return (
+    <>
     <div className={`border rounded-xl overflow-hidden ${isSuperAdmin ? 'bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-300' : isAdmin ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-200'}`}>
       {/* Header cliquable */}
       <button
@@ -285,10 +311,87 @@ function UserCard({ user, index, loadUsers }) {
                 </Button>
               )
             )}
+            
+            {/* Bouton envoyer email */}
+            <Button
+              onClick={() => setShowEmailModal(true)}
+              data-testid={`send-email-${index}`}
+              className="bg-sky-100 text-sky-700 hover:bg-sky-200 rounded-lg px-3 py-1.5 text-xs font-semibold"
+            >
+              <Mail className="w-3 h-3 mr-1 inline" />
+              Email
+            </Button>
           </div>
         </div>
       )}
     </div>
+    
+    {/* Modal d'envoi d'email */}
+    {showEmailModal && (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-2xl w-full max-w-md shadow-xl animate-fade-in">
+          <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+            <div>
+              <h3 className="font-bold text-slate-700">Envoyer un email</h3>
+              <p className="text-xs text-slate-500">À : {user.email}</p>
+            </div>
+            <button 
+              onClick={() => setShowEmailModal(false)}
+              className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200"
+            >
+              <X className="w-4 h-4 text-slate-600" />
+            </button>
+          </div>
+          
+          <div className="p-4 space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Sujet</label>
+              <Input
+                value={emailSubject}
+                onChange={(e) => setEmailSubject(e.target.value)}
+                placeholder="Ex: Information importante"
+                className="rounded-xl"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Message</label>
+              <textarea
+                value={emailMessage}
+                onChange={(e) => setEmailMessage(e.target.value)}
+                placeholder="Votre message..."
+                rows={5}
+                className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm"
+              />
+            </div>
+          </div>
+          
+          <div className="p-4 border-t border-slate-100 flex gap-2 justify-end">
+            <Button
+              onClick={() => setShowEmailModal(false)}
+              className="bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-xl px-4"
+            >
+              Annuler
+            </Button>
+            <Button
+              onClick={handleSendEmail}
+              disabled={sendingEmail}
+              className="bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:opacity-90 rounded-xl px-4"
+            >
+              {sendingEmail ? (
+                <>Envoi...</>
+              ) : (
+                <>
+                  <Send className="w-4 h-4 mr-1 inline" />
+                  Envoyer
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
 

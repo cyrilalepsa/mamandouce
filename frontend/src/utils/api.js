@@ -224,6 +224,7 @@ export const api = {
     setUserPremium: (userId, premium) => axios.post(`${API}/admin/user/${userId}/set-premium?premium=${premium}`, {}, getAuthHeaders()),
     setUserPostpartum: (userId, enabled) => axios.post(`${API}/admin/user/${userId}/set-postpartum?enabled=${enabled}`, {}, getAuthHeaders()),
     setUserRole: (userId, role) => axios.post(`${API}/admin/user/${userId}/set-role?role=${role}`, getAuthHeaders()),
+    sendEmailToUser: (userId, subject, message) => axios.post(`${API}/admin/user/${userId}/send-email`, { subject, message }, getAuthHeaders()),
     // Reminders Dashboard
     getRemindersDashboard: () => axios.get(`${API}/admin/reminders/dashboard`, getAuthHeaders()),
     getAllReminders: (status = 'all') => axios.get(`${API}/admin/reminders/all?status=${status}`, getAuthHeaders()),

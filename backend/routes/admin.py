@@ -672,6 +672,99 @@ async def set_user_role(user_id: str, role: str = "user", admin: User = Depends(
         "new_role": role
     }
 
+# ==================== SEND EMAIL TO USER ====================
+
+from pydantic import BaseModel
+
+class SendEmailRequest(BaseModel):
+    subject: str
+    message: str
+
+@router.post("/admin/user/{user_id}/send-email")
+async def send_email_to_user(user_id: str, request: SendEmailRequest, admin: User = Depends(get_admin_user)):
+    """Envoyer un email personnalisé à un utilisateur (admin only)"""
+    
+    # Trouver l'utilisateur
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="Utilisatrice non trouvée")
+    
+    user_email = user.get("email")
+    user_name = user.get("name", "").split()[0] if user.get("name") else "Chère utilisatrice"
+    
+    if not user_email:
+        raise HTTPException(status_code=400, detail="L'utilisatrice n'a pas d'email")
+    
+    if not resend or not RESEND_API_KEY:
+        raise HTTPException(status_code=500, detail="Service email non configuré")
+    
+    try:
+        # Construire le HTML de l'email
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fef7f7; margin: 0; padding: 20px; }}
+                .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }}
+                .header {{ background: linear-gradient(135deg, #ec4899, #f472b6); padding: 30px; text-align: center; }}
+                .header h1 {{ color: white; margin: 0; font-size: 24px; }}
+                .content {{ padding: 30px; color: #475569; line-height: 1.6; }}
+                .message {{ background: #fdf2f8; border-radius: 15px; padding: 20px; margin: 20px 0; }}
+                .footer {{ background: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🌸 MamanDouce</h1>
+                </div>
+                <div class="content">
+                    <p>Bonjour {user_name},</p>
+                    <div class="message">
+                        {request.message.replace(chr(10), '<br>')}
+                    </div>
+                    <p>Belle journée ! 💕</p>
+                    <p><em>L'équipe MamanDouce</em></p>
+                </div>
+                <div class="footer">
+                    <p>MamanDouce - Votre compagnon de grossesse</p>
+                    <p><a href="https://mamandouce.cycafamily.com" style="color: #ec4899;">mamandouce.cycafamily.com</a></p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Envoyer l'email
+        resend.emails.send({
+            "from": f"MamanDouce <{SENDER_EMAIL}>",
+            "to": user_email,
+            "subject": request.subject,
+            "html": html_content
+        })
+        
+        # Logger l'envoi
+        await db.admin_emails_sent.insert_one({
+            "user_id": user_id,
+            "user_email": user_email,
+            "subject": request.subject,
+            "message": request.message,
+            "sent_by": admin.email,
+            "sent_at": datetime.now(timezone.utc).isoformat()
+        })
+        
+        logger.info(f"Email sent to {user_email} by admin {admin.email}")
+        
+        return {
+            "success": True,
+            "message": f"Email envoyé à {user_email}"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error sending email to {user_email}: {e}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de l'envoi: {str(e)}")
+
 # ==================== FOODS ====================
 
 @router.get("/admin/pending-foods")
