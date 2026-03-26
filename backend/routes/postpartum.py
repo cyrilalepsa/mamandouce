@@ -621,7 +621,7 @@ POSTPARTUM_CONTENT = {
             },
             {
                 "problem": "Engorgement",
-                "solutions": ["Tétées très fréquentes", "Massez le sein pendant la tétée", "Appliquez du froid entre les tétées", "Exprimez un peu de lait sous la douche chaude"],
+                "solutions": ["Tétées très fréquentes", "Massez le sein pendant la tétée", "Appliquez du froid entre les tétées", "Extraire un peu de lait sous la douche chaude"],
                 "video_url": "https://www.youtube.com/watch?v=jLTVf7nLkWA"
             },
             {
