@@ -1,41 +1,128 @@
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import { Card } from '../ui/card';
 import { 
   Sparkles, Baby, Gift, Heart, Library,
   CalendarHeart, BookHeart, ScanBarcode, Apple, 
   History, Stethoscope, Bell, 
-  ClipboardList, Briefcase, Video, Youtube, Book, ChevronRight, ChevronDown, LineChart, Lock, Crown, Users
+  ClipboardList, Briefcase, Video, Youtube, Book, ChevronRight, ChevronDown, LineChart, Lock, Crown, Users, Pin, PinOff
 } from 'lucide-react';
 import { useSubscription } from '../SubscriptionGate';
+import { toast } from 'sonner';
+
+// Context pour gérer les sections épinglées
+const PinnedSectionsContext = createContext({
+  pinnedSections: [],
+  togglePin: () => {},
+  isPinned: () => false
+});
+
+export function PinnedSectionsProvider({ children }) {
+  const [pinnedSections, setPinnedSections] = useState([]);
+
+  useEffect(() => {
+    // Charger les sections épinglées depuis localStorage
+    const saved = localStorage.getItem('mamandouce_pinned_sections');
+    if (saved) {
+      setPinnedSections(JSON.parse(saved));
+    }
+  }, []);
+
+  const togglePin = (sectionId) => {
+    setPinnedSections(prev => {
+      const newPinned = prev.includes(sectionId)
+        ? prev.filter(id => id !== sectionId)
+        : [...prev, sectionId];
+      
+      localStorage.setItem('mamandouce_pinned_sections', JSON.stringify(newPinned));
+      
+      if (newPinned.includes(sectionId)) {
+        toast.success('Section épinglée ! Elle restera toujours ouverte.');
+      } else {
+        toast.info('Section désépinglée.');
+      }
+      
+      return newPinned;
+    });
+  };
+
+  const isPinned = (sectionId) => pinnedSections.includes(sectionId);
+
+  return (
+    <PinnedSectionsContext.Provider value={{ pinnedSections, togglePin, isPinned }}>
+      {children}
+    </PinnedSectionsContext.Provider>
+  );
+}
+
+export function usePinnedSections() {
+  return useContext(PinnedSectionsContext);
+}
 
 // Composant réutilisable pour les sections déroulantes
-function CollapsibleSection({ title, icon: Icon, iconColor, children, defaultOpen = false }) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+function CollapsibleSection({ title, icon: Icon, iconColor, children, defaultOpen = false, sectionId }) {
+  const { isPinned, togglePin } = usePinnedSections();
+  const pinned = sectionId ? isPinned(sectionId) : false;
+  const [isOpen, setIsOpen] = useState(defaultOpen || pinned);
+  
+  // Mettre à jour l'état si la section est épinglée
+  useEffect(() => {
+    if (pinned) {
+      setIsOpen(true);
+    }
+  }, [pinned]);
   
   // Si title est un composant React, on l'affiche directement
   const isCustomTitle = typeof title !== 'string';
   
+  const handleToggle = () => {
+    // Si épinglée, on ne peut pas fermer (sauf si on désépingle)
+    if (pinned && isOpen) {
+      toast.info('Cette section est épinglée. Cliquez sur 📌 pour la désépingler.');
+      return;
+    }
+    setIsOpen(!isOpen);
+  };
+  
   return (
     <div className="mb-4">
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between py-3 px-1 group"
-      >
-        {isCustomTitle ? (
-          <h2 className="text-xl font-bold text-slate-600 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-            {title}
-          </h2>
-        ) : (
-          <h2 className="text-xl font-bold text-slate-600 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-            {Icon && <Icon className={`w-5 h-5 ${iconColor}`} />}
-            {title}
-          </h2>
+      <div className="flex items-center gap-2">
+        <button 
+          onClick={handleToggle}
+          className="flex-1 flex items-center justify-between py-3 px-1 group"
+        >
+          {isCustomTitle ? (
+            <h2 className="text-xl font-bold text-slate-600 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              {title}
+              {pinned && <Pin className="w-4 h-4 text-pink-500 fill-pink-500" />}
+            </h2>
+          ) : (
+            <h2 className="text-xl font-bold text-slate-600 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              {Icon && <Icon className={`w-5 h-5 ${iconColor}`} />}
+              {title}
+              {pinned && <Pin className="w-4 h-4 text-pink-500 fill-pink-500" />}
+            </h2>
+          )}
+          <ChevronDown 
+            className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
+          />
+        </button>
+        
+        {/* Bouton épingler */}
+        {sectionId && (
+          <button
+            onClick={() => togglePin(sectionId)}
+            className={`p-2 rounded-full transition-all ${
+              pinned 
+                ? 'bg-pink-100 text-pink-600 hover:bg-pink-200' 
+                : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600'
+            }`}
+            title={pinned ? 'Désépingler cette section' : 'Épingler cette section (toujours ouverte)'}
+          >
+            {pinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
+          </button>
         )}
-        <ChevronDown 
-          className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
-        />
-      </button>
+      </div>
       
       <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="pt-2">
@@ -43,11 +130,21 @@ function CollapsibleSection({ title, icon: Icon, iconColor, children, defaultOpe
           
           {/* Bouton fermer en bas */}
           <button
-            onClick={() => setIsOpen(false)}
-            className="w-full mt-4 p-3 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center gap-2 transition-all duration-200 text-slate-600"
+            onClick={() => {
+              if (pinned) {
+                toast.info('Cette section est épinglée. Cliquez sur 📌 pour la désépingler.');
+                return;
+              }
+              setIsOpen(false);
+            }}
+            className={`w-full mt-4 p-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 ${
+              pinned 
+                ? 'bg-pink-50 text-pink-400 cursor-not-allowed' 
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+            }`}
           >
             <ChevronDown className="w-4 h-4 rotate-180" />
-            <span className="text-sm font-semibold">Fermer</span>
+            <span className="text-sm font-semibold">{pinned ? 'Section épinglée' : 'Fermer'}</span>
           </button>
         </div>
       </div>
