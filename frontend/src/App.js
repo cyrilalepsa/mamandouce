@@ -36,7 +36,10 @@ import ChatbotPage from './pages/ChatbotPage';
 import TrackingPage from './pages/TrackingPage';
 import PregnancyAfter35Page from './pages/PregnancyAfter35Page';
 import BabyNamesPage from './pages/BabyNamesPage';
+import UpdatesHistoryPage from './pages/UpdatesHistoryPage';
 import ChatBubble from './components/ChatBubble';
+import WhatsNewModal from './components/WhatsNewModal';
+import { NewBadgeProvider } from './components/NewBadge';
 import { PWAInstallBanner } from './components/PWAInstallBanner';
 import { Toaster } from './components/ui/sonner';
 
@@ -88,47 +91,51 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
-        <div className="App">
-          <BrowserRouter>
-            <Routes>
-              <Route path="/auth" element={<AuthPage setIsAuthenticated={setIsAuthenticated} />} />
-              <Route path="/reset-password" element={<ResetPasswordPage />} />
-              <Route path="/pricing" element={<PricingPage />} />
-              <Route path="/privacy" element={<PrivacyPolicyPage />} />
-              <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-              <Route path="/calculator" element={<ProtectedRoute><PregnancyCalculator /></ProtectedRoute>} />
-              <Route path="/wheel" element={<ProtectedRoute><PregnancyWheel /></ProtectedRoute>} />
-              <Route path="/scanner" element={<ProtectedRoute><FoodScanner /></ProtectedRoute>} />
-              <Route path="/library" element={<ProtectedRoute><FoodLibraryPage /></ProtectedRoute>} />
-              <Route path="/birth-list" element={<ProtectedRoute><BirthListPage /></ProtectedRoute>} />
-              <Route path="/birth-list/shared/:shareId" element={<SharedBirthListPage />} />
-              <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
-              <Route path="/favorites" element={<ProtectedRoute><FavoritesPage /></ProtectedRoute>} />
-              <Route path="/medical" element={<ProtectedRoute><MedicalAppointmentsPage /></ProtectedRoute>} />
-              <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
-              <Route path="/tips" element={<ProtectedRoute><WeeklyTipsPage /></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute requireSubscription={false}><ProfilePage /></ProtectedRoute>} />
-              <Route path="/settings" element={<ProtectedRoute requireSubscription={false}><SettingsPage /></ProtectedRoute>} />
-              <Route path="/subscription/checkout" element={<ProtectedRoute requireSubscription={false}><SubscriptionCheckout /></ProtectedRoute>} />
-              <Route path="/subscription/success" element={<ProtectedRoute requireSubscription={false}><SubscriptionSuccess /></ProtectedRoute>} />
-              <Route path="/subscription/cancel" element={<ProtectedRoute requireSubscription={false}><SubscriptionCancel /></ProtectedRoute>} />
-              <Route path="/subscription/manage" element={<ProtectedRoute requireSubscription={false}><SubscriptionManage /></ProtectedRoute>} />
-              <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
-              <Route path="/maternity-bag" element={<ProtectedRoute><MaternityBagPage /></ProtectedRoute>} />
-              <Route path="/postpartum" element={<ProtectedRoute><PostpartumPage /></ProtectedRoute>} />
-              <Route path="/recipes/shared/:shareCode" element={<SharedRecipesPage />} />
-              <Route path="/guide" element={<ProtectedRoute><GuidePage /></ProtectedRoute>} />
-              <Route path="/chatbot" element={<ProtectedRoute><ChatbotPage /></ProtectedRoute>} />
-              <Route path="/tracking" element={<ProtectedRoute><TrackingPage /></ProtectedRoute>} />
-              <Route path="/pregnancy-after-35" element={<ProtectedRoute><PregnancyAfter35Page /></ProtectedRoute>} />
-              <Route path="/baby-names" element={<ProtectedRoute><BabyNamesPage /></ProtectedRoute>} />
-            </Routes>
-          </BrowserRouter>
-          <Toaster />
-          <ChatBubble />
-          <PWAInstallBanner />
-          <OfflineSyncIndicator />
-        </div>
+        <NewBadgeProvider>
+          <div className="App">
+            <BrowserRouter>
+              <Routes>
+                <Route path="/auth" element={<AuthPage setIsAuthenticated={setIsAuthenticated} />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+                <Route path="/pricing" element={<PricingPage />} />
+                <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+                <Route path="/calculator" element={<ProtectedRoute><PregnancyCalculator /></ProtectedRoute>} />
+                <Route path="/wheel" element={<ProtectedRoute><PregnancyWheel /></ProtectedRoute>} />
+                <Route path="/scanner" element={<ProtectedRoute><FoodScanner /></ProtectedRoute>} />
+                <Route path="/library" element={<ProtectedRoute><FoodLibraryPage /></ProtectedRoute>} />
+                <Route path="/birth-list" element={<ProtectedRoute><BirthListPage /></ProtectedRoute>} />
+                <Route path="/birth-list/shared/:shareId" element={<SharedBirthListPage />} />
+                <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
+                <Route path="/favorites" element={<ProtectedRoute><FavoritesPage /></ProtectedRoute>} />
+                <Route path="/medical" element={<ProtectedRoute><MedicalAppointmentsPage /></ProtectedRoute>} />
+                <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+                <Route path="/tips" element={<ProtectedRoute><WeeklyTipsPage /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute requireSubscription={false}><ProfilePage /></ProtectedRoute>} />
+                <Route path="/settings" element={<ProtectedRoute requireSubscription={false}><SettingsPage /></ProtectedRoute>} />
+                <Route path="/subscription/checkout" element={<ProtectedRoute requireSubscription={false}><SubscriptionCheckout /></ProtectedRoute>} />
+                <Route path="/subscription/success" element={<ProtectedRoute requireSubscription={false}><SubscriptionSuccess /></ProtectedRoute>} />
+                <Route path="/subscription/cancel" element={<ProtectedRoute requireSubscription={false}><SubscriptionCancel /></ProtectedRoute>} />
+                <Route path="/subscription/manage" element={<ProtectedRoute requireSubscription={false}><SubscriptionManage /></ProtectedRoute>} />
+                <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
+                <Route path="/maternity-bag" element={<ProtectedRoute><MaternityBagPage /></ProtectedRoute>} />
+                <Route path="/postpartum" element={<ProtectedRoute><PostpartumPage /></ProtectedRoute>} />
+                <Route path="/recipes/shared/:shareCode" element={<SharedRecipesPage />} />
+                <Route path="/guide" element={<ProtectedRoute><GuidePage /></ProtectedRoute>} />
+                <Route path="/chatbot" element={<ProtectedRoute><ChatbotPage /></ProtectedRoute>} />
+                <Route path="/tracking" element={<ProtectedRoute><TrackingPage /></ProtectedRoute>} />
+                <Route path="/pregnancy-after-35" element={<ProtectedRoute><PregnancyAfter35Page /></ProtectedRoute>} />
+                <Route path="/baby-names" element={<ProtectedRoute><BabyNamesPage /></ProtectedRoute>} />
+                <Route path="/updates" element={<ProtectedRoute requireSubscription={false}><UpdatesHistoryPage /></ProtectedRoute>} />
+              </Routes>
+            </BrowserRouter>
+            <Toaster />
+            <ChatBubble />
+            <PWAInstallBanner />
+            <OfflineSyncIndicator />
+            <WhatsNewModal />
+          </div>
+        </NewBadgeProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

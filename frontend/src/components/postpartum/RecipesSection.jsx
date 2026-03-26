@@ -5,6 +5,7 @@ import { Input } from '../ui/input';
 import { Check, Play, ExternalLink, ChevronDown, ChevronUp, Heart, Share2, Copy, Link, Plus, Trash2, X, ChefHat } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'sonner';
+import { WithNewBadge } from '../NewBadge';
 
 export function RecipesSection({ babyRecipes, favorites, onFavoritesChange }) {
   const [recipeFilter, setRecipeFilter] = useState(null);
@@ -288,25 +289,29 @@ export function RecipesSection({ babyRecipes, favorites, onFavoritesChange }) {
         </div>
         <div className="flex gap-2">
           {/* Bouton Ajouter une recette */}
-          <button
-            onClick={() => setShowAddRecipeModal(true)}
-            data-testid="add-recipe-btn"
-            className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity"
-          >
-            <Plus className="w-4 h-4" />
-            Ajouter
-          </button>
+          <WithNewBadge badgeId="recipe-add" position="top-right">
+            <button
+              onClick={() => setShowAddRecipeModal(true)}
+              data-testid="add-recipe-btn"
+              className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity"
+            >
+              <Plus className="w-4 h-4" />
+              Ajouter
+            </button>
+          </WithNewBadge>
           {/* Bouton Partager favoris */}
           {favorites.length > 0 && (
-            <button
-              onClick={handleShareFavorites}
-              disabled={isSharing}
-              data-testid="share-favorites-btn"
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
-            >
-              <Share2 className="w-4 h-4" />
-              {isSharing ? 'Création...' : 'Partager'}
-            </button>
+            <WithNewBadge badgeId="recipe-share" position="top-right">
+              <button
+                onClick={handleShareFavorites}
+                disabled={isSharing}
+                data-testid="share-favorites-btn"
+                className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                <Share2 className="w-4 h-4" />
+                {isSharing ? 'Création...' : 'Partager'}
+              </button>
+            </WithNewBadge>
           )}
         </div>
       </div>

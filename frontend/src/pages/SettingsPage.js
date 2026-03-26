@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/card';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
-import { Gift, Shield, Bell, BellRing, CreditCard, Users, Key, ChevronDown, Moon, Sun } from 'lucide-react';
+import { Gift, Shield, Bell, BellRing, CreditCard, Users, Key, ChevronDown, Moon, Sun, Sparkles, History } from 'lucide-react';
 import { ToggleAllSections } from '../components/ToggleAllSections';
 import { useTheme } from '../contexts/ThemeContext';
+import { getLatestVersion } from '../data/appUpdates';
 import {
   PromoCodeSection,
   AccountSection,
@@ -50,6 +52,7 @@ function CollapsibleSettingsSection({
 }
 
 function SettingsPage() {
+  const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useTheme();
   const [preferences, setPreferences] = useState({
     email_notifications: true,
@@ -322,6 +325,30 @@ function SettingsPage() {
                 onSave={handleSave}
               />
             </CollapsibleSettingsSection>
+            
+            {/* Section Mises à jour */}
+            <Card 
+              className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => navigate('/updates')}
+            >
+              <div className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-700">Mises à jour</h3>
+                    <p className="text-xs text-slate-500">Version {getLatestVersion()}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 px-3 py-1 rounded-full text-xs font-semibold">
+                    Voir l'historique
+                  </span>
+                  <History className="w-5 h-5 text-slate-400" />
+                </div>
+              </div>
+            </Card>
           </>
         )}
       </div>

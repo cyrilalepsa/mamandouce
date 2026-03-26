@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Sparkles } from 'lucide-react';
 import { getSaintOfTheDay } from '../data/saintsCalendar';
 import { frenchNames } from '../data/babyNamesFR';
+import { NewBadge } from './NewBadge';
 
 export default function NameOfTheDay({ isDarkMode = false }) {
   // Obtenir le prénom fêté aujourd'hui selon le calendrier des saints
@@ -85,6 +86,7 @@ export default function NameOfTheDay({ isDarkMode = false }) {
         <span className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
           Fête du jour
         </span>
+        <NewBadge badgeId="name-of-day" size="xs" />
         <span className={`font-semibold truncate ${isDarkMode ? 'text-slate-100' : 'text-slate-700'}`}>
           🎉 {nameOfTheDay.name}
         </span>
