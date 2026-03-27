@@ -135,7 +135,8 @@ export function AndroidExportTab() {
   };
   
   const handleViewBusinessDoc = (filename) => {
-    window.open(`${process.env.REACT_APP_BACKEND_URL}/docs/${filename}`, '_blank');
+    // Les fichiers sont dans /public/docs, accessibles directement depuis le frontend
+    window.open(`/docs/${filename}`, '_blank');
     setShowBusinessMenu(false);
   };
 
