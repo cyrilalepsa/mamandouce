@@ -29,7 +29,7 @@ export default function CarteVisitePage() {
         fontFamily: "'Quicksand', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
       }}
     >
-      {/* Header */}
+      {/* Header - Kit Business */}
       <div className="flex items-center gap-4 mb-6">
         <Button
           onClick={() => navigate(-1)}
@@ -38,40 +38,70 @@ export default function CarteVisitePage() {
           <ArrowLeft className="w-5 h-5 text-slate-600" />
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Carte de Visite MamanDouce</h1>
-          <p className="text-slate-500 text-sm">Modèle prêt à imprimer - Format 85mm x 55mm</p>
+          <h1 className="text-2xl font-bold text-slate-800">Kit Business MamanDouce</h1>
+          <p className="text-slate-500 text-sm">Outils de communication pour promouvoir votre application</p>
         </div>
       </div>
 
-      {/* Toggle QR Code */}
-      <div className="flex justify-center mb-6">
-        <div className="bg-white rounded-full p-1 shadow-md flex gap-1">
-          <button
-            onClick={() => setShowQRCode(false)}
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-              !showQRCode 
-                ? 'bg-gradient-to-r from-pink-500 to-orange-400 text-white' 
-                : 'text-slate-600 hover:bg-slate-100'
-            }`}
-          >
-            Sans QR Code
-          </button>
-          <button
-            onClick={() => setShowQRCode(true)}
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-2 ${
-              showQRCode 
-                ? 'bg-gradient-to-r from-pink-500 to-orange-400 text-white' 
-                : 'text-slate-600 hover:bg-slate-100'
-            }`}
-          >
-            <QrCode className="w-4 h-4" />
-            Avec QR Code
-          </button>
-        </div>
+      {/* Instructions d'impression - EN HAUT */}
+      <div className="max-w-2xl mx-auto bg-white rounded-2xl p-6 shadow-lg mb-8">
+        <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+          🖨️ Instructions d'impression
+        </h2>
+        <ul className="text-slate-600 space-y-2 text-sm">
+          <li><strong>Format :</strong> 85mm x 55mm (format carte de visite standard)</li>
+          <li><strong>Papier recommandé :</strong> 350g/m² couché mat ou soft touch premium</li>
+          <li><strong>Finition :</strong> Coins arrondis (rayon 3mm) pour un look moderne</li>
+          <li><strong>Impression :</strong> Recto-verso, quadrichromie (CMJN)</li>
+          <li><strong>Quantité suggérée :</strong> 500 exemplaires (~40-60€ chez Vistaprint, Moo)</li>
+        </ul>
+        
+        {showQRCode && (
+          <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mt-4 rounded-r-lg">
+            <strong className="text-amber-800">💡 QR Code :</strong>
+            <span className="text-amber-700 text-sm ml-1">
+              Une fois votre application publiée sur Google Play, générez votre QR Code sur 
+              <a href="https://www.qr-code-generator.com/" target="_blank" rel="noopener noreferrer" className="underline ml-1">
+                qr-code-generator.com
+              </a>
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* Download buttons */}
-      <div className="flex flex-wrap gap-3 justify-center mb-8">
+      {/* Carte de Visite - Section */}
+      <div className="max-w-4xl mx-auto">
+        <h2 className="text-xl font-bold text-slate-800 mb-4 text-center">📇 Carte de Visite</h2>
+        
+        {/* Toggle QR Code */}
+        <div className="flex justify-center mb-6">
+          <div className="bg-white rounded-full p-1 shadow-md flex gap-1">
+            <button
+              onClick={() => setShowQRCode(false)}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                !showQRCode 
+                  ? 'bg-gradient-to-r from-pink-500 to-orange-400 text-white' 
+                  : 'text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              Sans QR Code
+            </button>
+            <button
+              onClick={() => setShowQRCode(true)}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-2 ${
+                showQRCode 
+                  ? 'bg-gradient-to-r from-pink-500 to-orange-400 text-white' 
+                  : 'text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              <QrCode className="w-4 h-4" />
+              Avec QR Code
+            </button>
+          </div>
+        </div>
+
+        {/* Download buttons */}
+        <div className="flex flex-wrap gap-3 justify-center mb-8">
         <button
           onClick={() => handleDownload('pdf')}
           className="flex items-center gap-2 px-5 py-3 rounded-full font-semibold text-white text-sm transition-transform hover:-translate-y-0.5 hover:shadow-lg"
@@ -201,31 +231,6 @@ export default function CarteVisitePage() {
           </div>
         </div>
       </div>
-
-      {/* Instructions d'impression */}
-      <div className="max-w-2xl mx-auto bg-white rounded-2xl p-6 shadow-lg">
-        <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-          🖨️ Instructions d'impression
-        </h2>
-        <ul className="text-slate-600 space-y-2 text-sm">
-          <li><strong>Format :</strong> 85mm x 55mm (format carte de visite standard)</li>
-          <li><strong>Papier recommandé :</strong> 350g/m² couché mat ou soft touch premium</li>
-          <li><strong>Finition :</strong> Coins arrondis (rayon 3mm) pour un look moderne</li>
-          <li><strong>Impression :</strong> Recto-verso, quadrichromie (CMJN)</li>
-          <li><strong>Quantité suggérée :</strong> 500 exemplaires (~40-60€ chez Vistaprint, Moo)</li>
-        </ul>
-        
-        {showQRCode && (
-          <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mt-4 rounded-r-lg">
-            <strong className="text-amber-800">💡 QR Code :</strong>
-            <span className="text-amber-700 text-sm ml-1">
-              Une fois votre application publiée sur Google Play, générez votre QR Code sur 
-              <a href="https://www.qr-code-generator.com/" target="_blank" rel="noopener noreferrer" className="underline ml-1">
-                qr-code-generator.com
-              </a>
-            </span>
-          </div>
-        )}
       </div>
     </div>
   );
