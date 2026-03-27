@@ -48,11 +48,11 @@ export function LanguageBubble() {
   };
 
   return (
-    <div className="fixed top-4 right-14" style={{ zIndex: 9999 }} ref={dropdownRef}>
+    <div className="fixed top-4 right-16" style={{ zIndex: 9999 }} ref={dropdownRef}>
       {/* Language dropdown */}
       {isOpen && (
         <div 
-          className="absolute top-12 right-0 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
+          className="absolute top-10 right-0 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
           style={{ 
             minWidth: '200px',
             zIndex: 9999,
@@ -96,18 +96,14 @@ export function LanguageBubble() {
         </div>
       )}
 
-      {/* Floating bubble button */}
+      {/* Flag button (no bubble) */}
       <button
         onClick={toggleDropdown}
-        className={`w-10 h-10 rounded-full shadow-md flex items-center justify-center transition-all duration-300 hover:scale-110 ${
-          isOpen 
-            ? 'bg-gradient-to-r from-pink-500 to-purple-500 shadow-pink-300/50' 
-            : 'bg-white border border-pink-200 hover:border-pink-400 shadow-md'
-        }`}
+        className="p-1 flex items-center justify-center transition-all duration-200 hover:scale-110 hover:opacity-80"
         title={t('settings.selectLanguage')}
         data-testid="language-bubble-btn"
       >
-        <span className="text-xl">{currentLanguage.flag}</span>
+        <span className="text-2xl">{currentLanguage.flag}</span>
       </button>
 
       {/* Animation keyframes */}
