@@ -140,41 +140,49 @@ export default function CarteVisitePage() {
               background: 'linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%)'
             }}
           >
-            <div className="h-full flex flex-col items-center justify-center p-5 relative">
+            <div className="h-full flex flex-col items-center justify-between p-5 relative">
               {/* Top gradient bar */}
               <div 
                 className="absolute top-0 left-0 right-0 h-1"
                 style={{ background: 'linear-gradient(90deg, #f472b6, #fb7185, #f97316)' }}
               />
               
-              <div className="text-4xl mb-1">🤱</div>
-              <div 
-                className="text-3xl font-semibold"
-                style={{ 
-                  fontFamily: "'Dancing Script', cursive",
-                  background: 'linear-gradient(90deg, #f472b6, #fb7185, #f97316)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent'
-                }}
-              >
-                MamanDouce
-              </div>
-              <div className="text-slate-500 text-xs mt-1 text-center leading-tight">
-                Votre compagnon avant, pendant<br/>et après la grossesse
+              {/* Contenu principal */}
+              <div className="flex-1 flex flex-col items-center justify-center">
+                <div className="text-4xl mb-1">🤱</div>
+                <div 
+                  className="text-3xl font-semibold"
+                  style={{ 
+                    fontFamily: "'Dancing Script', cursive",
+                    background: 'linear-gradient(90deg, #f472b6, #fb7185, #f97316)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent'
+                  }}
+                >
+                  MamanDouce
+                </div>
+                <div className="text-slate-500 text-xs mt-1 text-center leading-tight">
+                  Votre compagnon avant, pendant<br/>et après la grossesse
+                </div>
+                
+                {showQRCode && (
+                  <div className="flex items-center gap-3 mt-3">
+                    <div 
+                      className="w-12 h-12 border-2 border-dashed border-pink-400 rounded-lg flex items-center justify-center text-pink-400 text-[10px] font-semibold"
+                    >
+                      QR<br/>CODE
+                    </div>
+                    <div className="text-[10px] text-slate-500 leading-snug text-left">
+                      Scannez pour<br/>télécharger l'app
+                    </div>
+                  </div>
+                )}
               </div>
               
-              {showQRCode && (
-                <div className="flex items-center gap-3 mt-4">
-                  <div 
-                    className="w-14 h-14 border-2 border-dashed border-pink-400 rounded-lg flex items-center justify-center text-pink-400 text-[10px] font-semibold"
-                  >
-                    QR<br/>CODE
-                  </div>
-                  <div className="text-[10px] text-slate-500 leading-snug text-left">
-                    Scannez pour<br/>télécharger l'app
-                  </div>
-                </div>
-              )}
+              {/* URL en bas */}
+              <div className="text-[9px] text-pink-400 font-medium tracking-wide">
+                mamandouce.cycafamily.com
+              </div>
             </div>
           </div>
         </div>
