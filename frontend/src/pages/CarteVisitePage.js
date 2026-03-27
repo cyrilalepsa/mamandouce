@@ -153,35 +153,35 @@ export default function CarteVisitePage() {
         <div className="text-center">
           <div className="font-bold text-slate-800 mb-4 text-lg">VERSO</div>
           <div 
-            className="w-[340px] h-[220px] rounded-xl overflow-hidden text-white p-4 flex flex-col justify-between"
+            className="w-[340px] h-[220px] rounded-xl overflow-hidden p-4 flex flex-col justify-between"
             style={{ 
-              boxShadow: '0 10px 40px rgba(236, 72, 153, 0.2)',
-              background: 'linear-gradient(135deg, #f472b6 0%, #fb7185 50%, #f97316 100%)'
+              boxShadow: '0 10px 40px rgba(236, 72, 153, 0.15)',
+              background: 'linear-gradient(145deg, #fdf2f8 0%, #fce7f3 25%, #fbcfe8 50%, #f9a8d4 80%, #f472b6 100%)'
             }}
           >
             <ul className="space-y-0.5 text-left">
-              <li className="flex items-center gap-2 text-[11px] font-bold">
-                <span>✓</span> Suivi règles & ovulation
+              <li className="flex items-center gap-2 text-[11px] font-bold text-pink-600">
+                <span className="text-pink-500">✓</span> Suivi règles & ovulation
               </li>
-              <li className="flex items-center gap-2 text-[11px]">
-                <span>✓</span> Suivi grossesse semaine/semaine
+              <li className="flex items-center gap-2 text-[11px] text-pink-700">
+                <span className="text-pink-500">✓</span> Suivi grossesse semaine/semaine
               </li>
-              <li className="flex items-center gap-2 text-[11px]">
-                <span>✓</span> Scanner d'aliments autorisés
+              <li className="flex items-center gap-2 text-[11px] text-pink-700">
+                <span className="text-pink-500">✓</span> Scanner d'aliments autorisés
               </li>
-              <li className="flex items-center gap-2 text-[11px]">
-                <span>✓</span> Idées de prénoms
+              <li className="flex items-center gap-2 text-[11px] text-pink-700">
+                <span className="text-pink-500">✓</span> Idées de prénoms
               </li>
-              <li className="flex items-center gap-2 text-[11px]">
-                <span>✓</span> Chatbot IA disponible 24/7
+              <li className="flex items-center gap-2 text-[11px] text-pink-700">
+                <span className="text-pink-500">✓</span> Chatbot IA disponible 24/7
               </li>
-              <li className="flex items-center gap-2 text-[11px]">
-                <span>✓</span> Recettes post-partum
+              <li className="flex items-center gap-2 text-[11px] text-pink-700">
+                <span className="text-pink-500">✓</span> Recettes post-partum
               </li>
-              <li className="flex items-center gap-2 text-[11px]">
-                <span>✓</span> 100% adapté à la France
+              <li className="flex items-center gap-2 text-[11px] text-pink-700">
+                <span className="text-pink-500">✓</span> 100% adapté à la France
               </li>
-              <li className="flex items-center justify-center gap-1 text-[11px] font-medium mt-1">
+              <li className="flex items-center justify-center gap-1 text-[11px] font-medium mt-1 text-pink-600">
                 <span className="text-[8px]">💕</span>
                 <span className="text-[10px]">❤️</span>
                 <span className="text-[12px]">💗</span>
@@ -192,8 +192,8 @@ export default function CarteVisitePage() {
               </li>
             </ul>
             
-            <div className="border-t border-white/30 pt-2 mt-1">
-              <div className="flex flex-col gap-1 text-xs">
+            <div className="border-t border-pink-300/50 pt-2 mt-1">
+              <div className="flex flex-col gap-1 text-xs text-pink-700">
                 <span className="flex items-center gap-2">📞 06 08 76 67 38</span>
                 <span className="flex items-center gap-2">📧 cyrilalepsa@gmail.com</span>
               </div>
