@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { ArrowLeft, Crown, Calendar, CreditCard } from 'lucide-react';
@@ -7,6 +8,7 @@ import api from '../utils/api';
 
 function SubscriptionManage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [user, setUser] = useState(null);
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -56,12 +58,12 @@ function SubscriptionManage() {
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <h1 className="text-3xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Mon abonnement</h1>
+          <h1 className="text-3xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('subscription.mySubscription')}</h1>
         </div>
 
         {loading ? (
           <Card className="bg-white rounded-3xl p-8 text-center">
-            <p className="text-slate-500">Chargement...</p>
+            <p className="text-slate-500">{t('common.loading')}</p>
           </Card>
         ) : (
           <>
@@ -81,12 +83,12 @@ function SubscriptionManage() {
                 </div>
                 <div className="flex-1">
                   <h2 className="text-2xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                    {isActive && !isExpired ? 'Premium Actif' : 'Gratuit'}
+                    {isActive && !isExpired ? t('subscription.premiumActive') : t('subscription.free')}
                   </h2>
                   <p className="text-slate-600">
                     {isActive && !isExpired
-                      ? 'Vous avez accès à toutes les fonctionnalités premium'
-                      : 'Passez à Premium pour débloquer toutes les fonctionnalités'}
+                      ? t('subscription.allFeaturesUnlocked')
+                      : t('subscription.upgradeToPremium')}
                   </p>
                 </div>
               </div>
@@ -95,10 +97,10 @@ function SubscriptionManage() {
                 <div className="mt-6 flex items-center gap-3 bg-white rounded-2xl p-4">
                   <Calendar className="w-5 h-5 text-sky-500" />
                   <div>
-                    <p className="text-sm text-slate-500">Date d'expiration</p>
+                    <p className="text-sm text-slate-500">{t('subscription.expiryDate')}</p>
                     <p className="font-bold text-slate-700">{formatDate(subscription.expiry)}</p>
                     {isExpired && (
-                      <p className="text-sm text-red-500 mt-1">⚠️ Abonnement expiré</p>
+                      <p className="text-sm text-red-500 mt-1">{t('subscription.expired')}</p>
                     )}
                   </div>
                 </div>
@@ -108,36 +110,36 @@ function SubscriptionManage() {
             {/* Actions */}
             {!isActive || isExpired ? (
               <Card className="bg-gradient-to-br from-sky-400 to-sky-300 rounded-3xl p-8 text-white">
-                <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Nunito, sans-serif' }}>Passez à Premium</h3>
-                <p className="text-sky-50 mb-6">Débloquez toutes les fonctionnalités pour seulement 27€/an (sans renouvellement automatique)</p>
+                <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('subscription.goPremiumTitle')}</h3>
+                <p className="text-sky-50 mb-6">{t('subscription.goPremiumDesc')}</p>
                 <ul className="space-y-2 mb-6 text-white">
-                  <li>✓ Scanner illimité</li>
-                  <li>✓ 41 semaines de conseils</li>
-                  <li>✓ Suivi de grossesse complet</li>
-                  <li>✓ Préparer l'arrivée de bébé</li>
-                  <li>✓ Notifications email</li>
+                  <li>✓ {t('subscription.features.unlimitedScanner')}</li>
+                  <li>✓ {t('subscription.features.weeklyTips')}</li>
+                  <li>✓ {t('subscription.features.fullTracking')}</li>
+                  <li>✓ {t('subscription.features.babyPrep')}</li>
+                  <li>✓ {t('subscription.features.emailNotifications')}</li>
                 </ul>
                 <Button
                   onClick={() => navigate('/pricing')}
                   data-testid="upgrade-button"
                   className="w-full bg-white text-sky-600 rounded-full py-3 font-bold text-lg hover:shadow-xl"
                 >
-                  S'abonner maintenant
+                  {t('subscription.subscribeNow')}
                 </Button>
               </Card>
             ) : (
               <Card className="bg-white rounded-3xl p-6 border border-slate-200">
-                <h3 className="text-lg font-bold text-slate-700 mb-4" style={{ fontFamily: 'Nunito, sans-serif' }}>Gestion de l'abonnement</h3>
+                <h3 className="text-lg font-bold text-slate-700 mb-4" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('subscription.management')}</h3>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl">
                     <CreditCard className="w-5 h-5 text-sky-500" />
                     <div>
-                      <p className="text-sm text-slate-500">Montant payé</p>
-                      <p className="font-bold text-slate-700">27€/an</p>
+                      <p className="text-sm text-slate-500">{t('subscription.amountPaid')}</p>
+                      <p className="font-bold text-slate-700">27€/{t('subscription.year')}</p>
                     </div>
                   </div>
                   <p className="text-sm text-slate-500 mt-4">
-                    Pour toute question concernant votre abonnement, contactez-nous.
+                    {t('subscription.contactUs')}
                   </p>
                 </div>
               </Card>
@@ -145,9 +147,9 @@ function SubscriptionManage() {
 
             {/* Infos */}
             <Card className="bg-white rounded-3xl p-6 border border-slate-200">
-              <h3 className="text-lg font-bold text-slate-700 mb-3" style={{ fontFamily: 'Nunito, sans-serif' }}>💬 Besoin d'aide ?</h3>
+              <h3 className="text-lg font-bold text-slate-700 mb-3" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('subscription.needHelp')}</h3>
               <p className="text-slate-600 text-sm">
-                Pour toute question sur votre abonnement, la facturation ou l'annulation, contactez notre support.
+                {t('subscription.helpDesc')}
               </p>
             </Card>
           </>

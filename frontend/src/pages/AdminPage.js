@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, RefreshCw, Eye, Crown, Baby, ChevronDown, Bell, Smartphone } from 'lucide-react';
@@ -19,6 +20,7 @@ import {
 
 function AdminPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -199,10 +201,10 @@ function AdminPage() {
         await api.admin.setUserPremium(userId, true);
         await api.admin.setUserPostpartum(userId, true);
         
-        toast.success('Mode Premium + Post-partum activé !');
+        toast.success(t('admin.premiumModeActivated'));
         navigate('/');
       } catch (error) {
-        toast.error('Erreur lors de l\'activation');
+        toast.error(t('admin.activationError'));
         console.error(error);
       }
     } else {
@@ -215,10 +217,10 @@ function AdminPage() {
         await api.admin.setUserPremium(userId, false);
         await api.admin.setUserPostpartum(userId, false);
         
-        toast.success('Mode Utilisateur gratuit activé !');
+        toast.success(t('admin.freeModeActivated'));
         navigate('/');
       } catch (error) {
-        toast.error('Erreur lors de la désactivation');
+        toast.error(t('admin.deactivationError'));
         console.error(error);
       }
     }
@@ -229,7 +231,7 @@ function AdminPage() {
       <div className="min-h-screen gradient-bg p-6">
         <div className="max-w-4xl mx-auto">
           <Card className="bg-white rounded-3xl p-8 text-center">
-            <p className="text-slate-500">Chargement...</p>
+            <p className="text-slate-500">{t('common.loading')}</p>
           </Card>
         </div>
       </div>
@@ -242,10 +244,10 @@ function AdminPage() {
         <div className="max-w-2xl mx-auto">
           <Card className="bg-white rounded-3xl p-8 text-center">
             <AlertTriangle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-slate-700 mb-2">Accès refusé</h2>
-            <p className="text-slate-500 mb-4">Vous n'avez pas les droits d'administration.</p>
+            <h2 className="text-2xl font-bold text-slate-700 mb-2">{t('admin.accessDenied')}</h2>
+            <p className="text-slate-500 mb-4">{t('admin.noPermission')}</p>
             <Button onClick={() => navigate('/')} className="bg-sky-500 text-white rounded-full px-6">
-              Retour à l'accueil
+              {t('admin.backToHome')}
             </Button>
           </Card>
         </div>
@@ -254,14 +256,14 @@ function AdminPage() {
   }
 
   const tabs = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, count: null },
-    { id: 'users', label: 'Utilisateurs', icon: Users, count: userStats.total },
-    { id: 'messages', label: 'Messages', icon: MessageSquare, count: messageStats.unread },
-    { id: 'reminders', label: 'Rappels', icon: Bell, count: null },
-    { id: 'foods', label: 'Aliments', icon: Apple, count: foodStats.pending },
-    { id: 'codes', label: 'Codes Promo', icon: Gift, count: codeStats.available },
-    { id: 'refunds', label: 'Remboursements', icon: RefreshCw, count: refundStats.pending },
-    { id: 'android', label: 'Android', icon: Smartphone, count: null },
+    { id: 'dashboard', label: t('admin.tabs.dashboard'), icon: LayoutDashboard, count: null },
+    { id: 'users', label: t('admin.tabs.users'), icon: Users, count: userStats.total },
+    { id: 'messages', label: t('admin.tabs.messages'), icon: MessageSquare, count: messageStats.unread },
+    { id: 'reminders', label: t('admin.tabs.reminders'), icon: Bell, count: null },
+    { id: 'foods', label: t('admin.tabs.foods'), icon: Apple, count: foodStats.pending },
+    { id: 'codes', label: t('admin.tabs.codes'), icon: Gift, count: codeStats.available },
+    { id: 'refunds', label: t('admin.tabs.refunds'), icon: RefreshCw, count: refundStats.pending },
+    { id: 'android', label: t('admin.tabs.android'), icon: Smartphone, count: null },
   ];
 
   return (
@@ -278,7 +280,7 @@ function AdminPage() {
               className="bg-gradient-to-r from-sky-500 to-purple-500 text-white rounded-full px-4 py-2 hover:opacity-90 flex items-center gap-2"
             >
               <Eye className="w-4 h-4" />
-              Voir comme...
+              {t('admin.viewAs')}
               <ChevronDown className={`w-4 h-4 transition-transform ${showViewMenu ? 'rotate-180' : ''}`} />
             </Button>
             
@@ -292,8 +294,8 @@ function AdminPage() {
                     <Users className="w-4 h-4 text-slate-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-slate-700">Utilisateur gratuit</p>
-                    <p className="text-xs text-slate-500">Interface de base</p>
+                    <p className="font-semibold text-slate-700">{t('admin.freeUser')}</p>
+                    <p className="text-xs text-slate-500">{t('admin.basicInterface')}</p>
                   </div>
                 </button>
                 
@@ -305,8 +307,8 @@ function AdminPage() {
                     <Crown className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <p className="font-semibold text-slate-700">Premium complet</p>
-                    <p className="text-xs text-slate-500">Premium + Post-partum activés</p>
+                    <p className="font-semibold text-slate-700">{t('admin.fullPremium')}</p>
+                    <p className="text-xs text-slate-500">{t('admin.premiumPostpartumActive')}</p>
                   </div>
                 </button>
               </div>

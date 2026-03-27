@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -26,6 +27,7 @@ import {
 
 export default function PostpartumPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [expandedSections, setExpandedSections] = useState({
@@ -148,17 +150,17 @@ export default function PostpartumPage() {
   
   const handleSaveBirthDate = async () => {
     if (!birthDate) {
-      toast.error('Veuillez entrer la date d\'accouchement');
+      toast.error(t('postpartumPage.enterBirthDate'));
       return;
     }
     
     setSavingBirthDate(true);
     try {
       await api.postpartum.setBirthDate(birthDate, babyName);
-      toast.success('Date d\'accouchement enregistrée ! Les rappels de RDV sont programmés.');
+      toast.success(t('postpartumPage.birthDateSaved'));
       loadPostpartumStatus();
     } catch (error) {
-      toast.error('Erreur lors de l\'enregistrement');
+      toast.error(t('postpartumPage.saveError'));
     } finally {
       setSavingBirthDate(false);
     }
@@ -200,15 +202,15 @@ export default function PostpartumPage() {
   }
 
   const sections = [
-    { id: 'appointments', label: 'RDV post-partum', icon: Calendar, color: 'pink' },
-    { id: 'difficulties', label: 'Difficultés courantes', icon: AlertTriangle, color: 'amber' },
-    { id: 'breastfeeding', label: 'Allaitement maternel', icon: Heart, color: 'rose' },
-    { id: 'formula', label: 'Biberon & préparation', icon: Baby, color: 'sky' },
-    { id: 'diapers', label: 'Couches & change', icon: Droplets, color: 'cyan' },
-    { id: 'babywearing', label: 'Portage bébé', icon: HandHeart, color: 'violet' },
-    { id: 'diversification', label: 'Diversification alimentaire', icon: Utensils, color: 'orange' },
-    { id: 'recipes', label: 'Recettes pour bébé', icon: Sparkles, color: 'emerald', badge: content?.recipes?.length || 0 },
-    { id: 'precautions', label: 'Précautions & sécurité', icon: Shield, color: 'slate' },
+    { id: 'appointments', label: t('postpartumPage.sections.appointments'), icon: Calendar, color: 'pink' },
+    { id: 'difficulties', label: t('postpartumPage.sections.difficulties'), icon: AlertTriangle, color: 'amber' },
+    { id: 'breastfeeding', label: t('postpartumPage.sections.breastfeeding'), icon: Heart, color: 'rose' },
+    { id: 'formula', label: t('postpartumPage.sections.formula'), icon: Baby, color: 'sky' },
+    { id: 'diapers', label: t('postpartumPage.sections.diapers'), icon: Droplets, color: 'cyan' },
+    { id: 'babywearing', label: t('postpartumPage.sections.babywearing'), icon: HandHeart, color: 'violet' },
+    { id: 'diversification', label: t('postpartumPage.sections.diversification'), icon: Utensils, color: 'orange' },
+    { id: 'recipes', label: t('postpartumPage.sections.recipes'), icon: Sparkles, color: 'emerald', badge: content?.recipes?.length || 0 },
+    { id: 'precautions', label: t('postpartumPage.sections.precautions'), icon: Shield, color: 'slate' },
   ];
 
   // ==================== APERÇU POUR NON-ACHETEURS ====================
@@ -226,9 +228,9 @@ export default function PostpartumPage() {
             </Button>
             <div>
               <h1 className="text-2xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                Suivi post-partum
+                {t('postpartumPage.title')}
               </h1>
-              <p className="text-sm text-slate-500">Les 6 premiers mois avec bébé</p>
+              <p className="text-sm text-slate-500">{t('postpartumPage.subtitle')}</p>
             </div>
           </div>
           
@@ -239,10 +241,10 @@ export default function PostpartumPage() {
                 <Baby className="w-10 h-10 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                Accompagnement post-accouchement
+                {t('postpartumPage.accompanyTitle')}
               </h2>
               <p className="text-slate-600">
-                6 mois de conseils personnalisés pour vous et votre bébé
+                {t('postpartumPage.accompanyDesc')}
               </p>
             </div>
             
@@ -250,39 +252,39 @@ export default function PostpartumPage() {
             <div className="bg-white rounded-2xl p-5 mb-6">
               <h3 className="font-bold text-slate-700 mb-4 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-amber-500" />
-                Ce qui vous attend
+                {t('postpartumPage.whatAwaits')}
               </h3>
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex items-center gap-2 text-sm">
                   <Check className="w-4 h-4 text-green-500" />
-                  <span>9 rendez-vous détaillés</span>
+                  <span>{t('postpartumPage.features.appointments')}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Check className="w-4 h-4 text-green-500" />
-                  <span>Guide allaitement complet</span>
+                  <span>{t('postpartumPage.features.breastfeedingGuide')}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Check className="w-4 h-4 text-green-500" />
-                  <span>Conseils lait infantile</span>
+                  <span>{t('postpartumPage.features.formulaAdvice')}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Check className="w-4 h-4 text-green-500" />
-                  <span>Guide des couches</span>
+                  <span>{t('postpartumPage.features.diapersGuide')}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Check className="w-4 h-4 text-green-500" />
-                  <span>Baby blues & dépression</span>
+                  <span>{t('postpartumPage.features.babyBlues')}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Check className="w-4 h-4 text-green-500" />
-                  <span>40+ recettes pour bébé</span>
+                  <span>{t('postpartumPage.features.recipes')}</span>
                 </div>
               </div>
             </div>
             
             {/* Aperçu des RDV */}
             <div className="bg-white rounded-2xl p-5 mb-6">
-              <h3 className="font-bold text-slate-700 mb-3">Aperçu des rendez-vous</h3>
+              <h3 className="font-bold text-slate-700 mb-3">{t('postpartumPage.appointmentsPreview')}</h3>
               <div className="space-y-2">
                 {content?.appointments?.slice(0, 3).map((apt, index) => (
                   <div key={index} className="flex items-center gap-3 p-2 bg-slate-50 rounded-xl">
@@ -293,7 +295,7 @@ export default function PostpartumPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-slate-700">{apt.title}</p>
-                      <p className="text-xs text-slate-500">Semaine {apt.week}</p>
+                      <p className="text-xs text-slate-500">{t('postpartumPage.week')} {apt.week}</p>
                     </div>
                     <span className={`text-xs px-2 py-0.5 rounded-full ${
                       apt.type === 'obligatoire' ? 'bg-rose-100 text-rose-700' : 'bg-sky-100 text-sky-700'
@@ -304,7 +306,7 @@ export default function PostpartumPage() {
                 ))}
                 <div className="flex items-center justify-center gap-2 text-slate-400 text-sm py-2">
                   <Lock className="w-4 h-4" />
-                  <span>+ 6 autres rendez-vous détaillés...</span>
+                  <span>{t('postpartumPage.moreAppointments')}</span>
                 </div>
               </div>
             </div>
@@ -312,13 +314,13 @@ export default function PostpartumPage() {
             {/* Prix et options */}
             <div className="space-y-4">
               <div className="bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-2xl p-5 text-center">
-                <p className="text-sm opacity-90 mb-1">Accès complet</p>
+                <p className="text-sm opacity-90 mb-1">{t('postpartumPage.fullAccess')}</p>
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-4xl font-bold">8€</span>
-                  <span className="text-lg opacity-90">paiement unique</span>
+                  <span className="text-lg opacity-90">{t('postpartumPage.oneTimePayment')}</span>
                 </div>
                 <p className="text-sm opacity-80 mt-2">
-                  Le contenu sera accessible après votre accouchement
+                  {t('postpartumPage.accessAfterBirth')}
                 </p>
               </div>
               
@@ -328,23 +330,23 @@ export default function PostpartumPage() {
                 className="w-full bg-white text-rose-600 border-2 border-rose-500 rounded-full py-4 font-bold text-lg hover:bg-rose-50"
               >
                 <Crown className="w-5 h-5 mr-2" />
-                Acheter le suivi post-partum
+                {t('postpartumPage.buyPostpartum')}
               </Button>
               
               {/* Option parrainage */}
               <div className="bg-purple-50 border border-purple-200 rounded-2xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Gift className="w-5 h-5 text-purple-600" />
-                  <span className="font-bold text-purple-800">Ou obtenez-le gratuitement !</span>
+                  <span className="font-bold text-purple-800">{t('postpartumPage.getItFree')}</span>
                 </div>
                 <p className="text-sm text-purple-700">
-                  Parrainez 2 amies qui s'inscrivent sur MamanDouce et le suivi post-partum vous est offert.
+                  {t('postpartumPage.referralOffer')}
                 </p>
                 <Button
                   onClick={() => navigate('/settings')}
                   className="mt-3 bg-purple-100 text-purple-700 rounded-full px-4 py-2 text-sm font-semibold hover:bg-purple-200"
                 >
-                  Aller aux paramètres
+                  {t('postpartumPage.goToSettings')}
                 </Button>
               </div>
             </div>
@@ -354,16 +356,14 @@ export default function PostpartumPage() {
           <Card className="bg-white rounded-2xl p-5 border border-slate-100">
             <h3 className="font-bold text-slate-700 mb-3 flex items-center gap-2">
               <Heart className="w-5 h-5 text-rose-500" />
-              Pourquoi ce suivi est important ?
+              {t('postpartumPage.whyImportant')}
             </h3>
             <p className="text-sm text-slate-600 mb-4">
-              Les premiers mois avec bébé sont intenses. Ce guide vous accompagne pas à pas avec des conseils 
-              de professionnels de santé pour chaque étape : rendez-vous médicaux, allaitement, sommeil, 
-              et bien-être émotionnel.
+              {t('postpartumPage.whyImportantDesc')}
             </p>
             <div className="flex items-center gap-2 text-xs text-slate-500">
               <Check className="w-4 h-4 text-green-500" />
-              <span>Contenu validé par des sages-femmes et pédiatres</span>
+              <span>{t('postpartumPage.validatedByProfessionals')}</span>
             </div>
           </Card>
         </div>
@@ -386,9 +386,9 @@ export default function PostpartumPage() {
             </Button>
             <div>
               <h1 className="text-2xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                Suivi post-partum
+                {t('postpartumPage.title')}
               </h1>
-              <p className="text-sm text-slate-500">Les 6 premiers mois avec bébé</p>
+              <p className="text-sm text-slate-500">{t('postpartumPage.subtitle')}</p>
             </div>
           </div>
           
@@ -399,11 +399,11 @@ export default function PostpartumPage() {
                 <Check className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-slate-700">Accès post-partum activé !</h2>
+                <h2 className="text-xl font-bold text-slate-700">{t('postpartumPage.accessActivated')}</h2>
                 <p className="text-sm text-slate-500">
                   {postpartumStatus?.postpartum_free_via_referral 
-                    ? 'Offert grâce à vos parrainages' 
-                    : 'Votre achat a été confirmé'}
+                    ? t('postpartumPage.freeViaReferral')
+                    : t('postpartumPage.purchaseConfirmed')}
                 </p>
               </div>
             </div>
@@ -411,17 +411,16 @@ export default function PostpartumPage() {
             <div className="bg-white rounded-2xl p-5">
               <div className="flex items-center gap-3 mb-4">
                 <CalendarDays className="w-6 h-6 text-rose-500" />
-                <h3 className="font-bold text-slate-700">Renseignez votre date d'accouchement</h3>
+                <h3 className="font-bold text-slate-700">{t('postpartumPage.enterBirthDateTitle')}</h3>
               </div>
               
               <p className="text-sm text-slate-600 mb-4">
-                Le contenu du suivi post-partum sera accessible une fois que vous aurez renseigné 
-                votre date d'accouchement. Cela nous permet de vous envoyer les rappels au bon moment.
+                {t('postpartumPage.enterBirthDateDesc')}
               </p>
               
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div>
-                  <label className="text-xs font-semibold text-slate-600 mb-1 block">Date d'accouchement</label>
+                  <label className="text-xs font-semibold text-slate-600 mb-1 block">{t('postpartumPage.birthDateLabel')}</label>
                   <Input
                     type="date"
                     value={birthDate}
@@ -431,11 +430,11 @@ export default function PostpartumPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600 mb-1 block">Prénom de bébé</label>
+                  <label className="text-xs font-semibold text-slate-600 mb-1 block">{t('postpartumPage.babyNameLabel')}</label>
                   <Input
                     value={babyName}
                     onChange={(e) => setBabyName(e.target.value)}
-                    placeholder="Prénom"
+                    placeholder={t('postpartumPage.babyNamePlaceholder')}
                     className="rounded-xl border-green-200"
                     data-testid="baby-name-input"
                   />
@@ -449,29 +448,29 @@ export default function PostpartumPage() {
                 className="w-full bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full py-3 font-semibold"
               >
                 <Baby className="w-5 h-5 mr-2" />
-                {savingBirthDate ? 'Enregistrement...' : 'J\'ai accouché - Accéder au contenu'}
+                {savingBirthDate ? t('postpartumPage.saving') : t('postpartumPage.iGaveBirth')}
               </Button>
             </div>
           </Card>
           
           {/* Aperçu de ce qui attend */}
           <Card className="bg-white rounded-2xl p-5 border border-slate-100">
-            <h3 className="font-bold text-slate-700 mb-3">Ce qui vous attend</h3>
+            <h3 className="font-bold text-slate-700 mb-3">{t('postpartumPage.whatAwaits')}</h3>
             <div className="grid grid-cols-3 gap-3 text-center">
               <div className="p-3 bg-rose-50 rounded-xl">
                 <Calendar className="w-6 h-6 text-rose-500 mx-auto mb-1" />
-                <p className="text-xs font-semibold text-slate-700">9 RDV</p>
-                <p className="text-xs text-slate-500">détaillés</p>
+                <p className="text-xs font-semibold text-slate-700">{t('postpartumPage.preview.appointments')}</p>
+                <p className="text-xs text-slate-500">{t('postpartumPage.preview.detailed')}</p>
               </div>
               <div className="p-3 bg-sky-50 rounded-xl">
                 <Heart className="w-6 h-6 text-sky-500 mx-auto mb-1" />
-                <p className="text-xs font-semibold text-slate-700">Allaitement</p>
-                <p className="text-xs text-slate-500">& lait</p>
+                <p className="text-xs font-semibold text-slate-700">{t('postpartumPage.preview.breastfeeding')}</p>
+                <p className="text-xs text-slate-500">{t('postpartumPage.preview.andFormula')}</p>
               </div>
               <div className="p-3 bg-purple-50 rounded-xl">
                 <Shield className="w-6 h-6 text-purple-500 mx-auto mb-1" />
-                <p className="text-xs font-semibold text-slate-700">Conseils</p>
-                <p className="text-xs text-slate-500">6 mois</p>
+                <p className="text-xs font-semibold text-slate-700">{t('postpartumPage.preview.advice')}</p>
+                <p className="text-xs text-slate-500">{t('postpartumPage.preview.sixMonths')}</p>
               </div>
             </div>
           </Card>
@@ -494,10 +493,10 @@ export default function PostpartumPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-              Suivi post-partum
+              {t('postpartumPage.title')}
             </h1>
             <p className="text-sm text-slate-500">
-              {babyName ? `${babyName} - ` : ''}Semaine {postpartumStatus?.current_postpartum_week || 0}
+              {babyName ? `${babyName} - ` : ''}{t('postpartumPage.week')} {postpartumStatus?.current_postpartum_week || 0}
             </p>
           </div>
         </div>
@@ -511,10 +510,10 @@ export default function PostpartumPage() {
               </div>
               <div>
                 <p className="font-bold text-slate-700">
-                  {babyName || 'Bébé'} a {postpartumStatus?.days_since_birth || 0} jours
+                  {babyName || t('postpartumPage.baby')} {t('postpartumPage.babyAge', { days: postpartumStatus?.days_since_birth || 0 })}
                 </p>
                 <p className="text-sm text-slate-500">
-                  Né(e) le {new Date(postpartumStatus.actual_birth_date).toLocaleDateString('fr-FR')}
+                  {t('postpartumPage.bornOn')} {new Date(postpartumStatus.actual_birth_date).toLocaleDateString()}
                 </p>
               </div>
             </div>
@@ -526,8 +525,7 @@ export default function PostpartumPage() {
           <div className="flex items-start gap-3">
             <Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-amber-800">
-              Ces informations sont données à titre indicatif et ne remplacent pas l'avis d'un professionnel de santé. 
-              En cas de doute, consultez votre médecin ou sage-femme.
+              {t('postpartumPage.disclaimer')}
             </p>
           </div>
         </Card>

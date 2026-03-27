@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Sparkles, Check, Calendar, Tag, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { appUpdates } from '../data/appUpdates';
 
 export default function UpdatesHistoryPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [expandedVersion, setExpandedVersion] = useState(appUpdates[0]?.version);
 
   const formatDate = (dateStr) => {
@@ -32,10 +34,10 @@ export default function UpdatesHistoryPage() {
 
   const getTypeLabel = (type) => {
     switch (type) {
-      case 'major': return 'Majeure';
-      case 'minor': return 'Mineure';
-      case 'patch': return 'Correction';
-      default: return 'Mise à jour';
+      case 'major': return t('updates.major');
+      case 'minor': return t('updates.minor');
+      case 'patch': return t('updates.patch');
+      default: return t('updates.update');
     }
   };
 
@@ -52,8 +54,8 @@ export default function UpdatesHistoryPage() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold">Historique des mises à jour</h1>
-            <p className="text-white/80 text-sm">Découvrez les nouveautés de MamanDouce</p>
+            <h1 className="text-2xl font-bold">{t('updates.title')}</h1>
+            <p className="text-white/80 text-sm">{t('updates.subtitle')}</p>
           </div>
         </div>
         
@@ -61,11 +63,11 @@ export default function UpdatesHistoryPage() {
         <div className="flex gap-4">
           <div className="bg-white/20 rounded-2xl px-4 py-3 flex-1">
             <p className="text-3xl font-bold">{appUpdates.length}</p>
-            <p className="text-white/80 text-sm">Mises à jour</p>
+            <p className="text-white/80 text-sm">{t('updates.updates')}</p>
           </div>
           <div className="bg-white/20 rounded-2xl px-4 py-3 flex-1">
             <p className="text-3xl font-bold">{appUpdates[0]?.version}</p>
-            <p className="text-white/80 text-sm">Version actuelle</p>
+            <p className="text-white/80 text-sm">{t('updates.currentVersion')}</p>
           </div>
         </div>
       </div>
@@ -111,7 +113,7 @@ export default function UpdatesHistoryPage() {
                           {isLatest && (
                             <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700 flex items-center gap-1">
                               <Sparkles className="w-3 h-3" />
-                              Actuelle
+                              {t('updates.current')}
                             </span>
                           )}
                         </div>
@@ -160,7 +162,7 @@ export default function UpdatesHistoryPage() {
                         className="w-full mt-4 p-3 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center gap-2 transition-all duration-200 text-slate-600"
                       >
                         <ChevronUp className="w-4 h-4" />
-                        <span className="text-sm font-semibold">Fermer</span>
+                        <span className="text-sm font-semibold">{t('common.close')}</span>
                       </button>
                     </div>
                   </div>
@@ -173,10 +175,10 @@ export default function UpdatesHistoryPage() {
         {/* Footer */}
         <div className="text-center mt-8 py-6 border-t border-slate-200">
           <p className="text-slate-400 text-sm">
-            MamanDouce est constamment améliorée pour vous 💕
+            {t('updates.footer')}
           </p>
           <p className="text-slate-300 text-xs mt-1">
-            Des suggestions ? Contactez-nous via l'app !
+            {t('updates.suggestions')}
           </p>
         </div>
       </div>

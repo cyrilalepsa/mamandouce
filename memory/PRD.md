@@ -34,7 +34,8 @@ Authentification, Calculateur, Scanner alimentaire, Bibliothèque, RDV médicaux
 26. **Magasins liste naissance** ✅ - Enseignes adaptées par pays (Vertbaudet FR, John Lewis UK, etc.)
 27. **Sac de maternité localisé** ✅ - Documents, durée séjour, marques par pays
 28. **Bulle de langue flottante** ✅ - Drapeau cliquable en haut à droite pour changer de langue
-29. **Traduction complète pages** ✅ - PregnancyCalculator.js, FoodScanner.js, HomePage.js, AgendaCard.jsx, BirthListPage.js, MaternityBagPage.js
+29. **Traduction complète pages** ✅ - Toutes les pages traduites
+30. **Traduction pages restantes** ✅ - PostpartumPage.js, AdminPage.js, UpdatesHistoryPage.js, SubscriptionManage.js (27/03/2026)
 
 ---
 
@@ -59,11 +60,15 @@ Authentification, Calculateur, Scanner alimentaire, Bibliothèque, RDV médicaux
 - `library.*` - Bibliothèque alimentaire
 - `pregnancy.*` - Section grossesse
 - `babyPrep.*` - Préparation bébé
-- `postpartum.*` - Post-partum
+- `postpartum.*` - Post-partum (titre, sections)
+- `postpartumPage.*` - Page post-partum complète
 - `settings.*` - Paramètres
 - `premium.*` - Messages premium
 - `fertility.*` - Fertilité
 - `babyNames.*` - Prénoms
+- `admin.*` - Page administration
+- `updates.*` - Historique des mises à jour
+- `subscription.*` - Page d'abonnement
 
 ---
 
@@ -94,6 +99,10 @@ Authentification, Calculateur, Scanner alimentaire, Bibliothèque, RDV médicaux
 - ~~P2: Traduction PregnancyCalculator.js~~ (27/03/2026)
 - ~~P2: Traduction FoodScanner.js~~ (27/03/2026)
 - ~~P2: Bulle de langue flottante avec drapeau~~ (27/03/2026)
+- ~~P2: Traduction PostpartumPage.js~~ (27/03/2026)
+- ~~P2: Traduction AdminPage.js~~ (27/03/2026)
+- ~~P2: Traduction UpdatesHistoryPage.js~~ (27/03/2026)
+- ~~P2: Traduction SubscriptionManage.js~~ (27/03/2026)
 - ~~Amélioration: Détection auto langue~~
 - ~~Amélioration: Prénom du jour par pays~~
 - ~~Amélioration: Magasins liste naissance par pays~~
@@ -118,6 +127,7 @@ Authentification, Calculateur, Scanner alimentaire, Bibliothèque, RDV médicaux
 - `/app/frontend/src/i18n/index.js` - Configuration
 - `/app/frontend/src/i18n/locales/*.json` - 6 fichiers de traduction
 - `/app/frontend/src/components/settings/LanguageSelector.jsx`
+- `/app/frontend/src/components/LanguageBubble.jsx` - Bulle de sélection de langue
 
 ### Données localisées
 - `/app/frontend/src/data/servicesByCountry.js` - Services par pays
