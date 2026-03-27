@@ -1,154 +1,84 @@
 # MamanDouce - Product Requirements Document
 
 ## Original Problem Statement
-Application PWA de suivi de grossesse "MamanDouce" pour accompagner les futures mamans tout au long de leur grossesse avec des fonctionnalités premium et gratuites.
+Application mobile de suivi de grossesse "MamanDouce" - Companion complet pour les femmes avant, pendant et après la grossesse. Déploiement full-stack sur Railway, amélioration UX/UI, support multi-langues (statique et dynamique), publication Google Play Store.
 
 ## Tech Stack
-- **Frontend**: React + Tailwind CSS + Shadcn/UI + i18next (6 langues)
+- **Frontend**: React (PWA)
 - **Backend**: FastAPI (Python)
-- **Database**: MongoDB Atlas
-- **Payments**: Stripe
-- **Emails**: Resend
-- **Deployment**: Railway (Production)
+- **Database**: MongoDB
+- **Hosting**: Railway
+- **Integrations**: Stripe (paiements), Resend (emails), OpenAI GPT-5.2 (chatbot + traduction)
 
-## Deployment
-- **Railway**: Déployé et opérationnel
-- **Domaine**: cycafamily.com
-- **Super Admin**: `cyrilalepsa@gmail.com`
+## Core Features Implemented
 
----
+### Authentification & Profil
+- [x] Inscription/Connexion email + mot de passe
+- [x] Reset password par email
+- [x] Profil utilisateur avec date d'accouchement prévue
+- [x] Gestion abonnement Stripe
 
-## Implemented Features ✅
+### Suivi Grossesse
+- [x] Calculateur de grossesse (roue)
+- [x] Conseils hebdomadaires personnalisés
+- [x] Scanner d'aliments (autorisés/interdits)
+- [x] Bibliothèque alimentaire complète
+- [x] RDV médicaux avec rappels
+- [x] Valise de maternité interactive
 
-### Core Features (1-18)
-Authentification, Calculateur, Scanner alimentaire, Bibliothèque, RDV médicaux, Suivi grossesse (Premium), Liste naissance, Sac maternité, Chatbot IA, Push notifications, Post-partum, Grossesse après 35, Carte visite, Admin Dashboard, Prénoms (28 pays), Prénom du jour, "Quoi de neuf ?", Recettes personnalisées
+### Post-Partum
+- [x] Guide post-partum complet (RDV bébé, allaitement, biberon)
+- [x] Recettes adaptées
+- [x] Suivi des étapes clés
 
-### Session actuelle ✨
-19. **Épinglage des catégories** - Garder sections favorites ouvertes
-20. **Multi-langues (6 langues)** - FR, EN, ES, PT, IT, DE
-21. **Bannière d'aide épinglage** - Guide nouvelles utilisatrices
-22. **Services localisés** - CAF/NHS/INPS selon langue
-23. **Traductions étendues** ✅ - Auth, calculateur, scanner, bibliothèque, prénoms
-24. **Détection auto langue** ✅ - Détecte la langue du navigateur
-25. **Prénom du jour localisé** ✅ - Calendrier des saints par pays (FR, ES, PT, IT, DE)
-26. **Magasins liste naissance** ✅ - Enseignes adaptées par pays (Vertbaudet FR, John Lewis UK, etc.)
-27. **Sac de maternité localisé** ✅ - Documents, durée séjour, marques par pays
-28. **Bulle de langue flottante** ✅ - Drapeau cliquable en haut à droite pour changer de langue
-29. **Traduction complète pages** ✅ - Toutes les pages traduites
-30. **Traduction pages restantes** ✅ - PostpartumPage.js, AdminPage.js, UpdatesHistoryPage.js, SubscriptionManage.js (27/03/2026)
-31. **Traduction automatique GPT** ✅ - API de traduction avec GPT-5.2 pour le contenu dynamique (27/03/2026)
-32. **Extension traduction auto** ✅ - PostpartumPage, FoodLibraryPage, WeeklyTipsPage avec hook useAutoTranslate (27/03/2026)
+### Fonctionnalités Avancées
+- [x] Chatbot IA (GPT-5.2) disponible 24/7
+- [x] Suivi des règles et ovulation (TrackingPage)
+- [x] Liste de naissance partageable
+- [x] Idées de prénoms (base FR + US)
+- [x] Grossesse après 35 ans (guide spécialisé)
 
----
+### Multi-langues (6 langues)
+- [x] Français, English, Español, Português, Italiano, Deutsch
+- [x] Traduction statique (i18next) sur toutes les pages
+- [x] Traduction dynamique (GPT-5.2) pour contenu BDD
+- [x] Sélecteur de langue (drapeau) sur HomePage/AuthPage
 
-## Langues supportées 🌍
+### Business Kit (Admin)
+- [x] Carte de visite (2 versions: avec/sans QR code)
+- [x] Accès aux documents téléchargeables
+- [x] Panel admin pour statistiques et gestion
 
-| Code | Langue | Drapeau | Détection auto |
-|------|--------|---------|----------------|
-| fr | Français | 🇫🇷 | ✅ Fallback |
-| en | English | 🇬🇧 | ✅ |
-| es | Español | 🇪🇸 | ✅ |
-| pt | Português | 🇵🇹 | ✅ |
-| it | Italiano | 🇮🇹 | ✅ |
-| de | Deutsch | 🇩🇪 | ✅ |
+## Completed in Current Session (March 2025)
 
-### Clés de traduction disponibles
-- `common.*` - Actions communes (save, cancel, close, etc.)
-- `auth.*` - Authentification (login, register, errors)
-- `home.*` - Page d'accueil (welcome, agenda, pins)
-- `sections.*` - Noms des sections
-- `calculator.*` - Calculateur de grossesse
-- `scanner.*` - Scanner alimentaire
-- `library.*` - Bibliothèque alimentaire
-- `pregnancy.*` - Section grossesse
-- `babyPrep.*` - Préparation bébé
-- `postpartum.*` - Post-partum (titre, sections)
-- `postpartumPage.*` - Page post-partum complète
-- `settings.*` - Paramètres
-- `premium.*` - Messages premium
-- `fertility.*` - Fertilité
-- `babyNames.*` - Prénoms
-- `admin.*` - Page administration
-- `updates.*` - Historique des mises à jour
-- `subscription.*` - Page d'abonnement
+### Carte de Visite - DONE
+- Version avec QR Code (recto: logo + slogan + QR)
+- Version sans QR Code (recto: logo + slogan + 4 features)
+- Verso: Liste complète des fonctionnalités + contact
+- Slogan: "Votre compagnon avant, pendant et après la grossesse"
+- Features listées: Suivi règles/ovulation, Grossesse semaine/semaine, Scanner aliments, Idées prénoms
 
----
+### Correction RDV - DONE
+- "Examen des hanches" → "Échographie des hanches (dépistage luxation)"
 
-## Services par Pays
-
-| Pays | Allocations | Santé | Urgences |
-|------|-------------|-------|----------|
-| 🇫🇷 FR | CAF | Ameli | SAMU 15 |
-| 🇬🇧 EN | Gov.uk | NHS | 111/999 |
-| 🇪🇸 ES | Seg. Social | Sanidad | 112 |
-| 🇵🇹 PT | Seg. Social | SNS | 112 |
-| 🇮🇹 IT | INPS | SSN | 118 |
-| 🇩🇪 DE | Familienkasse | Krankenkasse | 112 |
-
----
-
-## Prioritized Backlog
-
-### ✅ DONE
-- ~~P0: Déploiement Railway~~
-- ~~P0: Épinglage catégories~~
-- ~~P0: Vérification visuelle composants localisés~~ (26/03/2026)
-- ~~P2: Multi-langues~~
-- ~~P2: Services localisés~~
-- ~~P2: Traductions étendues~~
-- ~~P2: Finalisation fichiers i18n~~ (27/03/2026)
-- ~~P2: Traduction complète AgendaCard et HomePage~~ (27/03/2026)
-- ~~P2: Traduction PregnancyCalculator.js~~ (27/03/2026)
-- ~~P2: Traduction FoodScanner.js~~ (27/03/2026)
-- ~~P2: Bulle de langue flottante avec drapeau~~ (27/03/2026)
-- ~~P2: Traduction PostpartumPage.js~~ (27/03/2026)
-- ~~P2: Traduction AdminPage.js~~ (27/03/2026)
-- ~~P2: Traduction UpdatesHistoryPage.js~~ (27/03/2026)
-- ~~P2: Traduction SubscriptionManage.js~~ (27/03/2026)
-- ~~P2: Traduction automatique GPT~~ (27/03/2026) - API `/api/translate/*` avec service GPT-5.2
-- ~~Amélioration: Détection auto langue~~
-- ~~Amélioration: Prénom du jour par pays~~
-- ~~Amélioration: Magasins liste naissance par pays~~
-- ~~Amélioration: Sac de maternité par pays~~
+## Backlog
 
 ### P1 - High Priority
-- [ ] **Publication Google Play Store** - Générer AAB avec TWA
+- [ ] Publication Google Play Store (génération fichier .aab)
 
-### P2 - Medium Priority
-- [ ] **Apple App Store** - PWA/wrapper natif
+### P3 - Medium Priority
+- [ ] Audio prononciation pour les prénoms
 
-### P3 - Low Priority
-- [ ] Audio prononciation prénoms
+### P4 - Low Priority
 - [ ] Comparateur de prénoms
-- [ ] Mode sombre amélioré
-
----
 
 ## Key Files
+- `/app/frontend/src/pages/CarteVisitePage.js` - Carte de visite
+- `/app/backend/routes/postpartum.py` - RDV post-partum
+- `/app/frontend/src/i18n/locales/` - Fichiers de traduction
+- `/app/backend/services/translation_service.py` - Service traduction GPT-5.2
 
-### i18n
-- `/app/frontend/src/i18n/index.js` - Configuration
-- `/app/frontend/src/i18n/locales/*.json` - 6 fichiers de traduction
-- `/app/frontend/src/components/settings/LanguageSelector.jsx`
-- `/app/frontend/src/components/LanguageBubble.jsx` - Bulle de sélection de langue
-
-### Traduction automatique
-- `/app/backend/services/translation_service.py` - Service de traduction GPT
-- `/app/backend/routes/translation.py` - API `/api/translate/*`
-- `/app/frontend/src/utils/translationService.js` - Client frontend
-- `/app/frontend/src/hooks/useAutoTranslate.js` - Hook React pour traduction auto
-
-### Données localisées
-- `/app/frontend/src/data/servicesByCountry.js` - Services par pays
-- `/app/frontend/src/data/namesByCountry.js` - Calendrier des prénoms
-- `/app/frontend/src/data/storesByCountry.js` - Magasins liste naissance
-- `/app/frontend/src/data/maternityBagByCountry.js` - Infos sac maternité
-
-### Navigation
-- `/app/frontend/src/components/home/NavigationSections.jsx`
-- `/app/frontend/src/components/home/PinTip.jsx`
-
----
-
-## Notes importantes
-⚠️ Après modifications: cliquer sur **"Save to GitHub"** pour déclencher Railway.
+## Deployment Notes
+- Preview: `https://femme-enceinte-app.preview.emergentagent.com`
+- Production: `https://mamandouce.cycafamily.com`
+- **Important**: Cliquer "Save to GitHub" pour déclencher le déploiement Railway

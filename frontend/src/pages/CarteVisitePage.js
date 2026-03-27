@@ -147,9 +147,10 @@ export default function CarteVisitePage() {
               ) : (
                 <div className="mt-3 text-center">
                   <div className="text-[10px] text-slate-600 space-y-0.5">
-                    <div>✓ Calcul ovulation & règles</div>
+                    <div>✓ Suivi règles & ovulation</div>
+                    <div>✓ Suivi grossesse semaine/semaine</div>
                     <div>✓ Scanner d'aliments</div>
-                    <div>✓ Suivi semaine par semaine</div>
+                    <div>✓ Idées de prénoms</div>
                   </div>
                   <div className="text-[10px] text-pink-500 mt-1 font-medium">... et bien d'autres ❤️</div>
                 </div>

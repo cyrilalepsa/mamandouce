@@ -299,7 +299,7 @@ POSTPARTUM_CONTENT = {
                 "Examen neurologique (tonus, réflexes archaïques)",
                 "Auscultation cardiaque et pulmonaire",
                 "Palpation abdominale",
-                "Examen des hanches (dépistage luxation)",
+                "Échographie des hanches (dépistage luxation)",
                 "Vérification des yeux et audition",
                 "Examen de la peau (jaunisse, éruptions)",
                 "Vérification du cordon ombilical"
