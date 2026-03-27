@@ -212,13 +212,13 @@ export default function CarteVisitePage() {
                 <span className="text-pink-500">✓</span> 100% adapté à la France
               </li>
               <li className="flex items-center justify-center gap-1 text-[11px] font-medium mt-1 text-pink-600">
-                <span className="text-[8px]">💕</span>
-                <span className="text-[10px]">❤️</span>
-                <span className="text-[12px]">💗</span>
+                <span className="text-[8px] drop-shadow-[0_0_4px_rgba(255,255,255,0.9)]">💕</span>
+                <span className="text-[10px] drop-shadow-[0_0_5px_rgba(255,255,255,0.95)]">❤️</span>
+                <span className="text-[12px] drop-shadow-[0_0_6px_rgba(255,255,255,1)]">💗</span>
                 <span className="mx-1">... et bien d'autres !</span>
-                <span className="text-[12px]">💗</span>
-                <span className="text-[10px]">❤️</span>
-                <span className="text-[8px]">💕</span>
+                <span className="text-[12px] drop-shadow-[0_0_6px_rgba(255,255,255,1)]">💗</span>
+                <span className="text-[10px] drop-shadow-[0_0_5px_rgba(255,255,255,0.95)]">❤️</span>
+                <span className="text-[8px] drop-shadow-[0_0_4px_rgba(255,255,255,0.9)]">💕</span>
               </li>
             </ul>
             
