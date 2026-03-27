@@ -133,26 +133,16 @@ export default function CarteVisitePage() {
                 Votre compagnon avant, pendant<br/>et après la grossesse
               </div>
               
-              {showQRCode ? (
-                <div className="flex items-center gap-3 mt-3">
+              {showQRCode && (
+                <div className="flex items-center gap-3 mt-4">
                   <div 
-                    className="w-12 h-12 border-2 border-dashed border-pink-400 rounded-lg flex items-center justify-center text-pink-400 text-[10px] font-semibold"
+                    className="w-14 h-14 border-2 border-dashed border-pink-400 rounded-lg flex items-center justify-center text-pink-400 text-[10px] font-semibold"
                   >
                     QR<br/>CODE
                   </div>
                   <div className="text-[10px] text-slate-500 leading-snug text-left">
                     Scannez pour<br/>télécharger l'app
                   </div>
-                </div>
-              ) : (
-                <div className="mt-3 text-center">
-                  <div className="text-[10px] text-slate-600 space-y-0.5">
-                    <div>✓ Suivi règles & ovulation</div>
-                    <div>✓ Suivi grossesse semaine/semaine</div>
-                    <div>✓ Scanner d'aliments</div>
-                    <div>✓ Idées de prénoms</div>
-                  </div>
-                  <div className="text-[10px] text-pink-500 mt-1 font-medium">... et bien d'autres ❤️</div>
                 </div>
               )}
             </div>
@@ -169,26 +159,29 @@ export default function CarteVisitePage() {
               background: 'linear-gradient(135deg, #f472b6 0%, #fb7185 50%, #f97316 100%)'
             }}
           >
-            <ul className="space-y-1 text-left">
-              <li className="flex items-center gap-2 text-xs font-bold">
-                <span>✓</span> Calcul des règles et ovulation
+            <ul className="space-y-0.5 text-left">
+              <li className="flex items-center gap-2 text-[11px] font-bold">
+                <span>✓</span> Suivi règles & ovulation
               </li>
-              <li className="flex items-center gap-2 text-xs">
-                <span>✓</span> Suivi semaine par semaine
+              <li className="flex items-center gap-2 text-[11px]">
+                <span>✓</span> Suivi grossesse semaine/semaine
               </li>
-              <li className="flex items-center gap-2 text-xs">
+              <li className="flex items-center gap-2 text-[11px]">
                 <span>✓</span> Scanner d'aliments autorisés
               </li>
-              <li className="flex items-center gap-2 text-xs">
+              <li className="flex items-center gap-2 text-[11px]">
+                <span>✓</span> Idées de prénoms
+              </li>
+              <li className="flex items-center gap-2 text-[11px]">
                 <span>✓</span> Chatbot IA disponible 24/7
               </li>
-              <li className="flex items-center gap-2 text-xs">
+              <li className="flex items-center gap-2 text-[11px]">
                 <span>✓</span> Recettes post-partum
               </li>
-              <li className="flex items-center gap-2 text-xs">
+              <li className="flex items-center gap-2 text-[11px]">
                 <span>✓</span> 100% adapté à la France
               </li>
-              <li className="flex items-center gap-2 text-xs font-medium">
+              <li className="flex items-center gap-2 text-[11px] font-medium">
                 <span>❤️</span> ... et bien d'autres !
               </li>
             </ul>
