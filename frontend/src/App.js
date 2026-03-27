@@ -147,7 +147,6 @@ function App() {
             </BrowserRouter>
             <Toaster />
             <ChatBubble />
-            <LanguageBubble />
             <PWAInstallBanner />
             <OfflineSyncIndicator />
             <WhatsNewModal />

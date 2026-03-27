@@ -6,6 +6,7 @@ import api from '../utils/api';
 import { Cloud, Feather } from 'lucide-react';
 import AppTitle from '../components/AppTitle';
 import { useTranslation } from 'react-i18next';
+import LanguageBubble from '../components/LanguageBubble';
 import { 
   isBiometricAvailable,
   authenticateWithBiometric, 
@@ -400,6 +401,9 @@ function AuthPage({ setIsAuthenticated }) {
 
   return (
     <div className="min-h-screen gradient-bg flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Language Bubble - suit le scroll */}
+      <LanguageBubble />
+      
       <Cloud className="absolute top-10 left-10 w-32 h-32 text-sky-200 opacity-20 animate-float" />
       <Feather className="absolute top-20 right-20 w-24 h-24 text-pink-200 opacity-30 animate-float-delayed" />
       <Cloud className="absolute bottom-20 right-40 w-40 h-40 text-sky-100 opacity-20 animate-float" />
