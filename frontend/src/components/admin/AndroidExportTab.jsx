@@ -135,8 +135,13 @@ export function AndroidExportTab() {
   };
   
   const handleViewBusinessDoc = (filename) => {
-    // Les fichiers sont dans /public/docs, accessibles directement depuis le frontend
-    window.open(`/docs/${filename}`, '_blank');
+    if (filename === 'CARTE_VISITE_MAMANDOUCE.html') {
+      // Ouvrir la page React de la carte de visite
+      window.open('/carte-visite', '_blank');
+    } else {
+      // Les autres fichiers sont dans /public/docs
+      window.open(`/docs/${filename}`, '_blank');
+    }
     setShowBusinessMenu(false);
   };
 
