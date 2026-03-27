@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, RefreshCw, Eye, Crown, Baby, ChevronDown, Bell, Smartphone } from 'lucide-react';
+import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, HandCoins, Eye, Crown, Baby, ChevronDown, Bell, Smartphone } from 'lucide-react';
 import api from '../utils/api';
 import PageHeader from '../components/PageHeader';
 import { toast } from 'sonner';
@@ -262,7 +262,7 @@ function AdminPage() {
     { id: 'reminders', label: t('admin.tabs.reminders'), icon: Bell, count: null },
     { id: 'foods', label: t('admin.tabs.foods'), icon: Apple, count: foodStats.pending },
     { id: 'codes', label: t('admin.tabs.codes'), icon: Gift, count: codeStats.available },
-    { id: 'refunds', label: t('admin.tabs.refunds'), icon: RefreshCw, count: refundStats.pending },
+    { id: 'refunds', label: t('admin.tabs.refunds'), icon: HandCoins, count: refundStats.pending },
     { id: 'android', label: t('admin.tabs.android'), icon: Smartphone, count: null },
   ];
 
