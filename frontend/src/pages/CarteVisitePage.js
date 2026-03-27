@@ -181,8 +181,14 @@ export default function CarteVisitePage() {
               <li className="flex items-center gap-2 text-[11px]">
                 <span>✓</span> 100% adapté à la France
               </li>
-              <li className="flex items-center gap-2 text-[11px] font-medium">
-                <span>❤️</span> ... et bien d'autres !
+              <li className="flex items-center justify-center gap-1 text-[11px] font-medium mt-1">
+                <span className="text-[8px]">💕</span>
+                <span className="text-[10px]">❤️</span>
+                <span className="text-[12px]">💗</span>
+                <span className="mx-1">... et bien d'autres !</span>
+                <span className="text-[12px]">💗</span>
+                <span className="text-[10px]">❤️</span>
+                <span className="text-[8px]">💕</span>
               </li>
             </ul>
             
