@@ -4,14 +4,15 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { Search, ShieldCheck, ShieldAlert, ShieldX, AlertTriangle, ChevronDown, Heart, Plus, BookOpen } from 'lucide-react';
+import { Search, ShieldCheck, ShieldAlert, ShieldX, AlertTriangle, ChevronDown, Heart, Plus, BookOpen, Loader2 } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
+import { useAutoTranslate } from '../hooks/useAutoTranslate';
 
 function FoodLibraryPage() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [foods, setFoods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,6 +23,21 @@ function FoodLibraryPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [favorites, setFavorites] = useState(new Set());
+  
+  // Langue actuelle
+  const currentLang = i18n.language?.split('-')[0] || 'fr';
+  
+  // Traduction automatique des aliments
+  const { translated: translatedFoods, isLoading: isTranslating } = useAutoTranslate(
+    foods,
+    {
+      fields: ['name', 'description', 'advice', 'category'],
+      enabled: currentLang !== 'fr' && foods.length > 0
+    }
+  );
+  
+  // Utiliser les aliments traduits ou originaux
+  const displayFoods = currentLang !== 'fr' && translatedFoods ? translatedFoods : foods;
 
   useEffect(() => {
     loadFavorites();
@@ -215,59 +231,68 @@ function FoodLibraryPage() {
         {/* Foods List */}
         {loading ? (
           <Card className="bg-white rounded-3xl p-8 text-center">
-            <p className="text-slate-500">Chargement...</p>
+            <p className="text-slate-500">{t('common.loading')}</p>
           </Card>
-        ) : foods.length === 0 ? (
+        ) : displayFoods.length === 0 ? (
           <Card className="bg-white rounded-3xl p-8 text-center" data-testid="empty-results">
             <Search className="w-16 h-16 text-slate-300 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-slate-600 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-              Aucun résultat
+              {t('common.noResults')}
             </h3>
-            <p className="text-slate-500">Essayez avec d'autres termes de recherche</p>
+            <p className="text-slate-500">{t('library.tryOtherTerms')}</p>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {foods.map((food, index) => {
-              const badge = getSafetyBadge(food.safe_for_pregnancy);
-              return (
-                <Card
-                  key={index}
-                  className={`rounded-2xl p-4 border-2 transition-all hover:shadow-md ${badge.color.replace('bg-', 'bg-').replace('-100', '-50')}`}
-                  data-testid={`food-item-${index}`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${badge.color.split(' ')[0]}`}>
-                      {getSafetyIcon(food.safe_for_pregnancy)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-bold text-slate-700 truncate">{food.name}</h4>
-                          <p className="text-xs text-slate-500">{food.category}</p>
-                        </div>
-                        <button
-                          onClick={() => toggleFavorite(food)}
-                          className="p-1.5 rounded-full hover:bg-pink-50 transition-colors flex-shrink-0"
-                          data-testid={`favorite-${index}`}
-                        >
-                          <Heart
-                            className={`w-5 h-5 ${favorites.has(food.name) ? 'fill-pink-500 text-pink-500' : 'text-slate-300'}`}
-                          />
-                        </button>
-                      </div>
-                      <span className={`inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full text-xs font-medium border ${badge.color}`}>
+          <>
+            {/* Indicateur de traduction */}
+            {isTranslating && currentLang !== 'fr' && (
+              <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>{t('common.translating')}</span>
+              </div>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {displayFoods.map((food, index) => {
+                const badge = getSafetyBadge(food.safe_for_pregnancy);
+                return (
+                  <Card
+                    key={index}
+                    className={`rounded-2xl p-4 border-2 transition-all hover:shadow-md ${badge.color.replace('bg-', 'bg-').replace('-100', '-50')}`}
+                    data-testid={`food-item-${index}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${badge.color.split(' ')[0]}`}>
                         {getSafetyIcon(food.safe_for_pregnancy)}
-                        {badge.text}
-                      </span>
-                      {food.reason && (
-                        <p className="mt-2 text-xs text-slate-600 line-clamp-2">{food.reason}</p>
-                      )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-bold text-slate-700 truncate">{food.name}</h4>
+                            <p className="text-xs text-slate-500">{food.category}</p>
+                          </div>
+                          <button
+                            onClick={() => toggleFavorite(foods[index])}
+                            className="p-1.5 rounded-full hover:bg-pink-50 transition-colors flex-shrink-0"
+                            data-testid={`favorite-${index}`}
+                          >
+                            <Heart
+                              className={`w-5 h-5 ${favorites.has(foods[index]?.name) ? 'fill-pink-500 text-pink-500' : 'text-slate-300'}`}
+                            />
+                          </button>
+                        </div>
+                        <span className={`inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full text-xs font-medium border ${badge.color}`}>
+                          {getSafetyIcon(food.safe_for_pregnancy)}
+                          {badge.text}
+                        </span>
+                        {food.reason && (
+                          <p className="mt-2 text-xs text-slate-600 line-clamp-2">{food.reason}</p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              );
-            })}
-          </div>
+                  </Card>
+                );
+              })}
+            </div>
+          </>
         )}
 
         {/* Pagination */}

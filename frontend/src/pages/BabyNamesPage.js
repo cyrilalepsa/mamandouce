@@ -1,11 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Crown, Lock, Cloud, CloudOff, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Crown, Lock, Cloud, CloudOff, RefreshCw, Loader2 } from 'lucide-react';
 import { useSubscription } from '../components/SubscriptionGate';
 import { useTheme } from '../contexts/ThemeContext';
 import { toast } from 'sonner';
 import api from '../utils/api';
+import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { 
   babyNamesData, 
   freeCountries, 
@@ -42,9 +43,12 @@ const countriesByRegion = {
 
 export default function BabyNamesPage() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isPremium } = useSubscription();
   const { isDarkMode } = useTheme();
+  
+  // Langue actuelle
+  const currentLang = i18n.language?.split('-')[0] || 'fr';
   
   // États de navigation
   const [selectedGender, setSelectedGender] = useState(null);

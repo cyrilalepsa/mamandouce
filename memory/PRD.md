@@ -37,6 +37,7 @@ Authentification, Calculateur, Scanner alimentaire, Bibliothèque, RDV médicaux
 29. **Traduction complète pages** ✅ - Toutes les pages traduites
 30. **Traduction pages restantes** ✅ - PostpartumPage.js, AdminPage.js, UpdatesHistoryPage.js, SubscriptionManage.js (27/03/2026)
 31. **Traduction automatique GPT** ✅ - API de traduction avec GPT-5.2 pour le contenu dynamique (27/03/2026)
+32. **Extension traduction auto** ✅ - PostpartumPage, FoodLibraryPage, WeeklyTipsPage avec hook useAutoTranslate (27/03/2026)
 
 ---
 

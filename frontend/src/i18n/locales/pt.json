@@ -239,7 +239,9 @@
     "showForbidden": "Apenas proibidos",
     "showCaution": "Com precaução",
     "noFoodsFound": "Nenhum alimento encontrado",
-    "foodDetails": "Detalhes do alimento"
+    "foodDetails": "Food details",
+    "tryOtherTerms": "Tente com outros termos de pesquisa",
+    "proposeUnlisted": "Propor um alimento não listado"
   },
   "pregnancy": {
     "calculator": "Calculadora",

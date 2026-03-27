@@ -6,11 +6,12 @@ import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { 
   ArrowLeft, Calendar, Heart, AlertTriangle, Baby, Droplets,
-  Shield, Stethoscope, Info, CalendarDays, Check, Lock, Gift, Crown, Sparkles, Utensils, HandHeart, ChevronDown, ChevronUp
+  Shield, Stethoscope, Info, CalendarDays, Check, Lock, Gift, Crown, Sparkles, Utensils, HandHeart, ChevronDown, ChevronUp, Loader2
 } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import { ToggleAllSections } from '../components/ToggleAllSections';
+import { useAutoTranslate } from '../hooks/useAutoTranslate';
 
 // Import refactored components
 import {
@@ -27,7 +28,7 @@ import {
 
 export default function PostpartumPage() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [expandedSections, setExpandedSections] = useState({
@@ -41,6 +42,21 @@ export default function PostpartumPage() {
     recipes: false,
     precautions: false
   });
+  
+  // Langue actuelle
+  const currentLang = i18n.language?.split('-')[0] || 'fr';
+  
+  // Traduction automatique du contenu postpartum
+  const { translated: translatedContent, isLoading: isTranslating } = useAutoTranslate(
+    content,
+    {
+      fields: ['title', 'description', 'content', 'advice', 'tips', 'when', 'what', 'symptoms', 'solutions', 'name', 'ingredients', 'instructions'],
+      enabled: currentLang !== 'fr' && content !== null
+    }
+  );
+  
+  // Utiliser le contenu traduit ou original
+  const displayContent = currentLang !== 'fr' && translatedContent ? translatedContent : content;
   
   // Postpartum status
   const [postpartumStatus, setPostpartumStatus] = useState(null);
@@ -578,36 +594,43 @@ export default function PostpartumPage() {
                   isExpanded ? 'max-h-[10000px] opacity-100' : 'max-h-0 opacity-0'
                 }`}>
                   <div className="px-4 pb-4 border-t border-slate-100">
+                    {/* Indicateur de traduction */}
+                    {isTranslating && currentLang !== 'fr' && (
+                      <div className="flex items-center gap-2 py-2 text-sm text-slate-500">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>{t('common.translating')}</span>
+                      </div>
+                    )}
                     {section.id === 'appointments' && (
-                      <AppointmentsSection appointments={content?.appointments} />
+                      <AppointmentsSection appointments={displayContent?.appointments} />
                     )}
                     {section.id === 'difficulties' && (
-                      <DifficultiesSection difficulties={content?.difficulties} />
+                      <DifficultiesSection difficulties={displayContent?.difficulties} />
                     )}
                     {section.id === 'breastfeeding' && (
-                      <BreastfeedingSection breastfeeding={content?.breastfeeding} />
+                      <BreastfeedingSection breastfeeding={displayContent?.breastfeeding} />
                     )}
                     {section.id === 'formula' && (
-                      <FormulaSection formula={content?.formula} />
+                      <FormulaSection formula={displayContent?.formula} />
                     )}
                     {section.id === 'diapers' && (
-                      <DiapersSection diapers={content?.diapers} />
+                      <DiapersSection diapers={displayContent?.diapers} />
                     )}
                     {section.id === 'babywearing' && (
-                      <BabywearingSection babywearing={content?.babywearing} />
+                      <BabywearingSection babywearing={displayContent?.babywearing} />
                     )}
                     {section.id === 'diversification' && (
-                      <DiversificationSection diversification={content?.diversification} />
+                      <DiversificationSection diversification={displayContent?.diversification} />
                     )}
                     {section.id === 'recipes' && (
                       <RecipesSection 
-                        babyRecipes={content?.baby_recipes} 
+                        babyRecipes={displayContent?.baby_recipes} 
                         favorites={favorites}
                         onFavoritesChange={setFavorites}
                       />
                     )}
                     {section.id === 'precautions' && (
-                      <PrecautionsSection precautions={content?.precautions} />
+                      <PrecautionsSection precautions={displayContent?.precautions} />
                     )}
                   </div>
                 </div>
