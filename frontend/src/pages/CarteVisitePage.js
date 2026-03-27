@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, FileText, Image } from 'lucide-react';
+import { ArrowLeft, Download, FileText, Image, QrCode } from 'lucide-react';
 import { Button } from '../components/ui/button';
 
 export default function CarteVisitePage() {
   const navigate = useNavigate();
+  const [showQRCode, setShowQRCode] = useState(true);
 
   const handleDownload = (type) => {
     const files = {
@@ -39,6 +40,33 @@ export default function CarteVisitePage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Carte de Visite MamanDouce</h1>
           <p className="text-slate-500 text-sm">Modèle prêt à imprimer - Format 85mm x 55mm</p>
+        </div>
+      </div>
+
+      {/* Toggle QR Code */}
+      <div className="flex justify-center mb-6">
+        <div className="bg-white rounded-full p-1 shadow-md flex gap-1">
+          <button
+            onClick={() => setShowQRCode(false)}
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+              !showQRCode 
+                ? 'bg-gradient-to-r from-pink-500 to-orange-400 text-white' 
+                : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            Sans QR Code
+          </button>
+          <button
+            onClick={() => setShowQRCode(true)}
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-2 ${
+              showQRCode 
+                ? 'bg-gradient-to-r from-pink-500 to-orange-400 text-white' 
+                : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <QrCode className="w-4 h-4" />
+            Avec QR Code
+          </button>
         </div>
       </div>
 
@@ -82,16 +110,16 @@ export default function CarteVisitePage() {
               background: 'linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%)'
             }}
           >
-            <div className="h-full flex flex-col items-center justify-center p-6 relative">
+            <div className="h-full flex flex-col items-center justify-center p-5 relative">
               {/* Top gradient bar */}
               <div 
                 className="absolute top-0 left-0 right-0 h-1"
                 style={{ background: 'linear-gradient(90deg, #f472b6, #fb7185, #f97316)' }}
               />
               
-              <div className="text-5xl mb-2">🤱</div>
+              <div className="text-4xl mb-1">🤱</div>
               <div 
-                className="text-4xl font-semibold"
+                className="text-3xl font-semibold"
                 style={{ 
                   fontFamily: "'Dancing Script', cursive",
                   background: 'linear-gradient(90deg, #f472b6, #fb7185, #f97316)',
@@ -101,18 +129,31 @@ export default function CarteVisitePage() {
               >
                 MamanDouce
               </div>
-              <div className="text-slate-500 text-sm mt-2">Votre compagnon de grossesse</div>
-              
-              <div className="flex items-center gap-4 mt-4">
-                <div 
-                  className="w-14 h-14 border-2 border-dashed border-pink-400 rounded-lg flex items-center justify-center text-pink-400 text-xs font-semibold"
-                >
-                  QR<br/>CODE
-                </div>
-                <div className="text-xs text-slate-500 leading-snug">
-                  Scannez pour<br/>télécharger l'app
-                </div>
+              <div className="text-slate-500 text-xs mt-1 text-center leading-tight">
+                Votre compagnon avant, pendant<br/>et après la grossesse
               </div>
+              
+              {showQRCode ? (
+                <div className="flex items-center gap-3 mt-3">
+                  <div 
+                    className="w-12 h-12 border-2 border-dashed border-pink-400 rounded-lg flex items-center justify-center text-pink-400 text-[10px] font-semibold"
+                  >
+                    QR<br/>CODE
+                  </div>
+                  <div className="text-[10px] text-slate-500 leading-snug text-left">
+                    Scannez pour<br/>télécharger l'app
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-3 text-center">
+                  <div className="text-[10px] text-slate-600 space-y-0.5">
+                    <div>✓ Calcul ovulation & règles</div>
+                    <div>✓ Scanner d'aliments</div>
+                    <div>✓ Suivi semaine par semaine</div>
+                  </div>
+                  <div className="text-[10px] text-pink-500 mt-1 font-medium">... et bien d'autres ❤️</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -121,15 +162,15 @@ export default function CarteVisitePage() {
         <div className="text-center">
           <div className="font-bold text-slate-800 mb-4 text-lg">VERSO</div>
           <div 
-            className="w-[340px] h-[220px] rounded-xl overflow-hidden text-white p-5 flex flex-col justify-between"
+            className="w-[340px] h-[220px] rounded-xl overflow-hidden text-white p-4 flex flex-col justify-between"
             style={{ 
               boxShadow: '0 10px 40px rgba(236, 72, 153, 0.2)',
               background: 'linear-gradient(135deg, #f472b6 0%, #fb7185 50%, #f97316 100%)'
             }}
           >
-            <ul className="space-y-1.5 text-left">
-              <li className="flex items-center gap-2 text-sm font-bold">
-                <span>✓</span> Suivi et calcul des règles et ovulation
+            <ul className="space-y-1 text-left">
+              <li className="flex items-center gap-2 text-xs font-bold">
+                <span>✓</span> Calcul des règles et ovulation
               </li>
               <li className="flex items-center gap-2 text-xs">
                 <span>✓</span> Suivi semaine par semaine
@@ -146,10 +187,13 @@ export default function CarteVisitePage() {
               <li className="flex items-center gap-2 text-xs">
                 <span>✓</span> 100% adapté à la France
               </li>
+              <li className="flex items-center gap-2 text-xs font-medium">
+                <span>❤️</span> ... et bien d'autres !
+              </li>
             </ul>
             
-            <div className="border-t border-white/30 pt-3 mt-2">
-              <div className="flex flex-col gap-1.5 text-sm">
+            <div className="border-t border-white/30 pt-2 mt-1">
+              <div className="flex flex-col gap-1 text-xs">
                 <span className="flex items-center gap-2">📞 06 08 76 67 38</span>
                 <span className="flex items-center gap-2">📧 cyrilalepsa@gmail.com</span>
               </div>
@@ -171,15 +215,17 @@ export default function CarteVisitePage() {
           <li><strong>Quantité suggérée :</strong> 500 exemplaires (~40-60€ chez Vistaprint, Moo)</li>
         </ul>
         
-        <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mt-4 rounded-r-lg">
-          <strong className="text-amber-800">💡 QR Code :</strong>
-          <span className="text-amber-700 text-sm ml-1">
-            Une fois votre application publiée sur Google Play, générez votre QR Code sur 
-            <a href="https://www.qr-code-generator.com/" target="_blank" rel="noopener noreferrer" className="underline ml-1">
-              qr-code-generator.com
-            </a>
-          </span>
-        </div>
+        {showQRCode && (
+          <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mt-4 rounded-r-lg">
+            <strong className="text-amber-800">💡 QR Code :</strong>
+            <span className="text-amber-700 text-sm ml-1">
+              Une fois votre application publiée sur Google Play, générez votre QR Code sur 
+              <a href="https://www.qr-code-generator.com/" target="_blank" rel="noopener noreferrer" className="underline ml-1">
+                qr-code-generator.com
+              </a>
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
