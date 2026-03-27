@@ -147,43 +147,68 @@ export default function CarteVisitePage() {
                 style={{ background: 'linear-gradient(90deg, #f472b6, #fb7185, #f97316)' }}
               />
               
-              {/* Contenu principal - Logo et slogan */}
-              <div className="flex flex-col items-center pt-2">
-                <div className="text-3xl mb-0.5">👩‍🍼</div>
-                <div 
-                  className="text-2xl font-semibold"
-                  style={{ 
-                    fontFamily: "'Dancing Script', cursive",
-                    background: 'linear-gradient(90deg, #f472b6, #fb7185, #f97316)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent'
-                  }}
-                >
-                  MamanDouce
-                </div>
-                <div className="text-slate-500 text-[10px] mt-0.5 text-center leading-tight">
-                  Votre compagnon avant, pendant<br/>et après la grossesse
-                </div>
-              </div>
-              
-              {/* QR Code - positionné en bas à gauche pour plus d'espace */}
-              {showQRCode && (
-                <div className="flex items-center gap-4 mt-2">
-                  <div 
-                    className="w-14 h-14 border-2 border-dashed border-pink-400 rounded-lg flex items-center justify-center text-pink-400 text-[9px] font-semibold"
-                  >
-                    QR<br/>CODE
+              {showQRCode ? (
+                <>
+                  {/* Version AVEC QR Code */}
+                  <div className="flex flex-col items-center pt-2">
+                    <div className="text-3xl mb-0.5">👩‍🍼</div>
+                    <div 
+                      className="text-2xl font-semibold"
+                      style={{ 
+                        fontFamily: "'Dancing Script', cursive",
+                        background: 'linear-gradient(90deg, #f472b6, #fb7185, #f97316)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent'
+                      }}
+                    >
+                      MamanDouce
+                    </div>
+                    <div className="text-slate-500 text-[10px] mt-0.5 text-center leading-tight">
+                      Votre compagnon avant, pendant<br/>et après la grossesse
+                    </div>
                   </div>
-                  <div className="text-[9px] text-slate-500 leading-snug text-left">
-                    Scannez pour<br/>télécharger l'app
+                  
+                  <div className="flex items-center gap-4 mt-2">
+                    <div 
+                      className="w-14 h-14 border-2 border-dashed border-pink-400 rounded-lg flex items-center justify-center text-pink-400 text-[9px] font-semibold"
+                    >
+                      QR<br/>CODE
+                    </div>
+                    <div className="text-[9px] text-slate-500 leading-snug text-left">
+                      Scannez pour<br/>télécharger l'app
+                    </div>
                   </div>
-                </div>
+                  
+                  <div className="text-[9px] text-pink-400 font-medium tracking-wide mt-1">
+                    mamandouce.cycafamily.com
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Version SANS QR Code - Plus percutante et centrée */}
+                  <div className="flex-1 flex flex-col items-center justify-center">
+                    <div className="text-5xl mb-2">👩‍🍼</div>
+                    <div 
+                      className="text-4xl font-semibold mb-2"
+                      style={{ 
+                        fontFamily: "'Dancing Script', cursive",
+                        background: 'linear-gradient(90deg, #f472b6, #fb7185, #f97316)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent'
+                      }}
+                    >
+                      MamanDouce
+                    </div>
+                    <div className="text-slate-600 text-sm text-center leading-snug font-medium">
+                      Votre compagnon avant, pendant<br/>et après la grossesse
+                    </div>
+                  </div>
+                  
+                  <div className="text-[10px] text-pink-500 font-semibold tracking-wide">
+                    mamandouce.cycafamily.com
+                  </div>
+                </>
               )}
-              
-              {/* URL en bas */}
-              <div className="text-[9px] text-pink-400 font-medium tracking-wide mt-1">
-                mamandouce.cycafamily.com
-              </div>
             </div>
           </div>
         </div>
