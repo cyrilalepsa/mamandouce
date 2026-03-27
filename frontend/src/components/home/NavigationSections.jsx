@@ -119,10 +119,10 @@ function CollapsibleSection({ title, icon: Icon, iconColor, children, defaultOpe
         {sectionId && (
           <button
             onClick={handlePin}
-            className={`p-2 rounded-full transition-all ${
+            className={`p-2 transition-all hover:scale-110 ${
               pinned 
-                ? 'bg-pink-100 text-pink-600 hover:bg-pink-200' 
-                : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600'
+                ? 'text-pink-600' 
+                : 'text-slate-400 hover:text-slate-600'
             }`}
             title={pinned ? t('home.unpinSection', 'Désépingler cette section') : t('home.pinSection', 'Épingler cette section (toujours ouverte)')}
           >
