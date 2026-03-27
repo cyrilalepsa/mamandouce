@@ -195,44 +195,44 @@ export default function CarteVisitePage() {
             className="w-[340px] h-[220px] rounded-xl overflow-hidden p-4 flex flex-col justify-between"
             style={{ 
               boxShadow: '0 10px 40px rgba(236, 72, 153, 0.15)',
-              background: 'linear-gradient(145deg, #fdf2f8 0%, #fce7f3 25%, #fbcfe8 50%, #f9a8d4 80%, #f472b6 100%)'
+              background: 'linear-gradient(160deg, #ffffff 0%, #fdf2f8 15%, #fce7f3 30%, #fbcfe8 45%, #f9a8d4 60%, #f472b6 80%, #ec4899 100%)'
             }}
           >
             <ul className="space-y-0.5 text-left">
-              <li className="flex items-center gap-2 text-[11px] font-bold text-pink-600">
-                <span className="text-pink-500">✓</span> Suivi règles & ovulation
+              <li className="flex items-center gap-2 text-[11px] font-bold text-pink-700">
+                <span className="text-pink-600">✓</span> Suivi règles & ovulation
               </li>
               <li className="flex items-center gap-2 text-[11px] text-pink-700">
-                <span className="text-pink-500">✓</span> Suivi grossesse semaine/semaine
+                <span className="text-pink-600">✓</span> Suivi grossesse semaine/semaine
               </li>
               <li className="flex items-center gap-2 text-[11px] text-pink-700">
-                <span className="text-pink-500">✓</span> Scanner d'aliments autorisés
+                <span className="text-pink-600">✓</span> Scanner d'aliments autorisés
               </li>
               <li className="flex items-center gap-2 text-[11px] text-pink-700">
-                <span className="text-pink-500">✓</span> Idées de prénoms
+                <span className="text-pink-600">✓</span> Idées de prénoms
               </li>
               <li className="flex items-center gap-2 text-[11px] text-pink-700">
-                <span className="text-pink-500">✓</span> Chatbot IA disponible 24/7
+                <span className="text-pink-600">✓</span> Chatbot IA disponible 24/7
               </li>
               <li className="flex items-center gap-2 text-[11px] text-pink-700">
-                <span className="text-pink-500">✓</span> Recettes post-partum
+                <span className="text-pink-600">✓</span> Recettes post-partum
               </li>
               <li className="flex items-center gap-2 text-[11px] text-pink-700">
-                <span className="text-pink-500">✓</span> 100% adapté à la France
+                <span className="text-pink-600">✓</span> 100% adapté à la France
               </li>
-              <li className="flex items-center justify-center gap-1 text-[11px] font-medium mt-1 text-pink-600">
-                <span className="text-[8px] drop-shadow-[0_0_4px_rgba(255,255,255,0.9)]">💕</span>
-                <span className="text-[10px] drop-shadow-[0_0_5px_rgba(255,255,255,0.95)]">❤️</span>
-                <span className="text-[12px] drop-shadow-[0_0_6px_rgba(255,255,255,1)]">💗</span>
+              <li className="flex items-center justify-center gap-1 text-[11px] font-medium mt-1 text-pink-700">
+                <span className="text-[10px]" style={{ filter: 'drop-shadow(0 0 6px white) drop-shadow(0 0 10px white)' }}>💕</span>
+                <span className="text-[12px]" style={{ filter: 'drop-shadow(0 0 8px white) drop-shadow(0 0 12px white)' }}>❤️</span>
+                <span className="text-[14px]" style={{ filter: 'drop-shadow(0 0 10px white) drop-shadow(0 0 14px white)' }}>💗</span>
                 <span className="mx-1">... et bien d'autres !</span>
-                <span className="text-[12px] drop-shadow-[0_0_6px_rgba(255,255,255,1)]">💗</span>
-                <span className="text-[10px] drop-shadow-[0_0_5px_rgba(255,255,255,0.95)]">❤️</span>
-                <span className="text-[8px] drop-shadow-[0_0_4px_rgba(255,255,255,0.9)]">💕</span>
+                <span className="text-[14px]" style={{ filter: 'drop-shadow(0 0 10px white) drop-shadow(0 0 14px white)' }}>💗</span>
+                <span className="text-[12px]" style={{ filter: 'drop-shadow(0 0 8px white) drop-shadow(0 0 12px white)' }}>❤️</span>
+                <span className="text-[10px]" style={{ filter: 'drop-shadow(0 0 6px white) drop-shadow(0 0 10px white)' }}>💕</span>
               </li>
             </ul>
             
-            <div className="border-t border-pink-300/50 pt-2 mt-1">
-              <div className="flex flex-col gap-1 text-xs text-pink-700">
+            <div className="border-t border-pink-400/40 pt-2 mt-1">
+              <div className="flex flex-col gap-1 text-xs text-pink-800">
                 <span className="flex items-center gap-2">📞 06 08 76 67 38</span>
                 <span className="flex items-center gap-2">📧 cyrilalepsa@gmail.com</span>
               </div>
