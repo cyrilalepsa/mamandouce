@@ -53,6 +53,7 @@ from routes.preferences import router as preferences_router
 from routes.chatbot import router as chatbot_router
 from routes.favorites import router as favorites_router
 from routes.name_stats import router as name_stats_router
+from routes.translation import router as translation_router
 
 # Include all routers
 api_router.include_router(auth_router)
@@ -71,6 +72,7 @@ api_router.include_router(preferences_router)
 api_router.include_router(chatbot_router)
 api_router.include_router(favorites_router)
 api_router.include_router(name_stats_router)
+api_router.include_router(translation_router)
 
 # Include main router
 app.include_router(api_router)

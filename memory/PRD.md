@@ -36,6 +36,7 @@ Authentification, Calculateur, Scanner alimentaire, Bibliothèque, RDV médicaux
 28. **Bulle de langue flottante** ✅ - Drapeau cliquable en haut à droite pour changer de langue
 29. **Traduction complète pages** ✅ - Toutes les pages traduites
 30. **Traduction pages restantes** ✅ - PostpartumPage.js, AdminPage.js, UpdatesHistoryPage.js, SubscriptionManage.js (27/03/2026)
+31. **Traduction automatique GPT** ✅ - API de traduction avec GPT-5.2 pour le contenu dynamique (27/03/2026)
 
 ---
 
@@ -103,6 +104,7 @@ Authentification, Calculateur, Scanner alimentaire, Bibliothèque, RDV médicaux
 - ~~P2: Traduction AdminPage.js~~ (27/03/2026)
 - ~~P2: Traduction UpdatesHistoryPage.js~~ (27/03/2026)
 - ~~P2: Traduction SubscriptionManage.js~~ (27/03/2026)
+- ~~P2: Traduction automatique GPT~~ (27/03/2026) - API `/api/translate/*` avec service GPT-5.2
 - ~~Amélioration: Détection auto langue~~
 - ~~Amélioration: Prénom du jour par pays~~
 - ~~Amélioration: Magasins liste naissance par pays~~
@@ -128,6 +130,12 @@ Authentification, Calculateur, Scanner alimentaire, Bibliothèque, RDV médicaux
 - `/app/frontend/src/i18n/locales/*.json` - 6 fichiers de traduction
 - `/app/frontend/src/components/settings/LanguageSelector.jsx`
 - `/app/frontend/src/components/LanguageBubble.jsx` - Bulle de sélection de langue
+
+### Traduction automatique
+- `/app/backend/services/translation_service.py` - Service de traduction GPT
+- `/app/backend/routes/translation.py` - API `/api/translate/*`
+- `/app/frontend/src/utils/translationService.js` - Client frontend
+- `/app/frontend/src/hooks/useAutoTranslate.js` - Hook React pour traduction auto
 
 ### Données localisées
 - `/app/frontend/src/data/servicesByCountry.js` - Services par pays

@@ -33,7 +33,8 @@
     "required": "required",
     "optional": "optional",
     "standard": "standard",
-    "sending": "Sending..."
+    "sending": "Sending...",
+    "translating": "Translating...","translating": "Translating..."
   },
   "auth": {
     "login": "Sign in",
@@ -497,6 +498,19 @@
       "babyPrep": "Prepare for baby's arrival",
       "emailNotifications": "Email notifications"
     }
+  },
+  "weeklyTips": {
+    "title": "Weekly Tips",
+    "week": "Week",
+    "fetus": "Fetus week",
+    "size": "Size",
+    "weight": "Weight",
+    "comparableSize": "Comparable size to",
+    "development": "Development",
+    "currentWeek": "Current week",
+    "selectWeek": "Select a week",
+    "freeWeeks": "Weeks 1-4 available for free",
+    "unlockAll": "Unlock all"
   },
   "medicalWarning": "The advice provided is for informational purposes only and does not replace medical advice. Consult a healthcare professional before taking any medication or supplements."
 }

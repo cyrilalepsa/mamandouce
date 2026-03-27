@@ -3,18 +3,34 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { BookOpen, ChevronRight, AlertTriangle, Lock, Crown } from 'lucide-react';
+import { BookOpen, ChevronRight, AlertTriangle, Lock, Crown, Loader2 } from 'lucide-react';
 import api from '../utils/api';
 import PageHeader from '../components/PageHeader';
 import { useSubscription } from '../components/SubscriptionGate';
+import { useAutoTranslate } from '../hooks/useAutoTranslate';
 
 function WeeklyTipsPage() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isPremium, loading: subscriptionLoading } = useSubscription();
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [currentTip, setCurrentTip] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState(1);
+  
+  // Langue actuelle
+  const currentLang = i18n.language?.split('-')[0] || 'fr';
+  
+  // Traduction automatique du contenu
+  const { translated: translatedTip, isLoading: isTranslating } = useAutoTranslate(
+    currentTip,
+    {
+      fields: ['title', 'description', 'development', 'fruit_comparison', 'symptoms', 'advice'],
+      enabled: currentLang !== 'fr'
+    }
+  );
+  
+  // Utiliser le contenu traduit ou original
+  const displayTip = currentLang !== 'fr' && translatedTip ? translatedTip : currentTip;
   
   // Semaines gratuites (1-4)
   const FREE_WEEKS = [1, 2, 3, 4];
@@ -146,61 +162,69 @@ function WeeklyTipsPage() {
           </div>
         </Card>
 
-        {currentTip && (
+        {displayTip && (
           <Card className="bg-gradient-to-br from-sky-50 to-teal-50 rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 animate-fade-in" data-testid="tip-card">
+            {/* Indicateur de traduction */}
+            {isTranslating && (
+              <div className="flex items-center gap-2 mb-4 text-sm text-slate-500">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>{t('common.translating')}</span>
+              </div>
+            )}
+            
             <div className="space-y-6">
               <div>
                 <span className="inline-block px-4 py-1 bg-teal-100 text-teal-600 rounded-full text-sm font-semibold mb-3">
-                  Semaine {currentTip.week}
+                  {t('weeklyTips.week')} {displayTip.week}
                 </span>
-                <h2 className="text-3xl font-bold text-slate-700 mb-4" style={{ fontFamily: 'Nunito, sans-serif' }}>{currentTip.title}</h2>
+                <h2 className="text-3xl font-bold text-slate-700 mb-4" style={{ fontFamily: 'Nunito, sans-serif' }}>{displayTip.title}</h2>
               </div>
 
-              {currentTip.image_url && (
+              {displayTip.image_url && (
                 <div className="bg-white rounded-2xl p-6">
                   <div className="flex justify-center mb-4">
                     <img 
-                      src={currentTip.image_url} 
-                      alt={`Fœtus semaine ${currentTip.week}`}
+                      src={displayTip.image_url} 
+                      alt={`${t('weeklyTips.fetus')} ${displayTip.week}`}
                       className="w-56 h-56 object-contain rounded-2xl"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-3 mb-3">
                     <div className="bg-sky-50 rounded-xl p-3 text-center">
-                      <p className="text-xs text-slate-500 font-semibold mb-1">Taille</p>
-                      <p className="text-xl font-bold text-sky-600">{currentTip.embryo_size}</p>
+                      <p className="text-xs text-slate-500 font-semibold mb-1">{t('weeklyTips.size')}</p>
+                      <p className="text-xl font-bold text-sky-600">{displayTip.embryo_size}</p>
                     </div>
                     <div className="bg-pink-50 rounded-xl p-3 text-center">
-                      <p className="text-xs text-slate-500 font-semibold mb-1">Poids</p>
-                      <p className="text-xl font-bold text-pink-500">{currentTip.embryo_weight || '< 1 g'}</p>
+                      <p className="text-xs text-slate-500 font-semibold mb-1">{t('weeklyTips.weight')}</p>
+                      <p className="text-xl font-bold text-pink-500">{displayTip.embryo_weight || '< 1 g'}</p>
                     </div>
                   </div>
-                  {currentTip.fruit_comparison && (
+                  {displayTip.fruit_comparison && (
                     <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 border border-amber-200 text-center">
                       <p className="text-sm text-amber-700">
-                        <span className="font-semibold">Taille comparable à :</span> {currentTip.fruit_comparison}
+                        <span className="font-semibold">{t('weeklyTips.comparableSize')}:</span> {displayTip.fruit_comparison}
                       </p>
                     </div>
                   )}
                 </div>
               )}
 
-              {!currentTip.image_url && currentTip.embryo_size && (
+              {!displayTip.image_url && displayTip.embryo_size && (
                 <div className="bg-white rounded-2xl p-6">
                   <div className="grid grid-cols-2 gap-4 mb-3">
                     <div className="bg-sky-50 rounded-xl p-3 text-center">
-                      <p className="text-xs text-slate-500 font-semibold mb-1">Taille</p>
-                      <p className="text-xl font-bold text-sky-600">{currentTip.embryo_size}</p>
+                      <p className="text-xs text-slate-500 font-semibold mb-1">{t('weeklyTips.size')}</p>
+                      <p className="text-xl font-bold text-sky-600">{displayTip.embryo_size}</p>
                     </div>
                     <div className="bg-pink-50 rounded-xl p-3 text-center">
-                      <p className="text-xs text-slate-500 font-semibold mb-1">Poids</p>
-                      <p className="text-xl font-bold text-pink-500">{currentTip.embryo_weight || '< 1 g'}</p>
+                      <p className="text-xs text-slate-500 font-semibold mb-1">{t('weeklyTips.weight')}</p>
+                      <p className="text-xl font-bold text-pink-500">{displayTip.embryo_weight || '< 1 g'}</p>
                     </div>
                   </div>
-                  {currentTip.fruit_comparison && (
+                  {displayTip.fruit_comparison && (
                     <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 border border-amber-200 text-center">
                       <p className="text-sm text-amber-700">
-                        <span className="font-semibold">Taille comparable à :</span> {currentTip.fruit_comparison}
+                        <span className="font-semibold">{t('weeklyTips.comparableSize')}:</span> {displayTip.fruit_comparison}
                       </p>
                     </div>
                   )}
@@ -208,13 +232,13 @@ function WeeklyTipsPage() {
               )}
 
               <div className="bg-white rounded-2xl p-6">
-                <p className="text-slate-600 leading-relaxed">{currentTip.description}</p>
+                <p className="text-slate-600 leading-relaxed">{displayTip.description}</p>
               </div>
 
-              {currentTip.development && (
+              {displayTip.development && (
                 <div className="bg-gradient-to-br from-pink-100 to-sky-100 rounded-2xl p-6">
-                  <h4 className="font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>Développement</h4>
-                  <p className="text-slate-600">{currentTip.development}</p>
+                  <h4 className="font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('weeklyTips.development')}</h4>
+                  <p className="text-slate-600">{displayTip.development}</p>
                 </div>
               )}
 

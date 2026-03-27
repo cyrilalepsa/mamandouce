@@ -33,7 +33,7 @@
     "required": "obbligatorio",
     "optional": "opzionale",
     "standard": "standard",
-    "sending": "Invio in corso..."
+    "sending": "Sending...","translating": "Translating..."
   },
   "auth": {
     "login": "Accedi",
@@ -497,6 +497,19 @@
       "babyPrep": "Preparare l'arrivo del bebè",
       "emailNotifications": "Notifiche email"
     }
+  },
+  "weeklyTips": {
+    "title": "Consigli settimanali",
+    "week": "Settimana",
+    "fetus": "Feto settimana",
+    "size": "Dimensione",
+    "weight": "Peso",
+    "comparableSize": "Dimensione paragonabile a",
+    "development": "Sviluppo",
+    "currentWeek": "Settimana attuale",
+    "selectWeek": "Seleziona una settimana",
+    "freeWeeks": "Settimane 1-4 disponibili gratuitamente",
+    "unlockAll": "Sblocca tutto"
   },
   "medicalWarning": "I consigli forniti sono solo a scopo informativo e non sostituiscono il parere medico. Consulta un professionista sanitario prima di assumere farmaci o integratori."
 }
