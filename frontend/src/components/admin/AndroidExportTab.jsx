@@ -169,6 +169,168 @@ export function AndroidExportTab() {
         </div>
       </Card>
 
+      {/* Business Kit Card - EN HAUT */}
+      <Card className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-3xl p-6 text-white">
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
+            <Briefcase className="w-7 h-7" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold">Kit Business</h2>
+            <p className="text-white/80 text-sm">Plan financier, pitchs & carte de visite</p>
+          </div>
+        </div>
+        
+        <div className="relative">
+          <Button
+            onClick={() => setShowBusinessMenu(!showBusinessMenu)}
+            disabled={sendingBusinessKit}
+            data-testid="business-kit-btn"
+            className="w-full bg-white text-amber-600 rounded-xl py-3 hover:bg-white/90 flex items-center justify-center gap-3 font-semibold"
+          >
+            {sendingBusinessKit ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Envoi en cours...
+              </>
+            ) : (
+              <>
+                <FileText className="w-5 h-5" />
+                Accéder au kit business
+                <ChevronDown className={`w-5 h-5 transition-transform ${showBusinessMenu ? 'rotate-180' : ''}`} />
+              </>
+            )}
+          </Button>
+          
+          {showBusinessMenu && !sendingBusinessKit && (
+            <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50 animate-fade-in">
+              <button
+                onClick={() => handleViewBusinessDoc('BUSINESS_PLAN_MAMANDOUCE.md')}
+                className="w-full px-4 py-4 text-left hover:bg-slate-50 flex items-center gap-4 transition-colors"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-slate-700">Plan Business</p>
+                  <p className="text-sm text-slate-500">Financier, pitchs, App Store...</p>
+                </div>
+              </button>
+              
+              <button
+                onClick={() => handleViewBusinessDoc('CARTE_VISITE_MAMANDOUCE.html')}
+                className="w-full px-4 py-4 text-left hover:bg-slate-50 flex items-center gap-4 transition-colors border-t border-slate-100"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center">
+                  <CreditCard className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-slate-700">Carte de visite</p>
+                  <p className="text-sm text-slate-500">Modèle prêt à imprimer</p>
+                </div>
+              </button>
+              
+              <button
+                onClick={handleSendBusinessKit}
+                disabled={!businessKitInfo?.email_available}
+                className="w-full px-4 py-4 text-left hover:bg-amber-50 flex items-center gap-4 transition-colors border-t border-slate-100 disabled:opacity-50"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center">
+                  <Mail className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-slate-700">Envoyer par email</p>
+                  <p className="text-sm text-slate-500">Recevoir le kit complet</p>
+                </div>
+              </button>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      {/* Instructions Card - Collapsible */}
+      <Card className="bg-white rounded-3xl p-6">
+        <button
+          onClick={() => setShowInstructions(!showInstructions)}
+          className="w-full flex items-center justify-between"
+        >
+          <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-sky-500" />
+            Instructions de build
+          </h3>
+          <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${showInstructions ? 'rotate-180' : ''}`} />
+        </button>
+        
+        {showInstructions && (
+          <div className="mt-4 space-y-4 animate-fade-in">
+            <div className="flex gap-4">
+              <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-pink-600 font-bold">1</span>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-700">Installer Node.js</p>
+                <p className="text-sm text-slate-500">Téléchargez la version LTS sur nodejs.org</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-4">
+              <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-pink-600 font-bold">2</span>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-700">Installer les dépendances</p>
+                <p className="text-sm text-slate-500 font-mono bg-slate-100 px-2 py-1 rounded mt-1">
+                  npm install --legacy-peer-deps
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-4">
+              <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-pink-600 font-bold">3</span>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-700">Compiler l'application</p>
+                <p className="text-sm text-slate-500 font-mono bg-slate-100 px-2 py-1 rounded mt-1">
+                  npm run build
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-4">
+              <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-pink-600 font-bold">4</span>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-700">Synchroniser avec Android</p>
+                <p className="text-sm text-slate-500 font-mono bg-slate-100 px-2 py-1 rounded mt-1">
+                  npx cap sync android
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-4">
+              <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-pink-600 font-bold">5</span>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-700">Générer le fichier AAB</p>
+                <p className="text-sm text-slate-500">
+                  Dans Android Studio : Build → Generate Signed Bundle / APK...
+                </p>
+              </div>
+            </div>
+            
+            <div className="mt-6 p-4 bg-amber-50 rounded-xl">
+              <p className="text-sm text-amber-700">
+                <strong>Important :</strong> Conservez précieusement votre fichier keystore (.jks) et son mot de passe.
+                Sans eux, vous ne pourrez plus mettre à jour votre application sur le Play Store.
+              </p>
+            </div>
+          </div>
+        )}
+      </Card>
+
       {/* Status Card */}
       <Card className="bg-white rounded-3xl p-6">
         <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
@@ -285,168 +447,6 @@ export function AndroidExportTab() {
             </div>
           </div>
         )}
-      </Card>
-
-      {/* Instructions Card - Collapsible */}
-      <Card className="bg-white rounded-3xl p-6">
-        <button
-          onClick={() => setShowInstructions(!showInstructions)}
-          className="w-full flex items-center justify-between"
-        >
-          <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-sky-500" />
-            Instructions de build
-          </h3>
-          <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${showInstructions ? 'rotate-180' : ''}`} />
-        </button>
-        
-        {showInstructions && (
-          <div className="mt-4 space-y-4 animate-fade-in">
-            <div className="flex gap-4">
-              <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-pink-600 font-bold">1</span>
-              </div>
-              <div>
-                <p className="font-semibold text-slate-700">Installer Node.js</p>
-                <p className="text-sm text-slate-500">Téléchargez la version LTS sur nodejs.org</p>
-              </div>
-            </div>
-            
-            <div className="flex gap-4">
-              <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-pink-600 font-bold">2</span>
-              </div>
-              <div>
-                <p className="font-semibold text-slate-700">Installer les dépendances</p>
-                <p className="text-sm text-slate-500 font-mono bg-slate-100 px-2 py-1 rounded mt-1">
-                  npm install --legacy-peer-deps
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex gap-4">
-              <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-pink-600 font-bold">3</span>
-              </div>
-              <div>
-                <p className="font-semibold text-slate-700">Compiler l'application</p>
-                <p className="text-sm text-slate-500 font-mono bg-slate-100 px-2 py-1 rounded mt-1">
-                  npm run build
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex gap-4">
-              <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-pink-600 font-bold">4</span>
-              </div>
-              <div>
-                <p className="font-semibold text-slate-700">Synchroniser avec Android</p>
-                <p className="text-sm text-slate-500 font-mono bg-slate-100 px-2 py-1 rounded mt-1">
-                  npx cap sync android
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex gap-4">
-              <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-pink-600 font-bold">5</span>
-              </div>
-              <div>
-                <p className="font-semibold text-slate-700">Générer le fichier AAB</p>
-                <p className="text-sm text-slate-500">
-                  Dans Android Studio : Build → Generate Signed Bundle / APK...
-                </p>
-              </div>
-            </div>
-            
-            <div className="mt-6 p-4 bg-amber-50 rounded-xl">
-              <p className="text-sm text-amber-700">
-                <strong>Important :</strong> Conservez précieusement votre fichier keystore (.jks) et son mot de passe.
-                Sans eux, vous ne pourrez plus mettre à jour votre application sur le Play Store.
-              </p>
-            </div>
-          </div>
-        )}
-      </Card>
-
-      {/* Business Kit Card */}
-      <Card className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-3xl p-6 text-white">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
-            <Briefcase className="w-7 h-7" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold">Kit Business</h2>
-            <p className="text-white/80 text-sm">Plan financier, pitchs & carte de visite</p>
-          </div>
-        </div>
-        
-        <div className="relative">
-          <Button
-            onClick={() => setShowBusinessMenu(!showBusinessMenu)}
-            disabled={sendingBusinessKit}
-            data-testid="business-kit-btn"
-            className="w-full bg-white text-amber-600 rounded-xl py-3 hover:bg-white/90 flex items-center justify-center gap-3 font-semibold"
-          >
-            {sendingBusinessKit ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Envoi en cours...
-              </>
-            ) : (
-              <>
-                <FileText className="w-5 h-5" />
-                Accéder au kit business
-                <ChevronDown className={`w-5 h-5 transition-transform ${showBusinessMenu ? 'rotate-180' : ''}`} />
-              </>
-            )}
-          </Button>
-          
-          {showBusinessMenu && !sendingBusinessKit && (
-            <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50 animate-fade-in">
-              <button
-                onClick={() => handleViewBusinessDoc('BUSINESS_PLAN_MAMANDOUCE.md')}
-                className="w-full px-4 py-4 text-left hover:bg-slate-50 flex items-center gap-4 transition-colors"
-              >
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center">
-                  <FileText className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-slate-700">Plan Business</p>
-                  <p className="text-sm text-slate-500">Financier, pitchs, App Store...</p>
-                </div>
-              </button>
-              
-              <button
-                onClick={() => handleViewBusinessDoc('CARTE_VISITE_MAMANDOUCE.html')}
-                className="w-full px-4 py-4 text-left hover:bg-slate-50 flex items-center gap-4 transition-colors border-t border-slate-100"
-              >
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center">
-                  <CreditCard className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-slate-700">Carte de visite</p>
-                  <p className="text-sm text-slate-500">Modèle prêt à imprimer</p>
-                </div>
-              </button>
-              
-              <button
-                onClick={handleSendBusinessKit}
-                disabled={!businessKitInfo?.email_available}
-                className="w-full px-4 py-4 text-left hover:bg-amber-50 flex items-center gap-4 transition-colors border-t border-slate-100 disabled:opacity-50"
-              >
-                <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center">
-                  <Mail className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-slate-700">Envoyer par email</p>
-                  <p className="text-sm text-slate-500">Recevoir le kit complet</p>
-                </div>
-              </button>
-            </div>
-          )}
-        </div>
       </Card>
     </div>
   );
