@@ -48,15 +48,15 @@ export function LanguageBubble() {
   };
 
   return (
-    <div className="fixed bottom-24 right-4" style={{ zIndex: 9999 }} ref={dropdownRef}>
+    <div className="fixed top-4 right-14" style={{ zIndex: 9999 }} ref={dropdownRef}>
       {/* Language dropdown */}
       {isOpen && (
         <div 
-          className="absolute bottom-16 right-0 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
+          className="absolute top-12 right-0 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
           style={{ 
             minWidth: '200px',
             zIndex: 9999,
-            animation: 'fadeInUp 0.2s ease-out'
+            animation: 'fadeInDown 0.2s ease-out'
           }}
         >
           {/* Header */}
@@ -99,23 +99,23 @@ export function LanguageBubble() {
       {/* Floating bubble button */}
       <button
         onClick={toggleDropdown}
-        className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 ${
+        className={`w-10 h-10 rounded-full shadow-md flex items-center justify-center transition-all duration-300 hover:scale-110 ${
           isOpen 
             ? 'bg-gradient-to-r from-pink-500 to-purple-500 shadow-pink-300/50' 
-            : 'bg-white border-2 border-pink-200 hover:border-pink-400 shadow-lg'
+            : 'bg-white border border-pink-200 hover:border-pink-400 shadow-md'
         }`}
         title={t('settings.selectLanguage')}
         data-testid="language-bubble-btn"
       >
-        <span className="text-3xl">{currentLanguage.flag}</span>
+        <span className="text-xl">{currentLanguage.flag}</span>
       </button>
 
       {/* Animation keyframes */}
       <style>{`
-        @keyframes fadeInUp {
+        @keyframes fadeInDown {
           from {
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(-10px);
           }
           to {
             opacity: 1;

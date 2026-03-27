@@ -103,7 +103,7 @@ function BirthListPage() {
   const addItem = async (e) => {
     e.preventDefault();
     if (!newItem.name.trim()) {
-      toast.error('Le nom est requis');
+      toast.error(t('birthList.itemNameRequired', 'Le nom est requis'));
       return;
     }
 
@@ -112,9 +112,9 @@ function BirthListPage() {
       setItems(response.data.items);
       setShowAddDialog(false);
       setNewItem({ name: '', store: 'orchestra', url: '', price: '', quantity: 1, notes: '' });
-      toast.success('Article ajouté !');
+      toast.success(t('birthList.itemAdded', 'Article ajouté !'));
     } catch (error) {
-      toast.error('Erreur lors de l\'ajout');
+      toast.error(t('common.error'));
     }
   };
 
@@ -122,9 +122,9 @@ function BirthListPage() {
     try {
       const response = await api.birthList.removeItem(itemId);
       setItems(response.data.items);
-      toast.success('Article supprimé');
+      toast.success(t('birthList.itemRemoved', 'Article supprimé'));
     } catch (error) {
-      toast.error('Erreur lors de la suppression');
+      toast.error(t('common.error'));
     }
   };
 
@@ -133,7 +133,7 @@ function BirthListPage() {
       const response = await api.birthList.toggleReserved(itemId);
       setItems(response.data.items);
     } catch (error) {
-      toast.error('Erreur');
+      toast.error(t('common.error'));
     }
   };
 
@@ -145,7 +145,7 @@ function BirthListPage() {
   const copyShareLink = () => {
     navigator.clipboard.writeText(getShareUrl());
     setCopied(true);
-    toast.success('Lien copié !');
+    toast.success(t('birthList.linkCopied'));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -157,9 +157,9 @@ function BirthListPage() {
     return (
       <div className="min-h-screen gradient-bg p-6">
         <div className="max-w-2xl mx-auto">
-          <PageHeader title="Liste de naissance" />
+          <PageHeader title={t('birthList.title')} />
           <Card className="bg-white rounded-3xl p-8 text-center">
-            <p className="text-slate-500">Chargement...</p>
+            <p className="text-slate-500">{t('common.loading')}</p>
           </Card>
         </div>
       </div>
@@ -170,15 +170,15 @@ function BirthListPage() {
     return (
       <div className="min-h-screen gradient-bg p-6">
         <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-          <PageHeader title="Liste de naissance" />
+          <PageHeader title={t('birthList.title')} />
           
           <Card className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl p-8 text-center border-0">
             <Gift className="w-20 h-20 text-pink-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-              Créez votre liste de naissance
+              {t('birthList.createList', 'Créez votre liste de naissance')}
             </h2>
             <p className="text-slate-600 mb-6">
-              Ajoutez des articles de vos magasins préférés et partagez le lien avec vos proches
+              {t('birthList.shareWithFamily')}
             </p>
             
             <div className="flex flex-wrap justify-center gap-3 mb-6">
@@ -195,7 +195,7 @@ function BirthListPage() {
               className="bg-gradient-to-r from-pink-500 to-pink-400 text-white rounded-full px-8 py-3 font-bold shadow-lg hover:shadow-pink-200/50"
             >
               <Plus className="w-5 h-5 mr-2" />
-              Créer ma liste
+              {t('birthList.createMyList', 'Créer ma liste')}
             </Button>
           </Card>
         </div>
@@ -206,7 +206,7 @@ function BirthListPage() {
   return (
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-        <PageHeader title="Liste de naissance" />
+        <PageHeader title={t('birthList.title')} />
 
         {/* Actions */}
         <div className="flex gap-3">
@@ -216,7 +216,7 @@ function BirthListPage() {
             className="flex-1 bg-gradient-to-r from-pink-500 to-pink-400 text-white rounded-2xl py-3 font-semibold"
           >
             <Plus className="w-5 h-5 mr-2" />
-            Ajouter un article
+            {t('birthList.addItem')}
           </Button>
           <Button
             onClick={() => setShowShareDialog(true)}
@@ -230,15 +230,15 @@ function BirthListPage() {
         {/* Stats */}
         <Card className="bg-white rounded-2xl p-4 flex items-center justify-between">
           <div>
-            <p className="text-sm text-slate-500">Articles dans la liste</p>
+            <p className="text-sm text-slate-500">{t('birthList.itemsInList', 'Articles dans la liste')}</p>
             <p className="text-2xl font-bold text-slate-700">{items.length}</p>
           </div>
           <div>
-            <p className="text-sm text-slate-500">Réservés</p>
+            <p className="text-sm text-slate-500">{t('birthList.reserved')}</p>
             <p className="text-2xl font-bold text-green-600">{items.filter(i => i.reserved).length}</p>
           </div>
           <div>
-            <p className="text-sm text-slate-500">Restants</p>
+            <p className="text-sm text-slate-500">{t('birthList.remaining', 'Restants')}</p>
             <p className="text-2xl font-bold text-pink-600">{items.filter(i => !i.reserved).length}</p>
           </div>
         </Card>
@@ -247,8 +247,8 @@ function BirthListPage() {
         {items.length === 0 ? (
           <Card className="bg-white rounded-3xl p-8 text-center">
             <ShoppingBag className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500">Votre liste est vide</p>
-            <p className="text-sm text-slate-400 mt-1">Ajoutez des articles pour commencer</p>
+            <p className="text-slate-500">{t('birthList.emptyList')}</p>
+            <p className="text-sm text-slate-400 mt-1">{t('birthList.addFirstItem')}</p>
           </Card>
         ) : (
           <div className="space-y-3">

@@ -33,8 +33,8 @@ Authentification, Calculateur, Scanner alimentaire, Bibliothèque, RDV médicaux
 25. **Prénom du jour localisé** ✅ - Calendrier des saints par pays (FR, ES, PT, IT, DE)
 26. **Magasins liste naissance** ✅ - Enseignes adaptées par pays (Vertbaudet FR, John Lewis UK, etc.)
 27. **Sac de maternité localisé** ✅ - Documents, durée séjour, marques par pays
-28. **Bulle de langue flottante** ✅ NEW - Drapeau cliquable pour changer de langue
-29. **Traduction complète pages** ✅ NEW - PregnancyCalculator.js, FoodScanner.js, HomePage.js, AgendaCard.jsx
+28. **Bulle de langue flottante** ✅ - Drapeau cliquable en haut à droite pour changer de langue
+29. **Traduction complète pages** ✅ - PregnancyCalculator.js, FoodScanner.js, HomePage.js, AgendaCard.jsx, BirthListPage.js, MaternityBagPage.js
 
 ---
 

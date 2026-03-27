@@ -74,7 +74,7 @@ export default function MaternityBagPage() {
             className="flex items-center gap-2 text-slate-600 mb-6"
           >
             <ArrowLeft className="w-5 h-5" />
-            Retour
+            {t('common.back')}
           </button>
           
           <Card className="bg-white rounded-3xl p-8 text-center">
@@ -82,20 +82,20 @@ export default function MaternityBagPage() {
               <Lock className="w-10 h-10 text-purple-500" />
             </div>
             <h1 className="text-2xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-              Fonctionnalité Premium
+              {t('premium.premiumFeature', 'Fonctionnalité Premium')}
             </h1>
             <p className="text-slate-500 mb-6">
-              La check-list du sac de maternité est réservée aux abonnées Premium.
+              {t('maternityBag.premiumRequired', 'La check-list du sac de maternité est réservée aux abonnées Premium.')}
             </p>
             <Button
               onClick={() => navigate('/pricing')}
               className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full px-8 py-3 text-lg font-semibold hover:opacity-90 transition-opacity"
             >
               <Crown className="w-5 h-5 mr-2" />
-              Découvrir Premium
+              {t('premium.discoverPremium', 'Découvrir Premium')}
             </Button>
             <p className="text-sm text-slate-400 mt-4">
-              Seulement 3€/mois • Annulation à tout moment
+              {t('premium.priceInfo', 'Seulement 3€/mois • Annulation à tout moment')}
             </p>
           </Card>
         </div>
@@ -144,13 +144,13 @@ export default function MaternityBagPage() {
       const response = await api.postpartum.toggleMaternityBagFavorite(itemName);
       if (response.data.is_favorite) {
         setFavorites([...favorites, itemName]);
-        toast.success('Ajouté aux favoris');
+        toast.success(t('scanner.addedToFavorites'));
       } else {
         setFavorites(favorites.filter(f => f !== itemName));
-        toast.success('Retiré des favoris');
+        toast.success(t('scanner.removedFromFavorites'));
       }
     } catch (error) {
-      toast.error('Erreur lors de la mise à jour');
+      toast.error(t('common.error'));
     }
   };
 
@@ -158,17 +158,17 @@ export default function MaternityBagPage() {
 
   const submitSuggestion = async () => {
     if (!newItem.trim()) {
-      toast.error('Veuillez entrer un article');
+      toast.error(t('maternityBag.enterItem', 'Veuillez entrer un article'));
       return;
     }
 
     try {
       await api.postpartum.suggestMaternityItem(newCategory, newItem);
-      toast.success('Suggestion envoyée pour validation');
+      toast.success(t('maternityBag.suggestionSent', 'Suggestion envoyée pour validation'));
       setShowSuggestion(false);
       setNewItem('');
     } catch (error) {
-      toast.error('Erreur lors de l\'envoi');
+      toast.error(t('common.error'));
     }
   };
 
@@ -202,6 +202,18 @@ export default function MaternityBagPage() {
       default:
         return { bg: 'bg-slate-100', text: 'text-slate-600', border: 'border-slate-200' };
     }
+  };
+
+  // Traduction des catégories
+  const translateCategory = (category) => {
+    const translations = {
+      'Pour maman': t('maternityBag.forMom', 'Pour maman'),
+      'Pour bébé': t('maternityBag.forBaby', 'Pour bébé'),
+      'Pour le retour': t('maternityBag.forReturn', 'Pour le retour'),
+      'Ajoutés': t('maternityBag.added', 'Ajoutés'),
+      'Autres': t('library.other', 'Autres')
+    };
+    return translations[category] || category;
   };
 
   const toggleCategory = (category) => {
@@ -344,7 +356,7 @@ export default function MaternityBagPage() {
         {/* Progress */}
         <Card className="bg-gradient-to-r from-pink-100 to-sky-100 rounded-3xl p-5">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-lg font-bold text-slate-700">Progression</span>
+            <span className="text-lg font-bold text-slate-700">{t('maternityBag.progress', 'Progression')}</span>
             <span className="text-2xl font-bold text-pink-600">{getProgress()}%</span>
           </div>
           <div className="w-full bg-white/50 rounded-full h-3">
@@ -354,7 +366,7 @@ export default function MaternityBagPage() {
             ></div>
           </div>
           <p className="text-xs text-slate-500 mt-2">
-            {items.filter(i => i.checked).length + customItems.filter(i => i.checked).length} / {items.length + customItems.length} articles préparés
+            {items.filter(i => i.checked).length + customItems.filter(i => i.checked).length} / {items.length + customItems.length} {t('maternityBag.itemsPrepared', 'articles préparés')}
           </p>
         </Card>
 
@@ -368,10 +380,10 @@ export default function MaternityBagPage() {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                    Mes essentiels
+                    {t('maternityBag.myEssentials', 'Mes essentiels')}
                   </h2>
                   <p className="text-sm text-slate-500">
-                    {favorites.length} article{favorites.length > 1 ? 's' : ''} favori{favorites.length > 1 ? 's' : ''}
+                    {favorites.length} {t('maternityBag.favoriteItems', 'articles favoris')}
                   </p>
                 </div>
               </div>
