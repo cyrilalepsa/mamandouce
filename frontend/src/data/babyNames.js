@@ -3,6 +3,8 @@
 
 // Import de la base massive des prénoms français (1000+)
 import { frenchNames } from './babyNamesFR.js';
+// Import de la base des prénoms américains
+import { americanNames } from './babyNamesUS.js';
 
 export const countries = {
   europe: [
@@ -76,6 +78,9 @@ export const freeLetters = ['A', 'B', 'C', 'D', 'E'];
 export const babyNamesData = {
   // FRANCE - Base massive 1000+ prénoms modernes (importée de babyNamesFR.js)
   FR: frenchNames,
+
+  // ÉTATS-UNIS - Base de prénoms américains populaires
+  US: americanNames,
 
   // ESPAGNE
   ES: {
