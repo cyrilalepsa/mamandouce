@@ -210,7 +210,7 @@ export function TopBar({ isAdmin }) {
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           data-testid="account-menu-btn"
-          className="relative w-10 h-10 bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-full shadow-sm hover:shadow-md hover:bg-white transition-all flex items-center justify-center"
+          className="relative p-2 hover:opacity-70 transition-all flex items-center justify-center"
         >
           <MoreVertical className="w-5 h-5 text-slate-500" />
           {/* Point rouge de notification */}
