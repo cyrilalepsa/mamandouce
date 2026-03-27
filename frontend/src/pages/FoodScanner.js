@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -14,6 +15,7 @@ import { useSubscription } from '../components/SubscriptionGate';
 function FoodScanner() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const { isPremium, subscriptionStatus, loading: subscriptionLoading } = useSubscription();
   
   const [barcode, setBarcode] = useState('');
@@ -274,22 +276,22 @@ function FoodScanner() {
   const getSafetyText = (status) => {
     switch (status) {
       case 'safe':
-        return { text: 'Sûr', color: 'text-green-600 bg-green-50' };
+        return { text: t('scanner.safe'), color: 'text-green-600 bg-green-50' };
       case 'caution':
-        return { text: 'Précaution', color: 'text-yellow-600 bg-yellow-50' };
+        return { text: t('scanner.caution'), color: 'text-yellow-600 bg-yellow-50' };
       case 'avoid':
-        return { text: 'À éviter', color: 'text-orange-600 bg-orange-50' };
+        return { text: t('scanner.avoid'), color: 'text-orange-600 bg-orange-50' };
       case 'unsafe':
-        return { text: 'Non sûr', color: 'text-red-600 bg-red-50' };
+        return { text: t('scanner.unsafe'), color: 'text-red-600 bg-red-50' };
       default:
-        return { text: 'Inconnu', color: 'text-gray-600 bg-gray-50' };
+        return { text: t('scanner.unknown'), color: 'text-gray-600 bg-gray-50' };
     }
   };
 
   return (
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-        <PageHeader title="Scanner d'aliments" />
+        <PageHeader title={t('scanner.title')} />
 
         {/* Scans Remaining Banner for free users */}
         {!subscriptionLoading && !isPremium && (
@@ -304,8 +306,8 @@ function FoodScanner() {
               )}
               <span className={`text-sm font-medium ${scansRemaining > 0 ? 'text-amber-700' : 'text-red-700'}`}>
                 {scansRemaining > 0 
-                  ? `${scansRemaining} scan${scansRemaining > 1 ? 's' : ''} restant${scansRemaining > 1 ? 's' : ''} cette semaine`
-                  : 'Limite atteinte cette semaine'
+                  ? (scansRemaining > 1 ? t('scanner.scansRemainingPlural', { count: scansRemaining }) : t('scanner.scansRemaining', { count: scansRemaining }))
+                  : t('scanner.limitReachedWeek')
                 }
               </span>
             </div>
@@ -323,7 +325,7 @@ function FoodScanner() {
         {!subscriptionLoading && isPremium && (
           <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-3 flex items-center gap-2">
             <Crown className="w-5 h-5 text-purple-600" />
-            <span className="text-sm font-medium text-purple-700">Scans illimités avec Premium</span>
+            <span className="text-sm font-medium text-purple-700">{t('scanner.unlimitedScans')}</span>
           </div>
         )}
 
@@ -335,7 +337,7 @@ function FoodScanner() {
             className={`flex-1 rounded-full py-3 font-semibold ${activeTab === 'camera' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
           >
             <Camera className="w-4 h-4 mr-2" />
-            Caméra
+            {t('scanner.camera')}
           </Button>
           <Button
             onClick={() => { stopScanner(); setActiveTab('manual'); }}
@@ -343,7 +345,7 @@ function FoodScanner() {
             className={`flex-1 rounded-full py-3 font-semibold ${activeTab === 'manual' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
           >
             <Keyboard className="w-4 h-4 mr-2" />
-            Manuel
+            {t('scanner.manual')}
           </Button>
           <Button
             onClick={() => { stopScanner(); setActiveTab('search'); }}
@@ -351,7 +353,7 @@ function FoodScanner() {
             className={`flex-1 rounded-full py-3 font-semibold ${activeTab === 'search' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
           >
             <Search className="w-4 h-4 mr-2" />
-            Recherche
+            {t('scanner.search')}
           </Button>
         </div>
 
@@ -359,7 +361,7 @@ function FoodScanner() {
         {activeTab === 'camera' && (
           <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
             <div className="text-center mb-4">
-              <p className="text-slate-600 mb-4">Pointez la caméra vers le code-barres du produit</p>
+              <p className="text-slate-600 mb-4">{t('scanner.pointCamera')}</p>
               
               <div id="qr-reader" className="mx-auto rounded-2xl overflow-hidden" style={{ maxWidth: '100%' }}></div>
               
@@ -370,7 +372,7 @@ function FoodScanner() {
                   className="mt-4 bg-gradient-to-r from-sky-500 to-sky-400 text-white rounded-full px-8 py-3 font-semibold"
                 >
                   <Camera className="w-5 h-5 mr-2" />
-                  Démarrer la caméra
+                  {t('scanner.startCamera')}
                 </Button>
               )}
               
@@ -381,7 +383,7 @@ function FoodScanner() {
                   className="mt-4 bg-red-500 text-white rounded-full px-8 py-3 font-semibold"
                 >
                   <X className="w-5 h-5 mr-2" />
-                  Arrêter
+                  {t('scanner.stopCamera')}
                 </Button>
               )}
             </div>
@@ -393,11 +395,11 @@ function FoodScanner() {
           <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
             <form onSubmit={handleManualBarcode} className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-slate-600 mb-2 block">Code-barres (EAN)</label>
+                <label className="text-sm font-medium text-slate-600 mb-2 block">{t('scanner.barcodeEAN')}</label>
                 <Input
                   type="text"
                   inputMode="numeric"
-                  placeholder="Ex: 3017620422003"
+                  placeholder={t('scanner.barcodeExample')}
                   value={barcode}
                   onChange={(e) => setBarcode(e.target.value)}
                   className="rounded-xl border-slate-200 focus:ring-sky-500"
@@ -410,7 +412,7 @@ function FoodScanner() {
                 data-testid="scan-button"
                 className="w-full bg-gradient-to-r from-sky-500 to-sky-400 text-white rounded-full py-3 font-semibold disabled:opacity-50"
               >
-                {loading ? 'Recherche...' : 'Rechercher le produit'}
+                {loading ? t('scanner.searching') : t('scanner.searchProduct')}
               </Button>
             </form>
           </Card>
@@ -421,10 +423,10 @@ function FoodScanner() {
           <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
             <form onSubmit={handleSearch} className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-slate-600 mb-2 block">Nom de l'aliment</label>
+                <label className="text-sm font-medium text-slate-600 mb-2 block">{t('scanner.foodName')}</label>
                 <Input
                   type="text"
-                  placeholder="Ex: fromage, saumon, café..."
+                  placeholder={t('scanner.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="rounded-xl border-slate-200 focus:ring-sky-500"
@@ -437,7 +439,7 @@ function FoodScanner() {
                 data-testid="search-button"
                 className="w-full bg-gradient-to-r from-pink-500 to-pink-400 text-white rounded-full py-3 font-semibold disabled:opacity-50"
               >
-                {loading ? 'Recherche...' : 'Rechercher'}
+                {loading ? t('scanner.searching') : t('common.search')}
               </Button>
             </form>
           </Card>
@@ -481,7 +483,7 @@ function FoodScanner() {
         {/* Search Results */}
         {searchResults.length > 0 && (
           <div className="space-y-3">
-            <h3 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Résultats ({searchResults.length})</h3>
+            <h3 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('common.results')} ({searchResults.length})</h3>
             {searchResults.map((item, index) => (
               <Card key={index} className="bg-white rounded-3xl p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 card-hover" data-testid={`search-result-${index}`}>
                 <div className="flex items-center justify-between">
@@ -516,10 +518,10 @@ function FoodScanner() {
             <div className="text-center">
               <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
               <h3 className="text-xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                Aliment non trouvé
+                {t('scanner.foodNotFound')}
               </h3>
               <p className="text-slate-600 mb-4">
-                "{searchQuery}" n'est pas dans notre base de données.
+                "{searchQuery}" {t('scanner.notInDatabase')}
               </p>
               <Button
                 onClick={() => {
@@ -530,7 +532,7 @@ function FoodScanner() {
                 className="bg-gradient-to-r from-pink-400 to-pink-300 text-white rounded-full px-6 py-3 font-semibold"
               >
                 <Plus className="w-5 h-5 mr-2" />
-                Proposer cet aliment
+                {t('scanner.proposeFood')}
               </Button>
             </div>
           </Card>
@@ -544,7 +546,7 @@ function FoodScanner() {
             className="flex-1 bg-white text-slate-600 border border-slate-200 rounded-2xl py-3 font-semibold hover:bg-slate-50"
           >
             <Library className="w-5 h-5 mr-2" />
-            Voir la bibliothèque
+            {t('scanner.seeLibrary')}
           </Button>
           <Button
             onClick={() => setShowAddFoodModal(true)}
@@ -552,7 +554,7 @@ function FoodScanner() {
             className="flex-1 bg-gradient-to-r from-green-400 to-green-300 text-white rounded-2xl py-3 font-semibold"
           >
             <Plus className="w-5 h-5 mr-2" />
-            Ajouter un aliment
+            {t('scanner.addFood')}
           </Button>
         </div>
 
@@ -561,23 +563,23 @@ function FoodScanner() {
           <DialogContent className="bg-white rounded-3xl max-w-md" data-testid="add-food-modal">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-slate-700" style={{ fontFamily: "'Dancing Script', cursive" }}>
-                Proposer un aliment
+                {t('scanner.proposeFoodTitle')}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleAddFood} className="space-y-4 mt-4">
               <div>
-                <label className="text-sm font-semibold text-slate-600 mb-2 block">Nom de l'aliment *</label>
+                <label className="text-sm font-semibold text-slate-600 mb-2 block">{t('scanner.foodNameRequired')}</label>
                 <Input
                   value={newFoodData.name}
                   onChange={(e) => setNewFoodData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Ex: Quinoa, Tofu..."
+                  placeholder={t('scanner.foodNamePlaceholder')}
                   className="rounded-xl"
                   data-testid="add-food-name"
                   required
                 />
               </div>
               <div>
-                <label className="text-sm font-semibold text-slate-600 mb-2 block">Code-barres (optionnel)</label>
+                <label className="text-sm font-semibold text-slate-600 mb-2 block">{t('scanner.barcodeOptional')}</label>
                 <Input
                   value={newFoodData.barcode}
                   onChange={(e) => setNewFoodData(prev => ({ ...prev, barcode: e.target.value }))}
@@ -587,34 +589,34 @@ function FoodScanner() {
                 />
               </div>
               <div>
-                <label className="text-sm font-semibold text-slate-600 mb-2 block">Catégorie</label>
+                <label className="text-sm font-semibold text-slate-600 mb-2 block">{t('scanner.category')}</label>
                 <select
                   value={newFoodData.category}
                   onChange={(e) => setNewFoodData(prev => ({ ...prev, category: e.target.value }))}
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-600"
                   data-testid="add-food-category"
                 >
-                  <option value="">Sélectionner une catégorie</option>
-                  <option value="Fruits">Fruits</option>
-                  <option value="Légumes">Légumes</option>
-                  <option value="Viandes">Viandes</option>
-                  <option value="Poissons">Poissons</option>
-                  <option value="Produits laitiers">Produits laitiers</option>
-                  <option value="Fromages">Fromages</option>
-                  <option value="Céréales">Céréales</option>
-                  <option value="Légumineuses">Légumineuses</option>
-                  <option value="Boissons">Boissons</option>
-                  <option value="Condiments">Condiments</option>
-                  <option value="Produits sucrés">Produits sucrés</option>
-                  <option value="Autre">Autre</option>
+                  <option value="">{t('scanner.selectCategory')}</option>
+                  <option value="Fruits">{t('library.fruits')}</option>
+                  <option value="Légumes">{t('library.vegetables')}</option>
+                  <option value="Viandes">{t('library.meat')}</option>
+                  <option value="Poissons">{t('library.fish')}</option>
+                  <option value="Produits laitiers">{t('library.dairy')}</option>
+                  <option value="Fromages">{t('library.dairy')}</option>
+                  <option value="Céréales">{t('library.grains')}</option>
+                  <option value="Légumineuses">{t('library.grains')}</option>
+                  <option value="Boissons">{t('library.beverages')}</option>
+                  <option value="Condiments">{t('library.other')}</option>
+                  <option value="Produits sucrés">{t('library.sweets')}</option>
+                  <option value="Autre">{t('library.other')}</option>
                 </select>
               </div>
               <div>
-                <label className="text-sm font-semibold text-slate-600 mb-2 block">Notes / Commentaires</label>
+                <label className="text-sm font-semibold text-slate-600 mb-2 block">{t('scanner.notesComments')}</label>
                 <textarea
                   value={newFoodData.notes}
                   onChange={(e) => setNewFoodData(prev => ({ ...prev, notes: e.target.value }))}
-                  placeholder="Informations supplémentaires..."
+                  placeholder={t('scanner.additionalInfo')}
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-600 resize-none h-20"
                   data-testid="add-food-notes"
                 />
@@ -626,11 +628,11 @@ function FoodScanner() {
                   data-testid="submit-add-food"
                   className="w-full bg-gradient-to-r from-green-400 to-green-300 text-white rounded-full py-3 font-bold disabled:opacity-50"
                 >
-                  {addingFood ? 'Envoi en cours...' : 'Soumettre pour vérification'}
+                  {addingFood ? t('common.sending') : t('scanner.submitForReview')}
                 </Button>
               </div>
               <p className="text-xs text-slate-500 text-center">
-                Votre proposition sera examinée avant d'être ajoutée à la bibliothèque.
+                {t('scanner.proposalNote')}
               </p>
             </form>
           </DialogContent>

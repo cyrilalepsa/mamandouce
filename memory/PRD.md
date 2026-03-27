@@ -30,9 +30,11 @@ Authentification, Calculateur, Scanner alimentaire, Bibliothèque, RDV médicaux
 22. **Services localisés** - CAF/NHS/INPS selon langue
 23. **Traductions étendues** ✅ - Auth, calculateur, scanner, bibliothèque, prénoms
 24. **Détection auto langue** ✅ - Détecte la langue du navigateur
-25. **Prénom du jour localisé** ✅ NEW - Calendrier des saints par pays (FR, ES, PT, IT, DE)
-26. **Magasins liste naissance** ✅ NEW - Enseignes adaptées par pays (Vertbaudet FR, John Lewis UK, etc.)
-27. **Sac de maternité localisé** ✅ NEW - Documents, durée séjour, marques par pays
+25. **Prénom du jour localisé** ✅ - Calendrier des saints par pays (FR, ES, PT, IT, DE)
+26. **Magasins liste naissance** ✅ - Enseignes adaptées par pays (Vertbaudet FR, John Lewis UK, etc.)
+27. **Sac de maternité localisé** ✅ - Documents, durée séjour, marques par pays
+28. **Bulle de langue flottante** ✅ NEW - Drapeau cliquable pour changer de langue
+29. **Traduction complète pages** ✅ NEW - PregnancyCalculator.js, FoodScanner.js, HomePage.js, AgendaCard.jsx
 
 ---
 
@@ -89,6 +91,9 @@ Authentification, Calculateur, Scanner alimentaire, Bibliothèque, RDV médicaux
 - ~~P2: Traductions étendues~~
 - ~~P2: Finalisation fichiers i18n~~ (27/03/2026)
 - ~~P2: Traduction complète AgendaCard et HomePage~~ (27/03/2026)
+- ~~P2: Traduction PregnancyCalculator.js~~ (27/03/2026)
+- ~~P2: Traduction FoodScanner.js~~ (27/03/2026)
+- ~~P2: Bulle de langue flottante avec drapeau~~ (27/03/2026)
 - ~~Amélioration: Détection auto langue~~
 - ~~Amélioration: Prénom du jour par pays~~
 - ~~Amélioration: Magasins liste naissance par pays~~

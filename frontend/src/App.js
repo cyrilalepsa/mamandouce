@@ -44,6 +44,7 @@ import WhatsNewModal from './components/WhatsNewModal';
 import { NewBadgeProvider } from './components/NewBadge';
 import { PWAInstallBanner } from './components/PWAInstallBanner';
 import { Toaster } from './components/ui/sonner';
+import LanguageBubble from './components/LanguageBubble';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -146,6 +147,7 @@ function App() {
             </BrowserRouter>
             <Toaster />
             <ChatBubble />
+            <LanguageBubble />
             <PWAInstallBanner />
             <OfflineSyncIndicator />
             <WhatsNewModal />
