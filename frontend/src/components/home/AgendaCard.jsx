@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { CalendarDays, Settings, Save, CalendarRange, Egg, Heart, Droplets, Baby, Info } from 'lucide-react';
+import { getCurrentLanguage } from '../../i18n';
 
 export function AgendaCard({ 
   agendaData,
@@ -16,7 +18,22 @@ export function AgendaCard({
   rapportDates,
   getNextImplantation
 }) {
+  const { t } = useTranslation();
   const [showForm, setShowForm] = useState(false);
+  const currentLang = getCurrentLanguage();
+
+  // Get locale for date formatting
+  const getLocale = () => {
+    const localeMap = {
+      'fr': 'fr-FR',
+      'en': 'en-US',
+      'es': 'es-ES',
+      'pt': 'pt-PT',
+      'it': 'it-IT',
+      'de': 'de-DE'
+    };
+    return localeMap[currentLang] || 'fr-FR';
+  };
 
   // Capitalize first letter
   const capitalize = (str) => {
@@ -26,7 +43,7 @@ export function AgendaCard({
 
   const formatDateFull = (date) => {
     if (!date) return '';
-    const formatted = new Date(date).toLocaleDateString('fr-FR', {
+    const formatted = new Date(date).toLocaleDateString(getLocale(), {
       weekday: 'long',
       day: 'numeric',
       month: 'long'
@@ -36,7 +53,7 @@ export function AgendaCard({
 
   const formatDateShort = (date) => {
     if (!date) return '';
-    return new Date(date).toLocaleDateString('fr-FR', {
+    return new Date(date).toLocaleDateString(getLocale(), {
       day: 'numeric',
       month: 'short'
     });
@@ -54,13 +71,13 @@ export function AgendaCard({
           <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
             <CalendarDays className="w-5 h-5 text-white" />
           </div>
-          <h2 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Mon agenda</h2>
+          <h2 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('home.myAgenda')}</h2>
         </div>
         <div className="flex items-center gap-2">
           <Button
             onClick={onOpenCalendar}
             className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-600 rounded-full p-2 hover:from-purple-200 hover:to-pink-200"
-            title="Ouvrir le calendrier"
+            title={t('fertility.openCalendar', 'Ouvrir le calendrier')}
             data-testid="open-calendar-btn"
           >
             <CalendarRange className="w-4 h-4" />
@@ -68,7 +85,7 @@ export function AgendaCard({
           <Button
             onClick={() => setShowForm(!showForm)}
             className="bg-slate-100 text-slate-600 rounded-full p-2 hover:bg-slate-200"
-            title="Modifier"
+            title={t('common.edit')}
           >
             <Settings className="w-4 h-4" />
           </Button>
@@ -80,7 +97,7 @@ export function AgendaCard({
         <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 mb-4 space-y-3">
           <div>
             <label className="text-sm font-semibold text-slate-600 mb-1 block">
-              Date de vos dernières règles
+              {t('home.lastPeriodDate')}
             </label>
             <Input
               type="date"
@@ -92,7 +109,7 @@ export function AgendaCard({
           </div>
           <div>
             <label className="text-sm font-semibold text-slate-600 mb-1 block">
-              Durée de votre cycle
+              {t('home.cycleLength')}
             </label>
             <select
               value={cycleLength}
@@ -101,7 +118,7 @@ export function AgendaCard({
               data-testid="agenda-cycle-select"
             >
               {[24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35].map(days => (
-                <option key={days} value={days}>{days} jours {days === 28 && '(standard)'}</option>
+                <option key={days} value={days}>{days} {t('home.days')} {days === 28 && `(${t('common.standard')})`}</option>
               ))}
             </select>
           </div>
@@ -112,7 +129,7 @@ export function AgendaCard({
             data-testid="agenda-save-button"
           >
             <Save className="w-4 h-4 mr-2" />
-            {loading ? 'Enregistrement...' : 'Enregistrer'}
+            {loading ? t('common.sending') : t('common.save')}
           </Button>
         </div>
       )}
@@ -130,14 +147,14 @@ export function AgendaCard({
                 <div>
                   <div className="flex items-center gap-2">
                     <p className="font-bold text-rose-700">
-                      {agendaData.isOvulationDay ? "Jour d'ovulation !" : "Période fertile en cours"}
+                      {agendaData.isOvulationDay ? t('fertility.ovulationToday') : t('fertility.inFertileWindow')}
                     </p>
                     <span className="animate-pulse w-2 h-2 bg-rose-500 rounded-full"></span>
                   </div>
                   <p className="text-sm text-rose-600">
                     {agendaData.isOvulationDay 
-                      ? "C'est le moment idéal pour concevoir"
-                      : `Pic d'ovulation dans ${agendaData.daysToOvulation} jour(s)`}
+                      ? t('calculator.ovulationTip', "C'est le moment idéal pour concevoir")
+                      : `${t('calculator.ovulationPeak')} ${t('calculator.inDays', { days: agendaData.daysToOvulation })}`}
                   </p>
                 </div>
               </div>
@@ -151,10 +168,10 @@ export function AgendaCard({
                 <Egg className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">
-                <p className="text-sm text-slate-500 font-semibold">Pic d'ovulation</p>
+                <p className="text-sm text-slate-500 font-semibold">{t('calculator.ovulationPeak')}</p>
                 <p className="text-lg font-bold text-sky-600">{formatDateFull(agendaData.ovulationDate)}</p>
                 {agendaData.daysToOvulation > 0 && !agendaData.isOvulationDay && (
-                  <p className="text-xs text-slate-500">Dans {agendaData.daysToOvulation} jour(s)</p>
+                  <p className="text-xs text-slate-500">{t('calculator.inDays', { days: agendaData.daysToOvulation })}</p>
                 )}
               </div>
             </div>
@@ -167,11 +184,11 @@ export function AgendaCard({
                 <Heart className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">
-                <p className="text-sm text-slate-500 font-semibold">Fenêtre de fertilité</p>
+                <p className="text-sm text-slate-500 font-semibold">{t('calculator.fertileWindow')}</p>
                 <p className="text-base font-bold text-emerald-600">
-                  Du {formatDateShort(agendaData.fertileStart)} au {formatDateShort(agendaData.fertileEnd)}
+                  {t('calculator.from')} {formatDateShort(agendaData.fertileStart)} {t('calculator.to')} {formatDateShort(agendaData.fertileEnd)}
                 </p>
-                <p className="text-xs text-slate-500">Période la plus favorable à la conception</p>
+                <p className="text-xs text-slate-500">{t('calculator.favorableDays')}</p>
               </div>
             </div>
             
@@ -181,10 +198,7 @@ export function AgendaCard({
                 <span className="text-lg">💡</span>
                 <div className="flex-1">
                   <p className="text-xs text-emerald-700 font-medium">
-                    Pensez au <span className="font-bold">test d'ovulation Clearblue Digital</span> pour plus de précision (réutilisable) !
-                  </p>
-                  <p className="text-[10px] text-slate-500 mt-1">
-                    💰 Astuce : Préférez les grandes pharmacies, souvent moins chères.
+                    {t('fertility.clearblueAdvice')}
                   </p>
                 </div>
                 <a 
@@ -192,7 +206,7 @@ export function AgendaCard({
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex-shrink-0 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow border border-emerald-200"
-                  title="En savoir plus sur le test Clearblue"
+                  title={t('common.info')}
                 >
                   <Info className="w-4 h-4 text-emerald-600" />
                 </a>
@@ -207,10 +221,10 @@ export function AgendaCard({
                 <Droplets className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">
-                <p className="text-sm text-slate-500 font-semibold">Prochaines règles</p>
+                <p className="text-sm text-slate-500 font-semibold">{t('fertility.nextPeriod')}</p>
                 <p className="text-lg font-bold text-pink-600">{formatDateFull(agendaData.nextPeriod)}</p>
                 {agendaData.daysToNextPeriod > 0 && (
-                  <p className="text-xs text-slate-500">Dans {agendaData.daysToNextPeriod} jour(s)</p>
+                  <p className="text-xs text-slate-500">{t('calculator.inDays', { days: agendaData.daysToNextPeriod })}</p>
                 )}
               </div>
             </div>
@@ -256,7 +270,7 @@ export function AgendaCard({
             <div className="bg-rose-50 rounded-2xl p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Heart className="w-4 h-4 text-rose-500" />
-                <span className="text-sm font-semibold text-rose-700">Rapports enregistrés</span>
+                <span className="text-sm font-semibold text-rose-700">{t('fertility.recordedIntercourse', 'Rapports enregistrés')}</span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {rapportDates.slice(-5).map((date, index) => (
@@ -274,19 +288,19 @@ export function AgendaCard({
           {/* Info cycle */}
           <div className="text-center pt-2">
             <p className="text-xs text-slate-400">
-              Cycle de {agendaData.cycleLength} jours • Dernières règles : {formatDateShort(lastPeriodDate)}
+              {t('home.cycleLength')}: {agendaData.cycleLength} {t('home.days')} • {t('home.lastPeriodDate')}: {formatDateShort(lastPeriodDate)}
             </p>
           </div>
         </div>
       ) : (
         <div className="text-center py-6">
           <CalendarDays className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-          <p className="text-slate-500 mb-3">Renseignez la date de vos dernières règles pour voir vos prévisions</p>
+          <p className="text-slate-500 mb-3">{t('fertility.enterPeriodDate', 'Renseignez la date de vos dernières règles pour voir vos prévisions')}</p>
           <Button
             onClick={() => setShowForm(true)}
             className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full px-6 py-2"
           >
-            Configurer mon cycle
+            {t('home.configureMyeCycle')}
           </Button>
         </div>
       )}

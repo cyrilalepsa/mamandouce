@@ -87,7 +87,8 @@ Authentification, Calculateur, Scanner alimentaire, Bibliothèque, RDV médicaux
 - ~~P2: Multi-langues~~
 - ~~P2: Services localisés~~
 - ~~P2: Traductions étendues~~
-- ~~P2: Finalisation fichiers i18n~~
+- ~~P2: Finalisation fichiers i18n~~ (27/03/2026)
+- ~~P2: Traduction complète AgendaCard et HomePage~~ (27/03/2026)
 - ~~Amélioration: Détection auto langue~~
 - ~~Amélioration: Prénom du jour par pays~~
 - ~~Amélioration: Magasins liste naissance par pays~~

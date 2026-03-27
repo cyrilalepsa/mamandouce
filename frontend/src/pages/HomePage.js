@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Cloud, Feather, PartyPopper } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import AppTitle from '../components/AppTitle';
@@ -24,6 +25,7 @@ import {
 const ADMIN_EMAIL = 'cyrilalepsa@gmail.com';
 
 function HomePage() {
+  const { t } = useTranslation();
   const { isDarkMode } = useTheme();
   const [userName, setUserName] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -229,7 +231,7 @@ function HomePage() {
               )}
             </div>
             <h2 className="text-2xl sm:text-3xl text-center" data-testid="user-welcome">
-              <span className="text-slate-500 font-medium" style={{ fontFamily: "'Quicksand', sans-serif" }}>Bonjour, </span>
+              <span className="text-slate-500 font-medium" style={{ fontFamily: "'Quicksand', sans-serif" }}>{t('home.welcome')}, </span>
               <span className="text-slate-700 text-4xl sm:text-5xl font-semibold" style={{ fontFamily: "'Caveat', cursive" }}>
                 {displayName || userName}
               </span>
@@ -242,7 +244,7 @@ function HomePage() {
                 <div className="flex items-center justify-center gap-2">
                   <PartyPopper className="w-5 h-5 text-amber-600" />
                   <span className="text-lg font-bold text-amber-700" style={{ fontFamily: "'Caveat', cursive" }}>
-                    🎉 Bonne fête {displayName || userName} ! 🎉
+                    🎉 {t('home.happyNameDay')} {displayName || userName} ! 🎉
                   </span>
                   <PartyPopper className="w-5 h-5 text-amber-600" />
                 </div>

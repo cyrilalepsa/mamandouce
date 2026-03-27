@@ -311,7 +311,10 @@
     "daysUntilPeriod": "days until period",
     "inFertileWindow": "You're in your fertile window!",
     "ovulationToday": "Ovulation day!",
-    "clearblueAdvice": "Consider the Clearblue Digital ovulation test to identify your most fertile days"
+    "clearblueAdvice": "Consider the Clearblue Digital ovulation test to identify your most fertile days",
+    "openCalendar": "Open calendar",
+    "recordedIntercourse": "Recorded intercourse",
+    "enterPeriodDate": "Enter your last period date to see your predictions"
   },
   "babyNames": {
     "title": "Baby Names",
