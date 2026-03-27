@@ -48,7 +48,7 @@ export function LanguageBubble() {
   };
 
   return (
-    <div className="fixed top-4 right-16" style={{ zIndex: 9999 }} ref={dropdownRef}>
+    <div className="absolute top-4 right-4" style={{ zIndex: 50 }} ref={dropdownRef}>
       {/* Language dropdown */}
       {isOpen && (
         <div 

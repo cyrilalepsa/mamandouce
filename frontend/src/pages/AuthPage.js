@@ -400,25 +400,23 @@ function AuthPage({ setIsAuthenticated }) {
   };
 
   return (
-    <>
-      {/* Language Bubble - en dehors du conteneur pour suivre le scroll */}
+    <div className="min-h-screen gradient-bg flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Language Bubble - suit le scroll de la page */}
       <LanguageBubble />
       
-      <div className="min-h-screen gradient-bg flex items-center justify-center p-6 relative overflow-hidden">
-        <Cloud className="absolute top-10 left-10 w-32 h-32 text-sky-200 opacity-20 animate-float" />
-        <Feather className="absolute top-20 right-20 w-24 h-24 text-pink-200 opacity-30 animate-float-delayed" />
-        <Cloud className="absolute bottom-20 right-40 w-40 h-40 text-sky-100 opacity-20 animate-float" />
-        <Feather className="absolute bottom-10 left-20 w-20 h-20 text-pink-100 opacity-30 animate-float-delayed" />
+      <Cloud className="absolute top-10 left-10 w-32 h-32 text-sky-200 opacity-20 animate-float" />
+      <Feather className="absolute top-20 right-20 w-24 h-24 text-pink-200 opacity-30 animate-float-delayed" />
+      <Cloud className="absolute bottom-20 right-40 w-40 h-40 text-sky-100 opacity-20 animate-float" />
+      <Feather className="absolute bottom-10 left-20 w-20 h-20 text-pink-100 opacity-30 animate-float-delayed" />
 
-        <Card className="w-full max-w-md bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-[0_20px_50px_rgb(0,0,0,0.08)] border border-white/40 relative z-10 animate-fade-in" data-testid="auth-card">
-          <div className="text-center mb-8">
-            <AppTitle size="xl" showSubtitle={true} className="mb-4" />
-          </div>
+      <Card className="w-full max-w-md bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-[0_20px_50px_rgb(0,0,0,0.08)] border border-white/40 relative z-10 animate-fade-in" data-testid="auth-card">
+        <div className="text-center mb-8">
+          <AppTitle size="xl" showSubtitle={true} className="mb-4" />
+        </div>
 
-          {renderContent()}
-        </Card>
-      </div>
-    </>
+        {renderContent()}
+      </Card>
+    </div>
   );
 }
 
