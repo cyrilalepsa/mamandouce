@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { BookOpen, ChevronRight, AlertTriangle, Lock, Crown } from 'lucide-react';
@@ -9,6 +10,7 @@ import { useSubscription } from '../components/SubscriptionGate';
 
 function WeeklyTipsPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { isPremium, loading: subscriptionLoading } = useSubscription();
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [currentTip, setCurrentTip] = useState(null);

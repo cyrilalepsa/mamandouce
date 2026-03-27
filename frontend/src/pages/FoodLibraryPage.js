@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -10,6 +11,7 @@ import PageHeader from '../components/PageHeader';
 
 function FoodLibraryPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [foods, setFoods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -105,15 +107,15 @@ function FoodLibraryPage() {
   const getSafetyBadge = (status) => {
     switch (status) {
       case 'safe':
-        return { text: 'Sûr', color: 'bg-green-100 text-green-700 border-green-200' };
+        return { text: t('scanner.safe'), color: 'bg-green-100 text-green-700 border-green-200' };
       case 'caution':
-        return { text: 'Précaution', color: 'bg-yellow-100 text-yellow-700 border-yellow-200' };
+        return { text: t('scanner.caution'), color: 'bg-yellow-100 text-yellow-700 border-yellow-200' };
       case 'avoid':
-        return { text: 'À éviter', color: 'bg-orange-100 text-orange-700 border-orange-200' };
+        return { text: t('scanner.avoid'), color: 'bg-orange-100 text-orange-700 border-orange-200' };
       case 'unsafe':
-        return { text: 'Interdit', color: 'bg-red-100 text-red-700 border-red-200' };
+        return { text: t('scanner.forbidden'), color: 'bg-red-100 text-red-700 border-red-200' };
       default:
-        return { text: 'Inconnu', color: 'bg-gray-100 text-gray-600 border-gray-200' };
+        return { text: t('scanner.unknown'), color: 'bg-gray-100 text-gray-600 border-gray-200' };
     }
   };
 
@@ -123,17 +125,17 @@ function FoodLibraryPage() {
   };
 
   const statusOptions = [
-    { value: '', label: 'Tous les statuts' },
-    { value: 'safe', label: 'Sûrs' },
-    { value: 'caution', label: 'Avec précaution' },
-    { value: 'avoid', label: 'À éviter' },
-    { value: 'unsafe', label: 'Interdits' }
+    { value: '', label: t('library.showAll') },
+    { value: 'safe', label: t('library.showAllowed') },
+    { value: 'caution', label: t('library.showCaution') },
+    { value: 'avoid', label: t('scanner.avoid') },
+    { value: 'unsafe', label: t('library.showForbidden') }
   ];
 
   return (
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
-        <PageHeader title="Bibliothèque alimentaire" />
+        <PageHeader title={t('library.title')} />
 
         {/* Stats Card */}
         <Card className="bg-gradient-to-br from-green-100 to-sky-100 rounded-3xl p-6 border-0">
@@ -143,9 +145,9 @@ function FoodLibraryPage() {
             </div>
             <div>
               <h2 className="text-2xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                {total} aliments référencés
+                {total} {t('library.foodsReferenced', 'aliments référencés')}
               </h2>
-              <p className="text-slate-600">Triés par ordre alphabétique</p>
+              <p className="text-slate-600">{t('library.sortedAlphabetically', 'Triés par ordre alphabétique')}</p>
             </div>
           </div>
         </Card>
@@ -157,7 +159,7 @@ function FoodLibraryPage() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
               <Input
                 type="text"
-                placeholder="Rechercher un aliment..."
+                placeholder={t('library.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-12 rounded-2xl border-slate-200 focus:ring-sky-500"

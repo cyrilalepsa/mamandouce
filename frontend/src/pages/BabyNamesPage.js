@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Crown, Lock, Cloud, CloudOff, RefreshCw } from 'lucide-react';
 import { useSubscription } from '../components/SubscriptionGate';
 import { useTheme } from '../contexts/ThemeContext';
@@ -41,6 +42,7 @@ const countriesByRegion = {
 
 export default function BabyNamesPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { isPremium } = useSubscription();
   const { isDarkMode } = useTheme();
   

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Check, X, Crown, Baby, Users, Lock, Gift, Heart, HelpCircle, ChevronDown } from 'lucide-react';
@@ -7,49 +8,50 @@ import PageHeader from '../components/PageHeader';
 
 function PricingPage() {
   const navigate = useNavigate();
-  const [faqOpen, setFaqOpen] = useState(false); // Section FAQ ouverte ou non
-  const [openQuestion, setOpenQuestion] = useState(null); // Index de la question ouverte
+  const { t } = useTranslation();
+  const [faqOpen, setFaqOpen] = useState(false);
+  const [openQuestion, setOpenQuestion] = useState(null);
 
   const featuresStandard = [
-    { text: 'Calculateur de grossesse basique', included: true },
-    { text: '5 scans de produits par semaine', included: true },
-    { text: 'Évolution et conseils (4 semaines)', included: true },
-    { text: 'Accès CAF/Ameli/Mairie', included: true },
-    { text: 'Calendrier de fertilité', included: true },
-    { text: 'RDV médicaux (1er trimestre)', included: true },
-    { text: 'Liste de prénoms (3 pays, lettres A-E)', included: true },
-    { text: 'Suivi de grossesse complet', included: false },
-    { text: 'Évolution et conseils (41 semaines)', included: false },
-    { text: 'Scanner illimité', included: false },
-    { text: 'RDV médicaux (2e & 3e trimestre)', included: false },
-    { text: 'Liste de prénoms COMPLÈTE (28 pays)', included: false },
-    { text: 'Préparer l\'arrivée de bébé', included: false },
-    { text: 'Check-list sac de maternité', included: false },
-    { text: 'Liste de naissance partageable', included: false },
-    { text: 'Support prioritaire', included: false }
+    { text: t('pricing.basicCalculator', 'Calculateur de grossesse basique'), included: true },
+    { text: t('pricing.scansPerWeek', '5 scans de produits par semaine'), included: true },
+    { text: t('pricing.tips4Weeks', 'Évolution et conseils (4 semaines)'), included: true },
+    { text: t('pricing.accessServices', 'Accès CAF/Ameli/Mairie'), included: true },
+    { text: t('pricing.fertilityCalendar', 'Calendrier de fertilité'), included: true },
+    { text: t('pricing.appointments1stTrimester', 'RDV médicaux (1er trimestre)'), included: true },
+    { text: t('pricing.namesLimited', 'Liste de prénoms (3 pays, lettres A-E)'), included: true },
+    { text: t('pricing.fullTracking', 'Suivi de grossesse complet'), included: false },
+    { text: t('pricing.tips41Weeks', 'Évolution et conseils (41 semaines)'), included: false },
+    { text: t('pricing.unlimitedScans', 'Scanner illimité'), included: false },
+    { text: t('pricing.appointmentsAll', 'RDV médicaux (2e & 3e trimestre)'), included: false },
+    { text: t('pricing.namesComplete', 'Liste de prénoms COMPLÈTE (28 pays)'), included: false },
+    { text: t('pricing.babyPrep', "Préparer l'arrivée de bébé"), included: false },
+    { text: t('pricing.maternityBag', 'Check-list sac de maternité'), included: false },
+    { text: t('pricing.birthList', 'Liste de naissance partageable'), included: false },
+    { text: t('pricing.prioritySupport', 'Support prioritaire'), included: false }
   ];
   
   const featuresPremium = [
-    { text: 'Calculateur de grossesse complet', included: true },
-    { text: 'Scanner ILLIMITÉ de produits', included: true },
-    { text: 'Évolution et conseils (41 semaines)', included: true },
-    { text: 'Suivi de grossesse Maman & Bébé', included: true },
-    { text: 'RDV médicaux (3 trimestres)', included: true },
-    { text: 'Accès CAF/Ameli/Mairie', included: true },
-    { text: 'Calendrier de fertilité détaillé', included: true },
-    { text: 'Liste de prénoms COMPLÈTE (28 pays, 2000+ prénoms)', included: true },
-    { text: 'Préparer l\'arrivée de bébé', included: true },
-    { text: 'Check-list sac de maternité', included: true },
-    { text: 'Liste de naissance partageable', included: true },
-    { text: 'Notifications email automatiques', included: true },
-    { text: 'Support prioritaire', included: true }
+    { text: t('pricing.fullCalculator', 'Calculateur de grossesse complet'), included: true },
+    { text: t('pricing.unlimitedScanner', 'Scanner ILLIMITÉ de produits'), included: true },
+    { text: t('pricing.tips41Weeks', 'Évolution et conseils (41 semaines)'), included: true },
+    { text: t('pricing.momBabyTracking', 'Suivi de grossesse Maman & Bébé'), included: true },
+    { text: t('pricing.appointmentsAllTrimesters', 'RDV médicaux (3 trimestres)'), included: true },
+    { text: t('pricing.accessServices', 'Accès CAF/Ameli/Mairie'), included: true },
+    { text: t('pricing.detailedFertility', 'Calendrier de fertilité détaillé'), included: true },
+    { text: t('pricing.namesCompleteFull', 'Liste de prénoms COMPLÈTE (28 pays, 2000+ prénoms)'), included: true },
+    { text: t('pricing.babyPrep', "Préparer l'arrivée de bébé"), included: true },
+    { text: t('pricing.maternityBag', 'Check-list sac de maternité'), included: true },
+    { text: t('pricing.birthList', 'Liste de naissance partageable'), included: true },
+    { text: t('pricing.emailNotifications', 'Notifications email automatiques'), included: true },
+    { text: t('pricing.prioritySupport', 'Support prioritaire'), included: true }
   ];
 
   return (
     <div className="min-h-screen gradient-bg p-4 sm:p-6">
       <div className="max-w-4xl mx-auto space-y-5 animate-fade-in">
         <div className="flex items-center gap-4 mb-6">
-          <PageHeader title="Abonnements" />
+          <PageHeader title={t('pricing.title', 'Abonnements')} />
         </div>
 
         {/* Essai gratuit - EN HAUT */}
@@ -60,17 +62,17 @@ function PricingPage() {
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-bold text-emerald-800 mb-1" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                7 jours d'essai gratuit
+                {t('pricing.freeTrial', '7 jours d\'essai gratuit')}
               </h3>
               <p className="text-emerald-700 text-sm mb-2">
-                Testez toutes les fonctionnalités Premium sans engagement
+                {t('pricing.freeTrialDesc', 'Testez toutes les fonctionnalités Premium sans engagement')}
               </p>
               <Button
                 onClick={() => navigate('/subscription/checkout?trial=true')}
                 data-testid="start-trial-button-top"
                 className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full px-6 py-2 font-bold"
               >
-                Commencer l'essai gratuit
+                {t('pricing.startFreeTrial', "Commencer l'essai gratuit")}
               </Button>
             </div>
           </div>
@@ -80,14 +82,14 @@ function PricingPage() {
         <Card className="bg-gradient-to-br from-sky-100 to-pink-100 rounded-2xl p-6 text-center border-0">
           <Crown className="w-12 h-12 text-amber-500 mx-auto mb-3" />
           <h2 className="text-2xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>MamanDouce Premium</h2>
-          <p className="text-base text-slate-600 mb-3">Accompagnement complet pendant 9 mois</p>
+          <p className="text-base text-slate-600 mb-3">{t('pricing.fullSupport', 'Accompagnement complet pendant 9 mois')}</p>
           <div className="flex items-center justify-center gap-2">
             <span className="text-4xl font-bold text-sky-600">27€</span>
-            <span className="text-xl text-slate-500">/9 mois</span>
+            <span className="text-xl text-slate-500">/9 {t('pricing.months', 'mois')}</span>
           </div>
-          <p className="text-sm text-slate-500 mt-1">soit seulement 3€/mois</p>
+          <p className="text-sm text-slate-500 mt-1">{t('pricing.only3PerMonth', 'soit seulement 3€/mois')}</p>
           <div className="inline-block bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-sm font-semibold mt-3">
-            Sans renouvellement automatique
+            {t('pricing.noAutoRenewal', 'Sans renouvellement automatique')}
           </div>
         </Card>
 
@@ -97,8 +99,8 @@ function PricingPage() {
           <Card className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
             <div className="text-center mb-4">
               <h3 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Standard</h3>
-              <div className="text-3xl font-bold text-slate-600">Gratuit</div>
-              <p className="text-sm text-slate-500">Pour découvrir l'app</p>
+              <div className="text-3xl font-bold text-slate-600">{t('pricing.free', 'Gratuit')}</div>
+              <p className="text-sm text-slate-500">{t('pricing.toDiscover', "Pour découvrir l'app")}</p>
             </div>
             <ul className="space-y-2.5 mb-4">
               {featuresStandard.map((feature, index) => (
@@ -119,22 +121,22 @@ function PricingPage() {
               data-testid="free-button"
               className="w-full bg-slate-100 text-slate-700 rounded-full py-2.5 font-bold hover:bg-slate-200"
             >
-              Commencer gratuitement
+              {t('pricing.startFree', 'Commencer gratuitement')}
             </Button>
           </Card>
 
           {/* Premium */}
           <Card className="bg-gradient-to-br from-sky-400 to-sky-300 rounded-2xl p-5 shadow-lg border-2 border-amber-400 relative">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-white px-4 py-0.5 rounded-full text-xs font-bold">
-              RECOMMANDÉ
+              {t('pricing.recommended', 'RECOMMANDÉ')}
             </div>
             <div className="text-center mb-4 mt-2">
               <h3 className="text-xl font-bold text-white" style={{ fontFamily: 'Nunito, sans-serif' }}>Premium</h3>
               <div className="flex items-baseline justify-center gap-1">
                 <span className="text-4xl font-bold text-white">27€</span>
-                <span className="text-lg text-white">/9 mois</span>
+                <span className="text-lg text-white">/9 {t('pricing.months', 'mois')}</span>
               </div>
-              <p className="text-sm text-sky-100 mt-1">soit 3€/mois</p>
+              <p className="text-sm text-sky-100 mt-1">{t('pricing.per3Month', 'soit 3€/mois')}</p>
             </div>
             <ul className="space-y-2.5 mb-4">
               {featuresPremium.map((feature, index) => (
@@ -149,7 +151,7 @@ function PricingPage() {
               data-testid="premium-button"
               className="w-full bg-white text-sky-600 rounded-full py-3 font-bold shadow-md hover:shadow-lg"
             >
-              S'abonner maintenant
+              {t('pricing.subscribeNow', "S'abonner maintenant")}
             </Button>
           </Card>
         </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Heart, ShieldCheck, ShieldAlert, ShieldX, AlertTriangle, Trash2 } from 'lucide-react';
@@ -9,6 +10,7 @@ import PageHeader from '../components/PageHeader';
 
 function FavoritesPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -21,7 +23,7 @@ function FavoritesPage() {
       const response = await api.favorites.getAll();
       setFavorites(response.data);
     } catch (error) {
-      console.error('Erreur chargement favoris:', error);
+      console.error('Error loading favorites:', error);
     } finally {
       setLoading(false);
     }
@@ -31,9 +33,9 @@ function FavoritesPage() {
     try {
       await api.favorites.remove(foodName);
       setFavorites(prev => prev.filter(f => f.name !== foodName));
-      toast.success('Retiré des favoris');
+      toast.success(t('scanner.removedFromFavorites'));
     } catch (error) {
-      toast.error('Erreur lors de la suppression');
+      toast.error(t('common.error'));
     }
   };
 
@@ -55,15 +57,15 @@ function FavoritesPage() {
   const getSafetyText = (status) => {
     switch (status) {
       case 'safe':
-        return { text: 'Sûr', color: 'text-green-600 bg-green-50' };
+        return { text: t('scanner.safe'), color: 'text-green-600 bg-green-50' };
       case 'caution':
-        return { text: 'Précaution', color: 'text-yellow-600 bg-yellow-50' };
+        return { text: t('scanner.caution'), color: 'text-yellow-600 bg-yellow-50' };
       case 'avoid':
-        return { text: 'À éviter', color: 'text-orange-600 bg-orange-50' };
+        return { text: t('scanner.avoid'), color: 'text-orange-600 bg-orange-50' };
       case 'unsafe':
-        return { text: 'Non sûr', color: 'text-red-600 bg-red-50' };
+        return { text: t('scanner.unsafe'), color: 'text-red-600 bg-red-50' };
       default:
-        return { text: 'Inconnu', color: 'text-gray-600 bg-gray-50' };
+        return { text: t('scanner.unknown'), color: 'text-gray-600 bg-gray-50' };
     }
   };
 
@@ -91,11 +93,11 @@ function FavoritesPage() {
   return (
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-        <PageHeader title="Mes aliments favoris" />
+        <PageHeader title={t('favorites.myFoods', 'Mes aliments favoris')} />
 
         {loading ? (
           <Card className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 text-center">
-            <p className="text-slate-500">Chargement...</p>
+            <p className="text-slate-500">{t('common.loading')}</p>
           </Card>
         ) : favorites.length === 0 ? (
           <Card className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 text-center" data-testid="empty-favorites">

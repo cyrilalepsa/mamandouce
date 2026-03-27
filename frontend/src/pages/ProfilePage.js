@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { ArrowLeft, User, Baby, Settings, MessageSquare } from 'lucide-react';
 import api from '../utils/api';
@@ -34,6 +35,7 @@ function urlBase64ToUint8Array(base64String) {
 
 function ProfilePage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [user, setUser] = useState(null);
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -214,18 +216,18 @@ function ProfilePage() {
         }, user?.email);
 
         setNotificationsEnabled(true);
-        toast.success('Notifications activées ! Vous serez alertée des nouvelles réponses.');
+        toast.success(t('profile.notificationsEnabled', 'Notifications activées !'));
       }
     } catch (error) {
       console.error('Error toggling notifications:', error);
-      toast.error('Erreur lors de la configuration des notifications');
+      toast.error(t('common.error'));
     } finally {
       setNotificationsLoading(false);
     }
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'Non défini';
+    if (!dateString) return t('profile.notSet', 'Non défini');
     return new Date(dateString).toLocaleDateString('fr-FR', {
       day: 'numeric',
       month: 'long',
@@ -244,13 +246,13 @@ function ProfilePage() {
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <h1 className="text-3xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>Mon profil</h1>
+          <h1 className="text-3xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('profile.myProfile', 'Mon profil')}</h1>
         </div>
 
         {loading ? (
           <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 text-center">
             <div className="animate-spin w-8 h-8 border-3 border-pink-400 border-t-transparent rounded-full mx-auto"></div>
-            <p className="text-slate-500 mt-3">Chargement...</p>
+            <p className="text-slate-500 mt-3">{t('common.loading')}</p>
           </div>
         ) : (
           <>
