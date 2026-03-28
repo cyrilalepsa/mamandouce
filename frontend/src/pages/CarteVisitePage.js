@@ -29,25 +29,6 @@ export default function CarteVisitePage() {
     }
   };
 
-  // Icône maman-bébé en SVG
-  const MamanBebeIcon = ({ size = 48 }) => (
-    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="24" cy="18" r="10" fill="#f9a8d4"/>
-      <ellipse cx="24" cy="42" rx="14" ry="18" fill="#f472b6"/>
-      <path d="M14 18c0-8 6-14 14-14s10 6 10 14c0-4-4-8-10-8s-14 4-14 8z" fill="#854d0e"/>
-      <circle cx="21" cy="16" r="1.5" fill="#374151"/>
-      <circle cx="27" cy="16" r="1.5" fill="#374151"/>
-      <path d="M22 21c1 1.5 3 1.5 4 0" stroke="#374151" strokeWidth="1.5" strokeLinecap="round"/>
-      <circle cx="44" cy="32" r="8" fill="#fcd34d"/>
-      <ellipse cx="44" cy="48" rx="8" ry="10" fill="#fbbf24"/>
-      <circle cx="42" cy="31" r="1" fill="#374151"/>
-      <circle cx="46" cy="31" r="1" fill="#374151"/>
-      <path d="M42 35c0.8 1 2.2 1 3 0" stroke="#374151" strokeWidth="1" strokeLinecap="round"/>
-      <path d="M34 36c4-2 8 0 10 4" stroke="#f472b6" strokeWidth="4" strokeLinecap="round"/>
-      <path d="M30 28c-1-2 1-4 3-3 2-1 4 1 3 3l-3 4-3-4z" fill="#ef4444"/>
-    </svg>
-  );
-
   // Composant cœurs flottants (bulles)
   const FloatingHearts = () => (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -205,33 +186,43 @@ export default function CarteVisitePage() {
                     }}
                   >
                     <div className="h-full flex flex-col items-center justify-between py-4 px-5 relative">
-                      {/* Top gradient bar */}
+                      {/* Top gradient bar - bleu → blanc → rose */}
                       <div 
-                        className="absolute top-0 left-0 right-0 h-1"
-                        style={{ background: 'linear-gradient(90deg, #f472b6, #fb7185, #f97316)' }}
+                        className="absolute top-0 left-0 right-0 h-1.5"
+                        style={{ background: 'linear-gradient(90deg, #60a5fa, #93c5fd, #ffffff, #fda4af, #f472b6)' }}
                       />
                       
                       {/* Contenu centré */}
                       <div className="flex-1 flex flex-col items-center justify-center">
-                        <MamanBebeIcon size={showQRCode ? 40 : 52} />
+                        <div className={`${showQRCode ? 'text-4xl' : 'text-5xl'} mb-1`}>🤱</div>
                         <div 
-                          className={`font-semibold mt-1 ${showQRCode ? 'text-2xl' : 'text-3xl'}`}
+                          className={`font-semibold ${showQRCode ? 'text-2xl' : 'text-3xl'}`}
                           style={{ 
                             fontFamily: "'Dancing Script', cursive",
-                            background: 'linear-gradient(90deg, #f472b6, #fb7185, #f97316)',
+                            background: 'linear-gradient(90deg, #60a5fa, #f472b6)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent'
                           }}
                         >
                           MamanDouce
                         </div>
-                        <div className={`text-slate-600 text-center leading-snug font-medium mt-2 ${showQRCode ? 'text-[9px]' : 'text-[11px]'}`}>
+                        <div 
+                          className={`text-slate-600 text-center leading-snug mt-2 ${showQRCode ? 'text-[9px]' : 'text-[11px]'}`}
+                          style={{ fontFamily: "'Quicksand', sans-serif" }}
+                        >
                           Votre compagnon, pas à pas,<br/>jusqu'à la rencontre.
                         </div>
                       </div>
                       
                       {/* URL en bas */}
-                      <div className="text-[9px] text-pink-500 font-semibold tracking-wide">
+                      <div 
+                        className="text-[9px] font-semibold tracking-wide"
+                        style={{ 
+                          background: 'linear-gradient(90deg, #60a5fa, #f472b6)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent'
+                        }}
+                      >
                         mamandouce.cycafamily.com
                       </div>
                     </div>
@@ -245,7 +236,7 @@ export default function CarteVisitePage() {
                     className="w-full max-w-[340px] mx-auto aspect-[85/55] rounded-xl overflow-hidden relative"
                     style={{ 
                       boxShadow: '0 10px 40px rgba(236, 72, 153, 0.15)',
-                      background: 'linear-gradient(160deg, #ffffff 0%, #ffffff 30%, #fdf2f8 50%, #fce7f3 70%, #fbcfe8 90%, #f9a8d4 100%)'
+                      background: 'linear-gradient(160deg, #dbeafe 0%, #eff6ff 15%, #ffffff 35%, #ffffff 50%, #fdf2f8 65%, #fce7f3 80%, #fbcfe8 100%)'
                     }}
                   >
                     {/* Cœurs flottants en bulles */}
@@ -256,43 +247,48 @@ export default function CarteVisitePage() {
                       {/* Titre principal */}
                       <div className="text-center mt-1">
                         <div 
-                          className="text-[13px] font-bold text-pink-600 leading-tight"
-                          style={{ letterSpacing: '0.5px' }}
+                          className="text-[13px] font-bold leading-tight"
+                          style={{ 
+                            fontFamily: "'Quicksand', sans-serif",
+                            background: 'linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            letterSpacing: '0.5px'
+                          }}
                         >
                           Vivez votre grossesse en toute sérénité
                         </div>
                         <div 
-                          className="text-[9px] text-pink-500/80 mt-1 leading-snug"
+                          className="text-[9px] text-slate-500 mt-1.5 leading-snug"
                           style={{ 
-                            fontFamily: "'Dancing Script', 'Brush Script MT', cursive",
-                            fontStyle: 'italic'
+                            fontFamily: "'Dancing Script', cursive",
                           }}
                         >
                           Une bulle de douceur et de confiance<br/>pour vous accompagner
                         </div>
                       </div>
                       
-                      {/* QR Code avec halo (ou espace si sans QR) */}
+                      {/* QR Code avec halo OU halo de lumière seul */}
                       {showQRCode ? (
                         <div className="flex items-center gap-3 my-2">
                           {/* QR Code avec halo lumineux */}
                           <div 
                             className="relative"
                             style={{
-                              filter: 'drop-shadow(0 0 8px rgba(244,114,182,0.4)) drop-shadow(0 0 16px rgba(251,191,36,0.3))'
+                              filter: 'drop-shadow(0 0 10px rgba(96,165,250,0.4)) drop-shadow(0 0 20px rgba(244,114,182,0.3))'
                             }}
                           >
                             <div 
-                              className="w-12 h-12 bg-white border-2 border-pink-300 rounded-lg flex items-center justify-center text-pink-500 text-[8px] font-bold"
+                              className="w-12 h-12 bg-white border-2 border-blue-200 rounded-lg flex items-center justify-center text-blue-500 text-[8px] font-bold"
                               style={{
-                                boxShadow: '0 0 20px rgba(244,114,182,0.3), inset 0 0 10px rgba(251,191,36,0.1)'
+                                boxShadow: '0 0 25px rgba(96,165,250,0.4), 0 0 15px rgba(244,114,182,0.3), inset 0 0 10px rgba(255,255,255,0.8)'
                               }}
                             >
                               QR<br/>CODE
                             </div>
                           </div>
                           <div 
-                            className="text-[8px] text-pink-600 leading-snug text-left"
+                            className="text-[8px] text-slate-600 leading-snug text-left"
                             style={{ fontFamily: "'Dancing Script', cursive" }}
                           >
                             Scannez pour<br/>commencer l'aventure
@@ -300,11 +296,13 @@ export default function CarteVisitePage() {
                         </div>
                       ) : (
                         <div className="flex items-center justify-center my-2">
+                          {/* Halo de lumière sans bulle blanche */}
                           <div 
-                            className="text-[10px] text-pink-500 font-medium text-center px-4 py-2 rounded-full"
+                            className="text-[10px] text-slate-600 text-center px-6 py-2"
                             style={{ 
-                              background: 'rgba(255,255,255,0.7)',
-                              fontFamily: "'Dancing Script', cursive"
+                              fontFamily: "'Dancing Script', cursive",
+                              textShadow: '0 0 20px rgba(255,255,255,1), 0 0 40px rgba(96,165,250,0.3), 0 0 60px rgba(244,114,182,0.2)',
+                              filter: 'drop-shadow(0 0 15px rgba(255,255,255,0.8))'
                             }}
                           >
                             ✨ Commencez l'aventure sur notre app ✨
@@ -314,7 +312,7 @@ export default function CarteVisitePage() {
                       
                       {/* Contact en bas */}
                       <div className="w-full border-t border-pink-200/50 pt-2">
-                        <div className="flex justify-center gap-4 text-[8px] text-pink-700">
+                        <div className="flex justify-center gap-4 text-[8px] text-slate-600">
                           <span className="flex items-center gap-1">📞 06 08 76 67 38</span>
                           <span className="flex items-center gap-1">📧 cyrilalepsa@gmail.com</span>
                         </div>
