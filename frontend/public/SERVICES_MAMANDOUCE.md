@@ -24,12 +24,20 @@
 
 ### Cloudflare (cloudflare.com)
 - **Utilisation** : Gestion DNS pour le domaine personnalisé
-- **Domaine** : cycafamily.com
 - **Coût** : Gratuit (plan DNS)
 
 ---
 
-## 🗄️ 2. BASE DE DONNÉES
+## 🌐 2. DOMAINE
+
+### cycafamily.com
+- **Sous-domaine** : mamandouce.cycafamily.com
+- **Coût** : $10.46/an
+- **DNS géré par** : Cloudflare
+
+---
+
+## 🗄️ 3. BASE DE DONNÉES
 
 ### MongoDB
 - **Utilisation** : Stockage de toutes les données de l'application
@@ -43,7 +51,7 @@
 
 ---
 
-## 💳 3. PAIEMENTS
+## 💳 4. PAIEMENTS
 
 ### Stripe (stripe.com)
 - **Utilisation** : Gestion des abonnements Premium
@@ -61,7 +69,7 @@
 
 ---
 
-## 📧 4. EMAILS
+## 📧 5. EMAILS
 
 ### Resend (resend.com)
 - **Utilisation** : Envoi d'emails transactionnels
@@ -77,7 +85,7 @@
 
 ---
 
-## 🤖 5. INTELLIGENCE ARTIFICIELLE
+## 🤖 6. INTELLIGENCE ARTIFICIELLE
 
 ### OpenAI GPT-5.2 (via Emergent Universal Key)
 - **Utilisation** :
@@ -89,7 +97,7 @@
 
 ---
 
-## 📱 6. PUBLICATION MOBILE
+## 📱 7. PUBLICATION MOBILE
 
 ### Google Play Console (play.google.com/console)
 - **Utilisation** : Publication de l'app Android
@@ -103,15 +111,6 @@
 
 ---
 
-## 🌐 7. DOMAINE & DNS
-
-### Domaine : cycafamily.com
-- **Sous-domaine app** : mamandouce.cycafamily.com
-- **Registrar** : [Votre fournisseur de domaine]
-- **DNS géré par** : Cloudflare
-
----
-
 ## 💰 RÉCAPITULATIF DES COÛTS
 
 ### Coûts mensuels fixes
@@ -120,19 +119,26 @@
 | Railway (Hobby) | ~$5 |
 | Resend | Gratuit |
 | Cloudflare DNS | Gratuit |
-| **Total fixe** | **~$5/mois** |
+| **TOTAL MENSUEL** | **~$5/mois** |
+
+### Coûts annuels
+| Service | Coût annuel |
+|---------|-------------|
+| Domaine cycafamily.com | $10.46 |
+| Railway (Hobby x 12 mois) | ~$60 |
+| **TOTAL ANNUEL** | **~$70.46/an** |
+
+### Coûts uniques (une seule fois)
+| Service | Coût |
+|---------|------|
+| Google Play Console | $25 |
+| Apple Developer (optionnel) | $99/an |
 
 ### Coûts variables
 | Service | Coût |
 |---------|------|
 | Stripe | 2.9% + 0.30€ / transaction |
 | Emergent Universal Key | Selon utilisation |
-
-### Coûts uniques
-| Service | Coût |
-|---------|------|
-| Google Play Console | $25 (une fois) |
-| Apple Developer (optionnel) | $99/an |
 
 ---
 
