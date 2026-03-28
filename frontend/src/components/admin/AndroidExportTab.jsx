@@ -231,6 +231,19 @@ export function AndroidExportTab() {
               </button>
               
               <button
+                onClick={() => window.open('/SERVICES_MAMANDOUCE.pdf', '_blank')}
+                className="w-full px-4 py-4 text-left hover:bg-slate-50 flex items-center gap-4 transition-colors border-t border-slate-100"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-sky-400 to-blue-600 rounded-xl flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-slate-700">Liste des services</p>
+                  <p className="text-sm text-slate-500">Récapitulatif des intégrations & coûts</p>
+                </div>
+              </button>
+              
+              <button
                 onClick={handleSendBusinessKit}
                 disabled={!businessKitInfo?.email_available}
                 className="w-full px-4 py-4 text-left hover:bg-amber-50 flex items-center gap-4 transition-colors border-t border-slate-100 disabled:opacity-50"
