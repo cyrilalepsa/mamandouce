@@ -185,18 +185,18 @@ export default function CarteVisitePage() {
                       background: 'linear-gradient(160deg, #dbeafe 0%, #eff6ff 15%, #ffffff 35%, #ffffff 50%, #fdf2f8 65%, #fce7f3 80%, #fbcfe8 100%)'
                     }}
                   >
-                    <div className="h-full flex flex-col items-center justify-between py-4 px-5 relative">
-                      {/* Top gradient bar - couleurs claires et dégradé large */}
+                    <div className="h-full flex flex-col items-center justify-center py-4 px-5 relative">
+                      {/* Top gradient bar */}
                       <div 
                         className="absolute top-0 left-0 right-0 h-2"
                         style={{ background: 'linear-gradient(90deg, #bfdbfe 0%, #dbeafe 20%, #ffffff 40%, #ffffff 60%, #fce7f3 80%, #fbcfe8 100%)' }}
                       />
                       
-                      {/* Contenu centré */}
-                      <div className="flex-1 flex flex-col items-center justify-center">
-                        <div className={`${showQRCode ? 'text-4xl' : 'text-5xl'} mb-1`}>🤱</div>
+                      {/* Contenu centré au milieu */}
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="text-4xl mb-1">🤱</div>
                         <div 
-                          className={`font-semibold ${showQRCode ? 'text-2xl' : 'text-3xl'}`}
+                          className="font-semibold text-2xl"
                           style={{ 
                             fontFamily: "'Dancing Script', cursive",
                             color: '#ec4899'
@@ -205,7 +205,7 @@ export default function CarteVisitePage() {
                           MamanDouce
                         </div>
                         <div 
-                          className={`text-center leading-snug mt-2 ${showQRCode ? 'text-[10px]' : 'text-[12px]'}`}
+                          className="text-center leading-snug mt-2 text-[10px]"
                           style={{ 
                             fontFamily: "'Dancing Script', cursive",
                             color: '#64748b'
@@ -215,12 +215,10 @@ export default function CarteVisitePage() {
                         </div>
                       </div>
                       
-                      {/* URL en bas - même couleur rose que MamanDouce */}
+                      {/* URL en bas */}
                       <div 
-                        className="text-[9px] font-semibold tracking-wide"
-                        style={{ 
-                          color: '#ec4899'
-                        }}
+                        className="absolute bottom-3 text-[9px] font-semibold tracking-wide"
+                        style={{ color: '#ec4899' }}
                       >
                         mamandouce.cycafamily.com
                       </div>
@@ -228,7 +226,7 @@ export default function CarteVisitePage() {
                   </div>
                 </div>
 
-                {/* VERSO - Même design que le recto */}
+                {/* VERSO */}
                 <div className="text-center">
                   <div className="font-bold text-slate-700 mb-3 text-sm uppercase tracking-wide">Verso</div>
                   <div 
@@ -238,39 +236,37 @@ export default function CarteVisitePage() {
                       background: 'linear-gradient(160deg, #dbeafe 0%, #eff6ff 15%, #ffffff 35%, #ffffff 50%, #fdf2f8 65%, #fce7f3 80%, #fbcfe8 100%)'
                     }}
                   >
-                    {/* Cœurs flottants en bulles */}
+                    {/* Cœurs flottants */}
                     <FloatingHearts />
                     
-                    <div className="h-full flex flex-col items-center justify-between py-4 px-5 relative z-10">
-                      {/* Barre du haut - même que recto */}
+                    <div className="h-full flex flex-col items-center justify-center py-4 px-5 relative z-10">
+                      {/* Barre du haut */}
                       <div 
                         className="absolute top-0 left-0 right-0 h-2"
                         style={{ background: 'linear-gradient(90deg, #bfdbfe 0%, #dbeafe 20%, #ffffff 40%, #ffffff 60%, #fce7f3 80%, #fbcfe8 100%)' }}
                       />
                       
-                      {/* Contenu centré - même structure que recto */}
-                      <div className="flex-1 flex flex-col items-center justify-center mt-2">
-                        <div className={`${showQRCode ? 'text-4xl' : 'text-5xl'} mb-1`}>🤱</div>
+                      {/* Contenu centré au milieu */}
+                      <div className="flex flex-col items-center justify-center">
+                        {/* Titre principal en style Dancing Script comme MamanDouce */}
                         <div 
-                          className={`font-semibold ${showQRCode ? 'text-2xl' : 'text-3xl'}`}
+                          className="font-semibold text-xl text-center leading-tight"
                           style={{ 
                             fontFamily: "'Dancing Script', cursive",
                             color: '#ec4899'
                           }}
                         >
-                          MamanDouce
-                        </div>
-                        <div 
-                          className={`text-center leading-snug mt-2 ${showQRCode ? 'text-[10px]' : 'text-[12px]'}`}
-                          style={{ 
-                            fontFamily: "'Dancing Script', cursive",
-                            color: '#64748b'
-                          }}
-                        >
                           Vivez votre grossesse<br/>en toute sérénité
                         </div>
                         
-                        {/* QR Code ou Halo centré */}
+                        <div 
+                          className="text-[10px] text-slate-500 mt-2 text-center leading-snug"
+                          style={{ fontFamily: "'Dancing Script', cursive" }}
+                        >
+                          Une bulle de douceur et de confiance<br/>pour vous accompagner
+                        </div>
+                        
+                        {/* QR Code ou Halo */}
                         {showQRCode ? (
                           <div className="flex items-center gap-2 mt-3">
                             <div 
@@ -310,7 +306,7 @@ export default function CarteVisitePage() {
                       </div>
                       
                       {/* Contact en bas */}
-                      <div className="w-full border-t border-pink-200/30 pt-1.5">
+                      <div className="absolute bottom-2 w-full border-t border-pink-200/30 pt-1.5">
                         <div className="flex justify-center gap-3 text-[8px] text-slate-500">
                           <span>📞 06 08 76 67 38</span>
                           <span>📧 cyrilalepsa@gmail.com</span>
