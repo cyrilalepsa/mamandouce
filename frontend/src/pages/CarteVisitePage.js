@@ -273,7 +273,7 @@ export default function CarteVisitePage() {
                     className="w-full max-w-[340px] mx-auto aspect-[85/55] rounded-xl overflow-hidden p-3 flex flex-col justify-between"
                     style={{ 
                       boxShadow: '0 10px 40px rgba(236, 72, 153, 0.15)',
-                      background: 'linear-gradient(160deg, #ffffff 0%, #fdf2f8 15%, #fce7f3 30%, #fbcfe8 45%, #f9a8d4 60%, #f472b6 80%, #ec4899 100%)'
+                      background: 'linear-gradient(160deg, #ffffff 0%, #ffffff 20%, #fdf2f8 35%, #fce7f3 50%, #fbcfe8 70%, #f9a8d4 90%, #f472b6 100%)'
                     }}
                   >
                     <ul className="space-y-0 text-left">
