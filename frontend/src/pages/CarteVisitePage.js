@@ -29,30 +29,36 @@ export default function CarteVisitePage() {
     }
   };
 
-  // Icône maman-bébé en SVG pour cohérence entre aperçu et téléchargement
+  // Icône maman-bébé en SVG
   const MamanBebeIcon = ({ size = 48 }) => (
     <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Maman */}
       <circle cx="24" cy="18" r="10" fill="#f9a8d4"/>
       <ellipse cx="24" cy="42" rx="14" ry="18" fill="#f472b6"/>
-      {/* Cheveux */}
       <path d="M14 18c0-8 6-14 14-14s10 6 10 14c0-4-4-8-10-8s-14 4-14 8z" fill="#854d0e"/>
-      {/* Visage maman */}
       <circle cx="21" cy="16" r="1.5" fill="#374151"/>
       <circle cx="27" cy="16" r="1.5" fill="#374151"/>
       <path d="M22 21c1 1.5 3 1.5 4 0" stroke="#374151" strokeWidth="1.5" strokeLinecap="round"/>
-      {/* Bébé */}
       <circle cx="44" cy="32" r="8" fill="#fcd34d"/>
       <ellipse cx="44" cy="48" rx="8" ry="10" fill="#fbbf24"/>
-      {/* Visage bébé */}
       <circle cx="42" cy="31" r="1" fill="#374151"/>
       <circle cx="46" cy="31" r="1" fill="#374151"/>
       <path d="M42 35c0.8 1 2.2 1 3 0" stroke="#374151" strokeWidth="1" strokeLinecap="round"/>
-      {/* Bras maman tenant bébé */}
       <path d="M34 36c4-2 8 0 10 4" stroke="#f472b6" strokeWidth="4" strokeLinecap="round"/>
-      {/* Coeur */}
       <path d="M30 28c-1-2 1-4 3-3 2-1 4 1 3 3l-3 4-3-4z" fill="#ef4444"/>
     </svg>
+  );
+
+  // Composant cœurs flottants (bulles)
+  const FloatingHearts = () => (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* Cœurs comme des bulles flottantes */}
+      <div className="absolute top-3 left-4 text-[10px] opacity-30" style={{ filter: 'drop-shadow(0 0 3px rgba(244,114,182,0.5))' }}>💗</div>
+      <div className="absolute top-6 right-6 text-[14px] opacity-25" style={{ filter: 'drop-shadow(0 0 4px rgba(244,114,182,0.5))' }}>💕</div>
+      <div className="absolute top-12 left-8 text-[8px] opacity-40" style={{ filter: 'drop-shadow(0 0 2px rgba(244,114,182,0.5))' }}>❤️</div>
+      <div className="absolute bottom-16 right-4 text-[12px] opacity-20" style={{ filter: 'drop-shadow(0 0 4px rgba(244,114,182,0.5))' }}>💗</div>
+      <div className="absolute bottom-20 left-6 text-[6px] opacity-35" style={{ filter: 'drop-shadow(0 0 2px rgba(244,114,182,0.5))' }}>💕</div>
+      <div className="absolute top-16 right-12 text-[7px] opacity-30" style={{ filter: 'drop-shadow(0 0 2px rgba(244,114,182,0.5))' }}>❤️</div>
+    </div>
   );
 
   return (
@@ -63,7 +69,7 @@ export default function CarteVisitePage() {
         fontFamily: "'Quicksand', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
       }}
     >
-      {/* Header - Kit Business */}
+      {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <Button
           onClick={() => navigate(-1)}
@@ -79,7 +85,7 @@ export default function CarteVisitePage() {
 
       <div className="max-w-4xl mx-auto space-y-4">
         
-        {/* 🖨️ INSTRUCTIONS D'IMPRESSION - Menu déroulant */}
+        {/* Instructions d'impression - Menu déroulant */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
           <button
             onClick={() => setShowInstructions(!showInstructions)}
@@ -137,7 +143,7 @@ export default function CarteVisitePage() {
           )}
         </div>
 
-        {/* 📇 CARTE DE VISITE - Menu déroulant */}
+        {/* Carte de visite - Menu déroulant */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
           <button
             onClick={() => setShowCarteVisite(!showCarteVisite)}
@@ -199,69 +205,35 @@ export default function CarteVisitePage() {
                     }}
                   >
                     <div className="h-full flex flex-col items-center justify-between py-4 px-5 relative">
+                      {/* Top gradient bar */}
                       <div 
                         className="absolute top-0 left-0 right-0 h-1"
                         style={{ background: 'linear-gradient(90deg, #f472b6, #fb7185, #f97316)' }}
                       />
                       
-                      {showQRCode ? (
-                        <>
-                          <div className="flex flex-col items-center pt-2">
-                            <MamanBebeIcon size={36} />
-                            <div 
-                              className="text-xl font-semibold mt-1"
-                              style={{ 
-                                fontFamily: "'Dancing Script', cursive",
-                                background: 'linear-gradient(90deg, #f472b6, #fb7185, #f97316)',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent'
-                              }}
-                            >
-                              MamanDouce
-                            </div>
-                            <div className="text-slate-500 text-[9px] mt-0.5 text-center leading-tight">
-                              Votre compagnon avant, pendant<br/>et après la grossesse
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-3 mt-1">
-                            <div className="w-10 h-10 border-2 border-dashed border-pink-400 rounded-lg flex items-center justify-center text-pink-400 text-[8px] font-semibold">
-                              QR<br/>CODE
-                            </div>
-                            <div className="text-[8px] text-slate-500 leading-snug text-left">
-                              Scannez pour<br/>télécharger l'app
-                            </div>
-                          </div>
-                          
-                          <div className="text-[8px] text-pink-400 font-medium tracking-wide">
-                            mamandouce.cycafamily.com
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="flex-1 flex flex-col items-center justify-center">
-                            <MamanBebeIcon size={52} />
-                            <div 
-                              className="text-2xl font-semibold mt-1"
-                              style={{ 
-                                fontFamily: "'Dancing Script', cursive",
-                                background: 'linear-gradient(90deg, #f472b6, #fb7185, #f97316)',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent'
-                              }}
-                            >
-                              MamanDouce
-                            </div>
-                            <div className="text-slate-600 text-[10px] text-center leading-snug font-medium mt-1">
-                              Votre compagnon avant, pendant<br/>et après la grossesse
-                            </div>
-                          </div>
-                          
-                          <div className="text-[9px] text-pink-500 font-semibold tracking-wide">
-                            mamandouce.cycafamily.com
-                          </div>
-                        </>
-                      )}
+                      {/* Contenu centré */}
+                      <div className="flex-1 flex flex-col items-center justify-center">
+                        <MamanBebeIcon size={showQRCode ? 40 : 52} />
+                        <div 
+                          className={`font-semibold mt-1 ${showQRCode ? 'text-2xl' : 'text-3xl'}`}
+                          style={{ 
+                            fontFamily: "'Dancing Script', cursive",
+                            background: 'linear-gradient(90deg, #f472b6, #fb7185, #f97316)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent'
+                          }}
+                        >
+                          MamanDouce
+                        </div>
+                        <div className={`text-slate-600 text-center leading-snug font-medium mt-2 ${showQRCode ? 'text-[9px]' : 'text-[11px]'}`}>
+                          Votre compagnon, pas à pas,<br/>jusqu'à la rencontre.
+                        </div>
+                      </div>
+                      
+                      {/* URL en bas */}
+                      <div className="text-[9px] text-pink-500 font-semibold tracking-wide">
+                        mamandouce.cycafamily.com
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -270,49 +242,82 @@ export default function CarteVisitePage() {
                 <div className="text-center">
                   <div className="font-bold text-slate-700 mb-3 text-sm uppercase tracking-wide">Verso</div>
                   <div 
-                    className="w-full max-w-[340px] mx-auto aspect-[85/55] rounded-xl overflow-hidden p-3 flex flex-col justify-between"
+                    className="w-full max-w-[340px] mx-auto aspect-[85/55] rounded-xl overflow-hidden relative"
                     style={{ 
                       boxShadow: '0 10px 40px rgba(236, 72, 153, 0.15)',
-                      background: 'linear-gradient(160deg, #ffffff 0%, #ffffff 20%, #fdf2f8 35%, #fce7f3 50%, #fbcfe8 70%, #f9a8d4 90%, #f472b6 100%)'
+                      background: 'linear-gradient(160deg, #ffffff 0%, #ffffff 30%, #fdf2f8 50%, #fce7f3 70%, #fbcfe8 90%, #f9a8d4 100%)'
                     }}
                   >
-                    <ul className="space-y-0 text-left">
-                      <li className="flex items-center gap-1.5 text-[9px] font-bold text-pink-700">
-                        <span className="text-pink-600">✓</span> Suivi règles & ovulation
-                      </li>
-                      <li className="flex items-center gap-1.5 text-[9px] text-pink-700">
-                        <span className="text-pink-600">✓</span> Suivi grossesse semaine/semaine
-                      </li>
-                      <li className="flex items-center gap-1.5 text-[9px] text-pink-700">
-                        <span className="text-pink-600">✓</span> Scanner d'aliments autorisés
-                      </li>
-                      <li className="flex items-center gap-1.5 text-[9px] text-pink-700">
-                        <span className="text-pink-600">✓</span> Idées de prénoms
-                      </li>
-                      <li className="flex items-center gap-1.5 text-[9px] text-pink-700">
-                        <span className="text-pink-600">✓</span> Chatbot IA disponible 24/7
-                      </li>
-                      <li className="flex items-center gap-1.5 text-[9px] text-pink-700">
-                        <span className="text-pink-600">✓</span> Recettes post-partum
-                      </li>
-                      <li className="flex items-center gap-1.5 text-[9px] text-pink-700">
-                        <span className="text-pink-600">✓</span> 100% adapté à la France
-                      </li>
-                      <li className="flex items-center justify-center gap-0.5 text-[9px] font-medium mt-0.5 text-pink-700">
-                        <span style={{ filter: 'drop-shadow(0 0 4px white) drop-shadow(0 0 6px white)' }}>💕</span>
-                        <span style={{ filter: 'drop-shadow(0 0 5px white) drop-shadow(0 0 8px white)' }}>❤️</span>
-                        <span style={{ filter: 'drop-shadow(0 0 6px white) drop-shadow(0 0 10px white)' }}>💗</span>
-                        <span className="mx-0.5">... et bien d'autres !</span>
-                        <span style={{ filter: 'drop-shadow(0 0 6px white) drop-shadow(0 0 10px white)' }}>💗</span>
-                        <span style={{ filter: 'drop-shadow(0 0 5px white) drop-shadow(0 0 8px white)' }}>❤️</span>
-                        <span style={{ filter: 'drop-shadow(0 0 4px white) drop-shadow(0 0 6px white)' }}>💕</span>
-                      </li>
-                    </ul>
+                    {/* Cœurs flottants en bulles */}
+                    <FloatingHearts />
                     
-                    <div className="border-t border-pink-400/40 pt-1.5 mt-1">
-                      <div className="flex flex-col gap-0.5 text-[9px] text-pink-800">
-                        <span className="flex items-center gap-1.5">📞 06 08 76 67 38</span>
-                        <span className="flex items-center gap-1.5">📧 cyrilalepsa@gmail.com</span>
+                    <div className="h-full flex flex-col items-center justify-between py-3 px-4 relative z-10">
+                      
+                      {/* Titre principal */}
+                      <div className="text-center mt-1">
+                        <div 
+                          className="text-[13px] font-bold text-pink-600 leading-tight"
+                          style={{ letterSpacing: '0.5px' }}
+                        >
+                          Vivez votre grossesse en toute sérénité
+                        </div>
+                        <div 
+                          className="text-[9px] text-pink-500/80 mt-1 leading-snug"
+                          style={{ 
+                            fontFamily: "'Dancing Script', 'Brush Script MT', cursive",
+                            fontStyle: 'italic'
+                          }}
+                        >
+                          Une bulle de douceur et de confiance<br/>pour vous accompagner
+                        </div>
+                      </div>
+                      
+                      {/* QR Code avec halo (ou espace si sans QR) */}
+                      {showQRCode ? (
+                        <div className="flex items-center gap-3 my-2">
+                          {/* QR Code avec halo lumineux */}
+                          <div 
+                            className="relative"
+                            style={{
+                              filter: 'drop-shadow(0 0 8px rgba(244,114,182,0.4)) drop-shadow(0 0 16px rgba(251,191,36,0.3))'
+                            }}
+                          >
+                            <div 
+                              className="w-12 h-12 bg-white border-2 border-pink-300 rounded-lg flex items-center justify-center text-pink-500 text-[8px] font-bold"
+                              style={{
+                                boxShadow: '0 0 20px rgba(244,114,182,0.3), inset 0 0 10px rgba(251,191,36,0.1)'
+                              }}
+                            >
+                              QR<br/>CODE
+                            </div>
+                          </div>
+                          <div 
+                            className="text-[8px] text-pink-600 leading-snug text-left"
+                            style={{ fontFamily: "'Dancing Script', cursive" }}
+                          >
+                            Scannez pour<br/>commencer l'aventure
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center my-2">
+                          <div 
+                            className="text-[10px] text-pink-500 font-medium text-center px-4 py-2 rounded-full"
+                            style={{ 
+                              background: 'rgba(255,255,255,0.7)',
+                              fontFamily: "'Dancing Script', cursive"
+                            }}
+                          >
+                            ✨ Commencez l'aventure sur notre app ✨
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Contact en bas */}
+                      <div className="w-full border-t border-pink-200/50 pt-2">
+                        <div className="flex justify-center gap-4 text-[8px] text-pink-700">
+                          <span className="flex items-center gap-1">📞 06 08 76 67 38</span>
+                          <span className="flex items-center gap-1">📧 cyrilalepsa@gmail.com</span>
+                        </div>
                       </div>
                     </div>
                   </div>
