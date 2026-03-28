@@ -228,7 +228,7 @@ export default function CarteVisitePage() {
                   </div>
                 </div>
 
-                {/* VERSO */}
+                {/* VERSO - Même design que le recto */}
                 <div className="text-center">
                   <div className="font-bold text-slate-700 mb-3 text-sm uppercase tracking-wide">Verso</div>
                   <div 
@@ -241,77 +241,79 @@ export default function CarteVisitePage() {
                     {/* Cœurs flottants en bulles */}
                     <FloatingHearts />
                     
-                    <div className="h-full flex flex-col items-center justify-between py-3 px-4 relative z-10">
+                    <div className="h-full flex flex-col items-center justify-between py-4 px-5 relative z-10">
+                      {/* Barre du haut - même que recto */}
+                      <div 
+                        className="absolute top-0 left-0 right-0 h-2"
+                        style={{ background: 'linear-gradient(90deg, #bfdbfe 0%, #dbeafe 20%, #ffffff 40%, #ffffff 60%, #fce7f3 80%, #fbcfe8 100%)' }}
+                      />
                       
-                      {/* Titre principal */}
-                      <div className="text-center mt-1">
+                      {/* Contenu centré - même structure que recto */}
+                      <div className="flex-1 flex flex-col items-center justify-center mt-2">
+                        <div className={`${showQRCode ? 'text-4xl' : 'text-5xl'} mb-1`}>🤱</div>
                         <div 
-                          className="text-[13px] font-bold leading-tight"
-                          style={{ 
-                            fontFamily: "'Quicksand', sans-serif",
-                            color: '#be185d',
-                            letterSpacing: '0.5px'
-                          }}
-                        >
-                          Vivez votre grossesse en toute sérénité
-                        </div>
-                        <div 
-                          className="text-[11px] text-slate-500 mt-1.5 leading-snug"
+                          className={`font-semibold ${showQRCode ? 'text-2xl' : 'text-3xl'}`}
                           style={{ 
                             fontFamily: "'Dancing Script', cursive",
+                            color: '#ec4899'
                           }}
                         >
-                          Une bulle de douceur et de confiance<br/>pour vous accompagner
+                          MamanDouce
                         </div>
-                      </div>
-                      
-                      {/* QR Code avec halo BLANC OU halo de lumière blanc seul */}
-                      {showQRCode ? (
-                        <div className="flex items-center gap-3 my-2">
-                          {/* QR Code avec halo blanc lumineux */}
-                          <div 
-                            className="relative"
-                            style={{
-                              filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.9)) drop-shadow(0 0 25px rgba(255,255,255,0.7))'
-                            }}
-                          >
+                        <div 
+                          className={`text-center leading-snug mt-2 ${showQRCode ? 'text-[10px]' : 'text-[12px]'}`}
+                          style={{ 
+                            fontFamily: "'Dancing Script', cursive",
+                            color: '#64748b'
+                          }}
+                        >
+                          Vivez votre grossesse<br/>en toute sérénité
+                        </div>
+                        
+                        {/* QR Code ou Halo centré */}
+                        {showQRCode ? (
+                          <div className="flex items-center gap-2 mt-3">
                             <div 
-                              className="w-12 h-12 bg-white border-2 border-slate-200 rounded-lg flex items-center justify-center text-slate-500 text-[8px] font-bold"
+                              className="relative"
                               style={{
-                                boxShadow: '0 0 20px rgba(255,255,255,0.9), 0 0 35px rgba(255,255,255,0.6), inset 0 0 10px rgba(255,255,255,0.8)'
+                                filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.9)) drop-shadow(0 0 25px rgba(255,255,255,0.7))'
                               }}
                             >
-                              QR<br/>CODE
+                              <div 
+                                className="w-10 h-10 bg-white border-2 border-slate-200 rounded-lg flex items-center justify-center text-slate-500 text-[7px] font-bold"
+                                style={{
+                                  boxShadow: '0 0 20px rgba(255,255,255,0.9), 0 0 35px rgba(255,255,255,0.6)'
+                                }}
+                              >
+                                QR<br/>CODE
+                              </div>
+                            </div>
+                            <div 
+                              className="text-[8px] text-slate-500 leading-snug text-left"
+                              style={{ fontFamily: "'Dancing Script', cursive" }}
+                            >
+                              Scannez pour<br/>télécharger
                             </div>
                           </div>
+                        ) : (
                           <div 
-                            className="text-[8px] text-slate-600 leading-snug text-left"
-                            style={{ fontFamily: "'Dancing Script', cursive" }}
-                          >
-                            Scannez pour<br/>commencer l'aventure
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-center my-2">
-                          {/* Halo de lumière BLANC avec texte plus gros */}
-                          <div 
-                            className="text-[13px] text-slate-600 text-center px-6 py-3 rounded-xl"
+                            className="text-[11px] text-slate-500 text-center mt-3 px-4 py-1"
                             style={{ 
                               fontFamily: "'Dancing Script', cursive",
-                              textShadow: '0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.9), 0 0 45px rgba(255,255,255,0.7)',
-                              background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.6) 0%, transparent 70%)'
+                              textShadow: '0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.8)',
+                              background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.5) 0%, transparent 70%)'
                             }}
                           >
-                            ✨ Commencez l'aventure sur notre app ✨
+                            ✨ Téléchargez l'app ✨
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                       
                       {/* Contact en bas */}
-                      <div className="w-full border-t border-pink-200/50 pt-2">
-                        <div className="flex justify-center gap-4 text-[8px] text-slate-600">
-                          <span className="flex items-center gap-1">📞 06 08 76 67 38</span>
-                          <span className="flex items-center gap-1">📧 cyrilalepsa@gmail.com</span>
+                      <div className="w-full border-t border-pink-200/30 pt-1.5">
+                        <div className="flex justify-center gap-3 text-[8px] text-slate-500">
+                          <span>📞 06 08 76 67 38</span>
+                          <span>📧 cyrilalepsa@gmail.com</span>
                         </div>
                       </div>
                     </div>
