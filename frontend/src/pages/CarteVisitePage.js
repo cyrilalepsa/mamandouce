@@ -182,14 +182,14 @@ export default function CarteVisitePage() {
                     className="w-full max-w-[340px] mx-auto aspect-[85/55] rounded-xl overflow-hidden"
                     style={{ 
                       boxShadow: '0 10px 40px rgba(236, 72, 153, 0.2)',
-                      background: 'linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%)'
+                      background: 'linear-gradient(160deg, #dbeafe 0%, #eff6ff 15%, #ffffff 35%, #ffffff 50%, #fdf2f8 65%, #fce7f3 80%, #fbcfe8 100%)'
                     }}
                   >
                     <div className="h-full flex flex-col items-center justify-between py-4 px-5 relative">
-                      {/* Top gradient bar - bleu → blanc → rose */}
+                      {/* Top gradient bar - couleurs claires et dégradé large */}
                       <div 
-                        className="absolute top-0 left-0 right-0 h-1.5"
-                        style={{ background: 'linear-gradient(90deg, #60a5fa, #93c5fd, #ffffff, #fda4af, #f472b6)' }}
+                        className="absolute top-0 left-0 right-0 h-2"
+                        style={{ background: 'linear-gradient(90deg, #bfdbfe 0%, #dbeafe 20%, #ffffff 40%, #ffffff 60%, #fce7f3 80%, #fbcfe8 100%)' }}
                       />
                       
                       {/* Contenu centré */}
@@ -199,28 +199,27 @@ export default function CarteVisitePage() {
                           className={`font-semibold ${showQRCode ? 'text-2xl' : 'text-3xl'}`}
                           style={{ 
                             fontFamily: "'Dancing Script', cursive",
-                            background: 'linear-gradient(90deg, #60a5fa, #f472b6)',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent'
+                            color: '#ec4899'
                           }}
                         >
                           MamanDouce
                         </div>
                         <div 
-                          className={`text-slate-600 text-center leading-snug mt-2 ${showQRCode ? 'text-[9px]' : 'text-[11px]'}`}
-                          style={{ fontFamily: "'Quicksand', sans-serif" }}
+                          className={`text-center leading-snug mt-2 ${showQRCode ? 'text-[10px]' : 'text-[12px]'}`}
+                          style={{ 
+                            fontFamily: "'Dancing Script', cursive",
+                            color: '#64748b'
+                          }}
                         >
                           Votre compagnon, pas à pas,<br/>jusqu'à la rencontre.
                         </div>
                       </div>
                       
-                      {/* URL en bas */}
+                      {/* URL en bas - même couleur rose que MamanDouce */}
                       <div 
                         className="text-[9px] font-semibold tracking-wide"
                         style={{ 
-                          background: 'linear-gradient(90deg, #60a5fa, #f472b6)',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent'
+                          color: '#ec4899'
                         }}
                       >
                         mamandouce.cycafamily.com
@@ -250,16 +249,14 @@ export default function CarteVisitePage() {
                           className="text-[13px] font-bold leading-tight"
                           style={{ 
                             fontFamily: "'Quicksand', sans-serif",
-                            background: 'linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899)',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
+                            color: '#be185d',
                             letterSpacing: '0.5px'
                           }}
                         >
                           Vivez votre grossesse en toute sérénité
                         </div>
                         <div 
-                          className="text-[9px] text-slate-500 mt-1.5 leading-snug"
+                          className="text-[11px] text-slate-500 mt-1.5 leading-snug"
                           style={{ 
                             fontFamily: "'Dancing Script', cursive",
                           }}
@@ -268,20 +265,20 @@ export default function CarteVisitePage() {
                         </div>
                       </div>
                       
-                      {/* QR Code avec halo OU halo de lumière seul */}
+                      {/* QR Code avec halo BLANC OU halo de lumière blanc seul */}
                       {showQRCode ? (
                         <div className="flex items-center gap-3 my-2">
-                          {/* QR Code avec halo lumineux */}
+                          {/* QR Code avec halo blanc lumineux */}
                           <div 
                             className="relative"
                             style={{
-                              filter: 'drop-shadow(0 0 10px rgba(96,165,250,0.4)) drop-shadow(0 0 20px rgba(244,114,182,0.3))'
+                              filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.9)) drop-shadow(0 0 25px rgba(255,255,255,0.7))'
                             }}
                           >
                             <div 
-                              className="w-12 h-12 bg-white border-2 border-blue-200 rounded-lg flex items-center justify-center text-blue-500 text-[8px] font-bold"
+                              className="w-12 h-12 bg-white border-2 border-slate-200 rounded-lg flex items-center justify-center text-slate-500 text-[8px] font-bold"
                               style={{
-                                boxShadow: '0 0 25px rgba(96,165,250,0.4), 0 0 15px rgba(244,114,182,0.3), inset 0 0 10px rgba(255,255,255,0.8)'
+                                boxShadow: '0 0 20px rgba(255,255,255,0.9), 0 0 35px rgba(255,255,255,0.6), inset 0 0 10px rgba(255,255,255,0.8)'
                               }}
                             >
                               QR<br/>CODE
@@ -296,13 +293,13 @@ export default function CarteVisitePage() {
                         </div>
                       ) : (
                         <div className="flex items-center justify-center my-2">
-                          {/* Halo de lumière sans bulle blanche */}
+                          {/* Halo de lumière BLANC avec texte plus gros */}
                           <div 
-                            className="text-[10px] text-slate-600 text-center px-6 py-2"
+                            className="text-[13px] text-slate-600 text-center px-6 py-3 rounded-xl"
                             style={{ 
                               fontFamily: "'Dancing Script', cursive",
-                              textShadow: '0 0 20px rgba(255,255,255,1), 0 0 40px rgba(96,165,250,0.3), 0 0 60px rgba(244,114,182,0.2)',
-                              filter: 'drop-shadow(0 0 15px rgba(255,255,255,0.8))'
+                              textShadow: '0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.9), 0 0 45px rgba(255,255,255,0.7)',
+                              background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.6) 0%, transparent 70%)'
                             }}
                           >
                             ✨ Commencez l'aventure sur notre app ✨
