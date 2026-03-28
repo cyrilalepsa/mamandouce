@@ -8,13 +8,20 @@ export default function CarteVisitePage() {
   const [showQRCode, setShowQRCode] = useState(true);
 
   const handleDownload = (type) => {
-    const files = {
+    // Fichiers différents selon la version sélectionnée (avec ou sans QR code)
+    const filesWithQR = {
       pdf: '/MamanDouce_CarteVisite_v2.pdf',
       pngRecto: '/carte_recto_v2.png',
       pngVerso: '/carte_verso_v2.png',
-      jpgRecto: '/MamanDouce_Recto_v2.jpg',
-      jpgVerso: '/MamanDouce_Verso_v2.jpg'
     };
+    
+    const filesWithoutQR = {
+      pdf: '/MamanDouce_CarteVisite.pdf',
+      pngRecto: '/carte_recto.png',
+      pngVerso: '/carte_verso.png',
+    };
+    
+    const files = showQRCode ? filesWithQR : filesWithoutQR;
     
     if (files[type]) {
       window.open(files[type], '_blank');
