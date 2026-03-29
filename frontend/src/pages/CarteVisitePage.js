@@ -299,7 +299,7 @@ export default function CarteVisitePage() {
                           </div>
                         ) : (
                           <div 
-                            className="text-[9px] text-slate-600 text-center mt-3 px-2 py-1 font-medium whitespace-nowrap"
+                            className="text-[7px] text-slate-500 text-center mt-5 px-2 py-1 font-medium whitespace-nowrap"
                             style={{ 
                               fontFamily: "'Quicksand', sans-serif",
                               textShadow: '0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.8)',
