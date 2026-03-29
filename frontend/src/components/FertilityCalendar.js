@@ -427,14 +427,40 @@ export default function FertilityCalendar({
   };
 
   const isRapportDay = (date) => {
-    return rapportDates.some(d => new Date(d).toDateString() === date.toDateString());
+    // Comparer avec le format local YYYY-MM-DD
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    
+    return rapportDates.some(d => {
+      // Si d est déjà une string YYYY-MM-DD, comparer directement
+      if (typeof d === 'string' && d.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        return d === dateStr;
+      }
+      // Sinon, convertir en date locale
+      const rapportDate = new Date(d);
+      const rYear = rapportDate.getFullYear();
+      const rMonth = String(rapportDate.getMonth() + 1).padStart(2, '0');
+      const rDay = String(rapportDate.getDate()).padStart(2, '0');
+      return `${rYear}-${rMonth}-${rDay}` === dateStr;
+    });
   };
 
   // Calculer la nidation estimée basée sur les rapports
   const getEstimatedImplantation = (rapportDate) => {
     // La nidation a lieu 6-12 jours après la fécondation
-    // Si le rapport est proche de l'ovulation, la fécondation peut avoir lieu
-    const rapport = new Date(rapportDate);
+    // Parser correctement la date
+    let rapport;
+    if (typeof rapportDate === 'string' && rapportDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [y, m, d] = rapportDate.split('-').map(Number);
+      rapport = new Date(y, m - 1, d);
+    } else if (rapportDate instanceof Date) {
+      rapport = new Date(rapportDate);
+    } else {
+      rapport = new Date(rapportDate);
+    }
+    
     const implantationEarly = new Date(rapport);
     implantationEarly.setDate(implantationEarly.getDate() + 6);
     const implantationLate = new Date(rapport);
@@ -461,7 +487,12 @@ export default function FertilityCalendar({
 
   const handleAddRapport = () => {
     if (selectedDate && onAddRapport) {
-      onAddRapport(selectedDate.toISOString().split('T')[0]);
+      // Utiliser le format local YYYY-MM-DD pour éviter les décalages de fuseau horaire
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+      const day = String(selectedDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      onAddRapport(dateStr);
       setShowAddRapport(false);
       setSelectedDate(null);
     }
@@ -469,7 +500,12 @@ export default function FertilityCalendar({
 
   const handleRemoveRapport = () => {
     if (selectedDate && onRemoveRapport) {
-      onRemoveRapport(selectedDate.toISOString().split('T')[0]);
+      // Utiliser le format local YYYY-MM-DD pour éviter les décalages de fuseau horaire
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+      const day = String(selectedDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      onRemoveRapport(dateStr);
       setShowAddRapport(false);
       setSelectedDate(null);
     }
@@ -647,14 +683,22 @@ export default function FertilityCalendar({
             <p className="text-xs font-semibold text-slate-600 mb-2">Rapports enregistrés</p>
             <div className="space-y-2">
               {rapportDates.map((date, index) => {
-                const { early, late } = getEstimatedImplantation(date);
+                // Parser la date correctement pour éviter les décalages UTC
+                let rapportDate;
+                if (typeof date === 'string' && date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                  const [y, m, d] = date.split('-').map(Number);
+                  rapportDate = new Date(y, m - 1, d);
+                } else {
+                  rapportDate = new Date(date);
+                }
+                const { early, late } = getEstimatedImplantation(rapportDate);
                 return (
                   <div key={index} className="bg-rose-50 rounded-xl p-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Heart className="w-4 h-4 text-rose-500" />
                         <span className="text-sm font-semibold text-slate-700">
-                          {new Date(date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                          {rapportDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                         </span>
                       </div>
                       <button 
