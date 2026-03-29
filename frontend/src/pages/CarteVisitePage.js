@@ -253,7 +253,7 @@ export default function CarteVisitePage() {
                       <div className="flex flex-col items-center justify-center">
                         {/* Titre principal en style Dancing Script comme MamanDouce */}
                         <div 
-                          className="font-semibold text-xl text-center leading-tight"
+                          className="font-semibold text-lg text-center leading-tight"
                           style={{ 
                             fontFamily: "'Dancing Script', cursive",
                             color: '#ec4899'
@@ -263,7 +263,7 @@ export default function CarteVisitePage() {
                         </div>
                         
                         <div 
-                          className="text-[11px] mt-2 text-center leading-snug font-medium"
+                          className="text-[9px] mt-1.5 text-center leading-snug font-medium"
                           style={{ 
                             fontFamily: "'Quicksand', sans-serif",
                             color: '#475569'
@@ -274,7 +274,7 @@ export default function CarteVisitePage() {
                         
                         {/* QR Code ou Halo */}
                         {showQRCode ? (
-                          <div className="flex flex-col items-center mt-2">
+                          <div className="flex flex-col items-center mt-1.5">
                             <div 
                               className="relative"
                               style={{
@@ -282,7 +282,7 @@ export default function CarteVisitePage() {
                               }}
                             >
                               <div 
-                                className="w-16 h-16 bg-white border-2 border-slate-200 rounded-lg flex items-center justify-center text-slate-500 text-[9px] font-bold"
+                                className="w-14 h-14 bg-white border-2 border-slate-200 rounded-lg flex items-center justify-center text-slate-500 text-[8px] font-bold"
                                 style={{
                                   boxShadow: '0 0 20px rgba(255,255,255,0.9), 0 0 35px rgba(255,255,255,0.6)'
                                 }}
