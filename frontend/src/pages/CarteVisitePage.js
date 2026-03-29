@@ -179,17 +179,20 @@ export default function CarteVisitePage() {
                 <div className="text-center">
                   <div className="font-bold text-slate-700 mb-3 text-sm uppercase tracking-wide">Recto</div>
                   <div 
-                    className="w-full max-w-[340px] mx-auto aspect-[85/55] rounded-xl overflow-hidden"
+                    className="w-full max-w-[340px] mx-auto aspect-[85/55] rounded-xl overflow-hidden relative"
                     style={{ 
                       boxShadow: '0 10px 40px rgba(236, 72, 153, 0.2)',
-                      background: 'linear-gradient(160deg, #dbeafe 0%, #eff6ff 15%, #ffffff 35%, #ffffff 50%, #fdf2f8 65%, #fce7f3 80%, #fbcfe8 100%)'
+                      background: 'linear-gradient(160deg, #bfdbfe 0%, #dbeafe 15%, #f8fafc 35%, #f8fafc 50%, #fce7f3 65%, #fbcfe8 80%, #f9a8d4 100%)'
                     }}
                   >
-                    <div className="h-full flex flex-col items-center justify-center py-4 px-5 relative">
+                    {/* Cœurs flottants */}
+                    <FloatingHearts />
+                    
+                    <div className="h-full flex flex-col items-center justify-center py-4 px-5 relative z-10">
                       {/* Top gradient bar */}
                       <div 
                         className="absolute top-0 left-0 right-0 h-2"
-                        style={{ background: 'linear-gradient(90deg, #bfdbfe 0%, #dbeafe 20%, #ffffff 40%, #ffffff 60%, #fce7f3 80%, #fbcfe8 100%)' }}
+                        style={{ background: 'linear-gradient(90deg, #93c5fd 0%, #bfdbfe 20%, #f1f5f9 40%, #f1f5f9 60%, #fbcfe8 80%, #f9a8d4 100%)' }}
                       />
                       
                       {/* Contenu centré au milieu */}
@@ -205,10 +208,10 @@ export default function CarteVisitePage() {
                           MamanDouce
                         </div>
                         <div 
-                          className="text-center leading-snug mt-2 text-[10px]"
+                          className="text-center leading-snug mt-2 text-[11px] font-medium"
                           style={{ 
-                            fontFamily: "'Dancing Script', cursive",
-                            color: '#64748b'
+                            fontFamily: "'Quicksand', sans-serif",
+                            color: '#475569'
                           }}
                         >
                           Votre compagnon, pas à pas,<br/>jusqu'à la rencontre.
@@ -233,7 +236,7 @@ export default function CarteVisitePage() {
                     className="w-full max-w-[340px] mx-auto aspect-[85/55] rounded-xl overflow-hidden relative"
                     style={{ 
                       boxShadow: '0 10px 40px rgba(236, 72, 153, 0.15)',
-                      background: 'linear-gradient(160deg, #dbeafe 0%, #eff6ff 15%, #ffffff 35%, #ffffff 50%, #fdf2f8 65%, #fce7f3 80%, #fbcfe8 100%)'
+                      background: 'linear-gradient(160deg, #bfdbfe 0%, #dbeafe 15%, #f8fafc 35%, #f8fafc 50%, #fce7f3 65%, #fbcfe8 80%, #f9a8d4 100%)'
                     }}
                   >
                     {/* Cœurs flottants */}
@@ -243,7 +246,7 @@ export default function CarteVisitePage() {
                       {/* Barre du haut */}
                       <div 
                         className="absolute top-0 left-0 right-0 h-2"
-                        style={{ background: 'linear-gradient(90deg, #bfdbfe 0%, #dbeafe 20%, #ffffff 40%, #ffffff 60%, #fce7f3 80%, #fbcfe8 100%)' }}
+                        style={{ background: 'linear-gradient(90deg, #93c5fd 0%, #bfdbfe 20%, #f1f5f9 40%, #f1f5f9 60%, #fbcfe8 80%, #f9a8d4 100%)' }}
                       />
                       
                       {/* Contenu centré au milieu */}
@@ -260,8 +263,11 @@ export default function CarteVisitePage() {
                         </div>
                         
                         <div 
-                          className="text-[10px] text-slate-500 mt-2 text-center leading-snug"
-                          style={{ fontFamily: "'Dancing Script', cursive" }}
+                          className="text-[11px] mt-2 text-center leading-snug font-medium"
+                          style={{ 
+                            fontFamily: "'Quicksand', sans-serif",
+                            color: '#475569'
+                          }}
                         >
                           Une bulle de douceur et de confiance<br/>pour vous accompagner
                         </div>
@@ -285,17 +291,17 @@ export default function CarteVisitePage() {
                               </div>
                             </div>
                             <div 
-                              className="text-[8px] text-slate-500 leading-snug text-left"
-                              style={{ fontFamily: "'Dancing Script', cursive" }}
+                              className="text-[9px] text-slate-600 leading-snug text-left font-medium"
+                              style={{ fontFamily: "'Quicksand', sans-serif" }}
                             >
                               Scannez pour<br/>télécharger
                             </div>
                           </div>
                         ) : (
                           <div 
-                            className="text-[11px] text-slate-500 text-center mt-3 px-4 py-1"
+                            className="text-[12px] text-slate-600 text-center mt-3 px-4 py-1 font-medium"
                             style={{ 
-                              fontFamily: "'Dancing Script', cursive",
+                              fontFamily: "'Quicksand', sans-serif",
                               textShadow: '0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.8)',
                               background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.5) 0%, transparent 70%)'
                             }}
@@ -306,7 +312,7 @@ export default function CarteVisitePage() {
                       </div>
                       
                       {/* Contact en bas */}
-                      <div className="absolute bottom-2 w-full border-t border-pink-200/30 pt-1.5">
+                      <div className="absolute bottom-2 w-full border-t border-pink-300/40 pt-1.5">
                         <div className="flex justify-center gap-3 text-[8px] text-slate-500">
                           <span>📞 06 08 76 67 38</span>
                           <span>📧 cyrilalepsa@gmail.com</span>
