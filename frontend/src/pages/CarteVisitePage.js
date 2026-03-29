@@ -299,14 +299,14 @@ export default function CarteVisitePage() {
                           </div>
                         ) : (
                           <div 
-                            className="text-[12px] text-slate-600 text-center mt-3 px-4 py-1 font-medium"
+                            className="text-[11px] text-slate-600 text-center mt-3 px-4 py-1 font-medium"
                             style={{ 
                               fontFamily: "'Quicksand', sans-serif",
                               textShadow: '0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.8)',
                               background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.5) 0%, transparent 70%)'
                             }}
                           >
-                            ✨ Téléchargez l'app ✨
+                            ✨ Ajoutez l'application à votre écran d'accueil ✨
                           </div>
                         )}
                       </div>
