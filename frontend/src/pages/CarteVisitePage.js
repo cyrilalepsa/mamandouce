@@ -274,7 +274,7 @@ export default function CarteVisitePage() {
                         
                         {/* QR Code ou Halo */}
                         {showQRCode ? (
-                          <div className="flex items-center gap-2 mt-3">
+                          <div className="flex flex-col items-center mt-2">
                             <div 
                               className="relative"
                               style={{
@@ -282,7 +282,7 @@ export default function CarteVisitePage() {
                               }}
                             >
                               <div 
-                                className="w-10 h-10 bg-white border-2 border-slate-200 rounded-lg flex items-center justify-center text-slate-500 text-[7px] font-bold"
+                                className="w-16 h-16 bg-white border-2 border-slate-200 rounded-lg flex items-center justify-center text-slate-500 text-[9px] font-bold"
                                 style={{
                                   boxShadow: '0 0 20px rgba(255,255,255,0.9), 0 0 35px rgba(255,255,255,0.6)'
                                 }}
@@ -291,10 +291,10 @@ export default function CarteVisitePage() {
                               </div>
                             </div>
                             <div 
-                              className="text-[9px] text-slate-600 leading-snug text-left font-medium"
+                              className="text-[7px] text-slate-500 text-center mt-1 font-medium"
                               style={{ fontFamily: "'Quicksand', sans-serif" }}
                             >
-                              Scannez pour<br/>télécharger
+                              ✨ Scannez pour rejoindre l'aventure ✨
                             </div>
                           </div>
                         ) : (
