@@ -89,7 +89,7 @@ export default function CarteVisitePage() {
               <ul className="text-slate-600 space-y-3 text-sm mt-4">
                 <li className="flex gap-3">
                   <span className="text-blue-500 font-bold">•</span>
-                  <div><strong>Format :</strong> 85mm x 55mm (format carte de visite standard)</div>
+                  <div><strong>Format :</strong> 85mm x 55mm (format carte de visite standard européen)</div>
                 </li>
                 <li className="flex gap-3">
                   <span className="text-blue-500 font-bold">•</span>
@@ -97,26 +97,38 @@ export default function CarteVisitePage() {
                 </li>
                 <li className="flex gap-3">
                   <span className="text-blue-500 font-bold">•</span>
-                  <div><strong>Finition :</strong> Coins arrondis (rayon 3mm) pour un look moderne</div>
+                  <div><strong>Finition :</strong> Coins arrondis (rayon 3mm) pour un look moderne et doux</div>
                 </li>
                 <li className="flex gap-3">
                   <span className="text-blue-500 font-bold">•</span>
-                  <div><strong>Impression :</strong> Recto-verso, quadrichromie (CMJN)</div>
+                  <div><strong>Impression :</strong> Recto-verso, quadrichromie (CMJN), haute définition</div>
                 </li>
                 <li className="flex gap-3">
                   <span className="text-blue-500 font-bold">•</span>
-                  <div><strong>Quantité suggérée :</strong> 500 exemplaires (~40-60€ chez Vistaprint, Moo)</div>
+                  <div><strong>Quantité suggérée :</strong> 250 à 500 exemplaires (~30-60€ chez Vistaprint, Moo, Canva Print)</div>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-blue-500 font-bold">•</span>
+                  <div><strong>Téléchargement :</strong> Utilisez les fichiers PNG haute résolution ou le PDF complet ci-dessous</div>
                 </li>
               </ul>
               
-              {showQRCode && (
+              {showQRCode ? (
                 <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mt-4 rounded-r-lg">
                   <strong className="text-amber-800">💡 QR Code :</strong>
                   <span className="text-amber-700 text-sm ml-1">
-                    Une fois votre application publiée sur Google Play, générez votre QR Code sur 
-                    <a href="https://www.qr-code-generator.com/" target="_blank" rel="noopener noreferrer" className="underline ml-1">
+                    Remplacez le placeholder par votre vrai QR Code généré sur 
+                    <a href="https://www.qr-code-generator.com/" target="_blank" rel="noopener noreferrer" className="underline ml-1 text-amber-800 font-semibold">
                       qr-code-generator.com
                     </a>
+                    {' '}pointant vers mamandouce.cycafamily.com
+                  </span>
+                </div>
+              ) : (
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mt-4 rounded-r-lg">
+                  <strong className="text-blue-800">💡 Version sans QR :</strong>
+                  <span className="text-blue-700 text-sm ml-1">
+                    Idéale si vous préférez diriger les utilisateurs vers l'ajout de l'application en raccourci sur l'écran d'accueil (PWA).
                   </span>
                 </div>
               )}
