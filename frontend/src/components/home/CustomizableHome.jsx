@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Heart } from 'lucide-react';
+import { Heart, X } from 'lucide-react';
 import { useHomeLayout } from '../../contexts/HomeLayoutContext';
 import { Card } from '../ui/card';
 import NameOfTheDay from '../NameOfTheDay';
@@ -78,7 +78,7 @@ function JourneyStepsCard({ t, navigate }) {
 }
 
 // Carte de section pour pages utilisateur
-function UserSectionCard({ item, isEditMode, onDragStart, onDragOver, onDrop, isDragging, pregnancyProfile, hasPregnancyProfile, t }) {
+function UserSectionCard({ item, isEditMode, onDragStart, onDragOver, onDrop, isDragging, onRemove, pregnancyProfile, hasPregnancyProfile, t }) {
   const SECTION_COMPONENTS = {
     'preconception': PreconceptionSection,
     'pregnancy': PregnancySection,
@@ -104,7 +104,7 @@ function UserSectionCard({ item, isEditMode, onDragStart, onDragOver, onDrop, is
   
   return (
     <div 
-      className={`transition-all duration-300 ${isDragging ? 'opacity-50 scale-95' : ''}`}
+      className={`relative transition-all duration-300 ${isDragging ? 'opacity-50 scale-95' : ''}`}
       draggable={isEditMode}
       onDragStart={onDragStart}
       onDragOver={onDragOver}
@@ -112,7 +112,22 @@ function UserSectionCard({ item, isEditMode, onDragStart, onDragOver, onDrop, is
     >
       <Card className={`relative overflow-hidden bg-gradient-to-r ${meta.bgGradient} rounded-2xl border ${meta.borderColor} shadow-sm ${isEditMode ? 'ring-2 ring-pink-300/50' : ''}`}>
         <div className="absolute -top-6 -right-6 w-20 h-20 bg-white/40 rounded-full blur-2xl pointer-events-none"></div>
-        <div className="px-3 py-2">
+        
+        {/* Bouton supprimer en mode édition */}
+        {isEditMode && onRemove && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove(item.id);
+            }}
+            className="absolute top-2 right-2 z-10 w-7 h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center shadow-md transition-all"
+            title={t('home.removeItem', 'Supprimer')}
+          >
+            <X className="w-4 h-4 text-white" />
+          </button>
+        )}
+        
+        <div className={`px-3 py-2 ${isEditMode ? 'pr-10' : ''}`}>
           <SectionComponent {...sectionProps} />
         </div>
       </Card>
@@ -139,6 +154,7 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
     deletePage,
     renamePage,
     moveItem,
+    removeItemFromPage,
     resetToDefault,
     hasCustomLayout,
     setPageTheme,
@@ -311,6 +327,7 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDrop(e, index)}
                     isDragging={draggedItem === item.id}
+                    onRemove={(itemId) => removeItemFromPage(itemId, currentPage.id)}
                     pregnancyProfile={pregnancyProfile}
                     hasPregnancyProfile={hasPregnancyProfile}
                     t={t}
@@ -319,13 +336,22 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
 
                 {/* Cartes individuelles dupliquées */}
                 {currentPage?.items?.filter(item => item.type === 'card').map((item, index) => (
-                  <Card 
-                    key={`card-${item.id}-${index}`}
-                    className="p-3 rounded-2xl bg-white/80 border border-slate-100 cursor-pointer hover:shadow-md"
-                    onClick={() => navigate(item.path || '/')}
-                  >
-                    <p className="font-medium text-slate-700">{item.name || item.id}</p>
-                  </Card>
+                  <div key={`card-${item.id}-${index}`} className="relative">
+                    {isEditMode && (
+                      <button
+                        onClick={() => removeItemFromPage(item.id, currentPage.id)}
+                        className="absolute top-2 right-2 z-10 w-7 h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center shadow-md"
+                      >
+                        <X className="w-4 h-4 text-white" />
+                      </button>
+                    )}
+                    <Card 
+                      className={`p-3 rounded-2xl bg-white/80 border border-slate-100 cursor-pointer hover:shadow-md ${isEditMode ? 'ring-2 ring-pink-300/50' : ''}`}
+                      onClick={() => !isEditMode && navigate(item.path || '/')}
+                    >
+                      <p className="font-medium text-slate-700">{item.name || item.id}</p>
+                    </Card>
+                  </div>
                 ))}
 
                 {/* Page vide */}

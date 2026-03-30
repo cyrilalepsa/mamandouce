@@ -238,6 +238,25 @@ export function HomeLayoutProvider({ children }) {
     return await saveLayout(newLayout);
   }, [layout, saveLayout]);
 
+  // Supprimer un élément d'une page
+  const removeItemFromPage = useCallback(async (itemId, pageId) => {
+    const page = layout.pages.find(p => p.id === pageId);
+    if (!page || page.isDefault) return false; // Ne pas supprimer de la page socle
+    
+    const newItems = page.items.filter(i => i.id !== itemId);
+    
+    const newPages = layout.pages.map(p => 
+      p.id === pageId ? { ...p, items: newItems } : p
+    );
+    
+    const newLayout = { ...layout, pages: newPages };
+    const success = await saveLayout(newLayout);
+    if (success) {
+      toast.success(t('home.itemRemoved', 'Élément supprimé'));
+    }
+    return success;
+  }, [layout, saveLayout, t]);
+
   // Changer de page
   const setCurrentPage = useCallback((index) => {
     setLayout(prev => ({ ...prev, currentPageIndex: index }));
@@ -394,6 +413,7 @@ export function HomeLayoutProvider({ children }) {
     deletePage,
     renamePage,
     moveItem,
+    removeItemFromPage,
     resetToDefault,
     saveLayout,
     setPageTheme,
