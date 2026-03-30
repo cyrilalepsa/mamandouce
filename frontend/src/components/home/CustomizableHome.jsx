@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Heart, Sparkles, Baby, Gift, HeartHandshake, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Heart, Sparkles, Baby, Gift, HeartHandshake, Settings, ChevronRight } from 'lucide-react';
 import { useHomeLayout } from '../../contexts/HomeLayoutContext';
 import { useSubscription } from '../SubscriptionGate';
 import { Card } from '../ui/card';
@@ -43,35 +44,56 @@ const JOURNEY_ICONS = {
   'services': { icon: Settings, color: 'text-slate-500', bg: 'bg-slate-100' },
 };
 
-// Section "Les étapes de votre plus beau voyage" - Conteneur avec les 5 sections
-function JourneyStepsContainer({ children }) {
+// Section "Les étapes de votre plus beau voyage" - Carte cliquable vers la page dédiée
+function JourneyStepsCard() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   
   return (
-    <Card className="bg-gradient-to-br from-white via-pink-50/30 to-purple-50/30 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-pink-100/50">
-      {/* Header */}
-      <div className="mb-5">
-        <div className="flex items-center justify-center gap-3 mb-2">
-          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
-          <Heart className="w-5 h-5 text-pink-400 animate-pulse" />
-          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
-        </div>
+    <Card 
+      className="bg-gradient-to-br from-white via-pink-50/50 to-purple-50/50 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-pink-100/50 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-300 active:scale-[0.98]"
+      onClick={() => navigate('/journey-steps')}
+      data-testid="journey-steps-card"
+    >
+      {/* Header avec cœurs */}
+      <div className="flex items-center justify-center gap-3 mb-3">
+        <Heart className="w-5 h-5 text-pink-400 animate-pulse" fill="currentColor" />
         <h2 
-          className="text-center text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500"
+          className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500"
           style={{ fontFamily: "'Caveat', cursive" }}
         >
           {t('home.journeySteps', 'Les étapes de votre plus beau voyage')}
         </h2>
-        <div className="flex items-center justify-center gap-3 mt-2">
-          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
-          <Heart className="w-5 h-5 text-pink-400 animate-pulse" />
-          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
+        <Heart className="w-5 h-5 text-pink-400 animate-pulse" fill="currentColor" />
+      </div>
+      
+      {/* Icônes des 5 étapes */}
+      <div className="flex items-center justify-center gap-3 mb-3">
+        <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+          <Sparkles className="w-5 h-5 text-amber-500" />
+        </div>
+        <div className="w-10 h-10 bg-pink-100 rounded-xl flex items-center justify-center">
+          <Baby className="w-5 h-5 text-pink-500" />
+        </div>
+        <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+          <Gift className="w-5 h-5 text-purple-500" />
+        </div>
+        <div className="w-10 h-10 bg-rose-100 rounded-xl flex items-center justify-center">
+          <HeartHandshake className="w-5 h-5 text-rose-500" />
+        </div>
+        <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
+          <Settings className="w-5 h-5 text-slate-500" />
         </div>
       </div>
       
-      {/* Contenu - Les 5 sections */}
-      <div className="space-y-3">
-        {children}
+      {/* Description et flèche */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-slate-500 flex-1">
+          {t('home.journeyStepsDesc', 'De la conception à l\'arrivée de bébé')}
+        </p>
+        <div className="w-8 h-8 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full flex items-center justify-center">
+          <ChevronRight className="w-5 h-5 text-white" />
+        </div>
       </div>
     </Card>
   );
@@ -345,18 +367,9 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
               ))
             }
             
-            {/* Les 5 sections dans la bulle "Les étapes de votre plus beau voyage" */}
+            {/* Carte cliquable "Les étapes de votre plus beau voyage" (page par défaut uniquement) */}
             {currentPage.isDefault && currentPage.items.some(item => item.type === 'section') && (
-              <JourneyStepsContainer>
-                {currentPage.items
-                  .filter(item => item.type === 'section')
-                  .map((item, index) => (
-                    <div key={`section-${item.id}-${index}`}>
-                      {renderItem(item, index)}
-                    </div>
-                  ))
-                }
-              </JourneyStepsContainer>
+              <JourneyStepsCard />
             )}
             
             {/* Pour les pages personnalisées, afficher les sections normalement */}

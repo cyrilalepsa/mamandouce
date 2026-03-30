@@ -51,6 +51,17 @@ Application mobile de suivi de grossesse "MamanDouce" - Companion complet pour l
 
 ## Completed in Current Session (March 2025)
 
+### Page dédiée "Les étapes de votre plus beau voyage" - DONE (30/03/2025)
+- Nouvelle page `/journey-steps` avec les 5 sections principales :
+  1. En route vers la grossesse
+  2. Grossesse
+  3. Préparer l'arrivée de bébé
+  4. Suivi post-partum
+  5. Services et ressources
+- Carte cliquable sur l'accueil avec les cœurs de chaque côté du titre
+- Design cohérent avec icônes des 5 étapes et flèche de navigation
+- Timeline verticale colorée sur la page dédiée
+
 ### Réorganisation UI Page d'Accueil - DONE (30/03/2025)
 - "Suivi de cycles" : Nouvelle section collapsible en haut de page (anciennement "Mon agenda")
 - "Évolution et conseils" : Déplacé dans la catégorie "Grossesse" (sous Prénoms)
@@ -86,6 +97,8 @@ Application mobile de suivi de grossesse "MamanDouce" - Companion complet pour l
 
 ## Key Files
 - `/app/frontend/src/pages/HomePage.js` - Page d'accueil avec sections collapsibles
+- `/app/frontend/src/pages/JourneyStepsPage.js` - Page dédiée aux 5 étapes du voyage
+- `/app/frontend/src/components/home/CustomizableHome.jsx` - Accueil personnalisable avec carte voyage
 - `/app/frontend/src/components/home/NavigationSections.jsx` - Composants de navigation
 - `/app/frontend/src/pages/CarteVisitePage.js` - Carte de visite
 - `/app/backend/routes/postpartum.py` - RDV post-partum
