@@ -21,9 +21,10 @@ const DEFAULT_LAYOUT = {
       id: 'home',
       name: 'Accueil',
       isDefault: true,
+      theme: 'default',
       items: [
-        { id: 'week-display', type: 'widget', category: null },
-        { id: 'name-of-day', type: 'widget', category: null },
+        { id: 'week-display', type: 'widget', category: null, size: 'medium' },
+        { id: 'name-of-day', type: 'widget', category: null, size: 'medium' },
         { id: 'preconception', type: 'section', expanded: false },
         { id: 'pregnancy', type: 'section', expanded: false },
         { id: 'baby-preparation', type: 'section', expanded: false },
@@ -33,7 +34,7 @@ const DEFAULT_LAYOUT = {
     }
   ],
   currentPageIndex: 0,
-  version: 1
+  version: 2
 };
 
 // Tous les éléments disponibles
@@ -247,6 +248,32 @@ export function HomeLayoutProvider({ children }) {
     localStorage.setItem('mamandouce_layout_tutorial_seen', 'true');
   }, []);
 
+  // Changer le thème d'une page (Premium)
+  const setPageTheme = useCallback(async (pageId, themeId) => {
+    const newPages = layout.pages.map(p => 
+      p.id === pageId ? { ...p, theme: themeId } : p
+    );
+    
+    const newLayout = { ...layout, pages: newPages };
+    return await saveLayout(newLayout);
+  }, [layout, saveLayout]);
+
+  // Redimensionner un widget (Premium)
+  const resizeWidget = useCallback(async (pageId, itemId, newSize) => {
+    const newPages = layout.pages.map(p => {
+      if (p.id !== pageId) return p;
+      
+      const newItems = p.items.map(item => 
+        item.id === itemId ? { ...item, size: newSize } : item
+      );
+      
+      return { ...p, items: newItems };
+    });
+    
+    const newLayout = { ...layout, pages: newPages };
+    return await saveLayout(newLayout);
+  }, [layout, saveLayout]);
+
   const value = {
     layout,
     isEditMode,
@@ -265,6 +292,8 @@ export function HomeLayoutProvider({ children }) {
     moveItem,
     resetToDefault,
     saveLayout,
+    setPageTheme,
+    resizeWidget,
     AVAILABLE_ITEMS
   };
 

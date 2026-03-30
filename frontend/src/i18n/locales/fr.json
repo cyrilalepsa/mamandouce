@@ -328,7 +328,22 @@
     "allCountries": "Europe & Amérique - Signification et personnalité",
     "premiumFeature": "Fonctionnalité Premium",
     "discoverPremium": "Découvrir Premium",
-    "priceInfo": "Seulement 3€/mois • Annulation à tout moment"
+    "priceInfo": "Seulement 3€/mois • Annulation à tout moment",
+    "customization": "Personnalisation avancée",
+    "pageTheme": "Thème de la page",
+    "unlockThemes": "Débloquez les thèmes personnalisés avec Premium",
+    "upgrade": "Passer à Premium",
+    "themeApplied": "Thème appliqué !",
+    "sizeSmall": "Petit",
+    "sizeLarge": "Grand",
+    "required": "Fonctionnalité Premium requise",
+    "export": "Exporter",
+    "import": "Importer",
+    "exported": "Configuration exportée !",
+    "imported": "Configuration importée !",
+    "importConfig": "Importer une configuration",
+    "theme": "Thème",
+    "feature": "Fonctionnalité Premium"
   },
   "maternityBag": {
     "title": "Sac de maternité",

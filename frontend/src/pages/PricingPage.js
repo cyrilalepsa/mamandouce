@@ -44,6 +44,9 @@ function PricingPage() {
     { text: t('pricing.maternityBag', 'Check-list sac de maternité'), included: true },
     { text: t('pricing.birthList', 'Liste de naissance partageable'), included: true },
     { text: t('pricing.emailNotifications', 'Notifications email automatiques'), included: true },
+    { text: t('pricing.customThemes', 'Thèmes personnalisés pour l\'accueil'), included: true, isNew: true },
+    { text: t('pricing.widgetResize', 'Widgets redimensionnables'), included: true, isNew: true },
+    { text: t('pricing.configExport', 'Export/Import de configuration'), included: true, isNew: true },
     { text: t('pricing.prioritySupport', 'Support prioritaire'), included: true }
   ];
 
@@ -143,6 +146,11 @@ function PricingPage() {
                 <li key={index} className="flex items-start gap-2.5">
                   <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
                   <span className="text-white">{feature.text}</span>
+                  {feature.isNew && (
+                    <span className="bg-amber-400 text-amber-900 text-xs font-bold px-2 py-0.5 rounded-full ml-1">
+                      NEW
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>

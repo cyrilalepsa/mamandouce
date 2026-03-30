@@ -22,6 +22,7 @@ import {
   PinnedSectionsProvider
 } from './NavigationSections';
 import { PinTipBanner } from './PinTip';
+import { PremiumControlPanel, PAGE_THEMES } from './PremiumFeatures';
 
 // Mapping des composants de sections
 const SECTION_COMPONENTS = {
@@ -76,7 +77,8 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
     renamePage,
     moveItem,
     resetToDefault,
-    hasCustomLayout
+    hasCustomLayout,
+    setPageTheme
   } = useHomeLayout();
 
   const containerRef = useRef(null);
@@ -204,6 +206,9 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
   }
 
   const currentPage = pages[currentPageIndex];
+  
+  // Obtenir le thème de la page actuelle
+  const currentTheme = PAGE_THEMES.find(t => t.id === (currentPage.theme || 'default')) || PAGE_THEMES[0];
 
   return (
     <div className="relative">
@@ -218,6 +223,15 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
         />
       )}
 
+      {/* Panneau de contrôle Premium (en mode édition) */}
+      {isEditMode && (
+        <PremiumControlPanel
+          isVisible={isEditMode}
+          currentPageTheme={currentPage.theme || 'default'}
+          onThemeChange={(themeId) => setPageTheme(currentPage.id, themeId)}
+        />
+      )}
+
       {/* Bulles de pagination */}
       {pages.length > 1 || isEditMode ? (
         <PageDots
@@ -229,13 +243,13 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
         />
       ) : null}
 
-      {/* Zone de swipe */}
+      {/* Zone de swipe avec thème de page */}
       <div
         ref={containerRef}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
-        className="page-transition"
+        className={`page-transition rounded-3xl ${!currentPage.isDefault && currentTheme.colors.bg} ${!currentPage.isDefault ? 'p-4' : ''}`}
       >
         {/* Header de page (si page personnalisée) */}
         <PageHeader

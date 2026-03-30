@@ -22,3 +22,11 @@ export {
   PremiumFeatureBadge
 } from './HomeCustomization';
 export { CustomizableHome } from './CustomizableHome';
+export { 
+  PremiumControlPanel, 
+  PageThemeSelector, 
+  WidgetSizeControls,
+  ConfigExportImport,
+  PAGE_THEMES,
+  WIDGET_SIZES
+} from './PremiumFeatures';

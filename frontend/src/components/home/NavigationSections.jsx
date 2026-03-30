@@ -173,13 +173,13 @@ export function PreconceptionSection() {
       sectionId="preconception"
     >
       <div className="grid grid-cols-2 gap-4">
-        {/* Suivi de cycles - carte carrée */}
+        {/* Suivi de cycles - carte carrée ROSE */}
         <Card
           onClick={() => navigate('/cycle-tracking')}
           data-testid="cycle-tracking-nav"
-          className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-indigo-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+          className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-pink-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
         >
-          <CalendarHeart className="w-10 h-10 text-indigo-500 mx-auto mb-2" />
+          <CalendarHeart className="w-10 h-10 text-pink-500 mx-auto mb-2" />
           <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('home.cycleTracking', 'Suivi de cycles')}</h3>
           <p className="text-xs text-slate-500 mt-1">{t('fertility.trackYourCycle', 'Calendrier fertilité')}</p>
         </Card>
