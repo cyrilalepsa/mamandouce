@@ -314,7 +314,7 @@ function MedicalAppointmentsPage() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-slate-600 font-medium">Semaine actuelle</p>
-                  <p className="text-3xl font-bold text-sky-600">Semaine {currentWeek}</p>
+                  <p className="text-3xl font-bold text-sky-600">Semaine {currentWeek} SA</p>
                 </div>
                 <div className="text-right">
                   <p className="text-slate-600 font-medium">Progression</p>

@@ -85,7 +85,7 @@ function EmbryoTracker() {
               </div>
               <div>
                 <p className="text-slate-600 font-semibold">Vous êtes actuellement à</p>
-                <p className="text-3xl font-bold text-rose-600">Semaine {pregnancyProfile.current_week}</p>
+                <p className="text-3xl font-bold text-rose-600">Semaine {pregnancyProfile.current_week} SA</p>
               </div>
             </div>
           </Card>
@@ -145,8 +145,8 @@ function EmbryoTracker() {
             }}
           />
           <div className="flex justify-between text-xs text-slate-400 mt-2">
-            <span>Semaine 1</span>
-            <span>Semaine {maxWeek}</span>
+            <span>Semaine 1 SA</span>
+            <span>Semaine {maxWeek} SA</span>
           </div>
         </Card>
 

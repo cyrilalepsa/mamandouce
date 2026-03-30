@@ -10,7 +10,7 @@ export function PregnancyStatusCard({ pregnancyProfile }) {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-slate-500">Vous êtes à la</p>
-          <p className="text-2xl font-bold text-sky-600">Semaine {pregnancyProfile.current_week}</p>
+          <p className="text-2xl font-bold text-sky-600">Semaine {pregnancyProfile.current_week} SA</p>
           <p className="text-sm text-slate-500">Trimestre {pregnancyProfile.trimester || Math.ceil(pregnancyProfile.current_week / 13)}</p>
         </div>
         <div className="text-right">
@@ -41,7 +41,7 @@ export function PregnancyProgressCard({ pregnancyProfile }) {
         </div>
         <div className="flex-1">
           <p className="text-sm text-slate-600">Votre bébé grandit</p>
-          <p className="text-2xl font-bold text-slate-700">Semaine {pregnancyProfile.current_week}</p>
+          <p className="text-2xl font-bold text-slate-700">Semaine {pregnancyProfile.current_week} SA</p>
           <p className="text-sm text-slate-500">
             Trimestre {pregnancyProfile.trimester || Math.ceil(pregnancyProfile.current_week / 13)}
           </p>

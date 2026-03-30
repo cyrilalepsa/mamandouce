@@ -59,7 +59,7 @@ function AppointmentCard({ apt, index }) {
           <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-400">
             <span className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
-              Semaine {apt.week}
+              Semaine {apt.week} SA
             </span>
             {apt.duration && (
               <span className="flex items-center gap-1">

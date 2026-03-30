@@ -109,7 +109,7 @@ function WeeklyTipsPage() {
               </div>
               <div>
                 <p className="text-slate-600 font-semibold">Semaine actuelle</p>
-                <p className="text-2xl font-bold text-teal-600">Semaine {pregnancyProfile.current_week}</p>
+                <p className="text-2xl font-bold text-teal-600">Semaine {pregnancyProfile.current_week} SA</p>
               </div>
             </div>
           </Card>
