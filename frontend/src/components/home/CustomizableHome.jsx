@@ -51,33 +51,31 @@ function WeekDisplayWidget({ pregnancyProfile, t }) {
 function JourneyStepsCard({ t, navigate }) {
   return (
     <Card 
-      className="bg-gradient-to-br from-white via-pink-50/50 to-purple-50/50 rounded-2xl p-5 shadow-sm border border-pink-100/50 cursor-pointer hover:shadow-md hover:scale-[1.01] transition-all duration-300 active:scale-[0.99]"
+      className="bg-gradient-to-r from-white/90 via-pink-50/30 to-purple-50/30 rounded-2xl px-4 py-3 shadow-sm border border-pink-100/40 cursor-pointer hover:shadow-md hover:scale-[1.01] transition-all duration-300 active:scale-[0.99]"
       onClick={() => navigate('/journey-steps')}
       data-testid="journey-steps-card"
     >
-      {/* Header avec cœurs */}
-      <div className="flex items-center justify-center gap-2 mb-3">
-        <Heart className="w-4 h-4 text-pink-400" fill="currentColor" />
-        <h2 
-          className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500"
-          style={{ fontFamily: "'Caveat', cursive" }}
-        >
-          {t('home.journeySteps', 'Les étapes de votre plus beau voyage')}
-        </h2>
-        <Heart className="w-4 h-4 text-pink-400" fill="currentColor" />
-      </div>
-      
-      {/* Description */}
-      <p className="text-center text-sm text-slate-500">
-        {t('home.journeyStepsDesc', 'De la conception à l\'arrivée de bébé')}
-      </p>
-      
-      {/* Indicateur cliquable */}
-      <div className="flex justify-center mt-3">
-        <div className="px-4 py-1.5 bg-gradient-to-r from-pink-100 to-purple-100 rounded-full">
-          <span className="text-xs font-medium text-pink-600">
-            {t('home.tapToExplore', 'Appuyez pour explorer')}
-          </span>
+      <div className="flex items-center justify-between">
+        {/* Titre avec cœurs */}
+        <div className="flex items-center gap-2 flex-1">
+          <Heart className="w-4 h-4 text-pink-400 flex-shrink-0" fill="currentColor" />
+          <div>
+            <h2 
+              className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500 leading-tight"
+              style={{ fontFamily: "'Caveat', cursive" }}
+            >
+              {t('home.journeySteps', 'Les étapes de votre plus beau voyage')}
+            </h2>
+            <p className="text-[10px] text-slate-400 mt-0.5">
+              {t('home.journeyStepsDesc', 'De la conception à l\'arrivée de bébé')}
+            </p>
+          </div>
+          <Heart className="w-4 h-4 text-pink-400 flex-shrink-0" fill="currentColor" />
+        </div>
+        
+        {/* Flèche */}
+        <div className="w-7 h-7 bg-gradient-to-r from-pink-100 to-purple-100 rounded-full flex items-center justify-center ml-2">
+          <span className="text-pink-500 text-sm">›</span>
         </div>
       </div>
     </Card>
