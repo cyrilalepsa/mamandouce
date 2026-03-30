@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Heart, Sparkles, Baby, Gift, HeartHandshake, Settings } from 'lucide-react';
 import { useHomeLayout } from '../../contexts/HomeLayoutContext';
 import { useSubscription } from '../SubscriptionGate';
 import { Card } from '../ui/card';
@@ -32,6 +33,41 @@ const SECTION_COMPONENTS = {
   'postpartum': PostpartumSection,
   'services': ServicesSection,
 };
+
+// Icônes pour chaque étape du voyage
+const JOURNEY_ICONS = {
+  'preconception': { icon: Sparkles, color: 'text-amber-500', bg: 'bg-amber-100' },
+  'pregnancy': { icon: Baby, color: 'text-pink-500', bg: 'bg-pink-100' },
+  'baby-preparation': { icon: Gift, color: 'text-purple-500', bg: 'bg-purple-100' },
+  'postpartum': { icon: HeartHandshake, color: 'text-rose-500', bg: 'bg-rose-100' },
+  'services': { icon: Settings, color: 'text-slate-500', bg: 'bg-slate-100' },
+};
+
+// Section "Les étapes de votre plus beau voyage"
+function JourneyStepsHeader() {
+  const { t } = useTranslation();
+  
+  return (
+    <div className="mb-4">
+      <div className="flex items-center justify-center gap-3 mb-2">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pink-200 to-transparent"></div>
+        <Heart className="w-5 h-5 text-pink-400 animate-pulse" />
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pink-200 to-transparent"></div>
+      </div>
+      <h2 
+        className="text-center text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500"
+        style={{ fontFamily: "'Caveat', cursive" }}
+      >
+        {t('home.journeySteps', 'Les étapes de votre plus beau voyage')}
+      </h2>
+      <div className="flex items-center justify-center gap-3 mt-2">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pink-200 to-transparent"></div>
+        <Heart className="w-5 h-5 text-pink-400 animate-pulse" />
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pink-200 to-transparent"></div>
+      </div>
+    </div>
+  );
+}
 
 // Composant pour afficher le widget "Semaine de grossesse"
 function WeekDisplayWidget({ pregnancyProfile, t }) {
@@ -265,7 +301,18 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
           {currentPage.isDefault && <PinTipBanner />}
           
           <div className="space-y-4">
-            {currentPage.items.map((item, index) => renderItem(item, index))}
+            {currentPage.items.map((item, index) => {
+              // Afficher le header "Les étapes de votre plus beau voyage" avant la première section
+              const isFirstSection = item.type === 'section' && 
+                currentPage.items.findIndex(i => i.type === 'section') === index;
+              
+              return (
+                <div key={`${item.id}-${index}`}>
+                  {isFirstSection && currentPage.isDefault && <JourneyStepsHeader />}
+                  {renderItem(item, index)}
+                </div>
+              );
+            })}
           </div>
         </PinnedSectionsProvider>
 

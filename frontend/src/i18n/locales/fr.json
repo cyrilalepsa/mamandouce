@@ -98,7 +98,8 @@
     "editLayout": "Personnaliser",
     "saveChanges": "Enregistrer",
     "emptyPage": "Cette page est vide",
-    "dragItemsHere": "Faites glisser des éléments ici depuis une autre page"
+    "dragItemsHere": "Faites glisser des éléments ici depuis une autre page",
+    "journeySteps": "Les étapes de votre plus beau voyage"
   },
   "sections": {
     "preconception": "En route vers la grossesse",
