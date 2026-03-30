@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Heart, Scale, Baby, Calendar, Clock, Euro, FileText, ChevronDown, ChevronUp, Info } from 'lucide-react';
+import { ArrowLeft, Heart, Scale, Baby, Calendar, Clock, Euro, FileText, ChevronDown, ChevronUp, Info, Gift, Users, Stethoscope } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 
@@ -53,6 +53,152 @@ function ParentalLeavePage() {
               </p>
             </div>
           </div>
+        </Card>
+
+        {/* Congé de naissance */}
+        <Card className="bg-white rounded-2xl p-4 mb-4 border border-emerald-100">
+          <button 
+            onClick={() => toggleSection('birth')}
+            className="w-full flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+                <Gift className="w-5 h-5 text-emerald-500" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-bold text-slate-700">
+                  {t('parentalLeave.birthLeave', 'Congé de naissance')}
+                </h3>
+                <p className="text-xs text-emerald-500 font-medium">3 jours (payés par l'employeur)</p>
+              </div>
+            </div>
+            {expandedSection === 'birth' ? (
+              <ChevronUp className="w-5 h-5 text-slate-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400" />
+            )}
+          </button>
+          
+          {expandedSection === 'birth' && (
+            <div className="mt-4 pt-4 border-t border-emerald-100 space-y-3">
+              <div className="flex items-start gap-2">
+                <Calendar className="w-4 h-4 text-emerald-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Durée</p>
+                  <p className="text-xs text-slate-500">
+                    • <strong>3 jours ouvrables</strong> pour chaque naissance
+                    <br />• Peut aller jusqu'à <strong>4 jours</strong> selon les conventions collectives
+                    <br />• S'ajoute au congé paternité (non cumulable avec les 4 jours obligatoires)
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Clock className="w-4 h-4 text-emerald-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Quand le prendre ?</p>
+                  <p className="text-xs text-slate-500">
+                    • À prendre <strong>immédiatement</strong> après la naissance
+                    <br />• Dans un délai maximum de <strong>15 jours</strong> autour de la naissance
+                    <br />• Jours consécutifs (sauf accord de l'employeur)
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Euro className="w-4 h-4 text-emerald-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Indemnisation</p>
+                  <p className="text-xs text-slate-500">
+                    • <strong>100% du salaire</strong> maintenu
+                    <br />• Payé directement par l'employeur (pas la Sécu)
+                    <br />• Aucune condition d'ancienneté requise
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Users className="w-4 h-4 text-emerald-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Qui peut en bénéficier ?</p>
+                  <p className="text-xs text-slate-500">
+                    • Le père de l'enfant
+                    <br />• Le/la conjoint(e), concubin(e) ou partenaire PACS de la mère
+                    <br />• Applicable aux salariés du secteur privé et public
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </Card>
+
+        {/* Congés supplémentaires pour événements familiaux */}
+        <Card className="bg-white rounded-2xl p-4 mb-4 border border-amber-100">
+          <button 
+            onClick={() => toggleSection('family')}
+            className="w-full flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+                <Heart className="w-5 h-5 text-amber-500" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-bold text-slate-700">
+                  {t('parentalLeave.familyEvents', 'Congés événements familiaux')}
+                </h3>
+                <p className="text-xs text-amber-500 font-medium">Mariage, adoption, enfant malade...</p>
+              </div>
+            </div>
+            {expandedSection === 'family' ? (
+              <ChevronUp className="w-5 h-5 text-slate-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400" />
+            )}
+          </button>
+          
+          {expandedSection === 'family' && (
+            <div className="mt-4 pt-4 border-t border-amber-100 space-y-3">
+              <div className="flex items-start gap-2">
+                <Gift className="w-4 h-4 text-amber-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Mariage / PACS</p>
+                  <p className="text-xs text-slate-500">
+                    • Mariage du salarié : <strong>4 jours</strong>
+                    <br />• PACS : <strong>4 jours</strong>
+                    <br />• Mariage d'un enfant : <strong>1 jour</strong>
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Baby className="w-4 h-4 text-amber-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Adoption</p>
+                  <p className="text-xs text-slate-500">
+                    • Arrivée d'un enfant adopté : <strong>3 jours</strong> (congé naissance)
+                    <br />• Congé d'adoption : <strong>16 semaines</strong> (partageable entre les parents)
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Stethoscope className="w-4 h-4 text-amber-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Enfant malade</p>
+                  <p className="text-xs text-slate-500">
+                    • <strong>3 jours/an</strong> par enfant de moins de 16 ans
+                    <br />• <strong>5 jours/an</strong> si enfant de moins de 1 an ou si 3 enfants ou plus
+                    <br />• Non rémunérés (sauf convention collective plus favorable)
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Calendar className="w-4 h-4 text-amber-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Annonce handicap</p>
+                  <p className="text-xs text-slate-500">
+                    • Annonce du handicap d'un enfant : <strong>5 jours</strong> (nouvelle loi 2024)
+                    <br />• Annonce d'une maladie chronique : <strong>2 jours</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </Card>
 
         {/* Congé maternité */}
