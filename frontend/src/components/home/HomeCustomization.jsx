@@ -168,6 +168,7 @@ export function EditModeButton({ isEditMode, onToggle }) {
   return (
     <button
       onClick={onToggle}
+      data-testid="edit-mode-button"
       className={`fixed bottom-24 right-4 z-40 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
         isEditMode 
           ? 'bg-green-500 hover:bg-green-600 scale-110' 

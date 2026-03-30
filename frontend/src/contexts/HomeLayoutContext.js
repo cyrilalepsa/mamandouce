@@ -274,6 +274,71 @@ export function HomeLayoutProvider({ children }) {
     return await saveLayout(newLayout);
   }, [layout, saveLayout]);
 
+  // Ajouter un groupe à une page
+  const addGroup = useCallback(async (pageId, name = 'Nouveau groupe') => {
+    const newGroup = {
+      id: `group-${Date.now()}`,
+      name,
+      items: []
+    };
+    
+    const newPages = layout.pages.map(p => {
+      if (p.id !== pageId) return p;
+      return {
+        ...p,
+        groups: [...(p.groups || []), newGroup]
+      };
+    });
+    
+    const newLayout = { ...layout, pages: newPages };
+    const success = await saveLayout(newLayout);
+    if (success) {
+      toast.success(t('home.groupAdded', 'Groupe ajouté !'));
+    }
+    return success;
+  }, [layout, saveLayout, t]);
+
+  // Renommer un groupe
+  const renameGroup = useCallback(async (pageId, groupId, newName) => {
+    const newPages = layout.pages.map(p => {
+      if (p.id !== pageId) return p;
+      return {
+        ...p,
+        groups: (p.groups || []).map(g => 
+          g.id === groupId ? { ...g, name: newName } : g
+        )
+      };
+    });
+    
+    const newLayout = { ...layout, pages: newPages };
+    return await saveLayout(newLayout);
+  }, [layout, saveLayout]);
+
+  // Supprimer un groupe
+  const deleteGroup = useCallback(async (pageId, groupId) => {
+    const page = layout.pages.find(p => p.id === pageId);
+    const group = page?.groups?.find(g => g.id === groupId);
+    
+    // Remettre les items du groupe dans la page principale
+    const groupItems = group?.items || [];
+    
+    const newPages = layout.pages.map(p => {
+      if (p.id !== pageId) return p;
+      return {
+        ...p,
+        items: [...p.items, ...groupItems],
+        groups: (p.groups || []).filter(g => g.id !== groupId)
+      };
+    });
+    
+    const newLayout = { ...layout, pages: newPages };
+    const success = await saveLayout(newLayout);
+    if (success) {
+      toast.success(t('home.groupDeleted', 'Groupe supprimé'));
+    }
+    return success;
+  }, [layout, saveLayout, t]);
+
   const value = {
     layout,
     isEditMode,
@@ -294,6 +359,9 @@ export function HomeLayoutProvider({ children }) {
     saveLayout,
     setPageTheme,
     resizeWidget,
+    addGroup,
+    renameGroup,
+    deleteGroup,
     AVAILABLE_ITEMS
   };
 
