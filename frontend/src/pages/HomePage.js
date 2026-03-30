@@ -7,7 +7,6 @@ import { AvatarPreview } from '../components/profile/AvatarBuilder';
 import { useTheme } from '../contexts/ThemeContext';
 import { isNameCelebratedToday } from '../data/saintsCalendar';
 import LanguageBubble from '../components/LanguageBubble';
-import { HomeLayoutProvider } from '../contexts/HomeLayoutContext';
 import {
   TopBar,
   CustomizableHome
@@ -51,10 +50,9 @@ function HomePage() {
   const hasPregnancyProfile = pregnancyProfile && pregnancyProfile.current_week;
 
   return (
-    <HomeLayoutProvider>
-      <div className="min-h-screen gradient-bg relative overflow-hidden">
-        {/* Language Bubble - suit le scroll de la page */}
-        <LanguageBubble />
+    <div className="min-h-screen gradient-bg relative overflow-hidden">
+      {/* Language Bubble - suit le scroll de la page */}
+      <LanguageBubble />
         
         <Cloud className="absolute top-20 left-10 w-40 h-40 text-sky-200 opacity-10 animate-float" />
         <Feather className="absolute top-40 right-20 w-32 h-32 text-pink-200 opacity-20 animate-float-delayed" />
@@ -124,7 +122,6 @@ function HomePage() {
           </div>
         </div>
       </div>
-    </HomeLayoutProvider>
   );
 }
 

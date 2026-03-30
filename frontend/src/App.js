@@ -48,6 +48,7 @@ import { NewBadgeProvider } from './components/NewBadge';
 import { PWAInstallBanner } from './components/PWAInstallBanner';
 import { Toaster } from './components/ui/sonner';
 import LanguageBubble from './components/LanguageBubble';
+import { HomeLayoutProvider } from './contexts/HomeLayoutContext';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -110,10 +111,11 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
-        <NewBadgeProvider>
-          <div className="App">
-            <BrowserRouter>
-              <Routes>
+        <HomeLayoutProvider>
+          <NewBadgeProvider>
+            <div className="App">
+              <BrowserRouter>
+                <Routes>
                 <Route path="/auth" element={<AuthPage setIsAuthenticated={setIsAuthenticated} />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
@@ -159,8 +161,9 @@ function App() {
             <WhatsNewModal />
           </div>
         </NewBadgeProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
+      </HomeLayoutProvider>
+    </ThemeProvider>
+  </ErrorBoundary>
   );
 }
 

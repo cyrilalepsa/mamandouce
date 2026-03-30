@@ -12,6 +12,15 @@ Application mobile de suivi de grossesse "MamanDouce" - Companion complet pour l
 
 ## Core Features Implemented
 
+### Système de personnalisation smartphone (NOUVEAU - Mars 2025)
+- [x] **Page SOCLE** (3 éléments fixes) : Fête du jour, Semaine X, Carte "Les étapes de votre plus beau voyage"
+- [x] **Page `/journey-steps`** : 5 sections avec double tap pour mode édition
+- [x] **Appui long** : Sélection multiple pour duplication
+- [x] **Popup duplication** : Choix de la page de destination
+- [x] **Bouton Home 🏠** : Définir page par défaut pour prochaine connexion
+- [x] **Pages utilisateur** : Drag & drop, groupes renommables
+- [x] **Admin - Messages** : Sélection multiple et suppression en lot
+
 ### Authentification & Profil
 - [x] Inscription/Connexion email + mot de passe
 - [x] Reset password par email

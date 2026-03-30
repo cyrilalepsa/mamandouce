@@ -1,29 +1,50 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, X, Pencil, Check, Trash2, RotateCcw, Sparkles, Crown, GripVertical } from 'lucide-react';
+import { Plus, X, Pencil, Check, Trash2, RotateCcw, Sparkles, Crown, GripVertical, Home } from 'lucide-react';
 import { useHomeLayout } from '../../contexts/HomeLayoutContext';
 import { useSubscription } from '../SubscriptionGate';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { toast } from 'sonner';
 
-// Bulles de pagination (comme sur smartphone)
-export function PageDots({ pages, currentIndex, onPageChange, isEditMode, onAddPage }) {
+// Bulles de pagination avec bouton Home (comme sur smartphone)
+export function PageDots({ pages, currentIndex, onPageChange, isEditMode, onAddPage, showHomeButton, onSetAsHome, isCurrentPageHome, defaultPageId }) {
   const { t } = useTranslation();
   
   return (
     <div className="flex items-center justify-center gap-2 py-3">
+      {/* Bouton Home (à gauche) */}
+      {showHomeButton && (
+        <button
+          onClick={onSetAsHome}
+          className={`w-7 h-7 rounded-full flex items-center justify-center transition-all mr-2 ${
+            isCurrentPageHome
+              ? 'bg-pink-500 text-white shadow-md'
+              : 'bg-slate-100 hover:bg-pink-100 text-slate-500 hover:text-pink-500'
+          }`}
+          title={isCurrentPageHome ? t('home.isDefaultPage', 'Page d\'accueil par défaut') : t('home.setAsHome', 'Définir comme page d\'accueil')}
+        >
+          <Home className="w-4 h-4" />
+        </button>
+      )}
+      
+      {/* Bulles de pages */}
       {pages.map((page, index) => (
         <button
           key={page.id}
           onClick={() => onPageChange(index)}
-          className={`transition-all duration-300 ${
+          className={`relative transition-all duration-300 ${
             currentIndex === index
               ? 'w-6 h-2 bg-pink-500 rounded-full'
               : 'w-2 h-2 bg-slate-300 rounded-full hover:bg-slate-400'
           }`}
           title={page.name}
-        />
+        >
+          {/* Indicateur page par défaut */}
+          {page.id === defaultPageId && page.id !== 'default' && (
+            <span className="absolute -top-1 -right-1 w-2 h-2 bg-pink-400 rounded-full"></span>
+          )}
+        </button>
       ))}
       
       {/* Bouton ajouter une page */}

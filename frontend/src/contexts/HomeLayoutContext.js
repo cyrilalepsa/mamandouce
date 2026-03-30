@@ -34,7 +34,8 @@ const DEFAULT_LAYOUT = {
     }
   ],
   currentPageIndex: 0,
-  version: 2
+  defaultPageId: 'home', // Page affichée par défaut au login
+  version: 3
 };
 
 // Tous les éléments disponibles
@@ -366,6 +367,16 @@ export function HomeLayoutProvider({ children }) {
     return await saveLayout(newLayout);
   }, [layout, saveLayout, t]);
 
+  // Définir une page comme page d'accueil par défaut
+  const setDefaultPage = useCallback(async (pageId) => {
+    const newLayout = { ...layout, defaultPageId: pageId };
+    const success = await saveLayout(newLayout);
+    if (success) {
+      toast.success(t('home.defaultPageSet', 'Page d\'accueil définie !'));
+    }
+    return success;
+  }, [layout, saveLayout, t]);
+
   const value = {
     layout,
     isEditMode,
@@ -377,6 +388,7 @@ export function HomeLayoutProvider({ children }) {
     currentPage: layout.pages[layout.currentPageIndex],
     pages: layout.pages,
     currentPageIndex: layout.currentPageIndex,
+    defaultPageId: layout.defaultPageId || 'home',
     setCurrentPage,
     addPage,
     deletePage,
@@ -390,6 +402,7 @@ export function HomeLayoutProvider({ children }) {
     renameGroup,
     deleteGroup,
     duplicateItemToPage,
+    setDefaultPage,
     AVAILABLE_ITEMS
   };
 
