@@ -99,40 +99,30 @@ function CloudSectionCard({ section, index, isEditMode, onDragStart, onDragOver,
       <Card 
         className={`
           relative overflow-hidden
-          bg-gradient-to-br ${meta.bgGradient}
+          bg-gradient-to-r ${meta.bgGradient}
           backdrop-blur-sm
-          rounded-[2rem]
+          rounded-2xl
           border ${meta.borderColor}
-          shadow-[0_8px_32px_rgba(0,0,0,0.06)] ${meta.shadowColor}
-          hover:shadow-[0_12px_40px_rgba(0,0,0,0.1)]
+          shadow-sm
+          hover:shadow-md
           transition-all duration-300
-          ${isEditMode ? 'cursor-grab active:cursor-grabbing ring-2 ring-pink-300/50 ring-offset-2' : ''}
+          ${isEditMode ? 'cursor-grab active:cursor-grabbing ring-2 ring-pink-300/50' : ''}
         `}
       >
-        {/* Effet nuage décoratif */}
-        <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/30 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-white/20 rounded-full blur-2xl pointer-events-none"></div>
+        {/* Effet nuage subtil */}
+        <div className="absolute -top-6 -right-6 w-20 h-20 bg-white/40 rounded-full blur-2xl pointer-events-none"></div>
         
-        {/* Indicateur mode édition (uniquement en mode édition) */}
+        {/* Indicateur mode édition */}
         {isEditMode && (
-          <div className="relative p-4 pb-2">
-            <div className="flex items-center gap-3">
-              <div className={`
-                w-10 h-10 ${meta.iconBg} rounded-xl 
-                flex items-center justify-center 
-                shadow-md animate-pulse
-              `}>
-                <GripVertical className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xs text-slate-400">
-                {t('journey.dragToReorder', 'Glissez pour réorganiser')}
-              </span>
+          <div className="absolute top-2 left-2 z-10">
+            <div className={`w-8 h-8 ${meta.iconBg} rounded-lg flex items-center justify-center shadow-sm animate-pulse`}>
+              <GripVertical className="w-4 h-4 text-white" />
             </div>
           </div>
         )}
         
-        {/* Contenu de la section (CollapsibleSection avec épingle) */}
-        <div className={`px-4 pb-4 ${!isEditMode ? 'pt-4' : ''}`}>
+        {/* Contenu de la section */}
+        <div className={`px-3 py-2 ${isEditMode ? 'pl-12' : ''}`}>
           {children}
         </div>
       </Card>
@@ -297,7 +287,7 @@ function JourneyStepsPage() {
 
         {/* Les 5 sections dans des cartes nuage */}
         <PinnedSectionsProvider>
-          <div className="space-y-5">
+          <div className="space-y-3">
             {sections
               .sort((a, b) => a.order - b.order)
               .map((section, index) => (

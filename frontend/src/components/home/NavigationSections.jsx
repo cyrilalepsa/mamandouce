@@ -92,26 +92,26 @@ export function CollapsibleSection({ title, icon: Icon, iconColor, children, def
   };
   
   return (
-    <div className="mb-4">
-      <div className="flex items-center gap-2">
+    <div className="mb-2">
+      <div className="flex items-center gap-1">
         <button 
           onClick={handleToggle}
-          className="flex-1 flex items-center justify-between py-3 px-1 group"
+          className="flex-1 flex items-center justify-between py-2 group"
         >
           {isCustomTitle ? (
-            <h2 className="text-xl font-bold text-slate-600 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+            <h2 className="text-base font-bold text-slate-600 flex items-center gap-2 truncate" style={{ fontFamily: 'Nunito, sans-serif' }}>
               {title}
-              {pinned && <Pin className="w-4 h-4 text-pink-500 fill-pink-500" />}
+              {pinned && <Pin className="w-3 h-3 text-pink-500 fill-pink-500 flex-shrink-0" />}
             </h2>
           ) : (
-            <h2 className="text-xl font-bold text-slate-600 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-              {Icon && <Icon className={`w-5 h-5 ${iconColor}`} />}
-              {title}
-              {pinned && <Pin className="w-4 h-4 text-pink-500 fill-pink-500" />}
+            <h2 className="text-base font-bold text-slate-600 flex items-center gap-2 truncate" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              {Icon && <Icon className={`w-4 h-4 ${iconColor} flex-shrink-0`} />}
+              <span className="truncate">{title}</span>
+              {pinned && <Pin className="w-3 h-3 text-pink-500 fill-pink-500 flex-shrink-0" />}
             </h2>
           )}
           <ChevronDown 
-            className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
+            className={`w-4 h-4 text-slate-400 transition-transform duration-200 flex-shrink-0 ml-1 ${isOpen ? 'rotate-180' : ''}`} 
           />
         </button>
         
@@ -119,14 +119,14 @@ export function CollapsibleSection({ title, icon: Icon, iconColor, children, def
         {sectionId && (
           <button
             onClick={handlePin}
-            className={`p-2 transition-all hover:scale-110 ${
+            className={`p-1.5 transition-all hover:scale-110 flex-shrink-0 ${
               pinned 
                 ? 'text-pink-600' 
                 : 'text-slate-400 hover:text-slate-600'
             }`}
             title={pinned ? t('home.unpinSection', 'Désépingler cette section') : t('home.pinSection', 'Épingler cette section (toujours ouverte)')}
           >
-            {pinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
+            {pinned ? <PinOff className="w-3.5 h-3.5" /> : <Pin className="w-3.5 h-3.5" />}
           </button>
         )}
       </div>
@@ -144,14 +144,14 @@ export function CollapsibleSection({ title, icon: Icon, iconColor, children, def
               }
               setIsOpen(false);
             }}
-            className={`w-full mt-4 p-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 ${
+            className={`w-full mt-3 p-2.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 ${
               pinned 
                 ? 'bg-pink-50 text-pink-400 cursor-not-allowed' 
                 : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
             }`}
           >
-            <ChevronDown className="w-4 h-4 rotate-180" />
-            <span className="text-sm font-semibold">{pinned ? t('home.sectionPinnedLabel', 'Section épinglée') : t('common.close', 'Fermer')}</span>
+            <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+            <span className="text-xs font-semibold">{pinned ? t('home.sectionPinnedLabel', 'Section épinglée') : t('common.close', 'Fermer')}</span>
           </button>
         </div>
       </div>
