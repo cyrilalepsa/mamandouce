@@ -164,7 +164,7 @@ function UserSectionCard({ item, onRemove, pregnancyProfile, hasPregnancyProfile
   );
 }
 
-// Bulles de pagination (toujours visibles : Home + Socle + pages créées)
+// Bulles de pagination (en bas : Home gris + bulles rondes douces)
 function PageDots({ pages, currentIndex, onPageChange, onSetAsHome, defaultPageId }) {
   const { t } = useTranslation();
   const currentPage = pages[currentIndex];
@@ -176,53 +176,53 @@ function PageDots({ pages, currentIndex, onPageChange, onSetAsHome, defaultPageI
   const socleIndex = pages.findIndex(p => p.isDefault);
   
   return (
-    <div className="flex items-center justify-center gap-2 py-3">
-      {/* Bouton Home (toujours visible) */}
+    <div className="flex items-center justify-center gap-3 py-4">
+      {/* Icône Home (sans bulle, en gris) */}
       <button
         onClick={onSetAsHome}
-        className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
+        className={`transition-all ${
           isCurrentPageHome
-            ? 'bg-pink-500 text-white shadow-md'
-            : 'bg-slate-100 hover:bg-pink-100 text-slate-400 hover:text-pink-500'
+            ? 'text-slate-600'
+            : 'text-slate-400 hover:text-slate-500'
         }`}
         title={isCurrentPageHome ? t('home.isDefaultPage', 'Page d\'accueil par défaut') : t('home.setAsHome', 'Définir comme page d\'accueil')}
       >
-        <Home className="w-3.5 h-3.5" />
+        <Home className="w-5 h-5" />
       </button>
       
-      {/* Point pour la page Socle */}
+      {/* Bulle ronde pour la page Socle */}
       {soclePage && (
         <button
           onClick={() => onPageChange(socleIndex)}
-          className={`relative transition-all duration-300 ${
+          className={`relative transition-all duration-300 rounded-full ${
             currentIndex === socleIndex
-              ? 'w-6 h-2.5 bg-pink-500 rounded-full'
-              : 'w-2.5 h-2.5 bg-slate-300 rounded-full hover:bg-slate-400'
+              ? 'w-3 h-3 bg-rose-300 shadow-sm'
+              : 'w-2.5 h-2.5 bg-rose-200 hover:bg-rose-300'
           }`}
           title={t('home.soclePage', 'Page Socle')}
         >
-          {soclePage.id === defaultPageId && (
-            <span className="absolute -top-1 -right-1 w-2 h-2 bg-pink-400 rounded-full"></span>
+          {soclePage.id === defaultPageId && currentIndex !== socleIndex && (
+            <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-rose-400 rounded-full"></span>
           )}
         </button>
       )}
       
-      {/* Points pour les pages utilisateur */}
+      {/* Bulles rondes pour les pages utilisateur */}
       {userPages.map((page) => {
         const pageIndex = pages.findIndex(p => p.id === page.id);
         return (
           <button
             key={page.id}
             onClick={() => onPageChange(pageIndex)}
-            className={`relative transition-all duration-300 ${
+            className={`relative transition-all duration-300 rounded-full ${
               currentIndex === pageIndex
-                ? 'w-6 h-2.5 bg-purple-500 rounded-full'
-                : 'w-2.5 h-2.5 bg-purple-300 rounded-full hover:bg-purple-400'
+                ? 'w-3 h-3 bg-violet-300 shadow-sm'
+                : 'w-2.5 h-2.5 bg-violet-200 hover:bg-violet-300'
             }`}
             title={page.name}
           >
-            {page.id === defaultPageId && (
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-pink-400 rounded-full"></span>
+            {page.id === defaultPageId && currentIndex !== pageIndex && (
+              <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-rose-400 rounded-full"></span>
             )}
           </button>
         );
