@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Cloud, Feather, PartyPopper, CalendarDays } from 'lucide-react';
+import { Cloud, Feather, PartyPopper } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../utils/api';
 import { toast } from 'sonner';
@@ -10,9 +10,8 @@ import NameOfTheDay from '../components/NameOfTheDay';
 import { useTheme } from '../contexts/ThemeContext';
 import { isNameCelebratedToday, getSaintOfTheDay } from '../data/saintsCalendar';
 import LanguageBubble from '../components/LanguageBubble';
+import { Card } from '../components/ui/card';
 import {
-  AgendaCard,
-  PregnancyStatusCard,
   TopBar,
   PreconceptionSection,
   PregnancySection,
@@ -20,7 +19,6 @@ import {
   PostpartumSection,
   ServicesSection,
   PinnedSectionsProvider,
-  CollapsibleSection,
   PinTipBanner
 } from '../components/home';
 
@@ -260,56 +258,31 @@ function HomePage() {
           {/* Prénom du jour */}
           <NameOfTheDay isDarkMode={isDarkMode} />
 
+          {/* Affichage de la semaine de grossesse - sous fête du jour */}
+          {hasPregnancyProfile && pregnancyProfile?.current_week && (
+            <Card className="bg-gradient-to-br from-pink-100 to-sky-100 rounded-3xl p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-0" data-testid="week-display-card">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-500">{t('pregnancy.youAreAt', 'Vous êtes à la')}</p>
+                  <p className="text-2xl font-bold text-sky-600">{t('pregnancy.week', 'Semaine')} {pregnancyProfile.current_week} SA</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-slate-500">{t('pregnancy.trimester', 'Trimestre')} {pregnancyProfile.trimester || Math.ceil(pregnancyProfile.current_week / 13)}</p>
+                  {pregnancyProfile.estimated_due_date && (
+                    <p className="text-lg font-bold text-pink-600">
+                      {new Date(pregnancyProfile.estimated_due_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </Card>
+          )}
+
           {/* Sections de navigation */}
           <PinnedSectionsProvider>
             <PinTipBanner />
             
-            {/* Section "Suivi de cycles" collapsible - avant la section préconception */}
-            <CollapsibleSection
-              title={t('home.cycleTracking', 'Suivi de cycles')}
-              icon={CalendarDays}
-              iconColor="text-indigo-500"
-              defaultOpen={false}
-              sectionId="cycle-tracking"
-            >
-              <AgendaCard
-                agendaData={agendaData}
-                lastPeriodDate={lastPeriodDate}
-                setLastPeriodDate={setLastPeriodDate}
-                cycleLength={cycleLength}
-                setCycleLength={setCycleLength}
-                onSave={handleSaveAgenda}
-                loading={agendaLoading}
-                onOpenCalendar={() => setShowCalendar(true)}
-                rapportDates={rapportDates}
-                getNextImplantation={getNextImplantation}
-              />
-              
-              {/* Statut de grossesse - Seulement si un rapport est dans la fenêtre de fertilité */}
-              {hasPregnancyProfile && (() => {
-                // Vérifier si un rapport est dans la fenêtre de fertilité
-                if (!agendaData || rapportDates.length === 0) return null;
-                
-                const hasRapportInFertileWindow = rapportDates.some(rapportDate => {
-                  const rapport = new Date(rapportDate);
-                  const fertileStart = new Date(agendaData.fertileStart);
-                  const fertileEnd = new Date(agendaData.fertileEnd);
-                  return rapport >= fertileStart && rapport <= fertileEnd;
-                });
-                
-                if (!hasRapportInFertileWindow) return null;
-                
-                return (
-                  <div className="mt-4">
-                    <PregnancyStatusCard
-                      pregnancyProfile={pregnancyProfile}
-                    />
-                  </div>
-                );
-              })()}
-            </CollapsibleSection>
-            
-            <PreconceptionSection />
+            <PreconceptionSection onOpenCalendar={() => setShowCalendar(true)} />
             <PregnancySection 
               hasPregnancyProfile={hasPregnancyProfile} 
               pregnancyProfile={pregnancyProfile} 

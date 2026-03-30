@@ -266,7 +266,10 @@
     "pregnancyTracking": "Suivi grossesse",
     "momAndBaby": "Maman & Bébé",
     "reminders": "Rappels",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "youAreAt": "Vous êtes à la",
+    "week": "Semaine",
+    "trimester": "Trimestre"
   },
   "babyPrep": {
     "birthList": "Liste de naissance",
@@ -364,7 +367,8 @@
     "clearblueAdvice": "Pensez au test d'ovulation Clearblue Digital pour identifier vos jours les plus fertiles",
     "openCalendar": "Ouvrir le calendrier",
     "recordedIntercourse": "Rapports enregistrés",
-    "enterPeriodDate": "Renseignez la date de vos dernières règles pour voir vos prévisions"
+    "enterPeriodDate": "Renseignez la date de vos dernières règles pour voir vos prévisions",
+    "trackYourCycle": "Calendrier fertilité"
   },
   "babyNames": {
     "title": "Prénoms de bébé",

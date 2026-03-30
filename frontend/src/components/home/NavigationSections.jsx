@@ -160,7 +160,7 @@ export function CollapsibleSection({ title, icon: Icon, iconColor, children, def
 }
 
 // Catégorie: En route vers la grossesse
-export function PreconceptionSection() {
+export function PreconceptionSection({ onOpenCalendar }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -173,6 +173,17 @@ export function PreconceptionSection() {
       sectionId="preconception"
     >
       <div className="grid grid-cols-2 gap-4">
+        {/* Suivi de cycles - carte carrée */}
+        <Card
+          onClick={onOpenCalendar}
+          data-testid="cycle-tracking-nav"
+          className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-indigo-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+        >
+          <CalendarHeart className="w-10 h-10 text-indigo-500 mx-auto mb-2" />
+          <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('home.cycleTracking', 'Suivi de cycles')}</h3>
+          <p className="text-xs text-slate-500 mt-1">{t('fertility.trackYourCycle', 'Calendrier fertilité')}</p>
+        </Card>
+
         <Card
           onClick={() => navigate('/calculator')}
           data-testid="calculator-nav"
@@ -187,7 +198,7 @@ export function PreconceptionSection() {
         <Card
           onClick={() => navigate('/pregnancy-after-35')}
           data-testid="pregnancy-after-35-nav"
-          className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-purple-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+          className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-purple-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center col-span-2"
         >
           <Heart className="w-10 h-10 text-purple-400 mx-auto mb-2" />
           <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
