@@ -81,14 +81,45 @@
     "pinnedCantClose": "This section is pinned. Click the icon to unpin it.",
     "pinSection": "Pin this section",
     "unpinSection": "Unpin this section",
-    "sectionPinnedLabel": "Section pinned"
+    "sectionPinnedLabel": "Section pinned",
+    "journeySteps": "The steps of your most beautiful journey",
+    "journeyStepsDesc": "From conception to baby's arrival",
+    "longPressToCreate": "Long press to create a page",
+    "longPressToDelete": "Long press on a card to delete",
+    "goToJourneySteps": "Go to \"The steps of your most beautiful journey\" to duplicate elements",
+    "createPage": "Create a page",
+    "createPageDesc": "Create your custom page",
+    "deletePage": "Delete this page",
+    "soclePage": "Main Page",
+    "isDefaultPage": "Default home page",
+    "setAsHome": "Set as home page",
+    "myPage": "My page",
+    "emptyPage": "This page is empty",
+    "enterPageName": "Page name:",
+    "newPage": "New page"
+  },
+  "journey": {
+    "clickToEnter": "Click on a section to enter",
+    "duplicateTo": "Duplicate to...",
+    "sectionSelected": "Section selected",
+    "noUserPages": "No custom pages",
+    "createNewPage": "Create a new page",
+    "duplicatedSuccess": "Section duplicated!"
+  },
+  "section": {
+    "longPressToSelect": "Long press to select and duplicate"
   },
   "sections": {
     "preconception": "Trying to conceive",
+    "preconceptionDesc": "Prepare your body and mind",
     "pregnancy": "Pregnancy",
+    "pregnancyDesc": "Follow your pregnancy week by week",
     "babyPreparation": "Preparing for baby",
+    "babyPreparationDesc": "Everything to welcome your baby",
     "postpartum": "Postpartum care",
-    "services": "Services and resources"
+    "postpartumDesc": "Support after childbirth",
+    "services": "Services and resources",
+    "servicesDesc": "Useful tools and resources"
   },
   "calculator": {
     "title": "Pregnancy Calculator",

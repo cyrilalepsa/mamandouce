@@ -99,14 +99,41 @@
     "saveChanges": "Enregistrer",
     "emptyPage": "Cette page est vide",
     "dragItemsHere": "Faites glisser des éléments ici depuis une autre page",
-    "journeySteps": "Les étapes de votre plus beau voyage"
+    "journeySteps": "Les étapes de votre plus beau voyage",
+    "journeyStepsDesc": "De la conception à l'arrivée de bébé",
+    "longPressToCreate": "Appui long pour créer une page",
+    "longPressToDelete": "Appui long sur une carte pour supprimer",
+    "goToJourneySteps": "Allez dans \"Les étapes de votre plus beau voyage\" pour dupliquer des éléments",
+    "createPage": "Créer une page",
+    "createPageDesc": "Créez votre page personnalisée",
+    "deletePage": "Supprimer cette page",
+    "soclePage": "Page Socle",
+    "isDefaultPage": "Page d'accueil par défaut",
+    "setAsHome": "Définir comme page d'accueil",
+    "myPage": "Ma page"
+  },
+  "journey": {
+    "clickToEnter": "Cliquez sur une section pour y accéder",
+    "duplicateTo": "Dupliquer vers...",
+    "sectionSelected": "Section sélectionnée",
+    "noUserPages": "Aucune page personnalisée",
+    "createNewPage": "Créer une nouvelle page",
+    "duplicatedSuccess": "Section dupliquée !"
+  },
+  "section": {
+    "longPressToSelect": "Appui long pour sélectionner et dupliquer"
   },
   "sections": {
     "preconception": "En route vers la grossesse",
+    "preconceptionDesc": "Préparez votre corps et votre esprit",
     "pregnancy": "Grossesse",
+    "pregnancyDesc": "Suivez votre grossesse semaine par semaine",
     "babyPreparation": "Préparer l'arrivée de bébé",
+    "babyPreparationDesc": "Tout pour accueillir votre bébé",
     "postpartum": "Suivi post-partum",
-    "services": "Services et ressources"
+    "postpartumDesc": "Accompagnement après l'accouchement",
+    "services": "Services et ressources",
+    "servicesDesc": "Outils et ressources utiles"
   },
   "calculator": {
     "title": "Calculateur de grossesse",

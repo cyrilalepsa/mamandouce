@@ -42,6 +42,7 @@ import UpdatesHistoryPage from './pages/UpdatesHistoryPage';
 import CarteVisitePage from './pages/CarteVisitePage';
 import CycleTrackingPage from './pages/CycleTrackingPage';
 import JourneyStepsPage from './pages/JourneyStepsPage';
+import SectionDetailPage from './pages/SectionDetailPage';
 import ChatBubble from './components/ChatBubble';
 import WhatsNewModal from './components/WhatsNewModal';
 import { NewBadgeProvider } from './components/NewBadge';
@@ -152,6 +153,7 @@ function App() {
                 <Route path="/carte-visite" element={<ProtectedRoute><CarteVisitePage /></ProtectedRoute>} />
                 <Route path="/cycle-tracking" element={<ProtectedRoute><CycleTrackingPage /></ProtectedRoute>} />
                 <Route path="/journey-steps" element={<ProtectedRoute><JourneyStepsPage /></ProtectedRoute>} />
+                <Route path="/section/:sectionId" element={<ProtectedRoute><SectionDetailPage /></ProtectedRoute>} />
               </Routes>
             </BrowserRouter>
             <Toaster />

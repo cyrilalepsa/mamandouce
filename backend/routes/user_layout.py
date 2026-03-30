@@ -4,24 +4,28 @@ from typing import Optional, List, Any
 from datetime import datetime, timezone
 from core.database import db
 from core.security import get_current_user
+from models.schemas import User
 
-router = APIRouter(prefix="/api/user", tags=["user-layout"])
+router = APIRouter(prefix="/user", tags=["user-layout"])
 
 class LayoutItem(BaseModel):
     id: str
     type: str
     category: Optional[str] = None
     expanded: Optional[bool] = False
+    size: Optional[str] = None
 
 class LayoutPage(BaseModel):
     id: str
     name: str
     isDefault: bool = False
+    theme: Optional[str] = None
     items: List[LayoutItem] = []
 
 class UserLayout(BaseModel):
     pages: List[LayoutPage]
     currentPageIndex: int = 0
+    defaultPageId: Optional[str] = None
     version: int = 1
 
 class LayoutRequest(BaseModel):
@@ -29,11 +33,11 @@ class LayoutRequest(BaseModel):
 
 # Obtenir le layout de l'utilisateur
 @router.get("/layout")
-async def get_user_layout(current_user: dict = Depends(get_current_user)):
+async def get_user_layout(current_user: User = Depends(get_current_user)):
     try:
         user_layout = await db.user_layouts.find_one(
-            {"user_id": current_user["_id"]},
-            {"_id": 0, "user_id": 0}
+            {"user_email": current_user.email},
+            {"_id": 0, "user_email": 0}
         )
         
         if user_layout:
@@ -47,17 +51,17 @@ async def get_user_layout(current_user: dict = Depends(get_current_user)):
 @router.put("/layout")
 async def save_user_layout(
     request: LayoutRequest,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     try:
         layout_data = {
-            "user_id": current_user["_id"],
+            "user_email": current_user.email,
             "layout": request.layout.dict(),
             "updated_at": datetime.now(timezone.utc)
         }
         
         result = await db.user_layouts.update_one(
-            {"user_id": current_user["_id"]},
+            {"user_email": current_user.email},
             {"$set": layout_data},
             upsert=True
         )
@@ -68,9 +72,9 @@ async def save_user_layout(
 
 # Supprimer le layout personnalisé (réinitialiser)
 @router.delete("/layout")
-async def delete_user_layout(current_user: dict = Depends(get_current_user)):
+async def delete_user_layout(current_user: User = Depends(get_current_user)):
     try:
-        await db.user_layouts.delete_one({"user_id": current_user["_id"]})
+        await db.user_layouts.delete_one({"user_email": current_user.email})
         return {"success": True, "message": "Layout réinitialisé"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

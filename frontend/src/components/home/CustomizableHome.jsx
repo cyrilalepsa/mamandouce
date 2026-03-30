@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Heart, X, Home, Plus } from 'lucide-react';
+import { Heart, X, Home } from 'lucide-react';
 import { useHomeLayout } from '../../contexts/HomeLayoutContext';
 import { Card } from '../ui/card';
 import NameOfTheDay from '../NameOfTheDay';
@@ -164,56 +164,69 @@ function UserSectionCard({ item, onRemove, pregnancyProfile, hasPregnancyProfile
   );
 }
 
-// Bulles de pagination (toujours visibles sur page socle)
-function PageDots({ pages, currentIndex, onPageChange, onAddPage, onSetAsHome, defaultPageId }) {
+// Bulles de pagination (toujours visibles : Home + Socle + pages créées)
+function PageDots({ pages, currentIndex, onPageChange, onSetAsHome, defaultPageId }) {
   const { t } = useTranslation();
   const currentPage = pages[currentIndex];
   const isCurrentPageHome = currentPage?.id === defaultPageId;
-  const isOnUserPage = !currentPage?.isDefault;
+  
+  // Séparer page socle et pages utilisateur
+  const soclePage = pages.find(p => p.isDefault);
+  const userPages = pages.filter(p => !p.isDefault);
+  const socleIndex = pages.findIndex(p => p.isDefault);
   
   return (
     <div className="flex items-center justify-center gap-2 py-3">
-      {/* Bouton Home (visible sur pages utilisateur) */}
-      {isOnUserPage && (
-        <button
-          onClick={onSetAsHome}
-          className={`w-7 h-7 rounded-full flex items-center justify-center transition-all mr-1 ${
-            isCurrentPageHome
-              ? 'bg-pink-500 text-white shadow-md'
-              : 'bg-slate-100 hover:bg-pink-100 text-slate-400 hover:text-pink-500'
-          }`}
-          title={isCurrentPageHome ? t('home.isDefaultPage', 'Page d\'accueil par défaut') : t('home.setAsHome', 'Définir comme page d\'accueil')}
-        >
-          <Home className="w-3.5 h-3.5" />
-        </button>
-      )}
+      {/* Bouton Home (toujours visible) */}
+      <button
+        onClick={onSetAsHome}
+        className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
+          isCurrentPageHome
+            ? 'bg-pink-500 text-white shadow-md'
+            : 'bg-slate-100 hover:bg-pink-100 text-slate-400 hover:text-pink-500'
+        }`}
+        title={isCurrentPageHome ? t('home.isDefaultPage', 'Page d\'accueil par défaut') : t('home.setAsHome', 'Définir comme page d\'accueil')}
+      >
+        <Home className="w-3.5 h-3.5" />
+      </button>
       
-      {/* Bulles de pages */}
-      {pages.map((page, index) => (
+      {/* Point pour la page Socle */}
+      {soclePage && (
         <button
-          key={page.id}
-          onClick={() => onPageChange(index)}
+          onClick={() => onPageChange(socleIndex)}
           className={`relative transition-all duration-300 ${
-            currentIndex === index
+            currentIndex === socleIndex
               ? 'w-6 h-2.5 bg-pink-500 rounded-full'
               : 'w-2.5 h-2.5 bg-slate-300 rounded-full hover:bg-slate-400'
           }`}
-          title={page.name}
+          title={t('home.soclePage', 'Page Socle')}
         >
-          {page.id === defaultPageId && page.id !== 'home' && (
+          {soclePage.id === defaultPageId && (
             <span className="absolute -top-1 -right-1 w-2 h-2 bg-pink-400 rounded-full"></span>
           )}
         </button>
-      ))}
+      )}
       
-      {/* Bouton ajouter une page */}
-      <button
-        onClick={onAddPage}
-        className="w-6 h-6 bg-slate-100 hover:bg-pink-100 rounded-full flex items-center justify-center transition-all ml-1"
-        title={t('home.addPage', 'Ajouter une page')}
-      >
-        <Plus className="w-3.5 h-3.5 text-slate-400" />
-      </button>
+      {/* Points pour les pages utilisateur */}
+      {userPages.map((page) => {
+        const pageIndex = pages.findIndex(p => p.id === page.id);
+        return (
+          <button
+            key={page.id}
+            onClick={() => onPageChange(pageIndex)}
+            className={`relative transition-all duration-300 ${
+              currentIndex === pageIndex
+                ? 'w-6 h-2.5 bg-purple-500 rounded-full'
+                : 'w-2.5 h-2.5 bg-purple-300 rounded-full hover:bg-purple-400'
+            }`}
+            title={page.name}
+          >
+            {page.id === defaultPageId && (
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-pink-400 rounded-full"></span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -309,13 +322,8 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
     setShowCreatePagePrompt(false);
     const name = prompt(t('home.enterPageName', 'Nom de la page :'), t('home.newPage', 'Nouvelle page'));
     if (name && addPage) {
-      const success = await addPage(name);
-      if (success) {
-        // Aller sur la nouvelle page
-        setTimeout(() => {
-          setCurrentPage(pages.length);
-        }, 100);
-      }
+      await addPage(name);
+      // L'index est déjà mis à jour dans addPage (currentPageIndex: layout.pages.length)
     }
   };
 
@@ -372,7 +380,6 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
         pages={pages}
         currentIndex={currentPageIndex}
         onPageChange={setCurrentPage}
-        onAddPage={handleAddPage}
         onSetAsHome={handleSetAsHome}
         defaultPageId={defaultPageId}
       />
