@@ -339,6 +339,33 @@ export function HomeLayoutProvider({ children }) {
     return success;
   }, [layout, saveLayout, t]);
 
+  // Dupliquer un item vers une page utilisateur
+  const duplicateItemToPage = useCallback(async (itemId, targetPageId) => {
+    const targetPage = layout.pages.find(p => p.id === targetPageId);
+    if (!targetPage) return false;
+    
+    // Vérifier si l'item existe déjà sur la page cible
+    const alreadyExists = targetPage.items?.some(i => i.id === itemId);
+    if (alreadyExists) {
+      toast.info(t('home.alreadyOnPage', 'Cette section est déjà sur cette page'));
+      return false;
+    }
+    
+    // Ajouter l'item à la page cible
+    const newItem = { id: itemId, type: 'section' };
+    
+    const newPages = layout.pages.map(p => {
+      if (p.id !== targetPageId) return p;
+      return {
+        ...p,
+        items: [...(p.items || []), newItem]
+      };
+    });
+    
+    const newLayout = { ...layout, pages: newPages };
+    return await saveLayout(newLayout);
+  }, [layout, saveLayout, t]);
+
   const value = {
     layout,
     isEditMode,
@@ -362,6 +389,7 @@ export function HomeLayoutProvider({ children }) {
     addGroup,
     renameGroup,
     deleteGroup,
+    duplicateItemToPage,
     AVAILABLE_ITEMS
   };
 
