@@ -392,15 +392,6 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
         </div>
       )}
 
-      {/* Bulles de pagination (toujours visibles) */}
-      <PageDots
-        pages={pages}
-        currentIndex={currentPageIndex}
-        onPageChange={setCurrentPage}
-        onSetAsHome={handleSetAsHome}
-        defaultPageId={defaultPageId}
-      />
-
       {/* Zone de contenu */}
       <div
         ref={containerRef}
@@ -486,6 +477,15 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
           </div>
         </PinnedSectionsProvider>
       </div>
+
+      {/* Bulles de pagination (en bas de page) */}
+      <PageDots
+        pages={pages}
+        currentIndex={currentPageIndex}
+        onPageChange={setCurrentPage}
+        onSetAsHome={handleSetAsHome}
+        defaultPageId={defaultPageId}
+      />
     </div>
   );
 }
