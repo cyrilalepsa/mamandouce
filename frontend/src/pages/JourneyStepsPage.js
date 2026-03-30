@@ -24,91 +24,130 @@ const DEFAULT_SECTIONS = [
   { id: 'services', order: 4 },
 ];
 
-// Métadonnées des sections (icônes, couleurs)
+// Métadonnées des sections (icônes, couleurs, style nuage)
 const SECTION_META = {
   'preconception': { 
     icon: Sparkles, 
+    name: 'En route vers la grossesse',
+    nameKey: 'sections.preconception',
     color: 'amber',
-    bgColor: 'bg-amber-100',
-    textColor: 'text-amber-500',
-    labelColor: 'text-amber-600',
-    gradientFrom: 'from-amber-300',
-    gradientTo: 'to-pink-300'
+    bgGradient: 'from-amber-50/80 via-orange-50/60 to-yellow-50/80',
+    borderColor: 'border-amber-200/50',
+    iconBg: 'bg-gradient-to-br from-amber-400 to-orange-400',
+    textColor: 'text-amber-600',
+    shadowColor: 'shadow-amber-100/50'
   },
   'pregnancy': { 
     icon: Baby, 
+    name: 'Grossesse',
+    nameKey: 'sections.pregnancy',
     color: 'pink',
-    bgColor: 'bg-pink-100',
-    textColor: 'text-pink-500',
-    labelColor: 'text-pink-600',
-    gradientFrom: 'from-pink-300',
-    gradientTo: 'to-purple-300'
+    bgGradient: 'from-pink-50/80 via-rose-50/60 to-pink-100/80',
+    borderColor: 'border-pink-200/50',
+    iconBg: 'bg-gradient-to-br from-pink-400 to-rose-400',
+    textColor: 'text-pink-600',
+    shadowColor: 'shadow-pink-100/50'
   },
   'baby-preparation': { 
     icon: Gift, 
+    name: 'Préparer l\'arrivée de bébé',
+    nameKey: 'sections.babyPreparation',
     color: 'purple',
-    bgColor: 'bg-purple-100',
-    textColor: 'text-purple-500',
-    labelColor: 'text-purple-600',
-    gradientFrom: 'from-purple-300',
-    gradientTo: 'to-rose-300'
+    bgGradient: 'from-purple-50/80 via-violet-50/60 to-purple-100/80',
+    borderColor: 'border-purple-200/50',
+    iconBg: 'bg-gradient-to-br from-purple-400 to-violet-400',
+    textColor: 'text-purple-600',
+    shadowColor: 'shadow-purple-100/50'
   },
   'postpartum': { 
     icon: HeartHandshake, 
+    name: 'Suivi post-partum',
+    nameKey: 'sections.postpartum',
     color: 'rose',
-    bgColor: 'bg-rose-100',
-    textColor: 'text-rose-500',
-    labelColor: 'text-rose-600',
-    gradientFrom: 'from-rose-300',
-    gradientTo: 'to-slate-300'
+    bgGradient: 'from-rose-50/80 via-pink-50/60 to-rose-100/80',
+    borderColor: 'border-rose-200/50',
+    iconBg: 'bg-gradient-to-br from-rose-400 to-pink-400',
+    textColor: 'text-rose-600',
+    shadowColor: 'shadow-rose-100/50'
   },
   'services': { 
     icon: Settings, 
+    name: 'Services et ressources',
+    nameKey: 'sections.services',
     color: 'slate',
-    bgColor: 'bg-slate-100',
-    textColor: 'text-slate-500',
-    labelColor: 'text-slate-600',
-    gradientFrom: 'from-slate-300',
-    gradientTo: 'to-slate-200'
+    bgGradient: 'from-slate-50/80 via-gray-50/60 to-slate-100/80',
+    borderColor: 'border-slate-200/50',
+    iconBg: 'bg-gradient-to-br from-slate-400 to-gray-400',
+    textColor: 'text-slate-600',
+    shadowColor: 'shadow-slate-100/50'
   },
 };
 
-// Composant pour un élément déplaçable
-function DraggableSection({ section, index, isEditMode, onDragStart, onDragOver, onDrop, isDragging, children, t }) {
+// Composant carte nuage pour une section
+function CloudSectionCard({ section, index, isEditMode, onDragStart, onDragOver, onDrop, isDragging, children, t }) {
   const meta = SECTION_META[section.id];
   const Icon = meta.icon;
   
   return (
     <div 
-      className={`relative transition-all duration-200 ${isDragging ? 'opacity-50 scale-95' : ''}`}
+      className={`transition-all duration-300 ${isDragging ? 'opacity-50 scale-95' : ''}`}
       draggable={isEditMode}
       onDragStart={(e) => onDragStart(e, index)}
       onDragOver={(e) => onDragOver(e, index)}
       onDrop={(e) => onDrop(e, index)}
     >
-      {/* Timeline line (sauf pour le dernier) */}
-      {index < 4 && (
-        <div className={`absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b ${meta.gradientFrom} ${meta.gradientTo} -z-10`}></div>
-      )}
-      
-      {/* Header de l'étape */}
-      <div className="flex items-center gap-3 mb-2">
-        <div className={`w-12 h-12 ${meta.bgColor} rounded-full flex items-center justify-center border-4 border-white shadow-md ${isEditMode ? 'cursor-grab active:cursor-grabbing' : ''}`}>
-          {isEditMode ? (
-            <GripVertical className={`w-5 h-5 ${meta.textColor}`} />
-          ) : (
-            <Icon className={`w-5 h-5 ${meta.textColor}`} />
-          )}
+      <Card 
+        className={`
+          relative overflow-hidden
+          bg-gradient-to-br ${meta.bgGradient}
+          backdrop-blur-sm
+          rounded-[2rem]
+          border ${meta.borderColor}
+          shadow-[0_8px_32px_rgba(0,0,0,0.06)] ${meta.shadowColor}
+          hover:shadow-[0_12px_40px_rgba(0,0,0,0.1)]
+          transition-all duration-300
+          ${isEditMode ? 'cursor-grab active:cursor-grabbing ring-2 ring-pink-300/50 ring-offset-2' : ''}
+        `}
+      >
+        {/* Effet nuage décoratif */}
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/30 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-white/20 rounded-full blur-2xl pointer-events-none"></div>
+        
+        {/* Header de la carte avec étape et icône */}
+        <div className="relative p-4 pb-2">
+          <div className="flex items-center gap-3">
+            {/* Badge étape */}
+            <div className={`
+              w-12 h-12 ${meta.iconBg} rounded-2xl 
+              flex items-center justify-center 
+              shadow-lg
+              ${isEditMode ? 'animate-pulse' : ''}
+            `}>
+              {isEditMode ? (
+                <GripVertical className="w-6 h-6 text-white" />
+              ) : (
+                <Icon className="w-6 h-6 text-white" />
+              )}
+            </div>
+            
+            <div className="flex-1">
+              <span className={`text-xs font-semibold ${meta.textColor} uppercase tracking-wide`}>
+                {t('journey.step', 'Étape')} {index + 1}
+              </span>
+              {isEditMode && (
+                <p className="text-xs text-slate-400 mt-0.5">
+                  {t('journey.dragToReorder', 'Glissez pour réorganiser')}
+                </p>
+              )}
+            </div>
+          </div>
         </div>
-        <span className={`text-sm font-semibold ${meta.labelColor}`}>
-          {t('journey.step', 'Étape')} {index + 1}
-        </span>
-      </div>
-      
-      {/* Contenu de la section */}
-      <div className="ml-6 pl-6">
-        {children}
-      </div>
+        
+        {/* Contenu de la section (CollapsibleSection avec épingle) */}
+        <div className="px-4 pb-4">
+          {children}
+        </div>
+      </Card>
     </div>
   );
 }
@@ -119,7 +158,6 @@ function JourneyStepsPage() {
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [sections, setSections] = useState(() => {
-    // Charger depuis localStorage si disponible
     const saved = localStorage.getItem('journeySectionsOrder');
     if (saved) {
       try {
@@ -135,7 +173,6 @@ function JourneyStepsPage() {
 
   useEffect(() => {
     loadProfile();
-    // Vérifier si l'ordre a été personnalisé
     const saved = localStorage.getItem('journeySectionsOrder');
     setHasCustomOrder(!!saved);
   }, []);
@@ -173,11 +210,9 @@ function JourneyStepsPage() {
     const [draggedItem] = newSections.splice(draggedIndex, 1);
     newSections.splice(dropIndex, 0, draggedItem);
     
-    // Mettre à jour les ordres
     const updatedSections = newSections.map((s, i) => ({ ...s, order: i }));
     setSections(updatedSections);
     
-    // Sauvegarder dans localStorage
     localStorage.setItem('journeySectionsOrder', JSON.stringify(updatedSections));
     setHasCustomOrder(true);
     setDraggedIndex(null);
@@ -247,11 +282,11 @@ function JourneyStepsPage() {
           <div className="w-10"></div>
         </div>
 
-        {/* Introduction */}
-        <Card className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl p-5 mb-6 border-0">
+        {/* Bannière d'introduction */}
+        <Card className="bg-gradient-to-br from-pink-50/90 via-white/80 to-purple-50/90 backdrop-blur-sm rounded-[2rem] p-5 mb-6 border border-pink-100/50 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-purple-400 rounded-2xl flex items-center justify-center flex-shrink-0">
-              <Heart className="w-6 h-6 text-white" />
+            <div className="w-14 h-14 bg-gradient-to-br from-pink-400 to-purple-400 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+              <Heart className="w-7 h-7 text-white" />
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-700 mb-1" style={{ fontFamily: 'Nunito, sans-serif' }}>
@@ -261,22 +296,24 @@ function JourneyStepsPage() {
                 {t('journey.welcomeDesc', 'De la conception à l\'arrivée de bébé, nous sommes là pour vous accompagner. Explorez chaque étape à votre rythme.')}
               </p>
               {isEditMode && (
-                <p className="text-xs text-pink-500 mt-2 flex items-center gap-1">
+                <div className="mt-2 flex items-center gap-2 text-pink-500">
                   <GripVertical className="w-4 h-4" />
-                  {t('journey.dragHint', 'Glissez-déposez les étapes pour les réorganiser')}
-                </p>
+                  <span className="text-xs font-medium">
+                    {t('journey.dragHint', 'Glissez-déposez les cartes pour les réorganiser')}
+                  </span>
+                </div>
               )}
             </div>
           </div>
         </Card>
 
-        {/* Les 5 sections */}
+        {/* Les 5 sections dans des cartes nuage */}
         <PinnedSectionsProvider>
-          <div className="space-y-4">
+          <div className="space-y-5">
             {sections
               .sort((a, b) => a.order - b.order)
               .map((section, index) => (
-                <DraggableSection
+                <CloudSectionCard
                   key={section.id}
                   section={section}
                   index={index}
@@ -288,7 +325,7 @@ function JourneyStepsPage() {
                   t={t}
                 >
                   {renderSection(section.id)}
-                </DraggableSection>
+                </CloudSectionCard>
               ))
             }
           </div>
@@ -312,7 +349,7 @@ function JourneyStepsPage() {
         onClick={() => setIsEditMode(!isEditMode)}
         className={`fixed bottom-20 right-6 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
           isEditMode 
-            ? 'bg-green-500 hover:bg-green-600' 
+            ? 'bg-green-500 hover:bg-green-600 animate-pulse' 
             : 'bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600'
         }`}
         data-testid="edit-mode-button"
@@ -328,7 +365,7 @@ function JourneyStepsPage() {
       {isEditMode && hasCustomOrder && (
         <button
           onClick={handleReset}
-          className="fixed bottom-20 left-6 z-50 w-12 h-12 rounded-full bg-slate-100 hover:bg-slate-200 shadow-lg flex items-center justify-center transition-all"
+          className="fixed bottom-20 left-6 z-50 w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white shadow-lg flex items-center justify-center transition-all border border-slate-200"
           data-testid="reset-order-button"
         >
           <RotateCcw className="w-5 h-5 text-slate-600" />
