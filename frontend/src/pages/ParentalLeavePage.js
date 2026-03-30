@@ -41,7 +41,7 @@ function ParentalLeavePage() {
         </div>
 
         {/* Alerte nouvelle loi */}
-        <Card className="bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-2xl p-4 mb-6">
+        <Card className="bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-2xl p-4 mb-4">
           <div className="flex items-start gap-3">
             <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
             <div>
@@ -53,6 +53,110 @@ function ParentalLeavePage() {
               </p>
             </div>
           </div>
+        </Card>
+
+        {/* NOUVEAU : Congé supplémentaire de naissance 2026 */}
+        <Card className="bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-2xl p-4 mb-6">
+          <div className="flex items-start gap-3">
+            <Gift className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-bold text-sm">
+                {t('parentalLeave.newLaw2026', 'Réforme 2026 : Congé supplémentaire de naissance')}
+              </h3>
+              <p className="text-xs opacity-90 mt-1">
+                {t('parentalLeave.newLaw2026Desc', 'Nouveau dispositif adopté dans la Loi de financement de la Sécurité sociale pour 2026. Période plus courte mais beaucoup mieux rémunérée.')}
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        {/* Détails du congé supplémentaire de naissance */}
+        <Card className="bg-white rounded-2xl p-4 mb-4 border-2 border-violet-200">
+          <button 
+            onClick={() => toggleSection('supplementary')}
+            className="w-full flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-violet-400 to-purple-400 rounded-xl flex items-center justify-center">
+                <Gift className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-bold text-slate-700">
+                  {t('parentalLeave.supplementaryLeave', 'Congé supplémentaire de naissance')}
+                </h3>
+                <p className="text-xs text-violet-500 font-medium">1 à 2 mois par parent (mieux rémunéré)</p>
+              </div>
+            </div>
+            {expandedSection === 'supplementary' ? (
+              <ChevronUp className="w-5 h-5 text-slate-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400" />
+            )}
+          </button>
+          
+          {expandedSection === 'supplementary' && (
+            <div className="mt-4 pt-4 border-t border-violet-100 space-y-4">
+              <div className="bg-violet-50 rounded-xl p-3">
+                <p className="text-xs text-violet-700">
+                  <strong>Contrairement à l'ancien congé parental</strong> (qui pouvait durer jusqu'à 3 ans mais était très peu indemnisé), ce nouveau dispositif vise à offrir une période plus courte mais beaucoup mieux rémunérée.
+                </p>
+              </div>
+              
+              <div className="flex items-start gap-2">
+                <Calendar className="w-4 h-4 text-violet-500 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">1. Durée et Flexibilité</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    • <strong>Durée :</strong> Chaque parent peut bénéficier de <strong>1 ou 2 mois</strong> de congé supplémentaire
+                    <br />• <strong>Cumul :</strong> Si les deux parents le prennent, cela représente jusqu'à <strong>4 mois de présence parentale</strong> en plus des congés maternité et paternité classiques
+                    <br />• <strong>Fractionnement :</strong> Le congé peut être pris en une seule fois ou fractionné en deux périodes d'un mois chacune
+                    <br />• <strong>Délai :</strong> Il doit être pris dans les <strong>9 mois</strong> suivant la naissance (ou l'adoption)
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-2">
+                <Euro className="w-4 h-4 text-violet-500 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">2. Indemnisation (mieux rémunéré)</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    • L'indemnisation sera <strong>bien supérieure</strong> à l'ancienne PreParE
+                    <br />• Basée sur un pourcentage du salaire (détails à confirmer par décret)
+                    <br />• Objectif : permettre aux parents de rester auprès de leur enfant sans perte de revenus significative
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-2">
+                <Users className="w-4 h-4 text-violet-500 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">3. Bénéficiaires</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    • Les deux parents peuvent en bénéficier (mère ET père/second parent)
+                    <br />• Applicable aux salariés du secteur privé
+                    <br />• Conditions d'ancienneté à préciser par décret
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-2">
+                <Clock className="w-4 h-4 text-violet-500 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">4. Entrée en vigueur</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    • <strong>2026</strong> - Date exacte à confirmer par décret d'application
+                    <br />• Remplace progressivement l'ancien congé parental d'éducation
+                  </p>
+                </div>
+              </div>
+              
+              <div className="bg-amber-50 rounded-xl p-3 mt-2">
+                <p className="text-xs text-amber-700">
+                  <strong>💡 Conseil :</strong> Cette réforme est récente. Consultez régulièrement service-public.fr pour les mises à jour des décrets d'application.
+                </p>
+              </div>
+            </div>
+          )}
         </Card>
 
         {/* Congé de naissance */}

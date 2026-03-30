@@ -18,6 +18,7 @@ import {
 } from './NavigationSections';
 import { PinTipBanner } from './PinTip';
 import { DraggableItem, ItemGroup, GroupContentPopup } from './DragDropComponents';
+import { UpcomingRemindersCard } from './UpcomingRemindersCard';
 
 // CSS pour l'animation de tremblement
 if (typeof document !== 'undefined' && !document.getElementById('wiggle-style')) {
@@ -597,12 +598,16 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
           {isDefaultPage && <PinTipBanner />}
           
           <div className="space-y-3">
-            {/* === PAGE SOCLE (3 éléments) === */}
+            {/* === PAGE SOCLE (3 éléments + rappels) === */}
             {isDefaultPage && (
               <>
                 {hasPregnancyProfile && (
                   <WeekDisplayWidget pregnancyProfile={pregnancyProfile} t={t} />
                 )}
+                
+                {/* Carte de rappels/notifications à venir */}
+                <UpcomingRemindersCard />
+                
                 <NameOfTheDay isDarkMode={isDarkMode} />
                 <JourneyStepsCard t={t} navigate={navigate} />
                 
