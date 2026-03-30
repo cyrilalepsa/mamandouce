@@ -23,6 +23,22 @@ import {
 import { PinTipBanner } from './PinTip';
 import { PremiumControlPanel, PAGE_THEMES } from './PremiumFeatures';
 
+// CSS pour l'animation de tremblement (ajouté au head)
+if (typeof document !== 'undefined' && !document.getElementById('wiggle-style')) {
+  const style = document.createElement('style');
+  style.id = 'wiggle-style';
+  style.textContent = `
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-1deg); }
+      50% { transform: rotate(1deg); }
+    }
+    .animate-wiggle {
+      animation: wiggle 0.15s ease-in-out infinite;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
 // Widget "Semaine de grossesse"
 function WeekDisplayWidget({ pregnancyProfile, t }) {
   if (!pregnancyProfile?.current_week) return null;
@@ -77,8 +93,11 @@ function JourneyStepsCard({ t, navigate }) {
   );
 }
 
-// Carte de section pour pages utilisateur
-function UserSectionCard({ item, isEditMode, onDragStart, onDragOver, onDrop, isDragging, onRemove, pregnancyProfile, hasPregnancyProfile, t }) {
+// Carte de section pour pages utilisateur (avec suppression par appui long)
+function UserSectionCard({ item, onRemove, pregnancyProfile, hasPregnancyProfile, t }) {
+  const [isShaking, setIsShaking] = useState(false);
+  const longPressTimer = useRef(null);
+  
   const SECTION_COMPONENTS = {
     'preconception': PreconceptionSection,
     'pregnancy': PregnancySection,
@@ -101,35 +120,117 @@ function UserSectionCard({ item, isEditMode, onDragStart, onDragOver, onDrop, is
   if (!meta || !SectionComponent) return null;
   
   const sectionProps = item.id === 'pregnancy' ? { hasPregnancyProfile, pregnancyProfile } : {};
+
+  // Appui long pour activer le mode suppression
+  const handleTouchStart = () => {
+    longPressTimer.current = setTimeout(() => {
+      setIsShaking(true);
+      if (navigator.vibrate) navigator.vibrate(50);
+    }, 500);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+    }
+  };
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    setIsShaking(false);
+    onRemove(item.id);
+  };
+
+  // Clic ailleurs pour annuler
+  const handleClickOutside = () => {
+    if (isShaking) setIsShaking(false);
+  };
   
   return (
     <div 
-      className={`relative transition-all duration-300 ${isDragging ? 'opacity-50 scale-95' : ''}`}
-      draggable={isEditMode}
-      onDragStart={onDragStart}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
+      className={`relative transition-all duration-300 ${isShaking ? 'animate-wiggle' : ''}`}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleTouchStart}
+      onMouseUp={handleTouchEnd}
+      onMouseLeave={handleTouchEnd}
+      onClick={handleClickOutside}
     >
-      <Card className={`relative overflow-hidden bg-gradient-to-r ${meta.bgGradient} rounded-2xl border ${meta.borderColor} shadow-sm ${isEditMode ? 'ring-2 ring-pink-300/50' : ''}`}>
+      {/* Bouton supprimer (visible quand tremble) */}
+      {isShaking && (
+        <button
+          onClick={handleDelete}
+          className="absolute -top-2 -right-2 z-20 w-7 h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-pulse"
+        >
+          <X className="w-4 h-4 text-white" />
+        </button>
+      )}
+      
+      <Card className={`relative overflow-hidden bg-gradient-to-r ${meta.bgGradient} rounded-2xl border ${meta.borderColor} shadow-sm ${isShaking ? 'ring-2 ring-red-300' : ''}`}>
         <div className="absolute -top-6 -right-6 w-20 h-20 bg-white/40 rounded-full blur-2xl pointer-events-none"></div>
-        
-        {/* Bouton supprimer en mode édition */}
-        {isEditMode && onRemove && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemove(item.id);
-            }}
-            className="absolute top-2 right-2 z-10 w-7 h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center shadow-md transition-all"
-            title={t('home.removeItem', 'Supprimer')}
-          >
-            <X className="w-4 h-4 text-white" />
-          </button>
-        )}
-        
-        <div className={`px-3 py-2 ${isEditMode ? 'pr-10' : ''}`}>
+        <div className="px-3 py-2">
           <SectionComponent {...sectionProps} />
         </div>
+      </Card>
+    </div>
+  );
+}
+
+// Carte individuelle pour pages utilisateur (avec suppression par appui long)
+function UserCard({ item, onRemove, navigate, t }) {
+  const [isShaking, setIsShaking] = useState(false);
+  const longPressTimer = useRef(null);
+
+  const handleTouchStart = () => {
+    longPressTimer.current = setTimeout(() => {
+      setIsShaking(true);
+      if (navigator.vibrate) navigator.vibrate(50);
+    }, 500);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+    }
+  };
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    setIsShaking(false);
+    onRemove(item.id);
+  };
+
+  const handleClick = () => {
+    if (isShaking) {
+      setIsShaking(false);
+    } else {
+      navigate(item.path || '/');
+    }
+  };
+
+  return (
+    <div 
+      className={`relative transition-all duration-300 ${isShaking ? 'animate-wiggle' : ''}`}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleTouchStart}
+      onMouseUp={handleTouchEnd}
+      onMouseLeave={handleTouchEnd}
+    >
+      {isShaking && (
+        <button
+          onClick={handleDelete}
+          className="absolute -top-2 -right-2 z-20 w-7 h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-pulse"
+        >
+          <X className="w-4 h-4 text-white" />
+        </button>
+      )}
+      
+      <Card 
+        className={`p-3 rounded-2xl bg-white/80 border border-slate-100 cursor-pointer hover:shadow-md ${isShaking ? 'ring-2 ring-red-300' : ''}`}
+        onClick={handleClick}
+      >
+        <p className="font-medium text-slate-700">{item.name || item.id}</p>
       </Card>
     </div>
   );
@@ -141,9 +242,6 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
   const navigate = useNavigate();
   const { isDarkMode } = useTheme();
   const {
-    layout,
-    isEditMode,
-    setIsEditMode,
     isLoading,
     showTutorial,
     dismissTutorial,
@@ -152,12 +250,7 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
     setCurrentPage,
     addPage,
     deletePage,
-    renamePage,
-    moveItem,
     removeItemFromPage,
-    resetToDefault,
-    hasCustomLayout,
-    setPageTheme,
     setDefaultPage,
     defaultPageId
   } = useHomeLayout();
@@ -165,22 +258,20 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
   const containerRef = useRef(null);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
-  const [draggedItem, setDraggedItem] = useState(null);
+  const [isPageShaking, setIsPageShaking] = useState(false);
+  const pageLongPressTimer = useRef(null);
 
   // Swipe entre pages
   const onTouchStart = (e) => {
-    if (isEditMode) return;
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
   };
 
   const onTouchMove = (e) => {
-    if (isEditMode) return;
     setTouchEnd(e.targetTouches[0].clientX);
   };
 
   const onTouchEnd = () => {
-    if (isEditMode) return;
     if (!touchStart || !touchEnd) return;
     
     const distance = touchStart - touchEnd;
@@ -192,22 +283,29 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
     }
   };
 
-  // Drag & Drop
-  const handleDragStart = (e, itemId, pageId) => {
-    setDraggedItem(itemId);
-    e.dataTransfer.effectAllowed = 'move';
+  // Appui long sur zone vide pour supprimer la page
+  const handlePageLongPressStart = (e) => {
+    // Seulement sur les pages utilisateur et si on clique sur le fond
+    if (currentPage?.isDefault) return;
+    if (e.target !== e.currentTarget) return;
+    
+    pageLongPressTimer.current = setTimeout(() => {
+      setIsPageShaking(true);
+      if (navigator.vibrate) navigator.vibrate(50);
+    }, 500);
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
+  const handlePageLongPressEnd = () => {
+    if (pageLongPressTimer.current) {
+      clearTimeout(pageLongPressTimer.current);
+    }
   };
 
-  const handleDrop = async (e, targetIndex) => {
-    e.preventDefault();
-    if (!draggedItem) return;
-    await moveItem(draggedItem, currentPage.id, currentPage.id, targetIndex);
-    setDraggedItem(null);
+  const handleDeletePage = () => {
+    if (deletePage && currentPage && !currentPage.isDefault) {
+      deletePage(currentPage.id);
+      setIsPageShaking(false);
+    }
   };
 
   // Ajouter une page
@@ -234,7 +332,6 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
   }
 
   const currentPage = pages[currentPageIndex];
-  const currentTheme = PAGE_THEMES.find(th => th.id === (currentPage?.theme || 'default')) || PAGE_THEMES[0];
   const isDefaultPage = currentPage?.isDefault;
   const isCurrentPageHome = currentPage?.id === defaultPageId;
 
@@ -244,29 +341,17 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
       {showTutorial && (
         <LayoutTutorialBanner 
           onDismiss={dismissTutorial}
-          onStartEdit={() => {
-            dismissTutorial();
-            setIsEditMode(true);
-          }}
-        />
-      )}
-
-      {/* Panneau Premium */}
-      {isEditMode && !isDefaultPage && (
-        <PremiumControlPanel
-          isVisible={isEditMode}
-          currentPageTheme={currentPage?.theme || 'default'}
-          onThemeChange={(themeId) => setPageTheme(currentPage.id, themeId)}
+          onStartEdit={() => dismissTutorial()}
         />
       )}
 
       {/* Bulles de pagination avec bouton Home */}
-      {(pages.length > 1 || isEditMode) && (
+      {pages.length > 1 && (
         <PageDots
           pages={pages}
           currentIndex={currentPageIndex}
           onPageChange={setCurrentPage}
-          isEditMode={isEditMode}
+          isEditMode={false}
           onAddPage={handleAddPage}
           showHomeButton={!isDefaultPage}
           onSetAsHome={handleSetAsHome}
@@ -281,17 +366,22 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
-        className={`page-transition rounded-3xl ${!isDefaultPage && currentTheme.colors.bg} ${!isDefaultPage ? 'p-3' : ''}`}
+        className={`page-transition rounded-3xl ${isPageShaking ? 'animate-wiggle' : ''}`}
+        onMouseDown={handlePageLongPressStart}
+        onMouseUp={handlePageLongPressEnd}
+        onMouseLeave={handlePageLongPressEnd}
       >
-        {/* Header de page utilisateur */}
-        {!isDefaultPage && (
-          <PageHeader
-            page={currentPage}
-            isEditMode={isEditMode}
-            onRename={renamePage}
-            onDelete={deletePage}
-            isDefault={false}
-          />
+        {/* Bouton supprimer page (quand la page tremble) */}
+        {isPageShaking && !isDefaultPage && (
+          <div className="flex justify-center mb-4">
+            <button
+              onClick={handleDeletePage}
+              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center gap-2 shadow-lg animate-pulse"
+            >
+              <X className="w-4 h-4" />
+              {t('home.deletePage', 'Supprimer cette page')}
+            </button>
+          </div>
         )}
 
         <PinnedSectionsProvider>
@@ -317,16 +407,11 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
             {/* === PAGES UTILISATEUR === */}
             {!isDefaultPage && (
               <>
-                {/* Sections dupliquées */}
+                {/* Sections dupliquées (avec suppression par appui long) */}
                 {currentPage?.items?.filter(item => item.type === 'section').map((item, index) => (
                   <UserSectionCard
                     key={`section-${item.id}-${index}`}
                     item={item}
-                    isEditMode={isEditMode}
-                    onDragStart={(e) => handleDragStart(e, item.id, currentPage.id)}
-                    onDragOver={handleDragOver}
-                    onDrop={(e) => handleDrop(e, index)}
-                    isDragging={draggedItem === item.id}
                     onRemove={(itemId) => removeItemFromPage(itemId, currentPage.id)}
                     pregnancyProfile={pregnancyProfile}
                     hasPregnancyProfile={hasPregnancyProfile}
@@ -334,24 +419,15 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
                   />
                 ))}
 
-                {/* Cartes individuelles dupliquées */}
+                {/* Cartes individuelles dupliquées (avec suppression par appui long) */}
                 {currentPage?.items?.filter(item => item.type === 'card').map((item, index) => (
-                  <div key={`card-${item.id}-${index}`} className="relative">
-                    {isEditMode && (
-                      <button
-                        onClick={() => removeItemFromPage(item.id, currentPage.id)}
-                        className="absolute top-2 right-2 z-10 w-7 h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center shadow-md"
-                      >
-                        <X className="w-4 h-4 text-white" />
-                      </button>
-                    )}
-                    <Card 
-                      className={`p-3 rounded-2xl bg-white/80 border border-slate-100 cursor-pointer hover:shadow-md ${isEditMode ? 'ring-2 ring-pink-300/50' : ''}`}
-                      onClick={() => !isEditMode && navigate(item.path || '/')}
-                    >
-                      <p className="font-medium text-slate-700">{item.name || item.id}</p>
-                    </Card>
-                  </div>
+                  <UserCard
+                    key={`card-${item.id}-${index}`}
+                    item={item}
+                    onRemove={(itemId) => removeItemFromPage(itemId, currentPage.id)}
+                    navigate={navigate}
+                    t={t}
+                  />
                 ))}
 
                 {/* Page vide */}
@@ -368,11 +444,6 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
           </div>
         </PinnedSectionsProvider>
       </div>
-
-      {/* Bouton reset (pages utilisateur uniquement) */}
-      {isEditMode && hasCustomLayout && !isDefaultPage && (
-        <ResetLayoutButton onReset={resetToDefault} />
-      )}
     </div>
   );
 }
