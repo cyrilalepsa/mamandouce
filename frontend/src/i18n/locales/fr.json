@@ -106,7 +106,9 @@
     "goToJourneySteps": "Allez dans \"Les étapes de votre plus beau voyage\" pour dupliquer des éléments",
     "createPage": "Créer une page",
     "createPageDesc": "Créez votre page personnalisée",
-    "deletePage": "Supprimer cette page",
+    "deletePage": "Supprimer cette page ?",
+    "deletePageWarning": "Tout ce qui s'y trouve sera également supprimé.",
+    "pageNamePlaceholder": "Nom de la page...",
     "soclePage": "Page Socle",
     "isDefaultPage": "Page d'accueil par défaut",
     "setAsHome": "Définir comme page d'accueil",
@@ -114,14 +116,18 @@
   },
   "journey": {
     "clickToEnter": "Cliquez sur une section pour y accéder",
+    "longPressHint": "Appui long pour dupliquer · Clic pour entrer",
     "duplicateTo": "Dupliquer vers...",
     "sectionSelected": "Section sélectionnée",
     "noUserPages": "Aucune page personnalisée",
     "createNewPage": "Créer une nouvelle page",
-    "duplicatedSuccess": "Section dupliquée !"
+    "duplicatedSuccess": "Élément dupliqué !",
+    "pageCreatedAndDuplicated": "Page créée et élément dupliqué !"
   },
   "section": {
-    "longPressToSelect": "Appui long pour sélectionner et dupliquer"
+    "longPressToSelect": "Appui long pour dupliquer",
+    "pinned": "Section épinglée !",
+    "unpinned": "Section désépinglée"
   },
   "sections": {
     "preconception": "En route vers la grossesse",

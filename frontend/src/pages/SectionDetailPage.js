@@ -1,20 +1,18 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Heart, Sparkles, Baby, Gift, HeartHandshake, Settings, Check } from 'lucide-react';
+import { 
+  ArrowLeft, Heart, Sparkles, Baby, Gift, HeartHandshake, Settings, 
+  Check, Pin, PinOff, CalendarHeart, ScanBarcode, Apple, History,
+  Stethoscope, Bell, BookHeart, Users, ChevronRight, Crown, Lock,
+  ClipboardList, Briefcase, Video, Youtube, Book, Phone, LineChart
+} from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
+import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
-import api from '../utils/api';
 import { useHomeLayout } from '../contexts/HomeLayoutContext';
-import {
-  PreconceptionSection,
-  PregnancySection,
-  BabyPreparationSection,
-  PostpartumSection,
-  ServicesSection,
-  PinnedSectionsProvider
-} from '../components/home';
+import { useSubscription } from '../components/SubscriptionGate';
 
 // Métadonnées des sections
 const SECTION_META = {
@@ -22,8 +20,7 @@ const SECTION_META = {
     icon: Sparkles, 
     name: 'En route vers la grossesse',
     nameKey: 'sections.preconception',
-    bgGradient: 'from-amber-50/80 via-orange-50/60 to-yellow-50/80',
-    borderColor: 'border-amber-200/50',
+    bgGradient: 'from-amber-50 to-orange-50',
     accentColor: 'text-amber-600',
     bgColor: 'bg-amber-50',
   },
@@ -31,8 +28,7 @@ const SECTION_META = {
     icon: Baby, 
     name: 'Grossesse',
     nameKey: 'sections.pregnancy',
-    bgGradient: 'from-pink-50/80 via-rose-50/60 to-pink-100/80',
-    borderColor: 'border-pink-200/50',
+    bgGradient: 'from-pink-50 to-rose-50',
     accentColor: 'text-pink-600',
     bgColor: 'bg-pink-50',
   },
@@ -40,8 +36,7 @@ const SECTION_META = {
     icon: Gift, 
     name: 'Préparer l\'arrivée de bébé',
     nameKey: 'sections.babyPreparation',
-    bgGradient: 'from-purple-50/80 via-violet-50/60 to-purple-100/80',
-    borderColor: 'border-purple-200/50',
+    bgGradient: 'from-purple-50 to-violet-50',
     accentColor: 'text-purple-600',
     bgColor: 'bg-purple-50',
   },
@@ -49,8 +44,7 @@ const SECTION_META = {
     icon: HeartHandshake, 
     name: 'Suivi post-partum',
     nameKey: 'sections.postpartum',
-    bgGradient: 'from-rose-50/80 via-pink-50/60 to-rose-100/80',
-    borderColor: 'border-rose-200/50',
+    bgGradient: 'from-rose-50 to-pink-50',
     accentColor: 'text-rose-600',
     bgColor: 'bg-rose-50',
   },
@@ -58,35 +52,62 @@ const SECTION_META = {
     icon: Settings, 
     name: 'Services et ressources',
     nameKey: 'sections.services',
-    bgGradient: 'from-slate-50/80 via-gray-50/60 to-slate-100/80',
-    borderColor: 'border-slate-200/50',
+    bgGradient: 'from-slate-50 to-gray-50',
     accentColor: 'text-slate-600',
     bgColor: 'bg-slate-50',
   },
 };
 
-// Composants de section
-const SectionComponents = {
-  'preconception': PreconceptionSection,
-  'pregnancy': PregnancySection,
-  'baby-preparation': BabyPreparationSection,
-  'postpartum': PostpartumSection,
-  'services': ServicesSection,
+// Contenu de chaque section (cartes individuelles)
+const SECTION_ITEMS = {
+  'preconception': [
+    { id: 'cycle-tracking', icon: CalendarHeart, iconColor: 'text-pink-500', bgColor: 'bg-pink-50', title: 'Suivi de cycles', titleKey: 'preconception.cycleTracking', desc: 'Règles et ovulation', descKey: 'preconception.cycleDesc', route: '/tracking' },
+    { id: 'fertility-calc', icon: LineChart, iconColor: 'text-purple-500', bgColor: 'bg-purple-50', title: 'Calculateur fertilité', titleKey: 'preconception.fertilityCalc', desc: 'Période fertile', descKey: 'preconception.fertilityDesc', route: '/tracking' },
+    { id: 'preconception-tips', icon: BookHeart, iconColor: 'text-amber-500', bgColor: 'bg-amber-50', title: 'Conseils préconception', titleKey: 'preconception.tips', desc: 'Préparez votre corps', descKey: 'preconception.tipsDesc', route: '/tips' },
+  ],
+  'pregnancy': [
+    { id: 'food-scanner', icon: ScanBarcode, iconColor: 'text-emerald-500', bgColor: 'bg-emerald-50', title: 'Scanner', titleKey: 'pregnancy.scanner', desc: 'Aliments', descKey: 'pregnancy.foods', route: '/scanner' },
+    { id: 'food-library', icon: Apple, iconColor: 'text-red-400', bgColor: 'bg-red-50', title: 'Bibliothèque', titleKey: 'pregnancy.library', desc: 'Aliments', descKey: 'pregnancy.foods', route: '/library' },
+    { id: 'favorites', icon: Heart, iconColor: 'text-pink-400', bgColor: 'bg-pink-50', title: 'Favoris', titleKey: 'pregnancy.favorites', desc: 'Sauvegardés', descKey: 'pregnancy.saved', route: '/favorites' },
+    { id: 'history', icon: History, iconColor: 'text-purple-400', bgColor: 'bg-purple-50', title: 'Historique', titleKey: 'pregnancy.history', desc: 'Recherches', descKey: 'pregnancy.searches', route: '/history' },
+    { id: 'baby-names', icon: Users, iconColor: 'text-violet-500', bgColor: 'bg-violet-50', title: 'Liste des Prénoms', titleKey: 'pregnancy.babyNames', desc: 'Europe & Amérique', descKey: 'pregnancy.namesDesc', route: '/baby-names', premium: 'partial' },
+    { id: 'tips-evolution', icon: BookHeart, iconColor: 'text-pink-500', bgColor: 'bg-pink-50', title: 'Évolution et conseils', titleKey: 'pregnancy.tipsAndEvolution', desc: 'Semaine par semaine', descKey: 'pregnancy.weekByWeek', route: '/tips' },
+    { id: 'medical-appointments', icon: Stethoscope, iconColor: 'text-sky-500', bgColor: 'bg-sky-50', title: 'Rendez-vous', titleKey: 'pregnancy.appointments', desc: 'Suivi médical', descKey: 'pregnancy.medicalFollowUp', route: '/medical' },
+    { id: 'pregnancy-tracking', icon: LineChart, iconColor: 'text-teal-500', bgColor: 'bg-teal-50', title: 'Suivi grossesse', titleKey: 'pregnancy.tracking', desc: 'Statistiques', descKey: 'pregnancy.stats', route: '/calculator' },
+    { id: 'reminders', icon: Bell, iconColor: 'text-orange-500', bgColor: 'bg-orange-50', title: 'Rappels', titleKey: 'pregnancy.reminders', desc: 'Notifications', descKey: 'pregnancy.notifications', route: '/reminders' },
+  ],
+  'baby-preparation': [
+    { id: 'birth-list', icon: ClipboardList, iconColor: 'text-purple-500', bgColor: 'bg-purple-50', title: 'Liste de naissance', titleKey: 'babyPrep.birthList', desc: 'Préparez tout', descKey: 'babyPrep.birthListDesc', route: '/birth-list' },
+    { id: 'maternity-bag', icon: Briefcase, iconColor: 'text-pink-500', bgColor: 'bg-pink-50', title: 'Valise maternité', titleKey: 'babyPrep.maternityBag', desc: 'Checklist', descKey: 'babyPrep.checklistDesc', route: '/maternity-bag' },
+    { id: 'preparation-tips', icon: BookHeart, iconColor: 'text-violet-500', bgColor: 'bg-violet-50', title: 'Conseils préparation', titleKey: 'babyPrep.tips', desc: 'Avant l\'arrivée', descKey: 'babyPrep.beforeArrival', route: '/tips' },
+  ],
+  'postpartum': [
+    { id: 'postpartum-appointments', icon: Stethoscope, iconColor: 'text-rose-500', bgColor: 'bg-rose-50', title: 'RDV post-partum', titleKey: 'postpartum.appointments', desc: 'Suivi maman & bébé', descKey: 'postpartum.followUp', route: '/postpartum' },
+    { id: 'breastfeeding', icon: Heart, iconColor: 'text-pink-500', bgColor: 'bg-pink-50', title: 'Allaitement', titleKey: 'postpartum.breastfeeding', desc: 'Conseils et suivi', descKey: 'postpartum.breastfeedingDesc', route: '/postpartum' },
+    { id: 'postpartum-tips', icon: BookHeart, iconColor: 'text-purple-500', bgColor: 'bg-purple-50', title: 'Conseils post-partum', titleKey: 'postpartum.tips', desc: 'Récupération', descKey: 'postpartum.recovery', route: '/tips' },
+  ],
+  'services': [
+    { id: 'chatbot', icon: Phone, iconColor: 'text-sky-500', bgColor: 'bg-sky-50', title: 'Assistant IA', titleKey: 'services.chatbot', desc: 'Disponible 24/7', descKey: 'services.available247', route: '/chatbot' },
+    { id: 'videos', icon: Video, iconColor: 'text-red-500', bgColor: 'bg-red-50', title: 'Vidéos', titleKey: 'services.videos', desc: 'Tutoriels', descKey: 'services.tutorials', route: '/resources' },
+    { id: 'resources', icon: Book, iconColor: 'text-amber-500', bgColor: 'bg-amber-50', title: 'Ressources', titleKey: 'services.resources', desc: 'Documents utiles', descKey: 'services.usefulDocs', route: '/resources' },
+  ],
 };
 
-// Popup de sélection de destination - Style bulle/nuage
-function DuplicatePopup({ pages, onDuplicate, onCancel, onCreatePage, t }) {
+// Popup bulle pour dupliquer
+function DuplicatePopup({ itemName, pages, onDuplicate, onCancel, onCreatePage, t }) {
   const userPages = pages.filter(p => !p.isDefault);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newPageName, setNewPageName] = useState('');
   
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center pb-20 bg-black/20 backdrop-blur-[2px]">
       <div 
-        className="relative bg-white/95 backdrop-blur-xl rounded-[32px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/50 mx-4 max-w-sm w-full animate-in slide-in-from-bottom-4 duration-300"
+        className="relative bg-white/95 backdrop-blur-xl rounded-[32px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/50 mx-4 max-w-sm w-full"
         style={{
           background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,242,248,0.9) 100%)'
         }}
       >
-        {/* Petite flèche en bas pour effet bulle */}
+        {/* Flèche bulle */}
         <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/95 rotate-45 border-r border-b border-white/50"></div>
         
         {/* Décoration nuage */}
@@ -94,57 +115,184 @@ function DuplicatePopup({ pages, onDuplicate, onCancel, onCreatePage, t }) {
         <div className="absolute -bottom-2 -left-2 w-12 h-12 bg-purple-100/50 rounded-full blur-xl"></div>
         
         <div className="relative">
-          <div className="text-center mb-4">
-            <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-pink-400 to-purple-400 rounded-2xl flex items-center justify-center shadow-lg">
-              <span className="text-white text-xl">📋</span>
-            </div>
-            <h3 className="text-lg font-bold text-slate-700">
-              {t('journey.duplicateTo', 'Dupliquer vers...')}
-            </h3>
-            <p className="text-sm text-slate-500">
-              {t('journey.sectionSelected', 'Section sélectionnée')}
-            </p>
-          </div>
-          
-          <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
-            {userPages.length > 0 ? (
-              userPages.map(page => (
-                <button
-                  key={page.id}
-                  onClick={() => onDuplicate(page.id)}
-                  className="w-full p-3.5 text-left rounded-2xl bg-white/60 hover:bg-pink-50 hover:text-pink-600 transition-all border border-slate-100 hover:border-pink-200 active:scale-[0.98]"
-                >
-                  <span className="font-medium">{page.name}</span>
-                </button>
-              ))
-            ) : (
-              <div className="text-center py-4 px-3 rounded-2xl bg-slate-50/50">
-                <p className="text-sm text-slate-400">
-                  {t('journey.noUserPages', 'Aucune page personnalisée')}
-                </p>
+          {!showCreateForm ? (
+            <>
+              <div className="text-center mb-4">
+                <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-pink-400 to-purple-400 rounded-2xl flex items-center justify-center shadow-lg">
+                  <span className="text-white text-xl">📋</span>
+                </div>
+                <h3 className="text-lg font-bold text-slate-700">
+                  {t('journey.duplicateTo', 'Dupliquer vers...')}
+                </h3>
+                <p className="text-sm text-slate-500">{itemName}</p>
               </div>
-            )}
-            
-            <button
-              onClick={onCreatePage}
-              className="w-full p-3.5 text-left rounded-2xl bg-gradient-to-r from-pink-50 to-purple-50 text-pink-600 hover:from-pink-100 hover:to-purple-100 transition-all font-medium border border-pink-100 active:scale-[0.98]"
-            >
-              <span className="flex items-center gap-2">
-                <span className="text-lg">+</span>
-                {t('journey.createNewPage', 'Créer une nouvelle page')}
-              </span>
-            </button>
-          </div>
-          
-          <button 
-            onClick={onCancel} 
-            className="w-full py-2.5 rounded-2xl bg-slate-100/80 text-slate-600 font-medium hover:bg-slate-200/80 transition-all active:scale-95"
-          >
-            {t('common.cancel', 'Annuler')}
-          </button>
+              
+              <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
+                {userPages.length > 0 ? (
+                  userPages.map(page => (
+                    <button
+                      key={page.id}
+                      onClick={() => onDuplicate(page.id)}
+                      className="w-full p-3.5 text-left rounded-2xl bg-white/60 hover:bg-pink-50 hover:text-pink-600 transition-all border border-slate-100 hover:border-pink-200 active:scale-[0.98]"
+                    >
+                      <span className="font-medium">{page.name}</span>
+                    </button>
+                  ))
+                ) : (
+                  <div className="text-center py-4 px-3 rounded-2xl bg-slate-50/50">
+                    <p className="text-sm text-slate-400">
+                      {t('journey.noUserPages', 'Aucune page personnalisée')}
+                    </p>
+                  </div>
+                )}
+                
+                <button
+                  onClick={() => setShowCreateForm(true)}
+                  className="w-full p-3.5 text-left rounded-2xl bg-gradient-to-r from-pink-50 to-purple-50 text-pink-600 hover:from-pink-100 hover:to-purple-100 transition-all font-medium border border-pink-100 active:scale-[0.98]"
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="text-lg">+</span>
+                    {t('journey.createNewPage', 'Créer une nouvelle page')}
+                  </span>
+                </button>
+              </div>
+              
+              <button 
+                onClick={onCancel} 
+                className="w-full py-2.5 rounded-2xl bg-slate-100/80 text-slate-600 font-medium hover:bg-slate-200/80 transition-all active:scale-95"
+              >
+                {t('common.cancel', 'Annuler')}
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="text-center mb-4">
+                <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-pink-400 to-purple-400 rounded-2xl flex items-center justify-center shadow-lg">
+                  <span className="text-white text-xl">✨</span>
+                </div>
+                <h3 className="text-lg font-bold text-slate-700">
+                  {t('home.createPage', 'Créer une page')}
+                </h3>
+              </div>
+              
+              <Input
+                type="text"
+                value={newPageName}
+                onChange={(e) => setNewPageName(e.target.value)}
+                placeholder={t('home.pageNamePlaceholder', 'Nom de la page...')}
+                className="w-full mb-4 rounded-2xl border-slate-200 focus:border-pink-300 focus:ring-pink-200"
+                autoFocus
+                onKeyDown={(e) => e.key === 'Enter' && newPageName.trim() && onCreatePage(newPageName.trim())}
+              />
+              
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setShowCreateForm(false)} 
+                  className="flex-1 py-2.5 rounded-2xl bg-slate-100/80 text-slate-600 font-medium hover:bg-slate-200/80 transition-all active:scale-95"
+                >
+                  {t('common.back', 'Retour')}
+                </button>
+                <button 
+                  onClick={() => newPageName.trim() && onCreatePage(newPageName.trim())}
+                  disabled={!newPageName.trim()}
+                  className="flex-1 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-500 text-white font-medium shadow-lg shadow-pink-500/25 hover:shadow-xl disabled:opacity-50 transition-all active:scale-95"
+                >
+                  {t('common.create', 'Créer')}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
+  );
+}
+
+// Carte individuelle avec appui long
+function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
+  const { t } = useTranslation();
+  const { isPremium } = useSubscription();
+  const longPressTimer = useRef(null);
+  const isLongPress = useRef(false);
+  
+  const Icon = item.icon;
+  const isLocked = item.premium === 'full' && !isPremium;
+  const isPartialPremium = item.premium === 'partial' && !isPremium;
+  
+  const handleTouchStart = () => {
+    isLongPress.current = false;
+    longPressTimer.current = setTimeout(() => {
+      isLongPress.current = true;
+      if (navigator.vibrate) navigator.vibrate(50);
+      onLongPress(item);
+    }, 500);
+  };
+
+  const handleTouchEnd = (e) => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+    }
+    if (isLongPress.current) {
+      e.preventDefault();
+    }
+  };
+
+  const handleClick = () => {
+    if (!isLongPress.current && !isLocked) {
+      onNavigate(item.route);
+    }
+  };
+
+  return (
+    <Card 
+      className={`
+        relative bg-white rounded-2xl p-4 
+        shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 
+        hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] 
+        cursor-pointer transition-all text-center
+        ${isLocked ? 'opacity-60' : ''}
+        ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''}
+      `}
+      onClick={handleClick}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchMove={() => clearTimeout(longPressTimer.current)}
+      onMouseDown={handleTouchStart}
+      onMouseUp={handleTouchEnd}
+      onMouseLeave={() => clearTimeout(longPressTimer.current)}
+      data-testid={`item-card-${item.id}`}
+    >
+      {/* Badge premium */}
+      {isPartialPremium && (
+        <div className="absolute top-1 right-1">
+          <span className="flex items-center gap-0.5 bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full text-[10px] font-medium">
+            <Crown className="w-2.5 h-2.5" />
+          </span>
+        </div>
+      )}
+      
+      {/* Badge lock */}
+      {isLocked && (
+        <div className="absolute top-1 right-1">
+          <Lock className="w-4 h-4 text-slate-400" />
+        </div>
+      )}
+      
+      {/* Badge sélection */}
+      {isSelected && (
+        <div className="absolute top-1 left-1 w-5 h-5 bg-pink-500 rounded-full flex items-center justify-center z-10">
+          <Check className="w-3 h-3 text-white" />
+        </div>
+      )}
+      
+      <Icon className={`w-8 h-8 ${item.iconColor} mx-auto mb-2`} />
+      <h3 className="text-sm font-bold text-slate-700">
+        {t(item.titleKey, item.title)}
+      </h3>
+      <p className="text-xs text-slate-500">
+        {t(item.descKey, item.desc)}
+      </p>
+    </Card>
   );
 }
 
@@ -154,31 +302,71 @@ function SectionDetailPage() {
   const { t } = useTranslation();
   const { pages, addPage, duplicateItemToPage } = useHomeLayout();
   
-  const [pregnancyProfile, setPregnancyProfile] = useState(null);
-  const [isSelected, setIsSelected] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [showDuplicatePopup, setShowDuplicatePopup] = useState(false);
-  const longPressTimer = useRef(null);
 
   const meta = SECTION_META[sectionId];
-  const SectionComponent = SectionComponents[sectionId];
+  const items = SECTION_ITEMS[sectionId] || [];
 
+  // Charger l'état épinglé
   useEffect(() => {
-    loadProfile();
-  }, []);
+    const saved = localStorage.getItem(`mamandouce_section_pinned_${sectionId}`);
+    setIsPinned(saved === 'true');
+  }, [sectionId]);
 
-  const loadProfile = async () => {
-    try {
-      const res = await api.pregnancy.getProfile();
-      setPregnancyProfile(res.data);
-    } catch (error) {
-      console.error('Erreur chargement profil:', error);
-    }
+  // Toggle épingle
+  const handleTogglePin = () => {
+    const newValue = !isPinned;
+    setIsPinned(newValue);
+    localStorage.setItem(`mamandouce_section_pinned_${sectionId}`, newValue.toString());
+    toast.success(newValue 
+      ? t('section.pinned', 'Section épinglée !') 
+      : t('section.unpinned', 'Section désépinglée')
+    );
   };
 
-  const hasPregnancyProfile = pregnancyProfile && pregnancyProfile.current_week;
+  // Navigation
+  const handleNavigate = (route) => {
+    navigate(route);
+  };
 
-  // Si section invalide
-  if (!meta || !SectionComponent) {
+  // Appui long sur une carte
+  const handleLongPress = (item) => {
+    setSelectedItem(item);
+    setShowDuplicatePopup(true);
+  };
+
+  // Dupliquer vers une page
+  const handleDuplicate = async (pageId) => {
+    if (duplicateItemToPage && selectedItem) {
+      await duplicateItemToPage(selectedItem.id, pageId);
+      toast.success(t('journey.duplicatedSuccess', 'Élément dupliqué !'));
+    }
+    setShowDuplicatePopup(false);
+    setSelectedItem(null);
+  };
+
+  // Créer une page et dupliquer
+  const handleCreatePageAndDuplicate = async (pageName) => {
+    if (addPage && selectedItem) {
+      const success = await addPage(pageName);
+      if (success) {
+        setTimeout(async () => {
+          const newPage = pages[pages.length - 1];
+          if (newPage && !newPage.isDefault && duplicateItemToPage) {
+            await duplicateItemToPage(selectedItem.id, newPage.id);
+            toast.success(t('journey.pageCreatedAndDuplicated', 'Page créée et élément dupliqué !'));
+          }
+        }, 300);
+      }
+    }
+    setShowDuplicatePopup(false);
+    setSelectedItem(null);
+  };
+
+  // Section invalide
+  if (!meta) {
     return (
       <div className="min-h-screen gradient-bg flex items-center justify-center">
         <p className="text-slate-500">{t('common.notFound', 'Section non trouvée')}</p>
@@ -187,56 +375,12 @@ function SectionDetailPage() {
   }
 
   const Icon = meta.icon;
-  const sectionProps = sectionId === 'pregnancy' ? { hasPregnancyProfile, pregnancyProfile } : {};
-
-  // Appui long pour sélectionner
-  const handleLongPressStart = () => {
-    longPressTimer.current = setTimeout(() => {
-      setIsSelected(true);
-      setShowDuplicatePopup(true);
-      if (navigator.vibrate) navigator.vibrate(50);
-    }, 500);
-  };
-
-  const handleLongPressEnd = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-    }
-  };
-
-  // Dupliquer vers une page
-  const handleDuplicate = async (pageId) => {
-    if (duplicateItemToPage) {
-      await duplicateItemToPage(sectionId, pageId);
-      toast.success(t('journey.duplicatedSuccess', 'Section dupliquée !'));
-    }
-    setIsSelected(false);
-    setShowDuplicatePopup(false);
-  };
-
-  // Créer une nouvelle page puis dupliquer
-  const handleCreatePageAndDuplicate = async () => {
-    const name = prompt(t('home.enterPageName', 'Nom de la page :'), t('home.myPage', 'Ma page'));
-    if (name && addPage) {
-      const success = await addPage(name);
-      if (success) {
-        // Attendre que la page soit créée
-        setTimeout(async () => {
-          const updatedPages = pages;
-          const newPage = updatedPages[updatedPages.length - 1];
-          if (newPage && !newPage.isDefault) {
-            await handleDuplicate(newPage.id);
-          }
-        }, 300);
-      }
-    }
-  };
 
   return (
-    <div className="min-h-screen gradient-bg">
+    <div className={`min-h-screen bg-gradient-to-br ${meta.bgGradient}`}>
       <div className="max-w-2xl mx-auto p-4 sm:p-6">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex items-center gap-3 mb-4">
           <Button
             onClick={() => navigate('/journey-steps')}
             variant="ghost"
@@ -245,6 +389,7 @@ function SectionDetailPage() {
           >
             <ArrowLeft className="w-6 h-6 text-slate-600" />
           </Button>
+          
           <div className="flex-1 text-center">
             <div className="flex items-center justify-center gap-2">
               <Icon className={`w-5 h-5 ${meta.accentColor}`} />
@@ -253,51 +398,37 @@ function SectionDetailPage() {
               </h1>
             </div>
           </div>
-          <div className="w-10"></div>
+          
+          {/* Bouton épingle */}
+          <Button
+            onClick={handleTogglePin}
+            variant="ghost"
+            className={`p-2 rounded-full transition-all ${isPinned ? 'bg-pink-100 text-pink-600' : 'hover:bg-white/50 text-slate-400'}`}
+            data-testid="pin-button"
+          >
+            {isPinned ? <Pin className="w-5 h-5" /> : <PinOff className="w-5 h-5" />}
+          </Button>
         </div>
 
         {/* Message d'instruction */}
-        <div className={`text-center mb-4 py-2 px-4 rounded-full ${meta.bgColor} inline-flex items-center gap-2 mx-auto`} style={{ display: 'flex', justifyContent: 'center' }}>
-          <span className="text-xs text-slate-500">
-            {t('section.longPressToSelect', 'Appui long pour sélectionner et dupliquer')}
+        <div className="text-center mb-4">
+          <span className={`inline-block text-xs ${meta.accentColor} opacity-70 px-4 py-1.5 rounded-full ${meta.bgColor}`}>
+            {t('section.longPressToSelect', 'Appui long pour dupliquer')}
           </span>
         </div>
 
-        {/* Contenu de la section */}
-        <Card 
-          className={`
-            relative overflow-hidden
-            bg-gradient-to-r ${meta.bgGradient}
-            backdrop-blur-sm rounded-2xl
-            border ${meta.borderColor}
-            shadow-sm transition-all duration-300
-            ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2 animate-pulse' : ''}
-          `}
-          onTouchStart={handleLongPressStart}
-          onTouchEnd={handleLongPressEnd}
-          onTouchMove={handleLongPressEnd}
-          onMouseDown={handleLongPressStart}
-          onMouseUp={handleLongPressEnd}
-          onMouseLeave={handleLongPressEnd}
-          data-testid={`section-content-${sectionId}`}
-        >
-          {/* Effet nuage */}
-          <div className="absolute -top-6 -right-6 w-20 h-20 bg-white/40 rounded-full blur-2xl pointer-events-none"></div>
-          
-          {/* Coche de sélection */}
-          {isSelected && (
-            <div className="absolute top-3 right-3 z-10 w-7 h-7 bg-pink-500 rounded-full flex items-center justify-center shadow-lg">
-              <Check className="w-4 h-4 text-white" />
-            </div>
-          )}
-          
-          {/* Contenu */}
-          <PinnedSectionsProvider>
-            <div className="px-3 py-3">
-              <SectionComponent {...sectionProps} />
-            </div>
-          </PinnedSectionsProvider>
-        </Card>
+        {/* Grille des cartes */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {items.map((item) => (
+            <ItemCard
+              key={item.id}
+              item={item}
+              onNavigate={handleNavigate}
+              onLongPress={handleLongPress}
+              isSelected={selectedItem?.id === item.id}
+            />
+          ))}
+        </div>
 
         {/* Footer */}
         <div className="mt-8 text-center">
@@ -310,13 +441,14 @@ function SectionDetailPage() {
       </div>
 
       {/* Popup de duplication */}
-      {showDuplicatePopup && (
+      {showDuplicatePopup && selectedItem && (
         <DuplicatePopup
+          itemName={t(selectedItem.titleKey, selectedItem.title)}
           pages={pages}
           onDuplicate={handleDuplicate}
           onCancel={() => {
             setShowDuplicatePopup(false);
-            setIsSelected(false);
+            setSelectedItem(null);
           }}
           onCreatePage={handleCreatePageAndDuplicate}
           t={t}
