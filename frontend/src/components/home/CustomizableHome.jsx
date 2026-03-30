@@ -39,21 +39,21 @@ if (typeof document !== 'undefined' && !document.getElementById('wiggle-style'))
   document.head.appendChild(style);
 }
 
-// Widget "Semaine de grossesse"
+// Widget "Semaine de grossesse" (taille harmonisée)
 function WeekDisplayWidget({ pregnancyProfile, t }) {
   if (!pregnancyProfile?.current_week) return null;
   
   return (
-    <Card className="bg-gradient-to-br from-pink-100 to-sky-100 rounded-2xl p-4 shadow-sm border-0" data-testid="week-display-card">
+    <Card className="bg-gradient-to-br from-pink-100 to-sky-100 rounded-2xl px-4 py-3 shadow-sm border-0" data-testid="week-display-card">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-500">{t('pregnancy.youAreAt', 'Vous êtes à la')}</p>
-          <p className="text-2xl font-bold text-sky-600">{t('pregnancy.week', 'Semaine')} {pregnancyProfile.current_week} SA</p>
+          <p className="text-xs text-slate-500">{t('pregnancy.youAreAt', 'Vous êtes à la')}</p>
+          <p className="text-lg font-bold text-sky-600">{t('pregnancy.week', 'Semaine')} {pregnancyProfile.current_week} SA</p>
         </div>
         <div className="text-right">
-          <p className="text-sm text-slate-500">{t('pregnancy.trimester', 'Trimestre')} {pregnancyProfile.trimester || Math.ceil(pregnancyProfile.current_week / 13)}</p>
+          <p className="text-xs text-slate-500">{t('pregnancy.trimester', 'Trimestre')} {pregnancyProfile.trimester || Math.ceil(pregnancyProfile.current_week / 13)}</p>
           {pregnancyProfile.estimated_due_date && (
-            <p className="text-lg font-bold text-pink-600">
+            <p className="text-base font-bold text-pink-600">
               {new Date(pregnancyProfile.estimated_due_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
             </p>
           )}
@@ -63,29 +63,29 @@ function WeekDisplayWidget({ pregnancyProfile, t }) {
   );
 }
 
-// Carte cliquable "Les étapes de votre plus beau voyage"
+// Carte cliquable "Les étapes de votre plus beau voyage" (taille harmonisée)
 function JourneyStepsCard({ t, navigate }) {
   return (
     <Card 
-      className="bg-gradient-to-r from-white/90 via-pink-50/30 to-purple-50/30 rounded-2xl px-4 py-3 shadow-sm border border-pink-100/40 cursor-pointer hover:shadow-md hover:scale-[1.01] transition-all duration-300 active:scale-[0.99]"
+      className="bg-gradient-to-r from-white/90 via-pink-50/40 to-purple-50/40 rounded-2xl px-5 py-4 shadow-sm border border-pink-100/50 cursor-pointer hover:shadow-md hover:scale-[1.01] transition-all duration-300 active:scale-[0.99]"
       onClick={() => navigate('/journey-steps')}
       data-testid="journey-steps-card"
     >
       <div className="text-center">
         {/* Titre avec cœurs alignés */}
         <div className="flex items-center justify-center gap-2">
-          <Heart className="w-3.5 h-3.5 text-pink-400 flex-shrink-0" fill="currentColor" />
+          <Heart className="w-4 h-4 text-pink-400 flex-shrink-0" fill="currentColor" />
           <h2 
-            className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500 whitespace-nowrap"
+            className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500 whitespace-nowrap"
             style={{ fontFamily: "'Quicksand', 'Nunito', sans-serif", fontWeight: 700 }}
           >
             {t('home.journeySteps', 'Les étapes de votre plus beau voyage')}
           </h2>
-          <Heart className="w-3.5 h-3.5 text-pink-400 flex-shrink-0" fill="currentColor" />
+          <Heart className="w-4 h-4 text-pink-400 flex-shrink-0" fill="currentColor" />
         </div>
         
         {/* Sous-titre */}
-        <p className="text-[9px] text-slate-400 mt-0.5">
+        <p className="text-[10px] text-slate-400 mt-1">
           {t('home.journeyStepsDesc', 'De la conception à l\'arrivée de bébé')}
         </p>
       </div>
