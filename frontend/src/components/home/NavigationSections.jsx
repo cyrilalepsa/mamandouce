@@ -306,30 +306,19 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
         </div>
       </Card>
 
-      {/* Évolution et conseils - déplacé depuis préconception */}
-      <Card
-        onClick={() => navigate('/tips')}
-        data-testid="tips-nav"
-        className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover mb-4"
-      >
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-rose-400 rounded-xl flex items-center justify-center flex-shrink-0">
-            <BookHeart className="w-6 h-6 text-white" />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-              {t('pregnancy.tipsAndEvolution', 'Évolution et conseils')}
-            </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              {t('pregnancy.weekByWeek', 'Semaine par semaine')}
-            </p>
-          </div>
-          <ChevronRight className="w-5 h-5 text-pink-400" />
-        </div>
-      </Card>
+      {/* RDV, Évolution et conseils, Suivi de grossesse, Rappels */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {/* Évolution et conseils - format carré comme les autres */}
+        <Card
+          onClick={() => navigate('/tips')}
+          data-testid="tips-nav"
+          className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+        >
+          <BookHeart className="w-8 h-8 text-pink-500 mx-auto mb-2" />
+          <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.tipsAndEvolution', 'Évolution et conseils')}</h3>
+          <p className="text-xs text-slate-500">{t('pregnancy.weekByWeek', 'Semaine par semaine')}</p>
+        </Card>
 
-      {/* RDV (1er trimestre gratuit, Premium après), Suivi de grossesse (Premium), Rappels */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {/* RDV - Gratuit au 1er trimestre, Premium après */}
         {isPremium || isFirstTrimester ? (
           <Card
