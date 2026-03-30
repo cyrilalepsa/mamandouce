@@ -51,6 +51,12 @@ Application mobile de suivi de grossesse "MamanDouce" - Companion complet pour l
 
 ## Completed in Current Session (March 2025)
 
+### Réorganisation UI Page d'Accueil - DONE (30/03/2025)
+- "Suivi de cycles" : Nouvelle section collapsible en haut de page (anciennement "Mon agenda")
+- "Évolution et conseils" : Déplacé dans la catégorie "Grossesse" (sous Prénoms)
+- Toutes les sections ont un bouton "Fermer" en bas et une épingle pour rester ouvertes
+- Traductions ajoutées dans les 6 langues pour "cycleTracking"
+
 ### Carte de Visite - DONE
 - Version avec QR Code (recto: logo + slogan + QR)
 - Version sans QR Code (recto: logo + slogan + 4 features)
@@ -60,6 +66,12 @@ Application mobile de suivi de grossesse "MamanDouce" - Companion complet pour l
 
 ### Correction RDV - DONE
 - "Examen des hanches" → "Échographie des hanches (dépistage luxation)"
+
+### Correction Calendrier Fertilité - DONE
+- Bug de décalage de date corrigé (timezone locale vs UTC)
+
+### Label SA - DONE
+- "SA" (Semaines d'Aménorrhée) ajouté à tous les affichages de semaines de grossesse
 
 ## Backlog
 
@@ -73,6 +85,8 @@ Application mobile de suivi de grossesse "MamanDouce" - Companion complet pour l
 - [ ] Comparateur de prénoms
 
 ## Key Files
+- `/app/frontend/src/pages/HomePage.js` - Page d'accueil avec sections collapsibles
+- `/app/frontend/src/components/home/NavigationSections.jsx` - Composants de navigation
 - `/app/frontend/src/pages/CarteVisitePage.js` - Carte de visite
 - `/app/backend/routes/postpartum.py` - RDV post-partum
 - `/app/frontend/src/i18n/locales/` - Fichiers de traduction

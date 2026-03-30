@@ -54,8 +54,8 @@ export function usePinnedSections() {
   return useContext(PinnedSectionsContext);
 }
 
-// Composant réutilisable pour les sections déroulantes
-function CollapsibleSection({ title, icon: Icon, iconColor, children, defaultOpen = false, sectionId }) {
+// Composant réutilisable pour les sections déroulantes - exporté pour usage externe
+export function CollapsibleSection({ title, icon: Icon, iconColor, children, defaultOpen = false, sectionId }) {
   const { t } = useTranslation();
   const { isPinned, togglePin } = usePinnedSections();
   const pinned = sectionId ? isPinned(sectionId) : false;
@@ -183,38 +183,21 @@ export function PreconceptionSection() {
           <p className="text-xs text-slate-500 mt-1">{t('pregnancy.ovulationAndDates', 'Ovulation et dates clés')}</p>
         </Card>
 
+        {/* Grossesse après 35 ans - version compacte */}
         <Card
-          onClick={() => navigate('/tips')}
-          data-testid="preconception-tips-nav"
-          className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
+          onClick={() => navigate('/pregnancy-after-35')}
+          data-testid="pregnancy-after-35-nav"
+          className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-purple-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
         >
-          <BookHeart className="w-10 h-10 text-pink-400 mx-auto mb-2" />
-          <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('pregnancy.tipsAndEvolution', 'Évolution et conseils')}</h3>
-          <p className="text-xs text-slate-500 mt-1">{t('pregnancy.weekByWeek', 'Semaine par semaine')}</p>
+          <Heart className="w-10 h-10 text-purple-400 mx-auto mb-2" />
+          <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
+            {t('pregnancy.after35', 'Grossesse après 35 ans')}
+          </h3>
+          <p className="text-xs text-slate-500 mt-1">
+            {t('pregnancy.after35Desc', 'Conseils et accompagnement')}
+          </p>
         </Card>
       </div>
-      
-      {/* Nouvelle carte : Grossesse après 35 ans */}
-      <Card
-        onClick={() => navigate('/pregnancy-after-35')}
-        data-testid="pregnancy-after-35-nav"
-        className="mt-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-purple-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover"
-      >
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 bg-gradient-to-br from-purple-400 to-pink-400 rounded-2xl flex items-center justify-center flex-shrink-0">
-            <Heart className="w-7 h-7 text-white" />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-              {t('pregnancy.after35', 'Grossesse après 35 ans')}
-            </h3>
-            <p className="text-xs text-slate-500 mt-1">
-              {t('pregnancy.after35Desc', 'Conseils, examens et accompagnement spécialisé')}
-            </p>
-          </div>
-          <ChevronRight className="w-5 h-5 text-slate-400" />
-        </div>
-      </Card>
       
       {/* Avertissement médical */}
       <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
@@ -320,6 +303,28 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
             </p>
           </div>
           <ChevronRight className="w-5 h-5 text-violet-400" />
+        </div>
+      </Card>
+
+      {/* Évolution et conseils - déplacé depuis préconception */}
+      <Card
+        onClick={() => navigate('/tips')}
+        data-testid="tips-nav"
+        className="bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] cursor-pointer card-hover mb-4"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-rose-400 rounded-xl flex items-center justify-center flex-shrink-0">
+            <BookHeart className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-base font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              {t('pregnancy.tipsAndEvolution', 'Évolution et conseils')}
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {t('pregnancy.weekByWeek', 'Semaine par semaine')}
+            </p>
+          </div>
+          <ChevronRight className="w-5 h-5 text-pink-400" />
         </div>
       </Card>
 

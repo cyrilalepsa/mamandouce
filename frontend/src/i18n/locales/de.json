@@ -65,6 +65,7 @@
   "home": {
     "welcome": "Hallo",
     "myAgenda": "Meine Agenda",
+    "cycleTracking": "Zyklusverfolgung",
     "configureMyeCycle": "Meinen Zyklus konfigurieren",
     "lastPeriodDate": "Datum der letzten Periode",
     "cycleLength": "Zykluslänge",

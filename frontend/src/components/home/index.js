@@ -6,7 +6,9 @@ export {
   BabyPreparationSection, 
   PostpartumSection, 
   ServicesSection,
-  PinnedSectionsProvider 
+  PinnedSectionsProvider,
+  CollapsibleSection,
+  usePinnedSections
 } from './NavigationSections';
 export { TopBar } from './TopBar';
 export { PinTipBanner, PinTooltip } from './PinTip';

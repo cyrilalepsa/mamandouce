@@ -66,6 +66,7 @@
   "home": {
     "welcome": "Hello",
     "myAgenda": "My agenda",
+    "cycleTracking": "Cycle tracking",
     "configureMyeCycle": "Configure my cycle",
     "lastPeriodDate": "Last period date",
     "cycleLength": "Cycle length",

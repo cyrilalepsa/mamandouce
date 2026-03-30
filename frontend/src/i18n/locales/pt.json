@@ -65,6 +65,7 @@
   "home": {
     "welcome": "Olá",
     "myAgenda": "A minha agenda",
+    "cycleTracking": "Acompanhamento de ciclos",
     "configureMyeCycle": "Configurar o meu ciclo",
     "lastPeriodDate": "Data da última menstruação",
     "cycleLength": "Duração do ciclo",
