@@ -114,10 +114,12 @@ function HomePage() {
             </div>
 
             {/* Contenu personnalisable avec pages multiples */}
-            <CustomizableHome 
-              pregnancyProfile={pregnancyProfile}
-              hasPregnancyProfile={hasPregnancyProfile}
-            />
+            <div className="pt-8">
+              <CustomizableHome 
+                pregnancyProfile={pregnancyProfile}
+                hasPregnancyProfile={hasPregnancyProfile}
+              />
+            </div>
 
           </div>
         </div>
