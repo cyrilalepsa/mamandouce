@@ -28,6 +28,7 @@ import {
   BiometricLoginButton,
   PinLoginSection
 } from '../components/auth';
+import { incrementLoginCount } from '../components/home/PushNotificationReminder';
 
 function AuthPage({ setIsAuthenticated }) {
   const { t } = useTranslation();
@@ -128,6 +129,11 @@ function AuthPage({ setIsAuthenticated }) {
   };
 
   const completeLogin = async (isNewUser = false) => {
+    // Incrémenter le compteur de connexions pour le rappel de notifications
+    if (!isNewUser) {
+      incrementLoginCount();
+    }
+    
     // Pour les nouveaux utilisateurs, rediriger vers la page d'abonnement
     if (isNewUser) {
       setIsAuthenticated(true);

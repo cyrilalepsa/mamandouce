@@ -19,6 +19,7 @@ import {
 import { PinTipBanner } from './PinTip';
 import { DraggableItem, ItemGroup, GroupContentPopup } from './DragDropComponents';
 import { UpcomingRemindersCard } from './UpcomingRemindersCard';
+import { PushNotificationReminder } from './PushNotificationReminder';
 
 // CSS pour l'animation de tremblement
 if (typeof document !== 'undefined' && !document.getElementById('wiggle-style')) {
@@ -215,7 +216,7 @@ function PageDots({ pages, currentIndex, onPageChange, onSetAsHome, defaultPageI
               ? 'w-3 h-3 bg-rose-300 shadow-sm'
               : 'w-2.5 h-2.5 bg-rose-200 hover:bg-rose-300'
           }`}
-          title={t('home.soclePage', 'Page Socle')}
+          title={t('home.soclePage', 'Page principale')}
         >
           {soclePage.id === defaultPageId && currentIndex !== socleIndex && (
             <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-rose-400 rounded-full"></span>
@@ -303,7 +304,7 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
     }
   };
 
-  // Appui long sur page socle = créer nouvelle page
+  // Appui long sur page principale = créer nouvelle page
   const handleSocleLongPressStart = (e) => {
     if (!currentPage?.isDefault) return;
     
@@ -458,7 +459,7 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
 
   return (
     <div className="relative">
-      {/* Popup créer une page (appui long sur socle) - Style bulle/nuage */}
+      {/* Popup créer une page (appui long sur page principale) - Style bulle/nuage */}
       {showCreatePagePrompt && (
         <div className="fixed inset-0 z-50 flex items-end justify-center pb-24 bg-black/20 backdrop-blur-[2px]">
           <div 
@@ -598,15 +599,18 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
           {isDefaultPage && <PinTipBanner />}
           
           <div className="space-y-3">
-            {/* === PAGE SOCLE (3 éléments + rappels) === */}
+            {/* Carte de rappels/notifications - visible sur TOUTES les pages */}
+            <UpcomingRemindersCard />
+            
+            {/* Rappel d'activation des notifications push (après 3 connexions) */}
+            <PushNotificationReminder />
+
+            {/* === PAGE PRINCIPALE (3 éléments) === */}
             {isDefaultPage && (
               <>
                 {hasPregnancyProfile && (
                   <WeekDisplayWidget pregnancyProfile={pregnancyProfile} t={t} />
                 )}
-                
-                {/* Carte de rappels/notifications à venir */}
-                <UpcomingRemindersCard />
                 
                 <NameOfTheDay isDarkMode={isDarkMode} />
                 <JourneyStepsCard t={t} navigate={navigate} />

@@ -14,7 +14,7 @@ const getAuthHeaders = () => ({
 
 const HomeLayoutContext = createContext(null);
 
-// Configuration par défaut de la page socle
+// Configuration par défaut de la page principale
 const DEFAULT_LAYOUT = {
   pages: [
     {
@@ -241,7 +241,7 @@ export function HomeLayoutProvider({ children }) {
   // Supprimer un élément d'une page
   const removeItemFromPage = useCallback(async (itemId, pageId) => {
     const page = layout.pages.find(p => p.id === pageId);
-    if (!page || page.isDefault) return false; // Ne pas supprimer de la page socle
+    if (!page || page.isDefault) return false; // Ne pas supprimer de la page principale
     
     const newItems = page.items.filter(i => i.id !== itemId);
     
