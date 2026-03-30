@@ -55,23 +55,23 @@ function JourneyStepsCard({ t, navigate }) {
       onClick={() => navigate('/journey-steps')}
       data-testid="journey-steps-card"
     >
-      {/* Contenu centré */}
-      <div className="flex items-center justify-center gap-2">
-        <Heart className="w-3.5 h-3.5 text-pink-400 flex-shrink-0" fill="currentColor" />
-        
-        <div className="text-center">
+      <div className="text-center">
+        {/* Titre avec cœurs alignés */}
+        <div className="flex items-center justify-center gap-2">
+          <Heart className="w-3.5 h-3.5 text-pink-400 flex-shrink-0" fill="currentColor" />
           <h2 
             className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500 whitespace-nowrap"
             style={{ fontFamily: "'Quicksand', 'Nunito', sans-serif", fontWeight: 700 }}
           >
             {t('home.journeySteps', 'Les étapes de votre plus beau voyage')}
           </h2>
-          <p className="text-[9px] text-slate-400 mt-0.5">
-            {t('home.journeyStepsDesc', 'De la conception à l\'arrivée de bébé')}
-          </p>
+          <Heart className="w-3.5 h-3.5 text-pink-400 flex-shrink-0" fill="currentColor" />
         </div>
         
-        <Heart className="w-3.5 h-3.5 text-pink-400 flex-shrink-0" fill="currentColor" />
+        {/* Sous-titre */}
+        <p className="text-[9px] text-slate-400 mt-0.5">
+          {t('home.journeyStepsDesc', 'De la conception à l\'arrivée de bébé')}
+        </p>
       </div>
     </Card>
   );
