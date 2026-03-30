@@ -1,96 +1,85 @@
 # MamanDouce - Product Requirements Document
 
 ## Original Problem Statement
-Application mobile de suivi de grossesse "MamanDouce" - Companion complet pour les femmes avant, pendant et après la grossesse. Déploiement full-stack sur Railway, amélioration UX/UI, support multi-langues (statique et dynamique), publication Google Play Store.
+Application pour femmes enceintes avec une UX/UI type smartphone (iOS/Android). 
+
+### Core Features
+- Page "Socle" fixe type tiroir d'applications
+- Pages personnalisables avec duplication
+- Création de dossiers/groupes via Drag & Drop
+- Système d'épingle pour les sections
+- Support Multi-langues complet
 
 ## Tech Stack
-- **Frontend**: React (PWA)
-- **Backend**: FastAPI (Python)
-- **Database**: MongoDB
+- **Frontend**: React, Context API, Tailwind CSS, HTML5 Drag and Drop API
+- **Backend**: FastAPI, MongoDB
 - **Hosting**: Railway
-- **Integrations**: Stripe (paiements), Resend (emails), OpenAI GPT-5.2 (chatbot + traduction)
+- **Integrations**: Resend (emails), Stripe (payments), OpenAI GPT-5.2 (translations)
 
-## Core Features Implemented
+## Database Schema
+- `users`: Données utilisateur
+- `user_layouts`: Layouts personnalisés liés par email
+- `contact_messages`: Messages de contact
+- `reminders`: Rappels personnalisés
 
-### Système de personnalisation smartphone (UPDATED - Mars 2025)
-- [x] **Page SOCLE** (3 éléments fixes) : Fête du jour, Semaine X, Carte "Les étapes de votre plus beau voyage"
-- [x] **Page `/journey-steps`** : 5 sections en cartes cliquables (plus d'accordéons)
-- [x] **Page `/section/:sectionId`** : Page de détail avec message "appui long pour sélectionner et dupliquer"
-- [x] **Appui long Page Socle** : Création d'une nouvelle page personnalisée
-- [x] **Appui long carte utilisateur** : Animation tremblement + croix rouge pour suppression
-- [x] **Popup duplication** : Choix de la page de destination
-- [x] **Bouton Home 🏠** : Toujours visible + définir page par défaut
-- [x] **Bulles de pagination** : Home (rose) + Socle (rose) + Pages utilisateur (violet)
-- [x] **Admin - Messages** : Sélection multiple et suppression en lot
+## Key API Endpoints
+- `/api/user/layout` (GET/POST/DELETE) - Gestion des layouts
 
-### Authentification & Profil
-- [x] Inscription/Connexion email + mot de passe
-- [x] Reset password par email
-- [x] Profil utilisateur avec date d'accouchement prévue
-- [x] Gestion abonnement Stripe
+---
 
-### Suivi Grossesse
-- [x] Calculateur de grossesse (roue)
-- [x] Conseils hebdomadaires personnalisés
-- [x] Scanner d'aliments (autorisés/interdits)
-- [x] Bibliothèque alimentaire complète
-- [x] RDV médicaux avec rappels
-- [x] Valise de maternité interactive
+# CHANGELOG
 
-### Post-Partum
-- [x] Guide post-partum complet (RDV bébé, allaitement, biberon)
-- [x] Recettes adaptées
-- [x] Suivi des étapes clés
+## 2026-03-30
+- ✅ Vérification visuelle de la réforme 2026 (congés parentaux)
+- ✅ Vérification de `UpcomingRemindersCard` (carte rappels sur accueil)
+- ✅ Vérification du point rouge clignotant (notifications messages)
 
-### Fonctionnalités Avancées
-- [x] Chatbot IA (GPT-5.2) disponible 24/7
-- [x] Suivi des règles et ovulation (TrackingPage)
-- [x] Liste de naissance partageable
-- [x] Idées de prénoms (base FR + US)
-- [x] Grossesse après 35 ans (guide spécialisé)
+## Sessions précédentes (récap)
+- ✅ Correction bug API `/api/user_layout` (remplacement `_id` par `email`)
+- ✅ Remplacement accordéons par pages de sections dédiées avec système d'épingle
+- ✅ Création popups de duplication "façon bulle/nuage"
+- ✅ Déplacement et redesign des bulles de pagination
+- ✅ Implémentation Drag & Drop pour créer des groupes/dossiers
+- ✅ Design en relief de la carte "Les étapes de votre plus beau voyage"
+- ✅ Création de `PreconceptionTipsPage.js` et `ParentalLeavePage.js`
+- ✅ Création de `UpcomingRemindersCard.jsx`
+- ✅ Ajout réforme 2026 dans `ParentalLeavePage.js`
+- ✅ Intégration carte rappels dans `CustomizableHome.jsx`
+- ✅ Point rouge clignotant dans `TopBar.jsx`
 
-### Multi-langues (6 langues)
-- [x] Français, English, Español, Português, Italiano, Deutsch
-- [x] Traduction statique (i18next) sur toutes les pages
-- [x] Traduction dynamique (GPT-5.2) pour contenu BDD
-- [x] Sélecteur de langue (drapeau) sur HomePage/AuthPage
+---
 
-### Business Kit (Admin)
-- [x] Carte de visite (2 versions: avec/sans QR code)
-- [x] Accès aux documents téléchargeables
-- [x] Panel admin pour statistiques et gestion
+# ROADMAP
 
-## Completed in Current Session (30 Mars 2025)
+## P0 - Critical
+- Aucun bloqueur actuel
 
-### 6 Corrections UX/UI Type Smartphone - DONE
-1. ✅ **Création de page** : Corrigé l'API `/api/user/layout` (prefix et type User)
-2. ✅ **Phrase "mode édition..."** : Retirée de JourneyStepsPage
-3. ✅ **Accordéons remplacés** : Cartes cliquables sur `/journey-steps` → `/section/:sectionId`
-4. ✅ **Double appui** : Remplacé par clic simple
-5. ✅ **Appui long Page Socle** : Ouvre popup création de page
-6. ✅ **Bulles de pagination** : Home + Socle (rose) + Pages utilisateur (violet)
+## P1 - High Priority
+- 🟡 Publication Google Play Store (génération archive `.aab`)
 
-## Backlog
+## P2 - Medium Priority
+- Aucune tâche P2 en attente
 
-### P1 - High Priority
-- [ ] Publication Google Play Store (génération fichier .aab)
+## P3 - Low Priority
+- 🔵 Audio prononciation pour les prénoms
 
-### P3 - Medium Priority
-- [ ] Audio prononciation pour les prénoms
+## P4 - Backlog
+- 🔵 Comparateur de prénoms
 
-### P4 - Low Priority
-- [ ] Comparateur de prénoms
+---
 
-## Key Files
-- `/app/frontend/src/pages/HomePage.js` - Page d'accueil avec sections collapsibles
-- `/app/frontend/src/pages/JourneyStepsPage.js` - 5 cartes cliquables vers sections
-- `/app/frontend/src/pages/SectionDetailPage.js` - Détail section avec appui long
-- `/app/frontend/src/components/home/CustomizableHome.jsx` - Accueil personnalisable, pagination
-- `/app/frontend/src/components/home/NavigationSections.jsx` - Composants de navigation
-- `/app/frontend/src/contexts/HomeLayoutContext.js` - Gestion état global pages
-- `/app/backend/routes/user_layout.py` - API layout utilisateur
+## Key Files Reference
+- `/app/frontend/src/pages/ParentalLeavePage.js`
+- `/app/frontend/src/components/home/UpcomingRemindersCard.jsx`
+- `/app/frontend/src/components/home/CustomizableHome.jsx`
+- `/app/frontend/src/components/home/TopBar.jsx`
+- `/app/frontend/src/components/home/DragDropComponents.jsx`
+- `/app/frontend/src/contexts/HomeLayoutContext.js`
+- `/app/backend/routes/user_layout.py`
 
-## Deployment Notes
-- Preview: `https://femme-enceinte-app.preview.emergentagent.com`
-- Production: `https://mamandouce.cycafamily.com`
-- **Important**: Cliquer "Save to GitHub" pour déclencher le déploiement Railway
+## Areas to Watch
+- `CustomizableHome.jsx` et `HomeLayoutContext.js` deviennent denses (Drag&Drop, touch events, swipes, long press)
+
+## Credentials for Testing
+- Test account: Créer via `/api/auth/register`
+- Admin: `cyrilalepsa@gmail.com`
