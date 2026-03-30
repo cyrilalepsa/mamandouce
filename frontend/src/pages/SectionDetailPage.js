@@ -66,11 +66,14 @@ const SECTION_ITEMS = {
     { id: 'preconception-tips', icon: BookHeart, iconColor: 'text-amber-500', bgColor: 'bg-amber-50', title: 'Conseils préconception', titleKey: 'preconception.tips', desc: 'Préparez votre corps', descKey: 'preconception.tipsDesc', route: '/tips' },
   ],
   'pregnancy': [
+    // Partie Alimentation (4 premières cartes)
     { id: 'food-scanner', icon: ScanBarcode, iconColor: 'text-emerald-500', bgColor: 'bg-emerald-50', title: 'Scanner', titleKey: 'pregnancy.scanner', desc: 'Aliments', descKey: 'pregnancy.foods', route: '/scanner' },
     { id: 'food-library', icon: Apple, iconColor: 'text-red-400', bgColor: 'bg-red-50', title: 'Bibliothèque', titleKey: 'pregnancy.library', desc: 'Aliments', descKey: 'pregnancy.foods', route: '/library' },
     { id: 'favorites', icon: Heart, iconColor: 'text-pink-400', bgColor: 'bg-pink-50', title: 'Favoris', titleKey: 'pregnancy.favorites', desc: 'Sauvegardés', descKey: 'pregnancy.saved', route: '/favorites' },
     { id: 'history', icon: History, iconColor: 'text-purple-400', bgColor: 'bg-purple-50', title: 'Historique', titleKey: 'pregnancy.history', desc: 'Recherches', descKey: 'pregnancy.searches', route: '/history' },
-    { id: 'baby-names', icon: Users, iconColor: 'text-violet-500', bgColor: 'bg-violet-50', title: 'Liste des Prénoms', titleKey: 'pregnancy.babyNames', desc: 'Europe & Amérique', descKey: 'pregnancy.namesDesc', route: '/baby-names', premium: 'partial' },
+    // Séparateur : Liste des Prénoms (carte large)
+    { id: 'baby-names', icon: Users, iconColor: 'text-violet-500', bgColor: 'bg-gradient-to-r from-violet-50 to-purple-50', title: 'Liste des Prénoms', titleKey: 'pregnancy.babyNames', desc: 'Europe & Amérique - Signification et personnalité', descKey: 'pregnancy.namesDescFull', route: '/baby-names', premium: 'partial', wide: true },
+    // Partie Médicale et Suivi
     { id: 'tips-evolution', icon: BookHeart, iconColor: 'text-pink-500', bgColor: 'bg-pink-50', title: 'Évolution et conseils', titleKey: 'pregnancy.tipsAndEvolution', desc: 'Semaine par semaine', descKey: 'pregnancy.weekByWeek', route: '/tips' },
     { id: 'medical-appointments', icon: Stethoscope, iconColor: 'text-sky-500', bgColor: 'bg-sky-50', title: 'Rendez-vous', titleKey: 'pregnancy.appointments', desc: 'Suivi médical', descKey: 'pregnancy.medicalFollowUp', route: '/medical' },
     { id: 'pregnancy-tracking', icon: LineChart, iconColor: 'text-teal-500', bgColor: 'bg-teal-50', title: 'Suivi grossesse', titleKey: 'pregnancy.tracking', desc: 'Statistiques', descKey: 'pregnancy.stats', route: '/calculator' },
@@ -243,6 +246,60 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
     }
   };
 
+  // Carte large (bannière)
+  if (item.wide) {
+    return (
+      <Card 
+        className={`
+          relative ${item.bgColor} rounded-2xl p-4 
+          shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-violet-100 
+          hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] 
+          cursor-pointer transition-all col-span-2 sm:col-span-3
+          ${isLocked ? 'opacity-60' : ''}
+          ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''}
+        `}
+        onClick={handleClick}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchMove={() => clearTimeout(longPressTimer.current)}
+        onMouseDown={handleTouchStart}
+        onMouseUp={handleTouchEnd}
+        onMouseLeave={() => clearTimeout(longPressTimer.current)}
+        data-testid={`item-card-${item.id}`}
+      >
+        <div className="flex items-center gap-4">
+          <div className={`w-12 h-12 bg-gradient-to-br from-violet-400 to-purple-400 rounded-xl flex items-center justify-center flex-shrink-0`}>
+            <Icon className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1 text-left">
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-bold text-slate-700">
+                {t(item.titleKey, item.title)}
+              </h3>
+              {isPartialPremium && (
+                <span className="flex items-center gap-0.5 bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full text-[10px] font-medium">
+                  <Crown className="w-2.5 h-2.5" />
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {t(item.descKey, item.desc)}
+            </p>
+          </div>
+          <ChevronRight className="w-5 h-5 text-violet-400 flex-shrink-0" />
+        </div>
+        
+        {/* Badge sélection */}
+        {isSelected && (
+          <div className="absolute top-2 left-2 w-5 h-5 bg-pink-500 rounded-full flex items-center justify-center z-10">
+            <Check className="w-3 h-3 text-white" />
+          </div>
+        )}
+      </Card>
+    );
+  }
+
+  // Carte normale (carrée)
   return (
     <Card 
       className={`
