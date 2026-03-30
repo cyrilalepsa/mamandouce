@@ -359,6 +359,102 @@ export function HomeLayoutProvider({ children }) {
     return success;
   }, [layout, saveLayout, t]);
 
+  // Créer un groupe en fusionnant deux items (drag & drop)
+  const createGroupFromItems = useCallback(async (pageId, item1Id, item2Id, groupName = 'Nouveau groupe') => {
+    const page = layout.pages.find(p => p.id === pageId);
+    if (!page || page.isDefault) return false;
+
+    const item1 = page.items?.find(i => i.id === item1Id);
+    const item2 = page.items?.find(i => i.id === item2Id);
+    
+    if (!item1 || !item2) return false;
+
+    const newGroup = {
+      id: `group-${Date.now()}`,
+      name: groupName,
+      items: [item1, item2]
+    };
+    
+    // Retirer les items de la liste principale et ajouter le groupe
+    const newItems = page.items.filter(i => i.id !== item1Id && i.id !== item2Id);
+    
+    const newPages = layout.pages.map(p => {
+      if (p.id !== pageId) return p;
+      return {
+        ...p,
+        items: newItems,
+        groups: [...(p.groups || []), newGroup]
+      };
+    });
+    
+    const newLayout = { ...layout, pages: newPages };
+    const success = await saveLayout(newLayout);
+    if (success) {
+      toast.success(t('home.groupCreated', 'Groupe créé !'));
+    }
+    return success;
+  }, [layout, saveLayout, t]);
+
+  // Ajouter un item à un groupe existant
+  const addItemToGroup = useCallback(async (pageId, groupId, itemId) => {
+    const page = layout.pages.find(p => p.id === pageId);
+    if (!page || page.isDefault) return false;
+
+    const item = page.items?.find(i => i.id === itemId);
+    if (!item) return false;
+
+    const newPages = layout.pages.map(p => {
+      if (p.id !== pageId) return p;
+      return {
+        ...p,
+        items: p.items.filter(i => i.id !== itemId),
+        groups: (p.groups || []).map(g => {
+          if (g.id !== groupId) return g;
+          return {
+            ...g,
+            items: [...g.items, item]
+          };
+        })
+      };
+    });
+    
+    const newLayout = { ...layout, pages: newPages };
+    return await saveLayout(newLayout);
+  }, [layout, saveLayout]);
+
+  // Retirer un item d'un groupe
+  const removeItemFromGroup = useCallback(async (pageId, groupId, itemId) => {
+    const page = layout.pages.find(p => p.id === pageId);
+    if (!page) return false;
+
+    const group = page.groups?.find(g => g.id === groupId);
+    if (!group) return false;
+
+    const item = group.items.find(i => i.id === itemId);
+    if (!item) return false;
+
+    const newPages = layout.pages.map(p => {
+      if (p.id !== pageId) return p;
+      
+      const updatedGroups = (p.groups || []).map(g => {
+        if (g.id !== groupId) return g;
+        return {
+          ...g,
+          items: g.items.filter(i => i.id !== itemId)
+        };
+      }).filter(g => g.items.length > 0); // Supprimer les groupes vides
+      
+      return {
+        ...p,
+        items: [...p.items, item],
+        groups: updatedGroups
+      };
+    });
+    
+    const newLayout = { ...layout, pages: newPages };
+    return await saveLayout(newLayout);
+  }, [layout, saveLayout]);
+
   // Dupliquer un item vers une page utilisateur
   const duplicateItemToPage = useCallback(async (itemId, targetPageId) => {
     const targetPage = layout.pages.find(p => p.id === targetPageId);
@@ -421,6 +517,9 @@ export function HomeLayoutProvider({ children }) {
     addGroup,
     renameGroup,
     deleteGroup,
+    createGroupFromItems,
+    addItemToGroup,
+    removeItemFromGroup,
     duplicateItemToPage,
     setDefaultPage,
     AVAILABLE_ITEMS

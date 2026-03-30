@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Heart, X, Home, Trash2 } from 'lucide-react';
+import { Heart, X, Home, Trash2, FolderOpen } from 'lucide-react';
 import { useHomeLayout } from '../../contexts/HomeLayoutContext';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
@@ -17,6 +17,7 @@ import {
   PinnedSectionsProvider
 } from './NavigationSections';
 import { PinTipBanner } from './PinTip';
+import { DraggableItem, ItemGroup, GroupContentPopup } from './DragDropComponents';
 
 // CSS pour l'animation de tremblement
 if (typeof document !== 'undefined' && !document.getElementById('wiggle-style')) {
@@ -246,7 +247,12 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
     deletePage,
     removeItemFromPage,
     setDefaultPage,
-    defaultPageId
+    defaultPageId,
+    createGroupFromItems,
+    addItemToGroup,
+    removeItemFromGroup,
+    renameGroup,
+    deleteGroup
   } = useHomeLayout();
 
   const containerRef = useRef(null);
@@ -255,6 +261,11 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
   const [isPageShaking, setIsPageShaking] = useState(false);
   const [showCreatePagePrompt, setShowCreatePagePrompt] = useState(false);
   const pageLongPressTimer = useRef(null);
+  
+  // États pour le drag & drop
+  const [draggingItem, setDraggingItem] = useState(null);
+  const [dropTarget, setDropTarget] = useState(null);
+  const [openGroup, setOpenGroup] = useState(null);
 
   // Swipe entre pages
   const onTouchStart = (e) => {
@@ -309,6 +320,84 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
   const handleUserPageLongPressEnd = () => {
     if (pageLongPressTimer.current) {
       clearTimeout(pageLongPressTimer.current);
+    }
+  };
+
+  // === DRAG & DROP HANDLERS ===
+  
+  // Quand on commence à glisser un item
+  const handleDragStart = (item) => {
+    setDraggingItem(item);
+  };
+
+  // Quand on arrête de glisser
+  const handleDragEnd = () => {
+    setDraggingItem(null);
+    setDropTarget(null);
+  };
+
+  // Quand on dépose un item sur un autre item (créer groupe)
+  const handleDropOnItem = async (draggedItemId, targetItemId) => {
+    if (!currentPage || currentPage.isDefault) return;
+    
+    // Demander le nom du groupe
+    const groupName = prompt(t('home.groupNamePrompt', 'Nom du groupe :'), t('home.newGroup', 'Nouveau groupe'));
+    if (groupName && createGroupFromItems) {
+      await createGroupFromItems(currentPage.id, draggedItemId, targetItemId, groupName);
+    }
+    handleDragEnd();
+  };
+
+  // Quand on dépose un item sur un groupe existant
+  const handleDropOnGroup = async (draggedItemId, groupId) => {
+    if (!currentPage || currentPage.isDefault) return;
+    
+    if (addItemToGroup) {
+      await addItemToGroup(currentPage.id, groupId, draggedItemId);
+      toast.success(t('home.addedToGroup', 'Ajouté au groupe !'));
+    }
+    handleDragEnd();
+  };
+
+  // Ouvrir un groupe
+  const handleOpenGroup = (group) => {
+    setOpenGroup(group);
+  };
+
+  // Fermer le popup de groupe
+  const handleCloseGroup = () => {
+    setOpenGroup(null);
+  };
+
+  // Retirer un item d'un groupe
+  const handleRemoveFromGroup = async (itemId) => {
+    if (!currentPage || !openGroup) return;
+    
+    if (removeItemFromGroup) {
+      await removeItemFromGroup(currentPage.id, openGroup.id, itemId);
+      // Mettre à jour le groupe ouvert
+      const updatedGroup = currentPage.groups?.find(g => g.id === openGroup.id);
+      if (updatedGroup && updatedGroup.items.length > 0) {
+        setOpenGroup(updatedGroup);
+      } else {
+        setOpenGroup(null);
+      }
+    }
+  };
+
+  // Renommer un groupe
+  const handleRenameGroup = async (groupId, newName) => {
+    if (!currentPage) return;
+    if (renameGroup) {
+      await renameGroup(currentPage.id, groupId, newName);
+    }
+  };
+
+  // Supprimer un groupe
+  const handleDeleteGroup = async (groupId) => {
+    if (!currentPage) return;
+    if (deleteGroup) {
+      await deleteGroup(currentPage.id, groupId);
     }
   };
 
@@ -517,22 +606,48 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
                 {/* Nom de la page */}
                 <div className="text-center mb-2">
                   <h2 className="text-lg font-bold text-slate-700">{currentPage?.name}</h2>
+                  <p className="text-[10px] text-slate-400">
+                    {t('home.dragToGroup', 'Glissez un élément sur un autre pour créer un groupe')}
+                  </p>
                 </div>
 
-                {/* Sections dupliquées */}
-                {currentPage?.items?.filter(item => item.type === 'section').map((item, index) => (
-                  <UserSectionCard
-                    key={`section-${item.id}-${index}`}
-                    item={item}
-                    onRemove={(itemId) => removeItemFromPage(itemId, currentPage.id)}
-                    pregnancyProfile={pregnancyProfile}
-                    hasPregnancyProfile={hasPregnancyProfile}
-                    t={t}
-                  />
-                ))}
+                {/* Groupes existants */}
+                {currentPage?.groups?.length > 0 && (
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    {currentPage.groups.map((group) => (
+                      <ItemGroup
+                        key={group.id}
+                        group={group}
+                        onOpen={handleOpenGroup}
+                        onRename={handleRenameGroup}
+                        onDelete={handleDeleteGroup}
+                        onDrop={(itemId) => handleDropOnGroup(itemId, group.id)}
+                        isDropTarget={dropTarget === group.id}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {/* Items individuels (drag & drop) */}
+                {currentPage?.items?.length > 0 && (
+                  <div className="grid grid-cols-2 gap-3">
+                    {currentPage.items.map((item, index) => (
+                      <DraggableItem
+                        key={`item-${item.id}-${index}`}
+                        item={item}
+                        onDragStart={handleDragStart}
+                        onDragEnd={handleDragEnd}
+                        onDrop={(draggedId, targetId) => handleDropOnItem(draggedId, targetId)}
+                        isDragging={draggingItem?.id === item.id}
+                        isDropTarget={dropTarget === item.id && draggingItem?.id !== item.id}
+                        onRemove={(itemId) => removeItemFromPage(itemId, currentPage.id)}
+                      />
+                    ))}
+                  </div>
+                )}
 
                 {/* Page vide */}
-                {(!currentPage?.items || currentPage.items.length === 0) && (
+                {(!currentPage?.items || currentPage.items.length === 0) && (!currentPage?.groups || currentPage.groups.length === 0) && (
                   <div className="text-center py-8">
                     <p className="text-slate-400 mb-2">{t('home.emptyPage', 'Cette page est vide')}</p>
                     <p className="text-xs text-slate-300">
@@ -550,6 +665,16 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
           </div>
         </PinnedSectionsProvider>
       </div>
+
+      {/* Popup contenu du groupe */}
+      {openGroup && (
+        <GroupContentPopup
+          group={openGroup}
+          onClose={handleCloseGroup}
+          onRemoveItem={handleRemoveFromGroup}
+          t={t}
+        />
+      )}
 
       {/* Bulles de pagination (en bas de page) */}
       <PageDots
