@@ -2,13 +2,11 @@ import { useState, useEffect } from 'react';
 import { Cloud, Feather, PartyPopper } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../utils/api';
-import { toast } from 'sonner';
 import AppTitle from '../components/AppTitle';
-import FertilityCalendar from '../components/FertilityCalendar';
 import { AvatarPreview } from '../components/profile/AvatarBuilder';
 import NameOfTheDay from '../components/NameOfTheDay';
 import { useTheme } from '../contexts/ThemeContext';
-import { isNameCelebratedToday, getSaintOfTheDay } from '../data/saintsCalendar';
+import { isNameCelebratedToday } from '../data/saintsCalendar';
 import LanguageBubble from '../components/LanguageBubble';
 import { Card } from '../components/ui/card';
 import {
@@ -34,18 +32,9 @@ function HomePage() {
   const [userEmail, setUserEmail] = useState('');
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [userRole, setUserRole] = useState('user');
-  
-  // Agenda states
-  const [lastPeriodDate, setLastPeriodDate] = useState('');
-  const [cycleLength, setCycleLength] = useState(28);
-  const [agendaData, setAgendaData] = useState(null);
-  const [agendaLoading, setAgendaLoading] = useState(false);
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [rapportDates, setRapportDates] = useState([]);
 
   useEffect(() => {
     loadUserData();
-    loadRapportDates();
   }, []);
 
   const loadUserData = async () => {
@@ -60,132 +49,9 @@ function HomePage() {
       
       const profileRes = await api.pregnancy.getProfile();
       setPregnancyProfile(profileRes.data);
-      
-      if (profileRes.data && profileRes.data.last_period_date) {
-        setLastPeriodDate(profileRes.data.last_period_date.split('T')[0]);
-        setCycleLength(profileRes.data.cycle_length || 28);
-        calculateAgendaDates(profileRes.data.last_period_date, profileRes.data.cycle_length || 28);
-      }
     } catch (error) {
       console.error('Erreur chargement données:', error);
     }
-  };
-
-  const calculateAgendaDates = (periodDate, cycle) => {
-    if (!periodDate) return;
-    
-    const lastPeriod = new Date(periodDate);
-    const cycleLen = cycle || 28;
-    const lutealPhase = 14;
-    const ovulationDay = cycleLen - lutealPhase;
-    
-    const ovulationDate = new Date(lastPeriod);
-    ovulationDate.setDate(ovulationDate.getDate() + ovulationDay);
-    
-    const fertileStart = new Date(ovulationDate);
-    fertileStart.setDate(fertileStart.getDate() - 5);
-    const fertileEnd = new Date(ovulationDate);
-    fertileEnd.setDate(fertileEnd.getDate() + 1);
-    
-    const nextPeriod = new Date(lastPeriod);
-    nextPeriod.setDate(nextPeriod.getDate() + cycleLen);
-    
-    const today = new Date();
-    let adjustedOvulation = ovulationDate;
-    let adjustedFertileStart = fertileStart;
-    let adjustedFertileEnd = fertileEnd;
-    let adjustedNextPeriod = nextPeriod;
-    
-    while (adjustedNextPeriod < today) {
-      adjustedOvulation.setDate(adjustedOvulation.getDate() + cycleLen);
-      adjustedFertileStart.setDate(adjustedFertileStart.getDate() + cycleLen);
-      adjustedFertileEnd.setDate(adjustedFertileEnd.getDate() + cycleLen);
-      adjustedNextPeriod.setDate(adjustedNextPeriod.getDate() + cycleLen);
-    }
-    
-    const inFertileWindow = today >= adjustedFertileStart && today <= adjustedFertileEnd;
-    const isOvulationDay = today.toDateString() === adjustedOvulation.toDateString();
-    const daysToOvulation = Math.ceil((adjustedOvulation - today) / (1000 * 60 * 60 * 24));
-    const daysToNextPeriod = Math.ceil((adjustedNextPeriod - today) / (1000 * 60 * 60 * 24));
-    
-    setAgendaData({
-      ovulationDate: adjustedOvulation,
-      fertileStart: adjustedFertileStart,
-      fertileEnd: adjustedFertileEnd,
-      nextPeriod: adjustedNextPeriod,
-      inFertileWindow,
-      isOvulationDay,
-      daysToOvulation: daysToOvulation > 0 ? daysToOvulation : 0,
-      daysToNextPeriod: daysToNextPeriod > 0 ? daysToNextPeriod : 0,
-      cycleLength: cycleLen
-    });
-  };
-
-  const handleSaveAgenda = async () => {
-    if (!lastPeriodDate) {
-      toast.error('Veuillez renseigner la date de vos dernières règles');
-      return;
-    }
-    
-    setAgendaLoading(true);
-    try {
-      await api.pregnancy.calculate({
-        last_period_date: lastPeriodDate,
-        cycle_length: cycleLength
-      });
-      
-      calculateAgendaDates(lastPeriodDate, cycleLength);
-      toast.success('Agenda mis à jour !');
-      loadUserData();
-    } catch (error) {
-      toast.error('Erreur lors de la mise à jour');
-    } finally {
-      setAgendaLoading(false);
-    }
-  };
-
-  const loadRapportDates = () => {
-    const saved = localStorage.getItem('mamandouce_rapports');
-    if (saved) {
-      setRapportDates(JSON.parse(saved));
-    }
-  };
-
-  const handleAddRapport = (date) => {
-    const newDates = [...rapportDates, date].sort();
-    setRapportDates(newDates);
-    localStorage.setItem('mamandouce_rapports', JSON.stringify(newDates));
-    toast.success('Rapport enregistré');
-  };
-
-  const handleRemoveRapport = (date) => {
-    const newDates = rapportDates.filter(d => d !== date);
-    setRapportDates(newDates);
-    localStorage.setItem('mamandouce_rapports', JSON.stringify(newDates));
-    toast.success('Rapport supprimé');
-  };
-
-  const getNextImplantation = () => {
-    if (rapportDates.length === 0) return null;
-    
-    const today = new Date();
-    let nextImplantation = null;
-    
-    for (const rapportDate of rapportDates) {
-      const rapport = new Date(rapportDate);
-      const implantationEarly = new Date(rapport);
-      implantationEarly.setDate(implantationEarly.getDate() + 6);
-      const implantationLate = new Date(rapport);
-      implantationLate.setDate(implantationLate.getDate() + 12);
-      
-      if (implantationLate >= today) {
-        if (!nextImplantation || implantationEarly < nextImplantation.early) {
-          nextImplantation = { early: implantationEarly, late: implantationLate, rapportDate: rapport };
-        }
-      }
-    }
-    
-    return nextImplantation;
   };
 
   const isAdmin = userRole === 'admin' || userEmail === ADMIN_EMAIL;
@@ -282,7 +148,7 @@ function HomePage() {
           <PinnedSectionsProvider>
             <PinTipBanner />
             
-            <PreconceptionSection onOpenCalendar={() => setShowCalendar(true)} />
+            <PreconceptionSection />
             <PregnancySection 
               hasPregnancyProfile={hasPregnancyProfile} 
               pregnancyProfile={pregnancyProfile} 
@@ -294,16 +160,6 @@ function HomePage() {
 
         </div>
       </div>
-
-      {/* Calendrier Modal */}
-      <FertilityCalendar
-        isOpen={showCalendar}
-        onClose={() => setShowCalendar(false)}
-        agendaData={agendaData}
-        rapportDates={rapportDates}
-        onAddRapport={handleAddRapport}
-        onRemoveRapport={handleRemoveRapport}
-      />
     </div>
   );
 }

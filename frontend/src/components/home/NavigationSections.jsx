@@ -160,7 +160,7 @@ export function CollapsibleSection({ title, icon: Icon, iconColor, children, def
 }
 
 // Catégorie: En route vers la grossesse
-export function PreconceptionSection({ onOpenCalendar }) {
+export function PreconceptionSection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -175,7 +175,7 @@ export function PreconceptionSection({ onOpenCalendar }) {
       <div className="grid grid-cols-2 gap-4">
         {/* Suivi de cycles - carte carrée */}
         <Card
-          onClick={onOpenCalendar}
+          onClick={() => navigate('/cycle-tracking')}
           data-testid="cycle-tracking-nav"
           className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-indigo-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-pointer card-hover text-center"
         >

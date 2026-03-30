@@ -40,6 +40,7 @@ import PregnancyAfter35Page from './pages/PregnancyAfter35Page';
 import BabyNamesPage from './pages/BabyNamesPage';
 import UpdatesHistoryPage from './pages/UpdatesHistoryPage';
 import CarteVisitePage from './pages/CarteVisitePage';
+import CycleTrackingPage from './pages/CycleTrackingPage';
 import ChatBubble from './components/ChatBubble';
 import WhatsNewModal from './components/WhatsNewModal';
 import { NewBadgeProvider } from './components/NewBadge';
@@ -145,6 +146,7 @@ function App() {
                 <Route path="/baby-names" element={<ProtectedRoute><BabyNamesPage /></ProtectedRoute>} />
                 <Route path="/updates" element={<ProtectedRoute requireSubscription={false}><UpdatesHistoryPage /></ProtectedRoute>} />
                 <Route path="/carte-visite" element={<ProtectedRoute><CarteVisitePage /></ProtectedRoute>} />
+                <Route path="/cycle-tracking" element={<ProtectedRoute><CycleTrackingPage /></ProtectedRoute>} />
               </Routes>
             </BrowserRouter>
             <Toaster />
