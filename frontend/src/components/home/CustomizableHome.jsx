@@ -59,28 +59,41 @@ function WeekDisplayWidget({ pregnancyProfile, t }) {
   );
 }
 
-// Carte cliquable "Les étapes de votre plus beau voyage"
+// Carte cliquable "Les étapes de votre plus beau voyage" - EN RELIEF
 function JourneyStepsCard({ t, navigate }) {
   return (
     <Card 
-      className="bg-gradient-to-r from-white/90 via-pink-50/40 to-purple-50/40 rounded-2xl px-4 py-3 shadow-sm border border-pink-100/50 cursor-pointer hover:shadow-md hover:scale-[1.01] transition-all duration-300 active:scale-[0.99]"
+      className="relative bg-gradient-to-r from-white via-pink-50/60 to-purple-50/60 rounded-2xl px-4 py-4 
+        shadow-[0_4px_20px_rgba(236,72,153,0.15)] border-2 border-pink-200/60 
+        cursor-pointer hover:shadow-[0_8px_30px_rgba(236,72,153,0.25)] hover:scale-[1.02] hover:border-pink-300/70
+        transition-all duration-300 active:scale-[0.98]"
       onClick={() => navigate('/journey-steps')}
       data-testid="journey-steps-card"
     >
+      {/* Indicateur "Cliquez" */}
+      <div className="absolute -top-2 right-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-md">
+        {t('common.clickMe', 'Cliquez !')}
+      </div>
+      
       <div className="text-center">
         <div className="flex items-center justify-center gap-2">
-          <Heart className="w-4 h-4 text-pink-400 flex-shrink-0" fill="currentColor" />
+          <Heart className="w-4 h-4 text-pink-400 flex-shrink-0 animate-pulse" fill="currentColor" />
           <h2 
             className="text-[15px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500 whitespace-nowrap"
             style={{ fontFamily: "'Quicksand', 'Nunito', sans-serif", fontWeight: 700 }}
           >
             {t('home.journeySteps', 'Les étapes de votre plus beau voyage')}
           </h2>
-          <Heart className="w-4 h-4 text-pink-400 flex-shrink-0" fill="currentColor" />
+          <Heart className="w-4 h-4 text-pink-400 flex-shrink-0 animate-pulse" fill="currentColor" />
         </div>
-        <p className="text-[11px] text-slate-400 mt-0.5">
+        <p className="text-[11px] text-slate-500 mt-1">
           {t('home.journeyStepsDesc', 'De la conception à l\'arrivée de bébé')}
         </p>
+        
+        {/* Flèche indicateur */}
+        <div className="mt-2 flex justify-center">
+          <span className="text-pink-400 text-xs">→ {t('home.enterHere', 'Entrez ici')} ←</span>
+        </div>
       </div>
     </Card>
   );

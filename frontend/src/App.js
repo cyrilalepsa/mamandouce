@@ -43,6 +43,8 @@ import CarteVisitePage from './pages/CarteVisitePage';
 import CycleTrackingPage from './pages/CycleTrackingPage';
 import JourneyStepsPage from './pages/JourneyStepsPage';
 import SectionDetailPage from './pages/SectionDetailPage';
+import PreconceptionTipsPage from './pages/PreconceptionTipsPage';
+import ParentalLeavePage from './pages/ParentalLeavePage';
 import ChatBubble from './components/ChatBubble';
 import WhatsNewModal from './components/WhatsNewModal';
 import { NewBadgeProvider } from './components/NewBadge';
@@ -154,6 +156,8 @@ function App() {
                 <Route path="/cycle-tracking" element={<ProtectedRoute><CycleTrackingPage /></ProtectedRoute>} />
                 <Route path="/journey-steps" element={<ProtectedRoute><JourneyStepsPage /></ProtectedRoute>} />
                 <Route path="/section/:sectionId" element={<ProtectedRoute><SectionDetailPage /></ProtectedRoute>} />
+                <Route path="/preconception-tips" element={<ProtectedRoute><PreconceptionTipsPage /></ProtectedRoute>} />
+                <Route path="/parental-leave" element={<ProtectedRoute><ParentalLeavePage /></ProtectedRoute>} />
               </Routes>
             </BrowserRouter>
             <Toaster />

@@ -5,7 +5,8 @@ import {
   ArrowLeft, Heart, Sparkles, Baby, Gift, HeartHandshake, Settings, 
   Check, Pin, PinOff, CalendarHeart, ScanBarcode, Apple, History,
   Stethoscope, Bell, BookHeart, Users, ChevronRight, Crown, Lock,
-  ClipboardList, Briefcase, Video, Youtube, Book, Phone, LineChart
+  ClipboardList, Briefcase, Video, Youtube, Book, Phone, LineChart,
+  Scale, Lightbulb
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -63,7 +64,7 @@ const SECTION_ITEMS = {
   'preconception': [
     { id: 'cycle-tracking', icon: CalendarHeart, iconColor: 'text-pink-500', bgColor: 'bg-pink-50', title: 'Suivi de cycles', titleKey: 'preconception.cycleTracking', desc: 'Règles et ovulation', descKey: 'preconception.cycleDesc', route: '/tracking' },
     { id: 'fertility-calc', icon: LineChart, iconColor: 'text-purple-500', bgColor: 'bg-purple-50', title: 'Calculateur fertilité', titleKey: 'preconception.fertilityCalc', desc: 'Période fertile', descKey: 'preconception.fertilityDesc', route: '/tracking' },
-    { id: 'preconception-tips', icon: BookHeart, iconColor: 'text-amber-500', bgColor: 'bg-amber-50', title: 'Conseils préconception', titleKey: 'preconception.tips', desc: 'Préparez votre corps', descKey: 'preconception.tipsDesc', route: '/tips' },
+    { id: 'preparation-advice', icon: Lightbulb, iconColor: 'text-amber-500', bgColor: 'bg-amber-50', title: 'Préparation et conseils', titleKey: 'preconception.preparationAdvice', desc: 'Acide folique, nutrition...', descKey: 'preconception.preparationDesc', route: '/preconception-tips' },
   ],
   'pregnancy': [
     // Partie Alimentation (4 premières cartes)
@@ -78,6 +79,8 @@ const SECTION_ITEMS = {
     { id: 'medical-appointments', icon: Stethoscope, iconColor: 'text-sky-500', bgColor: 'bg-sky-50', title: 'Rendez-vous', titleKey: 'pregnancy.appointments', desc: 'Suivi médical', descKey: 'pregnancy.medicalFollowUp', route: '/medical' },
     { id: 'pregnancy-tracking', icon: LineChart, iconColor: 'text-teal-500', bgColor: 'bg-teal-50', title: 'Suivi grossesse', titleKey: 'pregnancy.tracking', desc: 'Statistiques', descKey: 'pregnancy.stats', route: '/calculator' },
     { id: 'reminders', icon: Bell, iconColor: 'text-orange-500', bgColor: 'bg-orange-50', title: 'Rappels', titleKey: 'pregnancy.reminders', desc: 'Notifications', descKey: 'pregnancy.notifications', route: '/reminders' },
+    // Séparateur : Congés parentaux (carte large en bas)
+    { id: 'parental-leave', icon: Scale, iconColor: 'text-indigo-500', bgColor: 'bg-gradient-to-r from-indigo-50 to-blue-50', title: 'Congés parentaux', titleKey: 'pregnancy.parentalLeave', desc: 'Nouvelle loi 2024 - Vos droits', descKey: 'pregnancy.parentalLeaveDesc', route: '/parental-leave', wide: true },
   ],
   'baby-preparation': [
     { id: 'birth-list', icon: ClipboardList, iconColor: 'text-purple-500', bgColor: 'bg-purple-50', title: 'Liste de naissance', titleKey: 'babyPrep.birthList', desc: 'Préparez tout', descKey: 'babyPrep.birthListDesc', route: '/birth-list' },
