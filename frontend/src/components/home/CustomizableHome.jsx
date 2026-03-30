@@ -1,17 +1,12 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Heart, X } from 'lucide-react';
+import { Heart, X, Home, Plus } from 'lucide-react';
 import { useHomeLayout } from '../../contexts/HomeLayoutContext';
 import { Card } from '../ui/card';
 import NameOfTheDay from '../NameOfTheDay';
 import { useTheme } from '../../contexts/ThemeContext';
-import {
-  PageDots,
-  PageHeader,
-  LayoutTutorialBanner,
-  ResetLayoutButton,
-} from './HomeCustomization';
+import { toast } from 'sonner';
 import {
   PreconceptionSection,
   PregnancySection,
@@ -21,9 +16,8 @@ import {
   PinnedSectionsProvider
 } from './NavigationSections';
 import { PinTipBanner } from './PinTip';
-import { PremiumControlPanel, PAGE_THEMES } from './PremiumFeatures';
 
-// CSS pour l'animation de tremblement (ajouté au head)
+// CSS pour l'animation de tremblement
 if (typeof document !== 'undefined' && !document.getElementById('wiggle-style')) {
   const style = document.createElement('style');
   style.id = 'wiggle-style';
@@ -39,7 +33,7 @@ if (typeof document !== 'undefined' && !document.getElementById('wiggle-style'))
   document.head.appendChild(style);
 }
 
-// Widget "Semaine de grossesse" (taille harmonisée)
+// Widget "Semaine de grossesse"
 function WeekDisplayWidget({ pregnancyProfile, t }) {
   if (!pregnancyProfile?.current_week) return null;
   
@@ -63,7 +57,7 @@ function WeekDisplayWidget({ pregnancyProfile, t }) {
   );
 }
 
-// Carte cliquable "Les étapes de votre plus beau voyage" (taille harmonisée)
+// Carte cliquable "Les étapes de votre plus beau voyage"
 function JourneyStepsCard({ t, navigate }) {
   return (
     <Card 
@@ -72,7 +66,6 @@ function JourneyStepsCard({ t, navigate }) {
       data-testid="journey-steps-card"
     >
       <div className="text-center">
-        {/* Titre avec cœurs alignés */}
         <div className="flex items-center justify-center gap-2">
           <Heart className="w-4 h-4 text-pink-400 flex-shrink-0" fill="currentColor" />
           <h2 
@@ -83,8 +76,6 @@ function JourneyStepsCard({ t, navigate }) {
           </h2>
           <Heart className="w-4 h-4 text-pink-400 flex-shrink-0" fill="currentColor" />
         </div>
-        
-        {/* Sous-titre */}
         <p className="text-[11px] text-slate-400 mt-0.5">
           {t('home.journeyStepsDesc', 'De la conception à l\'arrivée de bébé')}
         </p>
@@ -121,7 +112,6 @@ function UserSectionCard({ item, onRemove, pregnancyProfile, hasPregnancyProfile
   
   const sectionProps = item.id === 'pregnancy' ? { hasPregnancyProfile, pregnancyProfile } : {};
 
-  // Appui long pour activer le mode suppression
   const handleTouchStart = () => {
     longPressTimer.current = setTimeout(() => {
       setIsShaking(true);
@@ -141,7 +131,6 @@ function UserSectionCard({ item, onRemove, pregnancyProfile, hasPregnancyProfile
     onRemove(item.id);
   };
 
-  // Clic ailleurs pour annuler
   const handleClickOutside = () => {
     if (isShaking) setIsShaking(false);
   };
@@ -156,7 +145,6 @@ function UserSectionCard({ item, onRemove, pregnancyProfile, hasPregnancyProfile
       onMouseLeave={handleTouchEnd}
       onClick={handleClickOutside}
     >
-      {/* Bouton supprimer (visible quand tremble) */}
       {isShaking && (
         <button
           onClick={handleDelete}
@@ -176,62 +164,56 @@ function UserSectionCard({ item, onRemove, pregnancyProfile, hasPregnancyProfile
   );
 }
 
-// Carte individuelle pour pages utilisateur (avec suppression par appui long)
-function UserCard({ item, onRemove, navigate, t }) {
-  const [isShaking, setIsShaking] = useState(false);
-  const longPressTimer = useRef(null);
-
-  const handleTouchStart = () => {
-    longPressTimer.current = setTimeout(() => {
-      setIsShaking(true);
-      if (navigator.vibrate) navigator.vibrate(50);
-    }, 500);
-  };
-
-  const handleTouchEnd = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-    }
-  };
-
-  const handleDelete = (e) => {
-    e.stopPropagation();
-    setIsShaking(false);
-    onRemove(item.id);
-  };
-
-  const handleClick = () => {
-    if (isShaking) {
-      setIsShaking(false);
-    } else {
-      navigate(item.path || '/');
-    }
-  };
-
+// Bulles de pagination (toujours visibles sur page socle)
+function PageDots({ pages, currentIndex, onPageChange, onAddPage, onSetAsHome, defaultPageId }) {
+  const { t } = useTranslation();
+  const currentPage = pages[currentIndex];
+  const isCurrentPageHome = currentPage?.id === defaultPageId;
+  const isOnUserPage = !currentPage?.isDefault;
+  
   return (
-    <div 
-      className={`relative transition-all duration-300 ${isShaking ? 'animate-wiggle' : ''}`}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onMouseDown={handleTouchStart}
-      onMouseUp={handleTouchEnd}
-      onMouseLeave={handleTouchEnd}
-    >
-      {isShaking && (
+    <div className="flex items-center justify-center gap-2 py-3">
+      {/* Bouton Home (visible sur pages utilisateur) */}
+      {isOnUserPage && (
         <button
-          onClick={handleDelete}
-          className="absolute -top-2 -right-2 z-20 w-7 h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-pulse"
+          onClick={onSetAsHome}
+          className={`w-7 h-7 rounded-full flex items-center justify-center transition-all mr-1 ${
+            isCurrentPageHome
+              ? 'bg-pink-500 text-white shadow-md'
+              : 'bg-slate-100 hover:bg-pink-100 text-slate-400 hover:text-pink-500'
+          }`}
+          title={isCurrentPageHome ? t('home.isDefaultPage', 'Page d\'accueil par défaut') : t('home.setAsHome', 'Définir comme page d\'accueil')}
         >
-          <X className="w-4 h-4 text-white" />
+          <Home className="w-3.5 h-3.5" />
         </button>
       )}
       
-      <Card 
-        className={`p-3 rounded-2xl bg-white/80 border border-slate-100 cursor-pointer hover:shadow-md ${isShaking ? 'ring-2 ring-red-300' : ''}`}
-        onClick={handleClick}
+      {/* Bulles de pages */}
+      {pages.map((page, index) => (
+        <button
+          key={page.id}
+          onClick={() => onPageChange(index)}
+          className={`relative transition-all duration-300 ${
+            currentIndex === index
+              ? 'w-6 h-2.5 bg-pink-500 rounded-full'
+              : 'w-2.5 h-2.5 bg-slate-300 rounded-full hover:bg-slate-400'
+          }`}
+          title={page.name}
+        >
+          {page.id === defaultPageId && page.id !== 'home' && (
+            <span className="absolute -top-1 -right-1 w-2 h-2 bg-pink-400 rounded-full"></span>
+          )}
+        </button>
+      ))}
+      
+      {/* Bouton ajouter une page */}
+      <button
+        onClick={onAddPage}
+        className="w-6 h-6 bg-slate-100 hover:bg-pink-100 rounded-full flex items-center justify-center transition-all ml-1"
+        title={t('home.addPage', 'Ajouter une page')}
       >
-        <p className="font-medium text-slate-700">{item.name || item.id}</p>
-      </Card>
+        <Plus className="w-3.5 h-3.5 text-slate-400" />
+      </button>
     </div>
   );
 }
@@ -243,8 +225,6 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
   const { isDarkMode } = useTheme();
   const {
     isLoading,
-    showTutorial,
-    dismissTutorial,
     pages,
     currentPageIndex,
     setCurrentPage,
@@ -259,6 +239,7 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const [isPageShaking, setIsPageShaking] = useState(false);
+  const [showCreatePagePrompt, setShowCreatePagePrompt] = useState(false);
   const pageLongPressTimer = useRef(null);
 
   // Swipe entre pages
@@ -283,9 +264,24 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
     }
   };
 
-  // Appui long sur zone vide pour supprimer la page
-  const handlePageLongPressStart = (e) => {
-    // Seulement sur les pages utilisateur et si on clique sur le fond
+  // Appui long sur page socle = créer nouvelle page
+  const handleSocleLongPressStart = (e) => {
+    if (!currentPage?.isDefault) return;
+    
+    pageLongPressTimer.current = setTimeout(() => {
+      if (navigator.vibrate) navigator.vibrate(50);
+      setShowCreatePagePrompt(true);
+    }, 600);
+  };
+
+  const handleSocleLongPressEnd = () => {
+    if (pageLongPressTimer.current) {
+      clearTimeout(pageLongPressTimer.current);
+    }
+  };
+
+  // Appui long sur page utilisateur = supprimer page
+  const handleUserPageLongPressStart = (e) => {
     if (currentPage?.isDefault) return;
     if (e.target !== e.currentTarget) return;
     
@@ -295,7 +291,7 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
     }, 500);
   };
 
-  const handlePageLongPressEnd = () => {
+  const handleUserPageLongPressEnd = () => {
     if (pageLongPressTimer.current) {
       clearTimeout(pageLongPressTimer.current);
     }
@@ -308,11 +304,18 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
     }
   };
 
-  // Ajouter une page
+  // Créer une page
   const handleAddPage = async () => {
+    setShowCreatePagePrompt(false);
     const name = prompt(t('home.enterPageName', 'Nom de la page :'), t('home.newPage', 'Nouvelle page'));
-    if (name) {
-      await addPage(name);
+    if (name && addPage) {
+      const success = await addPage(name);
+      if (success) {
+        // Aller sur la nouvelle page
+        setTimeout(() => {
+          setCurrentPage(pages.length);
+        }, 100);
+      }
     }
   };
 
@@ -333,32 +336,46 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
 
   const currentPage = pages[currentPageIndex];
   const isDefaultPage = currentPage?.isDefault;
-  const isCurrentPageHome = currentPage?.id === defaultPageId;
 
   return (
     <div className="relative">
-      {/* Tutoriel */}
-      {showTutorial && (
-        <LayoutTutorialBanner 
-          onDismiss={dismissTutorial}
-          onStartEdit={() => dismissTutorial()}
-        />
+      {/* Popup créer une page (appui long sur socle) */}
+      {showCreatePagePrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
+          <Card className="w-full max-w-xs bg-white rounded-3xl p-5 shadow-2xl text-center">
+            <h3 className="text-lg font-bold text-slate-700 mb-2">
+              {t('home.createPage', 'Créer une page')}
+            </h3>
+            <p className="text-sm text-slate-500 mb-4">
+              {t('home.createPageDesc', 'Créez votre page personnalisée')}
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowCreatePagePrompt(false)}
+                className="flex-1 py-2 px-4 rounded-full bg-slate-100 text-slate-600 font-medium"
+              >
+                {t('common.cancel', 'Annuler')}
+              </button>
+              <button
+                onClick={handleAddPage}
+                className="flex-1 py-2 px-4 rounded-full bg-pink-500 text-white font-medium"
+              >
+                {t('common.create', 'Créer')}
+              </button>
+            </div>
+          </Card>
+        </div>
       )}
 
-      {/* Bulles de pagination avec bouton Home */}
-      {pages.length > 1 && (
-        <PageDots
-          pages={pages}
-          currentIndex={currentPageIndex}
-          onPageChange={setCurrentPage}
-          isEditMode={false}
-          onAddPage={handleAddPage}
-          showHomeButton={!isDefaultPage}
-          onSetAsHome={handleSetAsHome}
-          isCurrentPageHome={isCurrentPageHome}
-          defaultPageId={defaultPageId}
-        />
-      )}
+      {/* Bulles de pagination (toujours visibles) */}
+      <PageDots
+        pages={pages}
+        currentIndex={currentPageIndex}
+        onPageChange={setCurrentPage}
+        onAddPage={handleAddPage}
+        onSetAsHome={handleSetAsHome}
+        defaultPageId={defaultPageId}
+      />
 
       {/* Zone de contenu */}
       <div
@@ -366,12 +383,14 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
-        className={`page-transition rounded-3xl ${isPageShaking ? 'animate-wiggle' : ''}`}
-        onMouseDown={handlePageLongPressStart}
-        onMouseUp={handlePageLongPressEnd}
-        onMouseLeave={handlePageLongPressEnd}
+        className={`page-transition rounded-3xl min-h-[300px] ${isPageShaking ? 'animate-wiggle' : ''}`}
+        onMouseDown={isDefaultPage ? handleSocleLongPressStart : handleUserPageLongPressStart}
+        onMouseUp={isDefaultPage ? handleSocleLongPressEnd : handleUserPageLongPressEnd}
+        onMouseLeave={isDefaultPage ? handleSocleLongPressEnd : handleUserPageLongPressEnd}
+        onTouchStartCapture={isDefaultPage ? handleSocleLongPressStart : undefined}
+        onTouchEndCapture={isDefaultPage ? handleSocleLongPressEnd : undefined}
       >
-        {/* Bouton supprimer page (quand la page tremble) */}
+        {/* Bouton supprimer page (quand la page utilisateur tremble) */}
         {isPageShaking && !isDefaultPage && (
           <div className="flex justify-center mb-4">
             <button
@@ -391,23 +410,28 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
             {/* === PAGE SOCLE (3 éléments) === */}
             {isDefaultPage && (
               <>
-                {/* 1. Widget Semaine */}
                 {hasPregnancyProfile && (
                   <WeekDisplayWidget pregnancyProfile={pregnancyProfile} t={t} />
                 )}
-                
-                {/* 2. Fête du jour */}
                 <NameOfTheDay isDarkMode={isDarkMode} />
-                
-                {/* 3. Carte cliquable "Les étapes de votre plus beau voyage" */}
                 <JourneyStepsCard t={t} navigate={navigate} />
+                
+                {/* Instruction appui long */}
+                <p className="text-center text-[10px] text-slate-400 mt-4">
+                  {t('home.longPressToCreate', 'Appui long pour créer une page')}
+                </p>
               </>
             )}
 
             {/* === PAGES UTILISATEUR === */}
             {!isDefaultPage && (
               <>
-                {/* Sections dupliquées (avec suppression par appui long) */}
+                {/* Nom de la page */}
+                <div className="text-center mb-2">
+                  <h2 className="text-lg font-bold text-slate-700">{currentPage?.name}</h2>
+                </div>
+
+                {/* Sections dupliquées */}
                 {currentPage?.items?.filter(item => item.type === 'section').map((item, index) => (
                   <UserSectionCard
                     key={`section-${item.id}-${index}`}
@@ -415,17 +439,6 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
                     onRemove={(itemId) => removeItemFromPage(itemId, currentPage.id)}
                     pregnancyProfile={pregnancyProfile}
                     hasPregnancyProfile={hasPregnancyProfile}
-                    t={t}
-                  />
-                ))}
-
-                {/* Cartes individuelles dupliquées (avec suppression par appui long) */}
-                {currentPage?.items?.filter(item => item.type === 'card').map((item, index) => (
-                  <UserCard
-                    key={`card-${item.id}-${index}`}
-                    item={item}
-                    onRemove={(itemId) => removeItemFromPage(itemId, currentPage.id)}
-                    navigate={navigate}
                     t={t}
                   />
                 ))}
@@ -439,6 +452,11 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
                     </p>
                   </div>
                 )}
+
+                {/* Instruction */}
+                <p className="text-center text-[10px] text-slate-400 mt-4">
+                  {t('home.longPressToDelete', 'Appui long sur une carte pour supprimer')}
+                </p>
               </>
             )}
           </div>
