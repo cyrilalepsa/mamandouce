@@ -113,38 +113,26 @@ function CloudSectionCard({ section, index, isEditMode, onDragStart, onDragOver,
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/30 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-white/20 rounded-full blur-2xl pointer-events-none"></div>
         
-        {/* Header de la carte avec étape et icône */}
-        <div className="relative p-4 pb-2">
-          <div className="flex items-center gap-3">
-            {/* Badge étape */}
-            <div className={`
-              w-12 h-12 ${meta.iconBg} rounded-2xl 
-              flex items-center justify-center 
-              shadow-lg
-              ${isEditMode ? 'animate-pulse' : ''}
-            `}>
-              {isEditMode ? (
-                <GripVertical className="w-6 h-6 text-white" />
-              ) : (
-                <Icon className="w-6 h-6 text-white" />
-              )}
-            </div>
-            
-            <div className="flex-1">
-              <span className={`text-xs font-semibold ${meta.textColor} uppercase tracking-wide`}>
-                {t('journey.step', 'Étape')} {index + 1}
+        {/* Indicateur mode édition (uniquement en mode édition) */}
+        {isEditMode && (
+          <div className="relative p-4 pb-2">
+            <div className="flex items-center gap-3">
+              <div className={`
+                w-10 h-10 ${meta.iconBg} rounded-xl 
+                flex items-center justify-center 
+                shadow-md animate-pulse
+              `}>
+                <GripVertical className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xs text-slate-400">
+                {t('journey.dragToReorder', 'Glissez pour réorganiser')}
               </span>
-              {isEditMode && (
-                <p className="text-xs text-slate-400 mt-0.5">
-                  {t('journey.dragToReorder', 'Glissez pour réorganiser')}
-                </p>
-              )}
             </div>
           </div>
-        </div>
+        )}
         
         {/* Contenu de la section (CollapsibleSection avec épingle) */}
-        <div className="px-4 pb-4">
+        <div className={`px-4 pb-4 ${!isEditMode ? 'pt-4' : ''}`}>
           {children}
         </div>
       </Card>
