@@ -4,20 +4,13 @@ import { useTranslation } from 'react-i18next';
 import api from '../utils/api';
 import AppTitle from '../components/AppTitle';
 import { AvatarPreview } from '../components/profile/AvatarBuilder';
-import NameOfTheDay from '../components/NameOfTheDay';
 import { useTheme } from '../contexts/ThemeContext';
 import { isNameCelebratedToday } from '../data/saintsCalendar';
 import LanguageBubble from '../components/LanguageBubble';
-import { Card } from '../components/ui/card';
+import { HomeLayoutProvider } from '../contexts/HomeLayoutContext';
 import {
   TopBar,
-  PreconceptionSection,
-  PregnancySection,
-  BabyPreparationSection,
-  PostpartumSection,
-  ServicesSection,
-  PinnedSectionsProvider,
-  PinTipBanner
+  CustomizableHome
 } from '../components/home';
 
 const ADMIN_EMAIL = 'cyrilalepsa@gmail.com';
@@ -58,109 +51,80 @@ function HomePage() {
   const hasPregnancyProfile = pregnancyProfile && pregnancyProfile.current_week;
 
   return (
-    <div className="min-h-screen gradient-bg relative overflow-hidden">
-      {/* Language Bubble - suit le scroll de la page */}
-      <LanguageBubble />
-      
-      <Cloud className="absolute top-20 left-10 w-40 h-40 text-sky-200 opacity-10 animate-float" />
-      <Feather className="absolute top-40 right-20 w-32 h-32 text-pink-200 opacity-20 animate-float-delayed" />
-      <Cloud className="absolute bottom-40 right-40 w-48 h-48 text-sky-100 opacity-10 animate-float" />
-      <Feather className="absolute bottom-20 left-40 w-24 h-24 text-pink-100 opacity-20 animate-float-delayed" />
+    <HomeLayoutProvider>
+      <div className="min-h-screen gradient-bg relative overflow-hidden">
+        {/* Language Bubble - suit le scroll de la page */}
+        <LanguageBubble />
+        
+        <Cloud className="absolute top-20 left-10 w-40 h-40 text-sky-200 opacity-10 animate-float" />
+        <Feather className="absolute top-40 right-20 w-32 h-32 text-pink-200 opacity-20 animate-float-delayed" />
+        <Cloud className="absolute bottom-40 right-40 w-48 h-48 text-sky-100 opacity-10 animate-float" />
+        <Feather className="absolute bottom-20 left-40 w-24 h-24 text-pink-100 opacity-20 animate-float-delayed" />
 
-      <div className="relative z-10">
-        <div className="max-w-4xl mx-auto p-6 space-y-6 animate-fade-in">
-          
-          <TopBar isAdmin={isAdmin} />
+        <div className="relative z-10">
+          <div className="max-w-4xl mx-auto p-6 space-y-6 animate-fade-in">
+            
+            <TopBar isAdmin={isAdmin} />
 
-          {/* Logo et bienvenue */}
-          <div className="text-center py-4">
-            <AppTitle size="xl" showSubtitle={false} />
-          </div>
+            {/* Logo et bienvenue */}
+            <div className="text-center py-4">
+              <AppTitle size="xl" showSubtitle={false} />
+            </div>
 
-          {/* Salutation avec avatar */}
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-white shadow-lg">
-              {userAvatar ? (
-                <img 
-                  src={userAvatar} 
-                  alt="Avatar" 
-                  className="w-full h-full object-cover"
-                  data-testid="home-user-avatar"
-                />
-              ) : userAvatarConfig ? (
-                <AvatarPreview config={userAvatarConfig} size={64} />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center" data-testid="home-default-avatar">
-                  <svg viewBox="0 0 24 24" className="w-10 h-10 text-white/90" fill="currentColor">
-                    <circle cx="12" cy="6" r="4" />
-                    <path d="M12 12c-4 0-6 2-6 4v1c0 .5.2 1 .6 1.3.5.4 1.2.7 2.4.7h6c1.2 0 1.9-.3 2.4-.7.4-.3.6-.8.6-1.3v-1c0-2-2-4-6-4z" />
-                    <path d="M9 19c-.3 1.5-.5 2.5-.5 3h7c0-.5-.2-1.5-.5-3H9z" />
-                  </svg>
+            {/* Salutation avec avatar */}
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-white shadow-lg">
+                {userAvatar ? (
+                  <img 
+                    src={userAvatar} 
+                    alt="Avatar" 
+                    className="w-full h-full object-cover"
+                    data-testid="home-user-avatar"
+                  />
+                ) : userAvatarConfig ? (
+                  <AvatarPreview config={userAvatarConfig} size={64} />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center" data-testid="home-default-avatar">
+                    <svg viewBox="0 0 24 24" className="w-10 h-10 text-white/90" fill="currentColor">
+                      <circle cx="12" cy="6" r="4" />
+                      <path d="M12 12c-4 0-6 2-6 4v1c0 .5.2 1 .6 1.3.5.4 1.2.7 2.4.7h6c1.2 0 1.9-.3 2.4-.7.4-.3.6-.8.6-1.3v-1c0-2-2-4-6-4z" />
+                      <path d="M9 19c-.3 1.5-.5 2.5-.5 3h7c0-.5-.2-1.5-.5-3H9z" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <h2 className="text-2xl sm:text-3xl text-center" data-testid="user-welcome">
+                <span className="text-slate-500 font-medium" style={{ fontFamily: "'Quicksand', sans-serif" }}>{t('home.welcome')}, </span>
+                <span className="text-slate-700 text-4xl sm:text-5xl font-semibold" style={{ fontFamily: "'Caveat', cursive" }}>
+                  {displayName || userName}
+                </span>
+                <span className="text-pink-400 ml-2">❤️</span>
+              </h2>
+              
+              {/* Message Bonne Fête si le prénom de l'utilisateur est fêté aujourd'hui */}
+              {isNameCelebratedToday(displayName || userName) && (
+                <div className="mt-3 bg-gradient-to-r from-amber-100 via-yellow-100 to-orange-100 rounded-2xl px-4 py-3 border-2 border-amber-300 shadow-lg animate-bounce-slow">
+                  <div className="flex items-center justify-center gap-2">
+                    <PartyPopper className="w-5 h-5 text-amber-600" />
+                    <span className="text-lg font-bold text-amber-700" style={{ fontFamily: "'Caveat', cursive" }}>
+                      🎉 {t('home.happyNameDay')} {displayName || userName} ! 🎉
+                    </span>
+                    <PartyPopper className="w-5 h-5 text-amber-600" />
+                  </div>
                 </div>
               )}
             </div>
-            <h2 className="text-2xl sm:text-3xl text-center" data-testid="user-welcome">
-              <span className="text-slate-500 font-medium" style={{ fontFamily: "'Quicksand', sans-serif" }}>{t('home.welcome')}, </span>
-              <span className="text-slate-700 text-4xl sm:text-5xl font-semibold" style={{ fontFamily: "'Caveat', cursive" }}>
-                {displayName || userName}
-              </span>
-              <span className="text-pink-400 ml-2">❤️</span>
-            </h2>
-            
-            {/* Message Bonne Fête si le prénom de l'utilisateur est fêté aujourd'hui */}
-            {isNameCelebratedToday(displayName || userName) && (
-              <div className="mt-3 bg-gradient-to-r from-amber-100 via-yellow-100 to-orange-100 rounded-2xl px-4 py-3 border-2 border-amber-300 shadow-lg animate-bounce-slow">
-                <div className="flex items-center justify-center gap-2">
-                  <PartyPopper className="w-5 h-5 text-amber-600" />
-                  <span className="text-lg font-bold text-amber-700" style={{ fontFamily: "'Caveat', cursive" }}>
-                    🎉 {t('home.happyNameDay')} {displayName || userName} ! 🎉
-                  </span>
-                  <PartyPopper className="w-5 h-5 text-amber-600" />
-                </div>
-              </div>
-            )}
-          </div>
 
-          {/* Prénom du jour */}
-          <NameOfTheDay isDarkMode={isDarkMode} />
-
-          {/* Affichage de la semaine de grossesse - sous fête du jour */}
-          {hasPregnancyProfile && pregnancyProfile?.current_week && (
-            <Card className="bg-gradient-to-br from-pink-100 to-sky-100 rounded-3xl p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-0" data-testid="week-display-card">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-500">{t('pregnancy.youAreAt', 'Vous êtes à la')}</p>
-                  <p className="text-2xl font-bold text-sky-600">{t('pregnancy.week', 'Semaine')} {pregnancyProfile.current_week} SA</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-slate-500">{t('pregnancy.trimester', 'Trimestre')} {pregnancyProfile.trimester || Math.ceil(pregnancyProfile.current_week / 13)}</p>
-                  {pregnancyProfile.estimated_due_date && (
-                    <p className="text-lg font-bold text-pink-600">
-                      {new Date(pregnancyProfile.estimated_due_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </Card>
-          )}
-
-          {/* Sections de navigation */}
-          <PinnedSectionsProvider>
-            <PinTipBanner />
-            
-            <PreconceptionSection />
-            <PregnancySection 
-              hasPregnancyProfile={hasPregnancyProfile} 
-              pregnancyProfile={pregnancyProfile} 
+            {/* Contenu personnalisable avec pages multiples */}
+            <CustomizableHome 
+              pregnancyProfile={pregnancyProfile}
+              hasPregnancyProfile={hasPregnancyProfile}
             />
-            <BabyPreparationSection />
-            <PostpartumSection />
-            <ServicesSection />
-          </PinnedSectionsProvider>
 
+          </div>
         </div>
       </div>
-    </div>
+    </HomeLayoutProvider>
   );
 }
 

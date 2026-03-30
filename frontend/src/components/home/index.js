@@ -12,3 +12,13 @@ export {
 } from './NavigationSections';
 export { TopBar } from './TopBar';
 export { PinTipBanner, PinTooltip } from './PinTip';
+export {
+  PageDots,
+  PageHeader,
+  LayoutTutorialBanner,
+  EditModeButton,
+  ResetLayoutButton,
+  DraggableItem,
+  PremiumFeatureBadge
+} from './HomeCustomization';
+export { CustomizableHome } from './CustomizableHome';

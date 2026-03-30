@@ -1,0 +1,286 @@
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
+const getAuthHeaders = () => ({
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem('token')}`,
+  },
+});
+
+const HomeLayoutContext = createContext(null);
+
+// Configuration par défaut de la page socle
+const DEFAULT_LAYOUT = {
+  pages: [
+    {
+      id: 'home',
+      name: 'Accueil',
+      isDefault: true,
+      items: [
+        { id: 'week-display', type: 'widget', category: null },
+        { id: 'name-of-day', type: 'widget', category: null },
+        { id: 'preconception', type: 'section', expanded: false },
+        { id: 'pregnancy', type: 'section', expanded: false },
+        { id: 'baby-preparation', type: 'section', expanded: false },
+        { id: 'postpartum', type: 'section', expanded: false },
+        { id: 'services', type: 'section', expanded: false },
+      ]
+    }
+  ],
+  currentPageIndex: 0,
+  version: 1
+};
+
+// Tous les éléments disponibles
+export const AVAILABLE_ITEMS = {
+  widgets: [
+    { id: 'week-display', name: 'Semaine de grossesse', icon: 'Baby', premium: false },
+    { id: 'name-of-day', name: 'Prénom du jour', icon: 'Sparkles', premium: false },
+    { id: 'fertility-summary', name: 'Résumé fertilité', icon: 'Heart', premium: true },
+    { id: 'next-appointment', name: 'Prochain RDV', icon: 'Calendar', premium: true },
+  ],
+  sections: [
+    { id: 'preconception', name: 'En route vers la grossesse', icon: 'Sparkles', premium: false },
+    { id: 'pregnancy', name: 'Grossesse', icon: 'Baby', premium: false },
+    { id: 'baby-preparation', name: 'Préparer l\'arrivée de bébé', icon: 'Gift', premium: false },
+    { id: 'postpartum', name: 'Suivi post-partum', icon: 'Heart', premium: false },
+    { id: 'services', name: 'Services et ressources', icon: 'Settings', premium: false },
+  ],
+  cards: [
+    { id: 'cycle-tracking', name: 'Suivi de cycles', icon: 'CalendarDays', section: 'preconception', premium: false },
+    { id: 'calculator', name: 'Calculateur', icon: 'Calculator', section: 'preconception', premium: false },
+    { id: 'pregnancy-after-35', name: 'Grossesse après 35 ans', icon: 'Heart', section: 'preconception', premium: false },
+    { id: 'scanner', name: 'Scanner aliments', icon: 'ScanBarcode', section: 'pregnancy', premium: false },
+    { id: 'library', name: 'Bibliothèque', icon: 'Apple', section: 'pregnancy', premium: false },
+    { id: 'favorites', name: 'Favoris', icon: 'Heart', section: 'pregnancy', premium: false },
+    { id: 'history', name: 'Historique', icon: 'History', section: 'pregnancy', premium: false },
+    { id: 'baby-names', name: 'Prénoms', icon: 'Users', section: 'pregnancy', premium: false },
+    { id: 'tips', name: 'Évolution et conseils', icon: 'BookHeart', section: 'pregnancy', premium: false },
+    { id: 'appointments', name: 'Rendez-vous', icon: 'Stethoscope', section: 'pregnancy', premium: false },
+    { id: 'pregnancy-tracking', name: 'Suivi grossesse', icon: 'LineChart', section: 'pregnancy', premium: true },
+    { id: 'reminders', name: 'Rappels', icon: 'Bell', section: 'pregnancy', premium: false },
+    { id: 'maternity-bag', name: 'Valise maternité', icon: 'Briefcase', section: 'baby-preparation', premium: false },
+    { id: 'birth-list', name: 'Liste de naissance', icon: 'Gift', section: 'baby-preparation', premium: false },
+    { id: 'postpartum-guide', name: 'Guide post-partum', icon: 'Book', section: 'postpartum', premium: false },
+    { id: 'recipes', name: 'Recettes', icon: 'UtensilsCrossed', section: 'postpartum', premium: false },
+  ]
+};
+
+export function HomeLayoutProvider({ children }) {
+  const { t } = useTranslation();
+  const [layout, setLayout] = useState(DEFAULT_LAYOUT);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasCustomLayout, setHasCustomLayout] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
+
+  // Charger le layout depuis la BDD
+  useEffect(() => {
+    loadLayout();
+  }, []);
+
+  const loadLayout = async () => {
+    try {
+      const response = await axios.get(`${API}/user/layout`, getAuthHeaders());
+      if (response.data && response.data.layout) {
+        setLayout(response.data.layout);
+        setHasCustomLayout(true);
+      } else {
+        setLayout(DEFAULT_LAYOUT);
+        // Vérifier si c'est la première fois - montrer le tutoriel
+        const tutorialSeen = localStorage.getItem('mamandouce_layout_tutorial_seen');
+        if (!tutorialSeen) {
+          setShowTutorial(true);
+        }
+      }
+    } catch (error) {
+      console.error('Erreur chargement layout:', error);
+      setLayout(DEFAULT_LAYOUT);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Sauvegarder le layout dans la BDD
+  const saveLayout = useCallback(async (newLayout) => {
+    try {
+      await axios.put(`${API}/user/layout`, { layout: newLayout }, getAuthHeaders());
+      setLayout(newLayout);
+      setHasCustomLayout(true);
+      return true;
+    } catch (error) {
+      console.error('Erreur sauvegarde layout:', error);
+      toast.error(t('common.error', 'Erreur lors de la sauvegarde'));
+      return false;
+    }
+  }, [t]);
+
+  // Réinitialiser au layout par défaut
+  const resetToDefault = useCallback(async () => {
+    try {
+      await axios.delete(`${API}/user/layout`, getAuthHeaders());
+      setLayout(DEFAULT_LAYOUT);
+      setHasCustomLayout(false);
+      toast.success(t('home.layoutReset', 'Disposition réinitialisée'));
+    } catch (error) {
+      console.error('Erreur réinitialisation:', error);
+      toast.error(t('common.error', 'Erreur'));
+    }
+  }, [t]);
+
+  // Ajouter une nouvelle page
+  const addPage = useCallback(async (name = 'Nouvelle page') => {
+    const newPage = {
+      id: `page-${Date.now()}`,
+      name,
+      isDefault: false,
+      items: []
+    };
+    
+    const newLayout = {
+      ...layout,
+      pages: [...layout.pages, newPage],
+      currentPageIndex: layout.pages.length
+    };
+    
+    const success = await saveLayout(newLayout);
+    if (success) {
+      toast.success(t('home.pageAdded', 'Page ajoutée !'));
+    }
+    return success;
+  }, [layout, saveLayout, t]);
+
+  // Supprimer une page
+  const deletePage = useCallback(async (pageId) => {
+    if (layout.pages.length <= 1) {
+      toast.error(t('home.cannotDeleteLastPage', 'Impossible de supprimer la dernière page'));
+      return false;
+    }
+    
+    const pageIndex = layout.pages.findIndex(p => p.id === pageId);
+    if (pageIndex === -1) return false;
+    
+    // Ne pas supprimer la page par défaut
+    if (layout.pages[pageIndex].isDefault) {
+      toast.error(t('home.cannotDeleteDefaultPage', 'Impossible de supprimer la page d\'accueil'));
+      return false;
+    }
+    
+    const newPages = layout.pages.filter(p => p.id !== pageId);
+    const newCurrentIndex = Math.min(layout.currentPageIndex, newPages.length - 1);
+    
+    const newLayout = {
+      ...layout,
+      pages: newPages,
+      currentPageIndex: newCurrentIndex
+    };
+    
+    const success = await saveLayout(newLayout);
+    if (success) {
+      toast.success(t('home.pageDeleted', 'Page supprimée'));
+    }
+    return success;
+  }, [layout, saveLayout, t]);
+
+  // Renommer une page
+  const renamePage = useCallback(async (pageId, newName) => {
+    const newPages = layout.pages.map(p => 
+      p.id === pageId ? { ...p, name: newName } : p
+    );
+    
+    const newLayout = { ...layout, pages: newPages };
+    return await saveLayout(newLayout);
+  }, [layout, saveLayout]);
+
+  // Déplacer un élément
+  const moveItem = useCallback(async (itemId, fromPageId, toPageId, toIndex) => {
+    const fromPage = layout.pages.find(p => p.id === fromPageId);
+    const toPage = layout.pages.find(p => p.id === toPageId);
+    
+    if (!fromPage || !toPage) return false;
+    
+    const item = fromPage.items.find(i => i.id === itemId);
+    if (!item) return false;
+    
+    let newPages;
+    
+    if (fromPageId === toPageId) {
+      // Déplacement dans la même page
+      const newItems = [...fromPage.items];
+      const oldIndex = newItems.findIndex(i => i.id === itemId);
+      newItems.splice(oldIndex, 1);
+      newItems.splice(toIndex, 0, item);
+      
+      newPages = layout.pages.map(p => 
+        p.id === fromPageId ? { ...p, items: newItems } : p
+      );
+    } else {
+      // Déplacement vers une autre page
+      const fromItems = fromPage.items.filter(i => i.id !== itemId);
+      const toItems = [...toPage.items];
+      toItems.splice(toIndex, 0, item);
+      
+      newPages = layout.pages.map(p => {
+        if (p.id === fromPageId) return { ...p, items: fromItems };
+        if (p.id === toPageId) return { ...p, items: toItems };
+        return p;
+      });
+    }
+    
+    const newLayout = { ...layout, pages: newPages };
+    return await saveLayout(newLayout);
+  }, [layout, saveLayout]);
+
+  // Changer de page
+  const setCurrentPage = useCallback((index) => {
+    setLayout(prev => ({ ...prev, currentPageIndex: index }));
+  }, []);
+
+  // Fermer le tutoriel
+  const dismissTutorial = useCallback(() => {
+    setShowTutorial(false);
+    localStorage.setItem('mamandouce_layout_tutorial_seen', 'true');
+  }, []);
+
+  const value = {
+    layout,
+    isEditMode,
+    setIsEditMode,
+    isLoading,
+    hasCustomLayout,
+    showTutorial,
+    dismissTutorial,
+    currentPage: layout.pages[layout.currentPageIndex],
+    pages: layout.pages,
+    currentPageIndex: layout.currentPageIndex,
+    setCurrentPage,
+    addPage,
+    deletePage,
+    renamePage,
+    moveItem,
+    resetToDefault,
+    saveLayout,
+    AVAILABLE_ITEMS
+  };
+
+  return (
+    <HomeLayoutContext.Provider value={value}>
+      {children}
+    </HomeLayoutContext.Provider>
+  );
+}
+
+export function useHomeLayout() {
+  const context = useContext(HomeLayoutContext);
+  if (!context) {
+    throw new Error('useHomeLayout must be used within a HomeLayoutProvider');
+  }
+  return context;
+}
+
+export default HomeLayoutContext;
