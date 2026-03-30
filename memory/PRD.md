@@ -12,13 +12,15 @@ Application mobile de suivi de grossesse "MamanDouce" - Companion complet pour l
 
 ## Core Features Implemented
 
-### Système de personnalisation smartphone (NOUVEAU - Mars 2025)
+### Système de personnalisation smartphone (UPDATED - Mars 2025)
 - [x] **Page SOCLE** (3 éléments fixes) : Fête du jour, Semaine X, Carte "Les étapes de votre plus beau voyage"
-- [x] **Page `/journey-steps`** : 5 sections avec double tap pour mode édition
-- [x] **Appui long** : Sélection multiple pour duplication
+- [x] **Page `/journey-steps`** : 5 sections en cartes cliquables (plus d'accordéons)
+- [x] **Page `/section/:sectionId`** : Page de détail avec message "appui long pour sélectionner et dupliquer"
+- [x] **Appui long Page Socle** : Création d'une nouvelle page personnalisée
+- [x] **Appui long carte utilisateur** : Animation tremblement + croix rouge pour suppression
 - [x] **Popup duplication** : Choix de la page de destination
-- [x] **Bouton Home 🏠** : Définir page par défaut pour prochaine connexion
-- [x] **Pages utilisateur** : Drag & drop, groupes renommables
+- [x] **Bouton Home 🏠** : Toujours visible + définir page par défaut
+- [x] **Bulles de pagination** : Home (rose) + Socle (rose) + Pages utilisateur (violet)
 - [x] **Admin - Messages** : Sélection multiple et suppression en lot
 
 ### Authentification & Profil
@@ -58,40 +60,15 @@ Application mobile de suivi de grossesse "MamanDouce" - Companion complet pour l
 - [x] Accès aux documents téléchargeables
 - [x] Panel admin pour statistiques et gestion
 
-## Completed in Current Session (March 2025)
+## Completed in Current Session (30 Mars 2025)
 
-### Page dédiée "Les étapes de votre plus beau voyage" - DONE (30/03/2025)
-- Nouvelle page `/journey-steps` avec les 5 sections principales :
-  1. En route vers la grossesse
-  2. Grossesse
-  3. Préparer l'arrivée de bébé
-  4. Suivi post-partum
-  5. Services et ressources
-- Carte cliquable sur l'accueil avec les cœurs de chaque côté du titre
-- Design cohérent avec icônes des 5 étapes et flèche de navigation
-- Timeline verticale colorée sur la page dédiée
-
-### Réorganisation UI Page d'Accueil - DONE (30/03/2025)
-- "Suivi de cycles" : Nouvelle section collapsible en haut de page (anciennement "Mon agenda")
-- "Évolution et conseils" : Déplacé dans la catégorie "Grossesse" (sous Prénoms)
-- Toutes les sections ont un bouton "Fermer" en bas et une épingle pour rester ouvertes
-- Traductions ajoutées dans les 6 langues pour "cycleTracking"
-
-### Carte de Visite - DONE
-- Version avec QR Code (recto: logo + slogan + QR)
-- Version sans QR Code (recto: logo + slogan + 4 features)
-- Verso: Liste complète des fonctionnalités + contact
-- Slogan: "Votre compagnon avant, pendant et après la grossesse"
-- Features listées: Suivi règles/ovulation, Grossesse semaine/semaine, Scanner aliments, Idées prénoms
-
-### Correction RDV - DONE
-- "Examen des hanches" → "Échographie des hanches (dépistage luxation)"
-
-### Correction Calendrier Fertilité - DONE
-- Bug de décalage de date corrigé (timezone locale vs UTC)
-
-### Label SA - DONE
-- "SA" (Semaines d'Aménorrhée) ajouté à tous les affichages de semaines de grossesse
+### 6 Corrections UX/UI Type Smartphone - DONE
+1. ✅ **Création de page** : Corrigé l'API `/api/user/layout` (prefix et type User)
+2. ✅ **Phrase "mode édition..."** : Retirée de JourneyStepsPage
+3. ✅ **Accordéons remplacés** : Cartes cliquables sur `/journey-steps` → `/section/:sectionId`
+4. ✅ **Double appui** : Remplacé par clic simple
+5. ✅ **Appui long Page Socle** : Ouvre popup création de page
+6. ✅ **Bulles de pagination** : Home + Socle (rose) + Pages utilisateur (violet)
 
 ## Backlog
 
@@ -106,13 +83,12 @@ Application mobile de suivi de grossesse "MamanDouce" - Companion complet pour l
 
 ## Key Files
 - `/app/frontend/src/pages/HomePage.js` - Page d'accueil avec sections collapsibles
-- `/app/frontend/src/pages/JourneyStepsPage.js` - Page dédiée aux 5 étapes du voyage
-- `/app/frontend/src/components/home/CustomizableHome.jsx` - Accueil personnalisable avec carte voyage
+- `/app/frontend/src/pages/JourneyStepsPage.js` - 5 cartes cliquables vers sections
+- `/app/frontend/src/pages/SectionDetailPage.js` - Détail section avec appui long
+- `/app/frontend/src/components/home/CustomizableHome.jsx` - Accueil personnalisable, pagination
 - `/app/frontend/src/components/home/NavigationSections.jsx` - Composants de navigation
-- `/app/frontend/src/pages/CarteVisitePage.js` - Carte de visite
-- `/app/backend/routes/postpartum.py` - RDV post-partum
-- `/app/frontend/src/i18n/locales/` - Fichiers de traduction
-- `/app/backend/services/translation_service.py` - Service traduction GPT-5.2
+- `/app/frontend/src/contexts/HomeLayoutContext.js` - Gestion état global pages
+- `/app/backend/routes/user_layout.py` - API layout utilisateur
 
 ## Deployment Notes
 - Preview: `https://femme-enceinte-app.preview.emergentagent.com`
