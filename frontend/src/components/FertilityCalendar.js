@@ -261,9 +261,19 @@ export default function FertilityCalendar({
   onRemoveRapport
 }) {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedZone, setSelectedZone] = useState('A');
+  // Charger la zone scolaire depuis localStorage
+  const [selectedZone, setSelectedZone] = useState(() => {
+    const saved = localStorage.getItem('mamandouce_school_zone');
+    return saved || 'A';
+  });
   const [showAddRapport, setShowAddRapport] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+
+  // Sauvegarder la zone scolaire quand elle change
+  const handleZoneChange = (zone) => {
+    setSelectedZone(zone);
+    localStorage.setItem('mamandouce_school_zone', zone);
+  };
 
   if (!isOpen) return null;
 
@@ -533,7 +543,7 @@ export default function FertilityCalendar({
               {['A', 'B', 'C'].map(zone => (
                 <button
                   key={zone}
-                  onClick={() => setSelectedZone(zone)}
+                  onClick={() => handleZoneChange(zone)}
                   className={`px-3 py-1 rounded-full text-sm font-semibold transition-all ${
                     selectedZone === zone 
                       ? 'bg-purple-500 text-white' 

@@ -118,6 +118,7 @@ function App() {
                 <Route path="/pricing" element={<PricingPage />} />
                 <Route path="/privacy" element={<PrivacyPolicyPage />} />
                 <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+                <Route path="/home" element={<Navigate to="/" replace />} />
                 <Route path="/calculator" element={<ProtectedRoute><PregnancyCalculator /></ProtectedRoute>} />
                 <Route path="/wheel" element={<ProtectedRoute><PregnancyWheel /></ProtectedRoute>} />
                 <Route path="/scanner" element={<ProtectedRoute><FoodScanner /></ProtectedRoute>} />
