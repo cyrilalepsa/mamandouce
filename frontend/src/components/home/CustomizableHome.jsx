@@ -43,7 +43,41 @@ const JOURNEY_ICONS = {
   'services': { icon: Settings, color: 'text-slate-500', bg: 'bg-slate-100' },
 };
 
-// Section "Les étapes de votre plus beau voyage"
+// Section "Les étapes de votre plus beau voyage" - Conteneur avec les 5 sections
+function JourneyStepsContainer({ children }) {
+  const { t } = useTranslation();
+  
+  return (
+    <Card className="bg-gradient-to-br from-white via-pink-50/30 to-purple-50/30 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-pink-100/50">
+      {/* Header */}
+      <div className="mb-5">
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
+          <Heart className="w-5 h-5 text-pink-400 animate-pulse" />
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
+        </div>
+        <h2 
+          className="text-center text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500"
+          style={{ fontFamily: "'Caveat', cursive" }}
+        >
+          {t('home.journeySteps', 'Les étapes de votre plus beau voyage')}
+        </h2>
+        <div className="flex items-center justify-center gap-3 mt-2">
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
+          <Heart className="w-5 h-5 text-pink-400 animate-pulse" />
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
+        </div>
+      </div>
+      
+      {/* Contenu - Les 5 sections */}
+      <div className="space-y-3">
+        {children}
+      </div>
+    </Card>
+  );
+}
+
+// Header simple (plus utilisé, gardé pour compatibilité)
 function JourneyStepsHeader() {
   const { t } = useTranslation();
   
@@ -301,18 +335,39 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
           {currentPage.isDefault && <PinTipBanner />}
           
           <div className="space-y-4">
-            {currentPage.items.map((item, index) => {
-              // Afficher le header "Les étapes de votre plus beau voyage" avant la première section
-              const isFirstSection = item.type === 'section' && 
-                currentPage.items.findIndex(i => i.type === 'section') === index;
-              
-              return (
-                <div key={`${item.id}-${index}`}>
-                  {isFirstSection && currentPage.isDefault && <JourneyStepsHeader />}
+            {/* Widgets (semaine de grossesse, fête du jour) */}
+            {currentPage.items
+              .filter(item => item.type !== 'section')
+              .map((item, index) => (
+                <div key={`widget-${item.id}-${index}`}>
                   {renderItem(item, index)}
                 </div>
-              );
-            })}
+              ))
+            }
+            
+            {/* Les 5 sections dans la bulle "Les étapes de votre plus beau voyage" */}
+            {currentPage.isDefault && currentPage.items.some(item => item.type === 'section') && (
+              <JourneyStepsContainer>
+                {currentPage.items
+                  .filter(item => item.type === 'section')
+                  .map((item, index) => (
+                    <div key={`section-${item.id}-${index}`}>
+                      {renderItem(item, index)}
+                    </div>
+                  ))
+                }
+              </JourneyStepsContainer>
+            )}
+            
+            {/* Pour les pages personnalisées, afficher les sections normalement */}
+            {!currentPage.isDefault && currentPage.items
+              .filter(item => item.type === 'section')
+              .map((item, index) => (
+                <div key={`section-${item.id}-${index}`}>
+                  {renderItem(item, index)}
+                </div>
+              ))
+            }
           </div>
         </PinnedSectionsProvider>
 
