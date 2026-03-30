@@ -347,31 +347,48 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
 
   return (
     <div className="relative">
-      {/* Popup créer une page (appui long sur socle) */}
+      {/* Popup créer une page (appui long sur socle) - Style bulle/nuage */}
       {showCreatePagePrompt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
-          <Card className="w-full max-w-xs bg-white rounded-3xl p-5 shadow-2xl text-center">
-            <h3 className="text-lg font-bold text-slate-700 mb-2">
-              {t('home.createPage', 'Créer une page')}
-            </h3>
-            <p className="text-sm text-slate-500 mb-4">
-              {t('home.createPageDesc', 'Créez votre page personnalisée')}
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setShowCreatePagePrompt(false)}
-                className="flex-1 py-2 px-4 rounded-full bg-slate-100 text-slate-600 font-medium"
-              >
-                {t('common.cancel', 'Annuler')}
-              </button>
-              <button
-                onClick={handleAddPage}
-                className="flex-1 py-2 px-4 rounded-full bg-pink-500 text-white font-medium"
-              >
-                {t('common.create', 'Créer')}
-              </button>
+        <div className="fixed inset-0 z-50 flex items-end justify-center pb-24 bg-black/20 backdrop-blur-[2px]">
+          <div 
+            className="relative bg-white/95 backdrop-blur-xl rounded-[32px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/50 mx-4 max-w-xs w-full animate-in slide-in-from-bottom-4 duration-300"
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,242,248,0.9) 100%)'
+            }}
+          >
+            {/* Petite flèche en bas pour effet bulle */}
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/95 rotate-45 border-r border-b border-white/50"></div>
+            
+            {/* Décoration nuage */}
+            <div className="absolute -top-3 -right-3 w-16 h-16 bg-pink-100/50 rounded-full blur-2xl"></div>
+            <div className="absolute -bottom-2 -left-2 w-12 h-12 bg-purple-100/50 rounded-full blur-xl"></div>
+            
+            <div className="relative text-center">
+              <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-pink-400 to-purple-400 rounded-2xl flex items-center justify-center shadow-lg">
+                <span className="text-white text-xl">✨</span>
+              </div>
+              <h3 className="text-lg font-bold text-slate-700 mb-1">
+                {t('home.createPage', 'Créer une page')}
+              </h3>
+              <p className="text-sm text-slate-500 mb-5">
+                {t('home.createPageDesc', 'Créez votre page personnalisée')}
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowCreatePagePrompt(false)}
+                  className="flex-1 py-2.5 px-4 rounded-2xl bg-slate-100/80 text-slate-600 font-medium hover:bg-slate-200/80 transition-all active:scale-95"
+                >
+                  {t('common.cancel', 'Annuler')}
+                </button>
+                <button
+                  onClick={handleAddPage}
+                  className="flex-1 py-2.5 px-4 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-500 text-white font-medium shadow-lg shadow-pink-500/25 hover:shadow-xl hover:shadow-pink-500/30 transition-all active:scale-95"
+                >
+                  {t('common.create', 'Créer')}
+                </button>
+              </div>
             </div>
-          </Card>
+          </div>
         </div>
       )}
 

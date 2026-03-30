@@ -74,49 +74,76 @@ const SectionComponents = {
   'services': ServicesSection,
 };
 
-// Popup de sélection de destination
+// Popup de sélection de destination - Style bulle/nuage
 function DuplicatePopup({ pages, onDuplicate, onCancel, onCreatePage, t }) {
   const userPages = pages.filter(p => !p.isDefault);
   
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <Card className="w-full max-w-sm bg-white rounded-3xl p-5 shadow-2xl">
-        <h3 className="text-lg font-bold text-slate-700 mb-1 text-center">
-          {t('journey.duplicateTo', 'Dupliquer vers...')}
-        </h3>
-        <p className="text-sm text-slate-500 mb-4 text-center">
-          {t('journey.sectionSelected', 'Section sélectionnée')}
-        </p>
+    <div className="fixed inset-0 z-50 flex items-end justify-center pb-20 bg-black/20 backdrop-blur-[2px]">
+      <div 
+        className="relative bg-white/95 backdrop-blur-xl rounded-[32px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/50 mx-4 max-w-sm w-full animate-in slide-in-from-bottom-4 duration-300"
+        style={{
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,242,248,0.9) 100%)'
+        }}
+      >
+        {/* Petite flèche en bas pour effet bulle */}
+        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/95 rotate-45 border-r border-b border-white/50"></div>
         
-        <div className="space-y-2 mb-4">
-          {userPages.length > 0 ? (
-            userPages.map(page => (
-              <button
-                key={page.id}
-                onClick={() => onDuplicate(page.id)}
-                className="w-full p-3 text-left rounded-xl bg-slate-50 hover:bg-pink-50 hover:text-pink-600 transition-all"
-              >
-                {page.name}
-              </button>
-            ))
-          ) : (
-            <p className="text-center text-sm text-slate-400 py-2">
-              {t('journey.noUserPages', 'Aucune page personnalisée')}
+        {/* Décoration nuage */}
+        <div className="absolute -top-3 -right-3 w-16 h-16 bg-pink-100/50 rounded-full blur-2xl"></div>
+        <div className="absolute -bottom-2 -left-2 w-12 h-12 bg-purple-100/50 rounded-full blur-xl"></div>
+        
+        <div className="relative">
+          <div className="text-center mb-4">
+            <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-pink-400 to-purple-400 rounded-2xl flex items-center justify-center shadow-lg">
+              <span className="text-white text-xl">📋</span>
+            </div>
+            <h3 className="text-lg font-bold text-slate-700">
+              {t('journey.duplicateTo', 'Dupliquer vers...')}
+            </h3>
+            <p className="text-sm text-slate-500">
+              {t('journey.sectionSelected', 'Section sélectionnée')}
             </p>
-          )}
+          </div>
           
-          <button
-            onClick={onCreatePage}
-            className="w-full p-3 text-left rounded-xl bg-gradient-to-r from-pink-50 to-purple-50 text-pink-600 hover:from-pink-100 hover:to-purple-100 transition-all font-medium"
+          <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
+            {userPages.length > 0 ? (
+              userPages.map(page => (
+                <button
+                  key={page.id}
+                  onClick={() => onDuplicate(page.id)}
+                  className="w-full p-3.5 text-left rounded-2xl bg-white/60 hover:bg-pink-50 hover:text-pink-600 transition-all border border-slate-100 hover:border-pink-200 active:scale-[0.98]"
+                >
+                  <span className="font-medium">{page.name}</span>
+                </button>
+              ))
+            ) : (
+              <div className="text-center py-4 px-3 rounded-2xl bg-slate-50/50">
+                <p className="text-sm text-slate-400">
+                  {t('journey.noUserPages', 'Aucune page personnalisée')}
+                </p>
+              </div>
+            )}
+            
+            <button
+              onClick={onCreatePage}
+              className="w-full p-3.5 text-left rounded-2xl bg-gradient-to-r from-pink-50 to-purple-50 text-pink-600 hover:from-pink-100 hover:to-purple-100 transition-all font-medium border border-pink-100 active:scale-[0.98]"
+            >
+              <span className="flex items-center gap-2">
+                <span className="text-lg">+</span>
+                {t('journey.createNewPage', 'Créer une nouvelle page')}
+              </span>
+            </button>
+          </div>
+          
+          <button 
+            onClick={onCancel} 
+            className="w-full py-2.5 rounded-2xl bg-slate-100/80 text-slate-600 font-medium hover:bg-slate-200/80 transition-all active:scale-95"
           >
-            + {t('journey.createNewPage', 'Créer une nouvelle page')}
+            {t('common.cancel', 'Annuler')}
           </button>
         </div>
-        
-        <Button onClick={onCancel} variant="outline" className="w-full rounded-full">
-          {t('common.cancel', 'Annuler')}
-        </Button>
-      </Card>
+      </div>
     </div>
   );
 }
