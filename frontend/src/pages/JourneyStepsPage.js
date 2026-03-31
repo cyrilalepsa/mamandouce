@@ -286,30 +286,27 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
           style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, transparent 100%)' }}
         />
         
-        {/* Effet brillance coin */}
-        <div className="absolute top-2 left-4 w-8 h-3 bg-white/50 rounded-full blur-sm pointer-events-none" />
-        
-        {/* Bouton épingle */}
+        {/* Bouton épingle (sans bulle) */}
         <button
           onClick={handlePinClick}
-          className={`absolute top-1/2 -translate-y-1/2 right-3 w-7 h-7 rounded-full flex items-center justify-center z-10 transition-all ${
+          className={`absolute top-1/2 -translate-y-1/2 right-4 z-10 transition-all ${
             isPinned 
-              ? 'bg-pink-500 text-white shadow-lg scale-110' 
-              : 'bg-white/70 text-slate-400 hover:bg-white hover:text-pink-500'
+              ? 'text-pink-500 scale-110' 
+              : 'text-slate-400 hover:text-pink-500'
           }`}
           title={isPinned ? t('journey.collapse', 'Replier') : t('journey.expand', 'Dérouler')}
         >
-          <Pin className={`w-3.5 h-3.5 transition-transform ${isPinned ? 'fill-current rotate-45' : ''}`} />
+          <Pin className={`w-4 h-4 transition-transform ${isPinned ? 'fill-current rotate-45' : ''}`} />
         </button>
         
         {/* Badge sélection */}
         {isSelected && (
-          <div className="absolute top-1/2 -translate-y-1/2 right-12 w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center z-10 shadow-md">
-            <Check className="w-4 h-4 text-white" />
+          <div className="absolute top-1/2 -translate-y-1/2 right-10 w-5 h-5 bg-pink-500 rounded-full flex items-center justify-center z-10 shadow-md">
+            <Check className="w-3 h-3 text-white" />
           </div>
         )}
         
-        <div className="relative flex items-center gap-3 pr-10">
+        <div className="relative flex items-center gap-3 pr-8">
           {/* Icône */}
           <div className={`w-10 h-10 ${meta.iconBg} rounded-full flex items-center justify-center flex-shrink-0 shadow-inner`}>
             <Icon className={`w-5 h-5 ${meta.iconColor}`} />

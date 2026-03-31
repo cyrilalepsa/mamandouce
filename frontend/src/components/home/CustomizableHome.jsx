@@ -61,16 +61,16 @@ function WeekDisplayWidget({ pregnancyProfile, t }) {
   );
 }
 
-// Carte cliquable "Les étapes de votre plus beau voyage" - Style PILL
+// Carte cliquable "Les étapes de votre plus beau voyage" - Style PILL fine
 function JourneyStepsCard({ t, navigate }) {
   return (
     <div 
-      className="relative overflow-hidden cursor-pointer select-none rounded-full px-6 py-4
-        shadow-lg hover:shadow-xl transition-all duration-300
+      className="relative overflow-hidden cursor-pointer select-none rounded-full px-4 py-2.5
+        shadow-md hover:shadow-lg transition-all duration-300
         hover:scale-[1.02] active:scale-[0.98]"
       style={{ 
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,242,248,0.9) 30%, rgba(244,114,182,0.4) 100%)',
-        boxShadow: '0 4px 20px rgba(236,72,153,0.2), inset 0 2px 10px rgba(255,255,255,0.8)',
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,242,248,0.9) 30%, rgba(244,114,182,0.35) 100%)',
+        boxShadow: '0 3px 15px rgba(236,72,153,0.15), inset 0 1px 8px rgba(255,255,255,0.8)',
       }}
       onClick={() => navigate('/journey-steps')}
       data-testid="journey-steps-card"
@@ -78,33 +78,19 @@ function JourneyStepsCard({ t, navigate }) {
       {/* Effet de reflet glass en haut */}
       <div 
         className="absolute top-0 left-0 right-0 h-1/2 rounded-t-full pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, transparent 100%)' }}
+        style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, transparent 100%)' }}
       />
       
-      {/* Effet brillance */}
-      <div className="absolute top-2 left-6 w-10 h-3 bg-white/50 rounded-full blur-sm pointer-events-none" />
-      
-      <div className="relative flex items-center gap-3">
-        {/* Icône cœur */}
-        <div className="w-10 h-10 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner">
-          <Heart className="w-5 h-5 text-pink-500" fill="currentColor" />
-        </div>
-        
-        {/* Texte */}
-        <div className="flex-1 min-w-0">
-          <h2 
-            className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500"
-            style={{ fontFamily: "'Quicksand', 'Nunito', sans-serif", fontWeight: 700 }}
-          >
-            {t('home.journeySteps', 'Les étapes de votre plus beau voyage')}
-          </h2>
-          <p className="text-[11px] text-slate-500">
-            {t('home.journeyStepsDesc', 'De la conception à l\'arrivée de bébé')}
-          </p>
-        </div>
-        
-        {/* Flèche */}
-        <ChevronRight className="w-5 h-5 text-pink-400 flex-shrink-0" />
+      {/* Contenu centré sur une ligne */}
+      <div className="relative flex items-center justify-center gap-2">
+        <Heart className="w-3.5 h-3.5 text-pink-400 flex-shrink-0" fill="currentColor" />
+        <span 
+          className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-pink-400 whitespace-nowrap"
+          style={{ fontFamily: "'Quicksand', 'Nunito', sans-serif" }}
+        >
+          {t('home.journeySteps', 'Les étapes de votre plus beau voyage')}
+        </span>
+        <Heart className="w-3.5 h-3.5 text-pink-400 flex-shrink-0" fill="currentColor" />
       </div>
     </div>
   );
