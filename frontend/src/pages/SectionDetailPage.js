@@ -88,9 +88,7 @@ const SECTION_ITEMS = {
     { id: 'preparation-tips', icon: BookHeart, iconColor: 'text-violet-500', bgColor: 'bg-violet-50', title: 'Conseils préparation', titleKey: 'babyPrep.tips', desc: 'Avant l\'arrivée', descKey: 'babyPrep.beforeArrival', route: '/tips' },
   ],
   'postpartum': [
-    { id: 'postpartum-appointments', icon: Stethoscope, iconColor: 'text-rose-500', bgColor: 'bg-rose-50', title: 'RDV post-partum', titleKey: 'postpartum.appointments', desc: 'Suivi maman & bébé', descKey: 'postpartum.followUp', route: '/postpartum' },
-    { id: 'breastfeeding', icon: Heart, iconColor: 'text-pink-500', bgColor: 'bg-pink-50', title: 'Allaitement', titleKey: 'postpartum.breastfeeding', desc: 'Conseils et suivi', descKey: 'postpartum.breastfeedingDesc', route: '/postpartum' },
-    { id: 'postpartum-tips', icon: BookHeart, iconColor: 'text-purple-500', bgColor: 'bg-purple-50', title: 'Conseils post-partum', titleKey: 'postpartum.tips', desc: 'Récupération', descKey: 'postpartum.recovery', route: '/tips' },
+    { id: 'postpartum-content', icon: Stethoscope, iconColor: 'text-rose-500', bgColor: 'bg-rose-50', title: 'Suivi post-partum', titleKey: 'postpartum.content', desc: 'RDV, allaitement, soins', descKey: 'postpartum.contentDesc', route: '/postpartum' },
   ],
   'services': [
     { id: 'chatbot', icon: Phone, iconColor: 'text-sky-500', bgColor: 'bg-sky-50', title: 'Assistant IA', titleKey: 'services.chatbot', desc: 'Disponible 24/7', descKey: 'services.available247', route: '/chatbot' },

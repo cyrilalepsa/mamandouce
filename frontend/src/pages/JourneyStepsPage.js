@@ -91,9 +91,7 @@ const SECTION_ITEMS = {
     { id: 'preparation-tips', icon: '💝', name: 'Conseils préparation', nameKey: 'babyPrep.tips', route: '/tips' },
   ],
   'postpartum': [
-    { id: 'postpartum-appointments', icon: '🏥', name: 'RDV post-partum', nameKey: 'postpartum.appointments', route: '/postpartum' },
-    { id: 'breastfeeding', icon: '🤱', name: 'Allaitement', nameKey: 'postpartum.breastfeeding', route: '/postpartum' },
-    { id: 'postpartum-tips', icon: '💜', name: 'Conseils post-partum', nameKey: 'postpartum.tips', route: '/tips' },
+    { id: 'postpartum-content', icon: '🏥', name: 'Suivi post-partum', nameKey: 'postpartum.content', route: '/postpartum' },
   ],
   'services': [
     { id: 'chatbot', icon: '🤖', name: 'Assistant IA', nameKey: 'services.chatbot', route: '/chatbot' },
@@ -388,7 +386,12 @@ function JourneyStepsPage() {
 
   // Navigation vers la page de détail de la section
   const handleSectionClick = (sectionId) => {
-    navigate(`/section/${sectionId}`);
+    // Pour postpartum, rediriger directement vers la page de contenu
+    if (sectionId === 'postpartum') {
+      navigate('/postpartum');
+    } else {
+      navigate(`/section/${sectionId}`);
+    }
   };
 
   // Appui long pour dupliquer
