@@ -95,7 +95,10 @@ export function DraggableItem({
   const navigate = useNavigate();
   const longPressTimer = useRef(null);
   const isLongPress = useRef(false);
+  const isDraggingTouch = useRef(false);
+  const touchStartPos = useRef({ x: 0, y: 0 });
   const [showDelete, setShowDelete] = useState(showDeleteButton);
+  const [isBeingDragged, setIsBeingDragged] = useState(false);
   
   const icon = ITEM_ICONS[item.id] || '📌';
   const name = ITEM_NAMES[item.id] || item.id;
@@ -107,25 +110,68 @@ export function DraggableItem({
   }, [showDeleteButton]);
 
   const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
     isLongPress.current = false;
+    isDraggingTouch.current = false;
+    
     longPressTimer.current = setTimeout(() => {
       isLongPress.current = true;
       if (navigator.vibrate) navigator.vibrate(50);
-      // Après appui long, montrer le bouton supprimer
-      setShowDelete(true);
+      // Préparer pour le drag ou suppression
       onLongPress?.(item);
-    }, 500);
+    }, 400);
+  };
+
+  const handleTouchMove = (e) => {
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
+    const deltaY = Math.abs(touch.clientY - touchStartPos.current.y);
+    
+    // Si mouvement significatif, c'est un drag
+    if (deltaX > 10 || deltaY > 10) {
+      clearTimeout(longPressTimer.current);
+      
+      // Si on était en appui long, commencer le drag
+      if (isLongPress.current && !isDraggingTouch.current) {
+        isDraggingTouch.current = true;
+        setIsBeingDragged(true);
+        setShowDelete(false); // Pas de bouton supprimer pendant le drag
+        onDragStart?.(item);
+      }
+    }
   };
 
   const handleTouchEnd = (e) => {
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
     }
+    
+    // Si c'était un drag, terminer le drag
+    if (isDraggingTouch.current) {
+      setIsBeingDragged(false);
+      isDraggingTouch.current = false;
+      onDragEnd?.();
+      
+      // Trouver l'élément sous le doigt pour le drop
+      const touch = e.changedTouches[0];
+      const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+      const targetItem = dropTarget?.closest('[data-draggable]');
+      if (targetItem && targetItem !== e.currentTarget) {
+        const targetId = targetItem.getAttribute('data-item-id');
+        if (targetId && targetId !== item.id) {
+          onDrop?.(item.id, targetId);
+        }
+      }
+    } else if (isLongPress.current) {
+      // Si c'était un appui long sans mouvement, montrer suppression
+      setShowDelete(true);
+    }
   };
 
   const handleClick = (e) => {
     // Si c'est un appui long ou si on montre le bouton supprimer, ne pas naviguer
-    if (isLongPress.current || showDelete) {
+    if (isLongPress.current || showDelete || isBeingDragged) {
       // Cacher le bouton supprimer au prochain clic
       if (showDelete && !isLongPress.current) {
         setShowDelete(false);
@@ -141,6 +187,7 @@ export function DraggableItem({
   const handleDragStart = (e) => {
     e.dataTransfer.setData('itemId', item.id);
     e.dataTransfer.setData('itemType', 'item');
+    setShowDelete(false);
     onDragStart?.(item);
   };
 
@@ -159,6 +206,7 @@ export function DraggableItem({
   return (
     <div
       data-draggable="true"
+      data-item-id={item.id}
       draggable
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
@@ -166,16 +214,13 @@ export function DraggableItem({
       onDrop={handleDrop}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      onTouchMove={() => clearTimeout(longPressTimer.current)}
-      onMouseDown={handleTouchStart}
-      onMouseUp={handleTouchEnd}
-      onMouseLeave={() => clearTimeout(longPressTimer.current)}
+      onTouchMove={handleTouchMove}
       onClick={handleClick}
       className={`
         relative bg-white rounded-2xl p-3 shadow-sm border
         cursor-pointer active:scale-95
         transition-all duration-200 select-none
-        ${isDragging ? 'opacity-50 scale-95' : ''}
+        ${isDragging || isBeingDragged ? 'opacity-50 scale-95 shadow-lg' : ''}
         ${isDropTarget ? 'ring-2 ring-pink-400 scale-105 bg-pink-50' : 'border-slate-100'}
         ${showDelete ? 'animate-wiggle' : ''}
       `}
