@@ -276,6 +276,11 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
   const [draggingItem, setDraggingItem] = useState(null);
   const [dropTarget, setDropTarget] = useState(null);
   const [openGroup, setOpenGroup] = useState(null);
+  
+  // États pour le popup de création de groupe
+  const [showGroupNamePopup, setShowGroupNamePopup] = useState(false);
+  const [pendingGroupItems, setPendingGroupItems] = useState(null);
+  const [newGroupName, setNewGroupName] = useState('');
 
   // Swipe entre pages
   const onTouchStart = (e) => {
@@ -361,12 +366,32 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
   const handleDropOnItem = async (draggedItemId, targetItemId) => {
     if (!currentPage || currentPage.isDefault) return;
     
-    // Demander le nom du groupe
-    const groupName = prompt(t('home.groupNamePrompt', 'Nom du groupe :'), t('home.newGroup', 'Nouveau groupe'));
-    if (groupName && createGroupFromItems) {
-      await createGroupFromItems(currentPage.id, draggedItemId, targetItemId, groupName);
-    }
+    // Stocker les items et afficher le popup de nom
+    setPendingGroupItems({ draggedItemId, targetItemId });
+    setNewGroupName(t('home.newGroup', 'Nouveau groupe'));
+    setShowGroupNamePopup(true);
     handleDragEnd();
+  };
+
+  // Confirmer la création du groupe
+  const handleConfirmGroupCreation = async () => {
+    if (!pendingGroupItems || !newGroupName.trim()) return;
+    
+    const { draggedItemId, targetItemId } = pendingGroupItems;
+    if (createGroupFromItems) {
+      await createGroupFromItems(currentPage.id, draggedItemId, targetItemId, newGroupName.trim());
+    }
+    
+    setShowGroupNamePopup(false);
+    setPendingGroupItems(null);
+    setNewGroupName('');
+  };
+
+  // Annuler la création du groupe
+  const handleCancelGroupCreation = () => {
+    setShowGroupNamePopup(false);
+    setPendingGroupItems(null);
+    setNewGroupName('');
   };
 
   // Quand on dépose un item sur un groupe existant
@@ -591,6 +616,84 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
                   }}
                 >
                   Oui
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Popup création de groupe - Style nuage doux */}
+      {showGroupNamePopup && (
+        <div 
+          className="fixed inset-0 z-40 flex items-center justify-center px-6"
+          onClick={handleCancelGroupCreation}
+          onContextMenu={(e) => e.preventDefault()}
+          style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+        >
+          {/* Overlay doux */}
+          <div className="absolute inset-0 bg-pink-100/40 backdrop-blur-md"></div>
+          
+          {/* Modal nuage */}
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="relative max-w-xs w-full select-none"
+            style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+            onContextMenu={(e) => e.preventDefault()}
+          >
+            {/* Effet nuage */}
+            <div className="absolute -top-4 -left-4 w-16 h-16 bg-white/60 rounded-full blur-2xl"></div>
+            <div className="absolute -top-2 -right-6 w-14 h-14 bg-purple-100/60 rounded-full blur-2xl"></div>
+            <div className="absolute -bottom-3 left-1/2 w-20 h-14 bg-blue-100/50 rounded-full blur-2xl"></div>
+            
+            {/* Contenu */}
+            <div 
+              className="relative rounded-[28px] p-5 shadow-[0_8px_40px_rgba(147,51,234,0.15)] border border-white/60"
+              style={{
+                background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(243,232,255,0.9) 50%, rgba(239,246,255,0.9) 100%)'
+              }}
+            >
+              {/* Icône */}
+              <div className="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, #e9d5ff 0%, #c4b5fd 100%)'
+                }}
+              >
+                <FolderOpen className="w-6 h-6 text-purple-500" />
+              </div>
+              
+              {/* Titre */}
+              <h3 className="text-base font-bold text-center text-slate-700 mb-3">
+                {t('home.groupNamePrompt', 'Nom du groupe')}
+              </h3>
+              
+              {/* Input */}
+              <Input
+                type="text"
+                value={newGroupName}
+                onChange={(e) => setNewGroupName(e.target.value)}
+                className="w-full mb-4 rounded-xl border-purple-200 bg-white/80 text-center font-medium"
+                autoFocus
+                onKeyDown={(e) => e.key === 'Enter' && handleConfirmGroupCreation()}
+              />
+              
+              {/* Boutons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={handleCancelGroupCreation}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-white/80 text-slate-600 font-semibold text-sm border border-slate-100 hover:bg-white transition-all"
+                >
+                  {t('common.cancel', 'Annuler')}
+                </button>
+                <button
+                  onClick={handleConfirmGroupCreation}
+                  className="flex-1 py-2.5 px-4 rounded-xl text-white font-semibold text-sm transition-all"
+                  style={{
+                    background: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)',
+                    boxShadow: '0 4px 15px rgba(139,92,246,0.3)'
+                  }}
+                >
+                  OK
                 </button>
               </div>
             </div>
