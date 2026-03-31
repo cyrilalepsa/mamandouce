@@ -186,6 +186,17 @@ export default function PostpartumPage() {
   const hasPostpartumAccess = postpartumStatus?.postpartum_unlocked || isSuperAdmin;
   const hasGivenBirth = postpartumStatus?.actual_birth_date || isSuperAdmin;
   const canViewFullContent = hasPostpartumAccess && hasGivenBirth;
+  
+  // Section actuellement ouverte (une seule à la fois, en plein écran)
+  const [activeSection, setActiveSection] = useState(null);
+
+  const openSection = (sectionId) => {
+    setActiveSection(sectionId);
+  };
+  
+  const closeSection = () => {
+    setActiveSection(null);
+  };
 
   const toggleSection = (section) => {
     const wasExpanded = expandedSections[section];
@@ -193,16 +204,6 @@ export default function PostpartumPage() {
       ...prev,
       [section]: !prev[section]
     }));
-    
-    // Si on ouvre une section, scroller vers le contenu après un court délai
-    if (!wasExpanded) {
-      setTimeout(() => {
-        const contentElement = document.getElementById(`content-${section}`);
-        if (contentElement) {
-          contentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-    }
   };
 
   const getColorClasses = (color) => {
@@ -507,6 +508,82 @@ export default function PostpartumPage() {
   }
 
   // ==================== CONTENU COMPLET (ACCÈS + ACCOUCHÉ) ====================
+  
+  // Si une section est active, afficher son contenu en plein écran
+  if (activeSection) {
+    const section = sections.find(s => s.id === activeSection);
+    if (section) {
+      const Icon = section.icon;
+      const colorClasses = getColorClasses(section.color);
+      
+      return (
+        <div className="min-h-screen gradient-bg">
+          <div className="max-w-2xl mx-auto p-6 space-y-4">
+            {/* Header avec bouton retour */}
+            <div className={`${colorClasses.bg} rounded-2xl p-4 flex items-center gap-3`}>
+              <Button
+                onClick={closeSection}
+                className="bg-white/50 rounded-full p-2 shadow-sm"
+                data-testid="back-from-section"
+              >
+                <ArrowLeft className="w-5 h-5 text-slate-600" />
+              </Button>
+              <div className={`w-10 h-10 bg-white/50 rounded-xl flex items-center justify-center`}>
+                <Icon className={`w-5 h-5 ${colorClasses.text}`} />
+              </div>
+              <h1 className={`text-xl font-bold ${colorClasses.text}`}>
+                {section.label}
+              </h1>
+            </div>
+            
+            {/* Contenu de la section */}
+            <Card className="bg-white rounded-3xl shadow-sm p-4">
+              {/* Indicateur de traduction */}
+              {isTranslating && currentLang !== 'fr' && (
+                <div className="flex items-center gap-2 py-2 text-sm text-slate-500">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>{t('common.translating')}</span>
+                </div>
+              )}
+              {activeSection === 'appointments' && (
+                <AppointmentsSection appointments={displayContent?.appointments} />
+              )}
+              {activeSection === 'difficulties' && (
+                <DifficultiesSection difficulties={displayContent?.difficulties} />
+              )}
+              {activeSection === 'breastfeeding' && (
+                <BreastfeedingSection breastfeeding={displayContent?.breastfeeding} />
+              )}
+              {activeSection === 'formula' && (
+                <FormulaSection formula={displayContent?.formula} />
+              )}
+              {activeSection === 'diapers' && (
+                <DiapersSection diapers={displayContent?.diapers} />
+              )}
+              {activeSection === 'babywearing' && (
+                <BabywearingSection babywearing={displayContent?.babywearing} />
+              )}
+              {activeSection === 'diversification' && (
+                <DiversificationSection diversification={displayContent?.diversification} />
+              )}
+              {activeSection === 'recipes' && (
+                <RecipesSection 
+                  babyRecipes={displayContent?.baby_recipes} 
+                  favorites={favorites}
+                  onFavoritesChange={setFavorites}
+                />
+              )}
+              {activeSection === 'precautions' && (
+                <PrecautionsSection precautions={displayContent?.precautions} />
+              )}
+            </Card>
+          </div>
+        </div>
+      );
+    }
+  }
+  
+  // Affichage de la grille de mosaïque
   return (
     <div className="min-h-screen gradient-bg">
       <div className="max-w-2xl mx-auto p-6 space-y-6">
@@ -557,28 +634,17 @@ export default function PostpartumPage() {
           </div>
         </Card>
 
-        {/* Toggle All Sections Button */}
-        <div className="flex justify-end">
-          <ToggleAllSections 
-            allOpen={allSectionsOpen} 
-            onToggle={toggleAllSections}
-          />
-        </div>
-
         {/* Sections en Mosaïque */}
         <div className="grid grid-cols-2 gap-3">
           {sections.map((section) => {
             const Icon = section.icon;
             const colorClasses = getColorClasses(section.color);
-            const isExpanded = expandedSections[section.id];
             
             return (
               <Card 
                 key={section.id} 
-                onClick={() => toggleSection(section.id)}
-                className={`bg-white rounded-2xl p-4 shadow-sm cursor-pointer transition-all hover:shadow-md hover:scale-[1.02] active:scale-[0.98] ${
-                  isExpanded ? 'ring-2 ring-offset-2 ' + (section.color === 'pink' ? 'ring-pink-400' : section.color === 'amber' ? 'ring-amber-400' : section.color === 'rose' ? 'ring-rose-400' : section.color === 'sky' ? 'ring-sky-400' : section.color === 'cyan' ? 'ring-cyan-400' : section.color === 'violet' ? 'ring-violet-400' : section.color === 'orange' ? 'ring-orange-400' : section.color === 'emerald' ? 'ring-emerald-400' : 'ring-slate-400') : ''
-                }`}
+                onClick={() => openSection(section.id)}
+                className="bg-white rounded-2xl p-4 shadow-sm cursor-pointer transition-all hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
                 data-testid={`toggle-${section.id}`}
               >
                 <div className={`w-12 h-12 ${colorClasses.bg} rounded-xl flex items-center justify-center mx-auto mb-2`}>
@@ -596,77 +662,6 @@ export default function PostpartumPage() {
             );
           })}
         </div>
-
-        {/* Contenu de la section sélectionnée */}
-        {sections.map((section) => {
-          const isExpanded = expandedSections[section.id];
-          const colorClasses = getColorClasses(section.color);
-          const Icon = section.icon;
-          
-          if (!isExpanded) return null;
-          
-          return (
-            <Card key={`content-${section.id}`} id={`content-${section.id}`} className="bg-white rounded-3xl shadow-sm overflow-hidden animate-in slide-in-from-top-2 duration-200">
-              {/* Header de la section ouverte */}
-              <div className={`p-4 ${colorClasses.bg} flex items-center justify-between`}>
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 bg-white/50 rounded-xl flex items-center justify-center`}>
-                    <Icon className={`w-5 h-5 ${colorClasses.text}`} />
-                  </div>
-                  <h3 className={`font-bold ${colorClasses.text}`}>{section.label}</h3>
-                </div>
-                <button 
-                  onClick={() => toggleSection(section.id)}
-                  className={`w-8 h-8 rounded-full bg-white/50 flex items-center justify-center ${colorClasses.text}`}
-                >
-                  <ChevronUp className="w-5 h-5" />
-                </button>
-              </div>
-              
-              {/* Contenu */}
-              <div className="p-4">
-                {/* Indicateur de traduction */}
-                {isTranslating && currentLang !== 'fr' && (
-                  <div className="flex items-center gap-2 py-2 text-sm text-slate-500">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>{t('common.translating')}</span>
-                  </div>
-                )}
-                {section.id === 'appointments' && (
-                  <AppointmentsSection appointments={displayContent?.appointments} />
-                )}
-                {section.id === 'difficulties' && (
-                  <DifficultiesSection difficulties={displayContent?.difficulties} />
-                )}
-                {section.id === 'breastfeeding' && (
-                  <BreastfeedingSection breastfeeding={displayContent?.breastfeeding} />
-                )}
-                {section.id === 'formula' && (
-                  <FormulaSection formula={displayContent?.formula} />
-                )}
-                {section.id === 'diapers' && (
-                  <DiapersSection diapers={displayContent?.diapers} />
-                )}
-                {section.id === 'babywearing' && (
-                  <BabywearingSection babywearing={displayContent?.babywearing} />
-                )}
-                {section.id === 'diversification' && (
-                  <DiversificationSection diversification={displayContent?.diversification} />
-                )}
-                {section.id === 'recipes' && (
-                  <RecipesSection 
-                    babyRecipes={displayContent?.baby_recipes} 
-                    favorites={favorites}
-                    onFavoritesChange={setFavorites}
-                  />
-                )}
-                {section.id === 'precautions' && (
-                  <PrecautionsSection precautions={displayContent?.precautions} />
-                )}
-              </div>
-            </Card>
-          );
-        })}
       </div>
     </div>
   );
