@@ -140,6 +140,8 @@ export function DraggableItem({
   }, [showDeleteButton]);
 
   const handleTouchStart = (e) => {
+    // Empêcher la propagation vers le handler de suppression de page
+    e.stopPropagation();
     isLongPress.current = false;
     longPressTimer.current = setTimeout(() => {
       isLongPress.current = true;
@@ -151,6 +153,7 @@ export function DraggableItem({
   };
 
   const handleTouchEnd = (e) => {
+    e.stopPropagation();
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
     }
@@ -195,6 +198,7 @@ export function DraggableItem({
   return (
     <div
       draggable
+      data-draggable-item="true"
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
       onDragOver={handleDragOver}
@@ -277,8 +281,11 @@ export function ItemGroup({
 
   return (
     <div
+      data-item-card="true"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      onTouchStart={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
       className={`
         relative bg-gradient-to-br from-slate-50 to-slate-100 
         rounded-2xl p-3 shadow-sm border cursor-pointer

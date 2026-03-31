@@ -124,14 +124,17 @@ function UserSectionCard({ item, onRemove, pregnancyProfile, hasPregnancyProfile
   
   const sectionProps = item.id === 'pregnancy' ? { hasPregnancyProfile, pregnancyProfile } : {};
 
-  const handleTouchStart = () => {
+  const handleTouchStart = (e) => {
+    // Empêcher la propagation vers le handler de suppression de page
+    e.stopPropagation();
     longPressTimer.current = setTimeout(() => {
       setIsShaking(true);
       if (navigator.vibrate) navigator.vibrate(50);
     }, 500);
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e) => {
+    e.stopPropagation();
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
     }
@@ -149,6 +152,7 @@ function UserSectionCard({ item, onRemove, pregnancyProfile, hasPregnancyProfile
   
   return (
     <div 
+      data-section-card="true"
       className={`relative transition-all duration-300 ${isShaking ? 'animate-wiggle' : ''}`}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
@@ -316,9 +320,21 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
   };
 
   // Appui long sur page utilisateur = afficher popup de suppression
+  // SEULEMENT si on clique sur une zone vide (pas sur une carte)
   const handleUserPageLongPressStart = (e) => {
     const pageToCheck = pages[currentPageIndex];
     if (!pageToCheck || pageToCheck.isDefault) return;
+    
+    // Vérifier si le clic est sur une carte ou un élément interactif
+    const target = e.target;
+    const isOnCard = target.closest('[data-item-card]') || 
+                     target.closest('[data-draggable-item]') ||
+                     target.closest('[data-section-card]') ||
+                     target.closest('button') ||
+                     target.closest('[role="button"]');
+    
+    // Ne pas déclencher la suppression de page si on est sur une carte
+    if (isOnCard) return;
     
     pageLongPressTimer.current = setTimeout(() => {
       if (navigator.vibrate) navigator.vibrate(50);
