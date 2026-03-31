@@ -315,10 +315,22 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
     }
   };
 
-  // Appui long sur page utilisateur = afficher popup de suppression
+  // Appui long sur page utilisateur = afficher popup de suppression (SEULEMENT sur zone vide)
   const handleUserPageLongPressStart = (e) => {
     const pageToCheck = pages[currentPageIndex];
     if (!pageToCheck || pageToCheck.isDefault) return;
+    
+    // Vérifier si on a cliqué sur une zone vide (pas sur une carte ou un bouton)
+    const target = e.target;
+    const isEmptyArea = !target.closest('button') && 
+                        !target.closest('[data-draggable]') && 
+                        !target.closest('[data-testid]') &&
+                        !target.closest('.bg-white') &&
+                        (target.classList.contains('page-transition') || 
+                         target.classList.contains('space-y-3') ||
+                         target.closest('.page-transition') === e.currentTarget);
+    
+    if (!isEmptyArea) return;
     
     pageLongPressTimer.current = setTimeout(() => {
       if (navigator.vibrate) navigator.vibrate(50);

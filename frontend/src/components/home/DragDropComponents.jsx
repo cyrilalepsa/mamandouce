@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FolderOpen, X, ChevronRight, GripVertical } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { FolderOpen, X, ChevronRight } from 'lucide-react';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 
@@ -12,6 +13,8 @@ const ITEM_ICONS = {
   'postpartum': '💕',
   'services': '⚙️',
   'cycle-tracking': '📅',
+  'fertility-calc': '📊',
+  'preparation-advice': '💡',
   'food-scanner': '📷',
   'food-library': '🍎',
   'favorites': '❤️',
@@ -21,6 +24,10 @@ const ITEM_ICONS = {
   'medical-appointments': '🩺',
   'pregnancy-tracking': '📊',
   'reminders': '🔔',
+  'parental-leave': '⚖️',
+  'birth-list': '📝',
+  'maternity-bag': '🧳',
+  'chatbot': '🤖',
 };
 
 const ITEM_NAMES = {
@@ -30,6 +37,8 @@ const ITEM_NAMES = {
   'postpartum': 'Post-partum',
   'services': 'Services',
   'cycle-tracking': 'Cycles',
+  'fertility-calc': 'Fertilité',
+  'preparation-advice': 'Conseils',
   'food-scanner': 'Scanner',
   'food-library': 'Bibliothèque',
   'favorites': 'Favoris',
@@ -39,6 +48,35 @@ const ITEM_NAMES = {
   'medical-appointments': 'RDV',
   'pregnancy-tracking': 'Suivi',
   'reminders': 'Rappels',
+  'parental-leave': 'Congés',
+  'birth-list': 'Naissance',
+  'maternity-bag': 'Valise',
+  'chatbot': 'Assistant',
+};
+
+// Routes pour les items
+const ITEM_ROUTES = {
+  'preconception': '/section/preconception',
+  'pregnancy': '/section/pregnancy',
+  'baby-preparation': '/section/baby-preparation',
+  'postpartum': '/postpartum',
+  'services': '/section/services',
+  'cycle-tracking': '/cycle-tracking',
+  'fertility-calc': '/fertility-calculator',
+  'preparation-advice': '/preconception-tips',
+  'food-scanner': '/scanner',
+  'food-library': '/library',
+  'favorites': '/favorites',
+  'history': '/history',
+  'baby-names': '/baby-names',
+  'tips-evolution': '/tips',
+  'medical-appointments': '/medical',
+  'pregnancy-tracking': '/tracking',
+  'reminders': '/reminders',
+  'parental-leave': '/parental-leave',
+  'birth-list': '/birth-list',
+  'maternity-bag': '/maternity-bag',
+  'chatbot': '/chatbot',
 };
 
 // Composant pour un item draggable
@@ -54,12 +92,14 @@ export function DraggableItem({
   showDeleteButton = false
 }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const longPressTimer = useRef(null);
   const isLongPress = useRef(false);
   const [showDelete, setShowDelete] = useState(showDeleteButton);
   
   const icon = ITEM_ICONS[item.id] || '📌';
   const name = ITEM_NAMES[item.id] || item.id;
+  const route = ITEM_ROUTES[item.id];
 
   // Synchroniser avec la prop externe
   useEffect(() => {
@@ -83,6 +123,21 @@ export function DraggableItem({
     }
   };
 
+  const handleClick = (e) => {
+    // Si c'est un appui long ou si on montre le bouton supprimer, ne pas naviguer
+    if (isLongPress.current || showDelete) {
+      // Cacher le bouton supprimer au prochain clic
+      if (showDelete && !isLongPress.current) {
+        setShowDelete(false);
+      }
+      return;
+    }
+    // Naviguer vers la route de l'item
+    if (route) {
+      navigate(route);
+    }
+  };
+
   const handleDragStart = (e) => {
     e.dataTransfer.setData('itemId', item.id);
     e.dataTransfer.setData('itemType', 'item');
@@ -103,6 +158,7 @@ export function DraggableItem({
 
   return (
     <div
+      data-draggable="true"
       draggable
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
@@ -114,14 +170,17 @@ export function DraggableItem({
       onMouseDown={handleTouchStart}
       onMouseUp={handleTouchEnd}
       onMouseLeave={() => clearTimeout(longPressTimer.current)}
+      onClick={handleClick}
       className={`
         relative bg-white rounded-2xl p-3 shadow-sm border
-        cursor-grab active:cursor-grabbing
-        transition-all duration-200
+        cursor-pointer active:scale-95
+        transition-all duration-200 select-none
         ${isDragging ? 'opacity-50 scale-95' : ''}
         ${isDropTarget ? 'ring-2 ring-pink-400 scale-105 bg-pink-50' : 'border-slate-100'}
         ${showDelete ? 'animate-wiggle' : ''}
       `}
+      style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+      onContextMenu={(e) => e.preventDefault()}
     >
       {/* Bouton supprimer - visible seulement après appui long */}
       {onRemove && showDelete && (
@@ -136,9 +195,8 @@ export function DraggableItem({
         </button>
       )}
       
-      <div className="flex items-center gap-2">
-        <GripVertical className="w-4 h-4 text-slate-300" />
-        <span className="text-xl">{icon}</span>
+      <div className="flex items-center justify-center gap-2">
+        <span className="text-2xl">{icon}</span>
         <span className="text-sm font-medium text-slate-700 truncate">{name}</span>
       </div>
     </div>
