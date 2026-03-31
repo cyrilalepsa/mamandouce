@@ -224,8 +224,6 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
   const items = SECTION_ITEMS[sectionId] || [];
 
   const handleTouchStart = (e) => {
-    // Empêcher le menu de sélection natif Android/iOS
-    e.preventDefault();
     isLongPress.current = false;
     longPressTimer.current = setTimeout(() => {
       isLongPress.current = true;
@@ -235,9 +233,12 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
   };
 
   const handleTouchEnd = (e) => {
-    e.preventDefault();
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
+    }
+    // Si c'était un appui court (pas un long press), simuler le clic
+    if (!isLongPress.current) {
+      // Le handleClick sera déclenché naturellement
     }
   };
   

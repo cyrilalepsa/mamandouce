@@ -226,8 +226,6 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
   const isPartialPremium = item.premium === 'partial' && !isPremium;
   
   const handleTouchStart = (e) => {
-    // Empêcher le menu de sélection natif Android/iOS
-    e.preventDefault();
     isLongPress.current = false;
     longPressTimer.current = setTimeout(() => {
       isLongPress.current = true;
@@ -237,7 +235,6 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
   };
 
   const handleTouchEnd = (e) => {
-    e.preventDefault();
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
     }
