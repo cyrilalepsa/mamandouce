@@ -115,6 +115,19 @@ code {
   animation: bounce-slow 2s ease-in-out infinite;
 }
 
+/* Empêcher la sélection de texte et le menu contextuel sur les éléments interactifs */
+.no-select,
+[data-testid*="section-card"],
+[data-testid*="card-"],
+.interactive-card {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 
 /* Cacher la bannière Wake up servers d'Emergent */
 div[style*="position: fixed"][style*="bottom: 0"],

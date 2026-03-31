@@ -223,7 +223,9 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
   const isLongPress = useRef(false);
   const items = SECTION_ITEMS[sectionId] || [];
 
-  const handleTouchStart = () => {
+  const handleTouchStart = (e) => {
+    // Empêcher le menu de sélection natif Android/iOS
+    e.preventDefault();
     isLongPress.current = false;
     longPressTimer.current = setTimeout(() => {
       isLongPress.current = true;
@@ -233,12 +235,15 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
   };
 
   const handleTouchEnd = (e) => {
+    e.preventDefault();
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
     }
-    if (isLongPress.current) {
-      e.preventDefault();
-    }
+  };
+  
+  const handleTouchMove = (e) => {
+    // Annuler le long press si l'utilisateur bouge
+    clearTimeout(longPressTimer.current);
   };
 
   const handleClick = (e) => {
@@ -282,7 +287,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
         onClick={handleClick}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        onTouchMove={() => clearTimeout(longPressTimer.current)}
+        onTouchMove={handleTouchMove}
         onMouseDown={handleTouchStart}
         onMouseUp={handleTouchEnd}
         onMouseLeave={() => clearTimeout(longPressTimer.current)}

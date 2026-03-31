@@ -225,7 +225,9 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
   const isLocked = item.premium === 'full' && !isPremium;
   const isPartialPremium = item.premium === 'partial' && !isPremium;
   
-  const handleTouchStart = () => {
+  const handleTouchStart = (e) => {
+    // Empêcher le menu de sélection natif Android/iOS
+    e.preventDefault();
     isLongPress.current = false;
     longPressTimer.current = setTimeout(() => {
       isLongPress.current = true;
@@ -235,12 +237,14 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
   };
 
   const handleTouchEnd = (e) => {
+    e.preventDefault();
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
     }
-    if (isLongPress.current) {
-      e.preventDefault();
-    }
+  };
+  
+  const handleTouchMove = () => {
+    clearTimeout(longPressTimer.current);
   };
 
   const handleClick = () => {
@@ -254,20 +258,22 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
     return (
       <Card 
         className={`
-          relative ${item.bgColor} rounded-2xl p-4 
+          relative ${item.bgColor} rounded-2xl p-4 select-none
           shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-violet-100 
           hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] 
           cursor-pointer transition-all col-span-2 sm:col-span-3
           ${isLocked ? 'opacity-60' : ''}
           ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''}
         `}
+        style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
         onClick={handleClick}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        onTouchMove={() => clearTimeout(longPressTimer.current)}
+        onTouchMove={handleTouchMove}
         onMouseDown={handleTouchStart}
         onMouseUp={handleTouchEnd}
         onMouseLeave={() => clearTimeout(longPressTimer.current)}
+        onContextMenu={(e) => e.preventDefault()}
         data-testid={`item-card-${item.id}`}
       >
         <div className="flex items-center gap-4">
@@ -306,20 +312,22 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
   return (
     <Card 
       className={`
-        relative bg-white rounded-2xl p-4 
+        relative bg-white rounded-2xl p-4 select-none
         shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 
         hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] 
         cursor-pointer transition-all text-center
         ${isLocked ? 'opacity-60' : ''}
         ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''}
       `}
+      style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
       onClick={handleClick}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      onTouchMove={() => clearTimeout(longPressTimer.current)}
+      onTouchMove={handleTouchMove}
       onMouseDown={handleTouchStart}
       onMouseUp={handleTouchEnd}
       onMouseLeave={() => clearTimeout(longPressTimer.current)}
+      onContextMenu={(e) => e.preventDefault()}
       data-testid={`item-card-${item.id}`}
     >
       {/* Badge premium */}
