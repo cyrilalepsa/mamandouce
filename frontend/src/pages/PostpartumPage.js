@@ -188,10 +188,21 @@ export default function PostpartumPage() {
   const canViewFullContent = hasPostpartumAccess && hasGivenBirth;
 
   const toggleSection = (section) => {
+    const wasExpanded = expandedSections[section];
     setExpandedSections(prev => ({
       ...prev,
       [section]: !prev[section]
     }));
+    
+    // Si on ouvre une section, scroller vers le contenu après un court délai
+    if (!wasExpanded) {
+      setTimeout(() => {
+        const contentElement = document.getElementById(`content-${section}`);
+        if (contentElement) {
+          contentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
   };
 
   const getColorClasses = (color) => {
@@ -595,7 +606,7 @@ export default function PostpartumPage() {
           if (!isExpanded) return null;
           
           return (
-            <Card key={`content-${section.id}`} className="bg-white rounded-3xl shadow-sm overflow-hidden animate-in slide-in-from-top-2 duration-200">
+            <Card key={`content-${section.id}`} id={`content-${section.id}`} className="bg-white rounded-3xl shadow-sm overflow-hidden animate-in slide-in-from-top-2 duration-200">
               {/* Header de la section ouverte */}
               <div className={`p-4 ${colorClasses.bg} flex items-center justify-between`}>
                 <div className="flex items-center gap-3">
