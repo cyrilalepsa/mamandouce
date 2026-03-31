@@ -206,8 +206,13 @@ export default function PostpartumPage() {
   
   const closeSection = () => {
     setActiveSection(null);
-    // Nettoyer le paramètre de l'URL
-    navigate('/postpartum', { replace: true });
+    // Si on est arrivé depuis JourneyStepsPage (avec ?section=xxx), retourner à JourneyStepsPage
+    if (sectionFromUrl) {
+      navigate('/journey-steps?open=postpartum');
+    } else {
+      // Sinon, rester sur la grille postpartum
+      navigate('/postpartum', { replace: true });
+    }
   };
   
   // Retour vers JourneyStepsPage avec l'épingle postpartum ouverte
