@@ -177,7 +177,7 @@ function DuplicatePopup({ sectionId, sectionName, pages, onDuplicate, onCancel, 
   );
 }
 
-// Carte de section avec appui long pour dupliquer et épingle pour ouvrir/fermer
+// Carte de section style PILL avec gradient rose nuage
 function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, onTogglePin }) {
   const { t } = useTranslation();
   const meta = SECTION_META[sectionId];
@@ -209,24 +209,22 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
     }
   };
 
-  const handlePinClick = (e) => {
-    e.stopPropagation();
-    onTogglePin?.(sectionId);
-  };
-
   return (
-    <Card 
+    <div 
       className={`
         relative overflow-hidden cursor-pointer select-none
-        bg-gradient-to-r ${meta.bgGradient}
-        backdrop-blur-sm rounded-2xl
-        border ${meta.borderColor}
-        shadow-sm hover:shadow-md
+        rounded-full px-5 py-3
+        shadow-lg hover:shadow-xl
         transition-all duration-300
-        hover:scale-[1.01] active:scale-[0.99]
+        hover:scale-[1.02] active:scale-[0.98]
         ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''}
       `}
-      style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+      style={{ 
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,242,248,0.9) 30%, rgba(244,114,182,0.4) 100%)',
+        boxShadow: '0 4px 20px rgba(236,72,153,0.2), inset 0 2px 10px rgba(255,255,255,0.8)',
+        WebkitUserSelect: 'none', 
+        WebkitTouchCallout: 'none' 
+      }}
       onClick={handleClick}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
@@ -237,46 +235,40 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
       onContextMenu={(e) => e.preventDefault()}
       data-testid={`section-card-${sectionId}`}
     >
-      {/* Effet nuage */}
-      <div className="absolute -top-6 -right-6 w-20 h-20 bg-white/40 rounded-full blur-2xl pointer-events-none"></div>
+      {/* Effet de reflet glass en haut */}
+      <div 
+        className="absolute top-0 left-0 right-0 h-1/2 rounded-t-full pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, transparent 100%)' }}
+      />
+      
+      {/* Effet brillance coin */}
+      <div className="absolute top-2 left-4 w-8 h-3 bg-white/50 rounded-full blur-sm pointer-events-none" />
+      <div className="absolute bottom-3 right-6 w-4 h-4 bg-pink-200/30 rounded-full blur-md pointer-events-none" />
       
       {/* Badge sélection */}
       {isSelected && (
-        <div className="absolute top-2 right-10 w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center z-10">
+        <div className="absolute top-1/2 -translate-y-1/2 right-3 w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center z-10 shadow-md">
           <Check className="w-4 h-4 text-white" />
         </div>
       )}
-
-      {/* Bouton épingle */}
-      <button
-        onClick={handlePinClick}
-        className={`absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center z-10 transition-all ${
-          isPinned 
-            ? 'bg-pink-500 text-white shadow-lg' 
-            : 'bg-white/60 text-slate-400 hover:bg-white hover:text-pink-500'
-        }`}
-        title={isPinned ? t('journey.unpin', 'Retirer l\'épingle') : t('journey.pin', 'Épingler')}
-      >
-        <Pin className={`w-3.5 h-3.5 ${isPinned ? 'fill-current' : ''}`} />
-      </button>
       
-      <div className="p-4 flex items-center gap-4">
+      <div className="relative flex items-center gap-3">
         {/* Icône */}
-        <div className={`w-12 h-12 ${meta.iconBg} rounded-xl flex items-center justify-center flex-shrink-0`}>
-          <Icon className={`w-6 h-6 ${meta.iconColor}`} />
+        <div className={`w-10 h-10 ${meta.iconBg} rounded-full flex items-center justify-center flex-shrink-0 shadow-inner`}>
+          <Icon className={`w-5 h-5 ${meta.iconColor}`} />
         </div>
         
         {/* Texte */}
         <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-slate-700 text-base">
+          <h3 className="font-bold text-slate-700 text-sm">
             {t(meta.nameKey, meta.name)}
           </h3>
-          <p className="text-xs text-slate-500 truncate">
+          <p className="text-[11px] text-slate-500 truncate">
             {t(meta.descKey, meta.description)}
           </p>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -288,23 +280,6 @@ function JourneyStepsPage() {
   const [selectedSection, setSelectedSection] = useState(null);
   const [selectedSectionName, setSelectedSectionName] = useState('');
   const [showDuplicatePopup, setShowDuplicatePopup] = useState(false);
-  
-  // État des sections épinglées (stockées dans localStorage)
-  const [pinnedSections, setPinnedSections] = useState(() => {
-    const saved = localStorage.getItem('mamandouce_pinned_journey_sections');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  // Sauvegarder les épingles dans localStorage
-  const togglePin = (sectionId) => {
-    setPinnedSections(prev => {
-      const newPinned = prev.includes(sectionId)
-        ? prev.filter(id => id !== sectionId)
-        : [...prev, sectionId];
-      localStorage.setItem('mamandouce_pinned_journey_sections', JSON.stringify(newPinned));
-      return newPinned;
-    });
-  };
 
   // Navigation vers la page de détail de la section
   const handleSectionClick = (sectionId) => {
@@ -379,7 +354,7 @@ function JourneyStepsPage() {
           <div className="w-10"></div>
         </div>
 
-        {/* Les 5 sections en cartes cliquables */}
+        {/* Les 5 sections en cartes pill */}
         <div className="space-y-3">
           {SECTIONS_ORDER.map((sectionId) => (
             <SectionCard
@@ -388,8 +363,6 @@ function JourneyStepsPage() {
               onClick={() => handleSectionClick(sectionId)}
               onLongPress={handleLongPress}
               isSelected={selectedSection === sectionId}
-              isPinned={pinnedSections.includes(sectionId)}
-              onTogglePin={togglePin}
             />
           ))}
         </div>
