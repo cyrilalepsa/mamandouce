@@ -69,7 +69,7 @@ const SECTION_META = {
 
 const SECTIONS_ORDER = ['preconception', 'pregnancy', 'baby-preparation', 'postpartum', 'services'];
 
-// Popup bulle pour dupliquer
+// Popup discret pour dupliquer (style toast)
 function DuplicatePopup({ sectionId, sectionName, pages, onDuplicate, onCancel, onCreatePage, t }) {
   const userPages = pages.filter(p => !p.isDefault);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -82,81 +82,74 @@ function DuplicatePopup({ sectionId, sectionName, pages, onDuplicate, onCancel, 
   };
   
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center pb-20 bg-black/20 backdrop-blur-[2px]">
+    <div 
+      className="fixed inset-0 z-50 flex items-end justify-center pb-6"
+      onClick={onCancel}
+    >
       <div 
-        className="relative bg-white/95 backdrop-blur-xl rounded-[32px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/50 mx-4 max-w-sm w-full"
-        style={{
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,242,248,0.9) 100%)'
-        }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative bg-white/98 backdrop-blur-xl rounded-3xl p-4 shadow-lg border border-slate-100/50 mx-4 max-w-xs w-full animate-in slide-in-from-bottom-4 duration-200"
       >
-        {/* Flèche bulle */}
-        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/95 rotate-45 border-r border-b border-white/50"></div>
-        
-        {/* Décoration nuage */}
-        <div className="absolute -top-3 -right-3 w-16 h-16 bg-pink-100/50 rounded-full blur-2xl"></div>
-        <div className="absolute -bottom-2 -left-2 w-12 h-12 bg-purple-100/50 rounded-full blur-xl"></div>
-        
         <div className="relative">
           {!showCreateForm ? (
             <>
-              <div className="text-center mb-4">
-                <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-pink-400 to-purple-400 rounded-2xl flex items-center justify-center shadow-lg">
-                  <span className="text-white text-xl">📋</span>
+              {/* Header compact */}
+              <div className="flex items-center gap-3 mb-3 pb-2 border-b border-slate-100">
+                <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-purple-400 rounded-xl flex items-center justify-center">
+                  <span className="text-white text-sm">📋</span>
                 </div>
-                <h3 className="text-lg font-bold text-slate-700">
-                  {t('journey.duplicateTo', 'Dupliquer vers...')}
-                </h3>
-                <p className="text-sm text-slate-500">
-                  {sectionName}
-                </p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-slate-400">{t('journey.duplicateTo', 'Dupliquer vers')}</p>
+                  <p className="text-sm font-medium text-slate-700 truncate">{sectionName}</p>
+                </div>
+                <button 
+                  onClick={onCancel}
+                  className="w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+                >
+                  <span className="text-slate-400 text-xs">✕</span>
+                </button>
               </div>
               
-              <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
+              {/* Liste compacte des pages */}
+              <div className="space-y-1.5 max-h-36 overflow-y-auto">
                 {userPages.length > 0 ? (
                   userPages.map(page => (
                     <button
                       key={page.id}
                       onClick={() => onDuplicate(page.id)}
-                      className="w-full p-3.5 text-left rounded-2xl bg-white/60 hover:bg-pink-50 hover:text-pink-600 transition-all border border-slate-100 hover:border-pink-200 active:scale-[0.98]"
+                      className="w-full p-2.5 text-left rounded-xl bg-slate-50 hover:bg-pink-50 hover:text-pink-600 transition-all text-sm font-medium text-slate-600"
                     >
-                      <span className="font-medium">{page.name}</span>
+                      {page.name}
                     </button>
                   ))
                 ) : (
-                  <div className="text-center py-4 px-3 rounded-2xl bg-slate-50/50">
-                    <p className="text-sm text-slate-400">
-                      {t('journey.noUserPages', 'Aucune page personnalisée')}
-                    </p>
-                  </div>
+                  <p className="text-xs text-slate-400 text-center py-2">
+                    {t('journey.noUserPages', 'Aucune page personnalisée')}
+                  </p>
                 )}
                 
                 <button
                   onClick={() => setShowCreateForm(true)}
-                  className="w-full p-3.5 text-left rounded-2xl bg-gradient-to-r from-pink-50 to-purple-50 text-pink-600 hover:from-pink-100 hover:to-purple-100 transition-all font-medium border border-pink-100 active:scale-[0.98]"
+                  className="w-full p-2.5 text-left rounded-xl bg-pink-50 text-pink-600 hover:bg-pink-100 transition-all text-sm font-medium flex items-center gap-2"
                 >
-                  <span className="flex items-center gap-2">
-                    <span className="text-lg">+</span>
-                    {t('journey.createNewPage', 'Créer une nouvelle page')}
-                  </span>
+                  <span className="text-base">+</span>
+                  {t('journey.createNewPage', 'Nouvelle page')}
                 </button>
               </div>
-              
-              <button 
-                onClick={onCancel} 
-                className="w-full py-2.5 rounded-2xl bg-slate-100/80 text-slate-600 font-medium hover:bg-slate-200/80 transition-all active:scale-95"
-              >
-                {t('common.cancel', 'Annuler')}
-              </button>
             </>
           ) : (
             <>
-              <div className="text-center mb-4">
-                <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-pink-400 to-purple-400 rounded-2xl flex items-center justify-center shadow-lg">
-                  <span className="text-white text-xl">✨</span>
-                </div>
-                <h3 className="text-lg font-bold text-slate-700">
-                  {t('home.createPage', 'Créer une page')}
-                </h3>
+              {/* Formulaire création compact */}
+              <div className="flex items-center gap-2 mb-3">
+                <button 
+                  onClick={() => setShowCreateForm(false)}
+                  className="w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+                >
+                  <span className="text-slate-400 text-xs">←</span>
+                </button>
+                <p className="text-sm font-medium text-slate-700">
+                  {t('home.createPage', 'Nouvelle page')}
+                </p>
               </div>
               
               <Input
@@ -164,26 +157,18 @@ function DuplicatePopup({ sectionId, sectionName, pages, onDuplicate, onCancel, 
                 value={newPageName}
                 onChange={(e) => setNewPageName(e.target.value)}
                 placeholder={t('home.pageNamePlaceholder', 'Nom de la page...')}
-                className="w-full mb-4 rounded-2xl border-slate-200 focus:border-pink-300 focus:ring-pink-200"
+                className="w-full mb-3 rounded-xl border-slate-200 text-sm h-10"
                 autoFocus
                 onKeyDown={(e) => e.key === 'Enter' && handleCreateAndDuplicate()}
               />
               
-              <div className="flex gap-3">
-                <button 
-                  onClick={() => setShowCreateForm(false)} 
-                  className="flex-1 py-2.5 rounded-2xl bg-slate-100/80 text-slate-600 font-medium hover:bg-slate-200/80 transition-all active:scale-95"
-                >
-                  {t('common.back', 'Retour')}
-                </button>
-                <button 
-                  onClick={handleCreateAndDuplicate}
-                  disabled={!newPageName.trim()}
-                  className="flex-1 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-500 text-white font-medium shadow-lg shadow-pink-500/25 hover:shadow-xl disabled:opacity-50 transition-all active:scale-95"
-                >
-                  {t('common.create', 'Créer')}
-                </button>
-              </div>
+              <button 
+                onClick={handleCreateAndDuplicate}
+                disabled={!newPageName.trim()}
+                className="w-full py-2 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 text-white text-sm font-medium shadow-sm disabled:opacity-50 transition-all active:scale-[0.98]"
+              >
+                {t('common.create', 'Créer')}
+              </button>
             </>
           )}
         </div>
@@ -232,7 +217,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
   return (
     <Card 
       className={`
-        relative overflow-hidden cursor-pointer
+        relative overflow-hidden cursor-pointer select-none
         bg-gradient-to-r ${meta.bgGradient}
         backdrop-blur-sm rounded-2xl
         border ${meta.borderColor}
@@ -241,6 +226,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
         hover:scale-[1.01] active:scale-[0.99]
         ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''}
       `}
+      style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
       onClick={handleClick}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
@@ -248,6 +234,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
       onMouseDown={handleTouchStart}
       onMouseUp={handleTouchEnd}
       onMouseLeave={() => clearTimeout(longPressTimer.current)}
+      onContextMenu={(e) => e.preventDefault()}
       data-testid={`section-card-${sectionId}`}
     >
       {/* Effet nuage */}
@@ -288,9 +275,6 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
             {t(meta.descKey, meta.description)}
           </p>
         </div>
-        
-        {/* Flèche */}
-        <ChevronRight className={`w-5 h-5 text-slate-400 flex-shrink-0 transition-transform ${isPinned ? 'rotate-90' : ''}`} />
       </div>
     </Card>
   );
