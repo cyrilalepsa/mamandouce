@@ -81,12 +81,35 @@ export function HomeLayoutProvider({ children }) {
   const [hasCustomLayout, setHasCustomLayout] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
 
-  // Charger le layout depuis la BDD
+  // Charger le layout depuis la BDD seulement si authentifié
   useEffect(() => {
-    loadLayout();
+    const token = localStorage.getItem('token');
+    if (token) {
+      loadLayout();
+    } else {
+      // Pas de token, utiliser le layout par défaut
+      setLayout(DEFAULT_LAYOUT);
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Écouter l'événement de login pour recharger le layout
+  useEffect(() => {
+    const handleLogin = () => {
+      loadLayout();
+    };
+    window.addEventListener('user-logged-in', handleLogin);
+    return () => window.removeEventListener('user-logged-in', handleLogin);
   }, []);
 
   const loadLayout = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setLayout(DEFAULT_LAYOUT);
+      setIsLoading(false);
+      return;
+    }
+    
     try {
       const response = await axios.get(`${API}/user/layout`, getAuthHeaders());
       if (response.data && response.data.layout) {
@@ -522,6 +545,7 @@ export function HomeLayoutProvider({ children }) {
     removeItemFromGroup,
     duplicateItemToPage,
     setDefaultPage,
+    loadLayout,  // Exposer pour recharger après login
     AVAILABLE_ITEMS
   };
 

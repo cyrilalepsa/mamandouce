@@ -29,6 +29,15 @@ Application pour femmes enceintes avec une UX/UI type smartphone (iOS/Android).
 
 # CHANGELOG
 
+## 2026-03-31 (Session 2 - Suite)
+- ✅ BUG FIX: Section Post-partum affiche maintenant les cartes en mosaïque (RDV, Difficultés, Allaitement, Biberon, Couches, Portage)
+- ✅ BUG FIX: Clic sur carte Post-partum → entre directement dans le contenu (plein écran)
+- ✅ BUG FIX: Retour depuis contenu → revient à JourneyStepsPage avec épingle ouverte
+- ✅ BUG FIX: Épingle Post-partum dans JourneyStepsPage affiche les 6 cartes
+- ✅ BUG FIX: Items sur pages personnalisées ont les bonnes icônes (pas 📌)
+- ✅ BUG FIX: Clic sur item de page personnalisée → navigue vers le contenu
+- ✅ BUG FIX: Persistance du layout - HomeLayoutContext attend maintenant l'authentification avant de charger
+
 ## 2026-03-31 (Session 2)
 - ✅ BUG FIX: Ajout de l'item "Rappels" manquant dans la section Grossesse (`JourneyStepsPage.js`)
 - ✅ BUG FIX: Correction route "Suivi grossesse" → `/tracking` au lieu de `/calculator`

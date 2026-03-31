@@ -74,6 +74,7 @@ function AuthPage({ setIsAuthenticated }) {
           password: credentials.password 
         });
         localStorage.setItem('token', response.data.access_token);
+        window.dispatchEvent(new Event('user-logged-in'));
         setIsAuthenticated(true);
         toast.success('Connexion réussie !');
         navigate('/');
@@ -109,6 +110,7 @@ function AuthPage({ setIsAuthenticated }) {
           password: credentials.password 
         });
         localStorage.setItem('token', response.data.access_token);
+        window.dispatchEvent(new Event('user-logged-in'));
         setIsAuthenticated(true);
         toast.success('Connexion réussie !');
         navigate('/');
@@ -129,6 +131,9 @@ function AuthPage({ setIsAuthenticated }) {
   };
 
   const completeLogin = async (isNewUser = false) => {
+    // Déclencher l'événement pour recharger le layout
+    window.dispatchEvent(new Event('user-logged-in'));
+    
     // Incrémenter le compteur de connexions pour le rappel de notifications
     if (!isNewUser) {
       incrementLoginCount();
