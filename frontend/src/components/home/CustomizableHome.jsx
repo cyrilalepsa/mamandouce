@@ -322,9 +322,13 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
 
   // Appui long sur page utilisateur = afficher popup de suppression
   const handleUserPageLongPressStart = (e) => {
-    if (currentPage?.isDefault) return;
-    // Vérifier si on clique sur une zone vide (pas sur une carte)
-    if (e.target !== e.currentTarget) return;
+    const pageToCheck = pages[currentPageIndex];
+    if (pageToCheck?.isDefault) return;
+    
+    // Ne pas déclencher si on clique sur un bouton ou une carte interactive
+    const clickedElement = e.target;
+    const isInteractiveElement = clickedElement.closest('button, a, [draggable="true"], input, [data-testid]');
+    if (isInteractiveElement && !clickedElement.closest('.page-transition')) return;
     
     pageLongPressTimer.current = setTimeout(() => {
       if (navigator.vibrate) navigator.vibrate(50);
@@ -417,8 +421,9 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
   };
 
   const handleDeletePage = () => {
-    if (deletePage && currentPage && !currentPage.isDefault) {
-      deletePage(currentPage.id);
+    const pageToDelete = pages[currentPageIndex];
+    if (deletePage && pageToDelete && !pageToDelete.isDefault) {
+      deletePage(pageToDelete.id);
       setIsPageShaking(false);
       setShowDeleteConfirm(false);
     }

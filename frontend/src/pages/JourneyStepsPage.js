@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Heart, Sparkles, Baby, Gift, HeartHandshake, Settings, ChevronRight, Check } from 'lucide-react';
+import { ArrowLeft, Heart, Sparkles, Baby, Gift, HeartHandshake, Settings, ChevronRight, Check, Pin } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -192,8 +192,8 @@ function DuplicatePopup({ sectionId, sectionName, pages, onDuplicate, onCancel, 
   );
 }
 
-// Carte de section avec appui long pour dupliquer
-function SectionCard({ sectionId, onClick, onLongPress, isSelected }) {
+// Carte de section avec appui long pour dupliquer et épingle pour ouvrir/fermer
+function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, onTogglePin }) {
   const { t } = useTranslation();
   const meta = SECTION_META[sectionId];
   const Icon = meta.icon;
@@ -224,6 +224,11 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected }) {
     }
   };
 
+  const handlePinClick = (e) => {
+    e.stopPropagation();
+    onTogglePin?.(sectionId);
+  };
+
   return (
     <Card 
       className={`
@@ -250,10 +255,23 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected }) {
       
       {/* Badge sélection */}
       {isSelected && (
-        <div className="absolute top-2 right-2 w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center z-10">
+        <div className="absolute top-2 right-10 w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center z-10">
           <Check className="w-4 h-4 text-white" />
         </div>
       )}
+
+      {/* Bouton épingle */}
+      <button
+        onClick={handlePinClick}
+        className={`absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center z-10 transition-all ${
+          isPinned 
+            ? 'bg-pink-500 text-white shadow-lg' 
+            : 'bg-white/60 text-slate-400 hover:bg-white hover:text-pink-500'
+        }`}
+        title={isPinned ? t('journey.unpin', 'Retirer l\'épingle') : t('journey.pin', 'Épingler')}
+      >
+        <Pin className={`w-3.5 h-3.5 ${isPinned ? 'fill-current' : ''}`} />
+      </button>
       
       <div className="p-4 flex items-center gap-4">
         {/* Icône */}
@@ -272,7 +290,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected }) {
         </div>
         
         {/* Flèche */}
-        <ChevronRight className="w-5 h-5 text-slate-400 flex-shrink-0" />
+        <ChevronRight className={`w-5 h-5 text-slate-400 flex-shrink-0 transition-transform ${isPinned ? 'rotate-90' : ''}`} />
       </div>
     </Card>
   );
@@ -286,6 +304,23 @@ function JourneyStepsPage() {
   const [selectedSection, setSelectedSection] = useState(null);
   const [selectedSectionName, setSelectedSectionName] = useState('');
   const [showDuplicatePopup, setShowDuplicatePopup] = useState(false);
+  
+  // État des sections épinglées (stockées dans localStorage)
+  const [pinnedSections, setPinnedSections] = useState(() => {
+    const saved = localStorage.getItem('mamandouce_pinned_journey_sections');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Sauvegarder les épingles dans localStorage
+  const togglePin = (sectionId) => {
+    setPinnedSections(prev => {
+      const newPinned = prev.includes(sectionId)
+        ? prev.filter(id => id !== sectionId)
+        : [...prev, sectionId];
+      localStorage.setItem('mamandouce_pinned_journey_sections', JSON.stringify(newPinned));
+      return newPinned;
+    });
+  };
 
   // Navigation vers la page de détail de la section
   const handleSectionClick = (sectionId) => {
@@ -369,6 +404,8 @@ function JourneyStepsPage() {
               onClick={() => handleSectionClick(sectionId)}
               onLongPress={handleLongPress}
               isSelected={selectedSection === sectionId}
+              isPinned={pinnedSections.includes(sectionId)}
+              onTogglePin={togglePin}
             />
           ))}
         </div>

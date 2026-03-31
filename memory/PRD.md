@@ -29,6 +29,11 @@ Application pour femmes enceintes avec une UX/UI type smartphone (iOS/Android).
 
 # CHANGELOG
 
+## 2026-03-31
+- ✅ BUG FIX: Suppression de page fonctionne maintenant (long press sur zone vide)
+- ✅ FEATURE: Épingles ajoutées sur JourneyStepsPage (bouton sur chaque section)
+- ✅ BUG FIX: Croix de suppression apparaît seulement après appui long sur les cartes dupliquées
+
 ## 2026-03-30
 - ✅ Carte de rappels (`UpcomingRemindersCard`) visible sur TOUTES les pages (pas seulement la page principale)
 - ✅ Renommage "Page Socle" → "Page principale" (terminologie plus intuitive)

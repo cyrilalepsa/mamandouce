@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FolderOpen, X, ChevronRight, GripVertical } from 'lucide-react';
 import { Card } from '../ui/card';
@@ -50,20 +50,29 @@ export function DraggableItem({
   isDragging,
   isDropTarget,
   onRemove,
-  onLongPress 
+  onLongPress,
+  showDeleteButton = false
 }) {
   const { t } = useTranslation();
   const longPressTimer = useRef(null);
   const isLongPress = useRef(false);
+  const [showDelete, setShowDelete] = useState(showDeleteButton);
   
   const icon = ITEM_ICONS[item.id] || '📌';
   const name = ITEM_NAMES[item.id] || item.id;
+
+  // Synchroniser avec la prop externe
+  useEffect(() => {
+    setShowDelete(showDeleteButton);
+  }, [showDeleteButton]);
 
   const handleTouchStart = (e) => {
     isLongPress.current = false;
     longPressTimer.current = setTimeout(() => {
       isLongPress.current = true;
       if (navigator.vibrate) navigator.vibrate(50);
+      // Après appui long, montrer le bouton supprimer
+      setShowDelete(true);
       onLongPress?.(item);
     }, 500);
   };
@@ -102,22 +111,26 @@ export function DraggableItem({
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onTouchMove={() => clearTimeout(longPressTimer.current)}
+      onMouseDown={handleTouchStart}
+      onMouseUp={handleTouchEnd}
+      onMouseLeave={() => clearTimeout(longPressTimer.current)}
       className={`
         relative bg-white rounded-2xl p-3 shadow-sm border
         cursor-grab active:cursor-grabbing
         transition-all duration-200
         ${isDragging ? 'opacity-50 scale-95' : ''}
         ${isDropTarget ? 'ring-2 ring-pink-400 scale-105 bg-pink-50' : 'border-slate-100'}
+        ${showDelete ? 'animate-wiggle' : ''}
       `}
     >
-      {/* Bouton supprimer */}
-      {onRemove && (
+      {/* Bouton supprimer - visible seulement après appui long */}
+      {onRemove && showDelete && (
         <button
           onClick={(e) => {
             e.stopPropagation();
             onRemove(item.id);
           }}
-          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shadow-lg z-10 hover:bg-red-600 transition-colors"
+          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shadow-lg z-10 hover:bg-red-600 transition-colors animate-pulse"
         >
           <X className="w-3.5 h-3.5 text-white" />
         </button>
