@@ -527,7 +527,7 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
         </div>
       )}
 
-      {/* Popup confirmation suppression de page */}
+      {/* Popup confirmation suppression de page - Style nuage doux */}
       {showDeleteConfirm && (
         <div 
           className="fixed inset-0 z-40 flex items-center justify-center px-6"
@@ -535,43 +535,64 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
           onContextMenu={(e) => e.preventDefault()}
           style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
         >
-          {/* Overlay sombre */}
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+          {/* Overlay doux */}
+          <div className="absolute inset-0 bg-pink-100/40 backdrop-blur-md"></div>
           
-          {/* Modal centré */}
+          {/* Modal nuage */}
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="relative bg-white rounded-3xl p-6 shadow-2xl max-w-sm w-full select-none"
+            className="relative max-w-sm w-full select-none"
             style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
             onContextMenu={(e) => e.preventDefault()}
           >
-            {/* Icône */}
-            <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-              <Trash2 className="w-8 h-8 text-red-500" />
-            </div>
+            {/* Effet nuage - formes arrondies */}
+            <div className="absolute -top-4 -left-4 w-20 h-20 bg-white/60 rounded-full blur-2xl"></div>
+            <div className="absolute -top-2 -right-6 w-16 h-16 bg-pink-100/60 rounded-full blur-2xl"></div>
+            <div className="absolute -bottom-4 left-1/2 w-24 h-16 bg-blue-100/50 rounded-full blur-2xl"></div>
             
-            {/* Message */}
-            <h3 className="text-lg font-bold text-center text-slate-800 mb-2">
-              Supprimer "{currentPage?.name}" ?
-            </h3>
-            <p className="text-center text-slate-500 mb-6">
-              Êtes-vous sûr de vouloir supprimer cette page et tous ses items ?
-            </p>
-            
-            {/* Boutons */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 py-3 px-4 rounded-2xl bg-slate-100 text-slate-700 font-semibold text-base hover:bg-slate-200 transition-colors"
+            {/* Contenu */}
+            <div 
+              className="relative rounded-[32px] p-6 shadow-[0_8px_40px_rgba(236,72,153,0.15)] border border-white/60"
+              style={{
+                background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(253,242,248,0.9) 50%, rgba(239,246,255,0.9) 100%)'
+              }}
+            >
+              {/* Icône douce */}
+              <div className="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, #fce7f3 0%, #fecdd3 100%)'
+                }}
               >
-                Non
-              </button>
-              <button
-                onClick={handleDeletePage}
-                className="flex-1 py-3 px-4 rounded-2xl bg-red-500 text-white font-semibold text-base hover:bg-red-600 transition-colors shadow-lg shadow-red-500/25"
-              >
-                Oui
-              </button>
+                <Trash2 className="w-7 h-7 text-rose-400" />
+              </div>
+              
+              {/* Message */}
+              <h3 className="text-lg font-bold text-center text-slate-700 mb-2">
+                Supprimer "{currentPage?.name}" ?
+              </h3>
+              <p className="text-center text-slate-500 text-sm mb-6 leading-relaxed">
+                Êtes-vous sûr de vouloir supprimer cette page et tous ses items ?
+              </p>
+              
+              {/* Boutons doux */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1 py-3 px-4 rounded-2xl bg-white/80 text-slate-600 font-semibold text-base border border-slate-100 hover:bg-white transition-all"
+                >
+                  Non
+                </button>
+                <button
+                  onClick={handleDeletePage}
+                  className="flex-1 py-3 px-4 rounded-2xl text-white font-semibold text-base transition-all"
+                  style={{
+                    background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 100%)',
+                    boxShadow: '0 4px 15px rgba(236,72,153,0.3)'
+                  }}
+                >
+                  Oui
+                </button>
+              </div>
             </div>
           </div>
         </div>
