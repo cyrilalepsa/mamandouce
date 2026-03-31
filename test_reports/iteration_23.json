@@ -1,0 +1,78 @@
+{
+  "summary": "Tested custom pages functionality from JourneyStepsPage. All 5 requested features work correctly: (1) Items on custom pages have correct icons (not pins), (2) Clicking items navigates to content, (3) Drag & drop creates groups, (4) Pins in JourneyStepsPage display section content, (5) Back button returns with section expanded. Found bug: Layout API returns 401 on page load because HomeLayoutProvider loads before authentication.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Layout persistence across sessions",
+        "issue": "HomeLayoutProvider loads and calls /api/user/layout before authentication is complete, causing 401 errors. Custom pages are not persisted across browser sessions.",
+        "affected_selectors": [],
+        "priority": "MEDIUM"
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Fix HomeLayoutProvider to wait for authentication before loading layout. Options: (1) Move HomeLayoutProvider inside ProtectedRoute, (2) Add auth check in loadLayout function, (3) Use auth context to trigger layout load after login"
+  ],
+  "critical_code_review_comments": [
+    "HomeLayoutContext.js line 85-109: loadLayout() is called in useEffect with empty deps, which runs on mount before auth. Should check for token validity first or wait for auth state.",
+    "App.js line 119: HomeLayoutProvider wraps entire app including auth page, causing premature API calls"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A - frontend only testing",
+    "frontend": "100% - All 5 features work correctly in single session"
+  },
+  "test_credentials": {
+    "email": "cyrilalepsa@gmail.com",
+    "password": "Cyc@dmin9630"
+  },
+  "seed_data_creation": "Created test pages during testing: 'Test Icons Page', 'Click Test Page', 'Group Test', 'DnD Test', 'DnD Final' - these are not persisted due to the 401 bug",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Custom pages functionality works correctly within a single browser session. The main issue is that the layout is not persisted across sessions because HomeLayoutProvider calls /api/user/layout before the user is authenticated. The backend API works correctly (verified with curl). Features tested: (1) ITEM_ICONS mapping in DragDropComponents.jsx correctly shows icons like 🎁, 🤰, ✨ instead of 📌, (2) DraggableItem handleClick navigates using ITEM_ROUTES, (3) createGroupFromItems in HomeLayoutContext creates groups via drag & drop, (4) JourneyStepsPage pin toggle expands sections showing SECTION_ITEMS, (5) Back navigation preserves expanded state via ?open= URL parameter.",
+  "features_tested": {
+    "custom_page_icons": {
+      "status": "PASS",
+      "details": "Items show correct icons from ITEM_ICONS mapping (🎁, 🤰, ✨) not pins (📌)"
+    },
+    "item_click_navigation": {
+      "status": "PASS",
+      "details": "Clicking items navigates to correct routes from ITEM_ROUTES (/section/pregnancy, /scanner)"
+    },
+    "drag_drop_groups": {
+      "status": "PASS",
+      "details": "Dragging item onto another triggers prompt and creates group with 'Groupe créé!' toast"
+    },
+    "pin_section_expand": {
+      "status": "PASS",
+      "details": "Clicking pin expands section showing 6 items with correct icons"
+    },
+    "back_button_preserves_state": {
+      "status": "PASS",
+      "details": "Back button returns to JourneyStepsPage with section still expanded (6 items visible)"
+    },
+    "layout_persistence": {
+      "status": "FAIL",
+      "details": "Layout not persisted across sessions due to 401 error on /api/user/layout during initial load"
+    }
+  },
+  "rca_of_the_issue": {
+    "issue": "Layout API returns 401 on page load",
+    "root_cause": "HomeLayoutProvider is mounted at App.js level (line 119) and calls loadLayout() in useEffect on mount (HomeLayoutContext.js line 85-109). At this point, the token may not be in localStorage yet or the auth state is not ready.",
+    "reproduction_steps": [
+      "1. Open app in new browser session",
+      "2. Login with valid credentials",
+      "3. Observe console: 'Erreur chargement layout: AxiosError' with 401 status",
+      "4. Create custom page and add items",
+      "5. Refresh page - custom page is gone"
+    ],
+    "mitigation": "Move HomeLayoutProvider inside protected routes or add auth state check before calling loadLayout()"
+  }
+}
