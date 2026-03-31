@@ -69,11 +69,11 @@ const SECTION_META = {
 
 const SECTIONS_ORDER = ['preconception', 'pregnancy', 'baby-preparation', 'postpartum', 'services'];
 
-// Items simplifiés pour l'accordéon (aperçu rapide)
+// Items pour l'accordéon - correspondant exactement à SectionDetailPage
 const SECTION_ITEMS = {
   'preconception': [
     { id: 'cycle-tracking', icon: '📅', name: 'Suivi de cycles', nameKey: 'preconception.cycleTracking', route: '/tracking' },
-    { id: 'fertility-calc', icon: '📊', name: 'Calculateur fertilité', nameKey: 'preconception.fertilityCalc', route: '/tracking' },
+    { id: 'fertility-calc', icon: '📊', name: 'Calculateur fertilité', nameKey: 'preconception.fertilityCalc', route: '/tracking?tab=fertility' },
     { id: 'preparation-advice', icon: '💡', name: 'Préparation et conseils', nameKey: 'preconception.preparationAdvice', route: '/preconception-tips' },
   ],
   'pregnancy': [
@@ -81,6 +81,7 @@ const SECTION_ITEMS = {
     { id: 'baby-names', icon: '👶', name: 'Liste des Prénoms', nameKey: 'pregnancy.babyNames', route: '/baby-names' },
     { id: 'tips-evolution', icon: '📖', name: 'Évolution et conseils', nameKey: 'pregnancy.tipsAndEvolution', route: '/tips' },
     { id: 'medical-appointments', icon: '🩺', name: 'Rendez-vous médicaux', nameKey: 'pregnancy.appointments', route: '/medical' },
+    { id: 'pregnancy-tracking', icon: '📈', name: 'Suivi grossesse', nameKey: 'pregnancy.tracking', route: '/calculator' },
     { id: 'parental-leave', icon: '⚖️', name: 'Congés parentaux', nameKey: 'pregnancy.parentalLeave', route: '/parental-leave' },
   ],
   'baby-preparation': [
@@ -95,8 +96,10 @@ const SECTION_ITEMS = {
   ],
   'services': [
     { id: 'chatbot', icon: '🤖', name: 'Assistant IA', nameKey: 'services.chatbot', route: '/chatbot' },
-    { id: 'videos', icon: '🎬', name: 'Vidéos', nameKey: 'services.videos', route: '/resources' },
-    { id: 'resources', icon: '📚', name: 'Ressources', nameKey: 'services.resources', route: '/resources' },
+    { id: 'caf', icon: '🏛️', name: 'CAF', nameKey: 'services.caf', route: 'https://www.caf.fr', external: true },
+    { id: 'ameli', icon: '🏥', name: 'Ameli', nameKey: 'services.ameli', route: 'https://www.ameli.fr', external: true },
+    { id: 'maps', icon: '📍', name: 'Mairie proche', nameKey: 'services.maps', route: 'https://www.google.com/maps/search/mairie', external: true },
+    { id: 'videos', icon: '🎬', name: 'Vidéos', nameKey: 'services.videos', route: 'https://www.youtube.com/results?search_query=grossesse+conseils', external: true },
   ],
 };
 
@@ -245,9 +248,13 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
     onTogglePin?.(sectionId);
   };
 
-  // Navigation vers un item spécifique
-  const handleItemClick = (route) => {
-    navigate(route);
+  // Navigation vers un item spécifique (ou lien externe)
+  const handleItemClick = (route, external = false) => {
+    if (external) {
+      window.open(route, '_blank', 'noopener,noreferrer');
+    } else {
+      navigate(route);
+    }
   };
 
   return (
@@ -329,7 +336,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
             {items.slice(0, 6).map((item, index) => (
               <button
                 key={item.id}
-                onClick={() => handleItemClick(item.route)}
+                onClick={() => handleItemClick(item.route, item.external)}
                 className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white/80 hover:bg-pink-50 transition-all shadow-sm border border-pink-100/30"
                 style={{ animationDelay: `${index * 30}ms` }}
               >

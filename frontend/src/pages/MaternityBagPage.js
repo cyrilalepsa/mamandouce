@@ -70,7 +70,7 @@ export default function MaternityBagPage() {
       <div className="min-h-screen gradient-bg p-6">
         <div className="max-w-2xl mx-auto">
           <button 
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/section/baby-preparation')}
             className="flex items-center gap-2 text-slate-600 mb-6"
           >
             <ArrowLeft className="w-5 h-5" />

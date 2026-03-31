@@ -96,7 +96,7 @@ const SECTION_ITEMS = {
     { id: 'chatbot', icon: Phone, iconColor: 'text-sky-500', bgColor: 'bg-sky-50', title: 'Assistant IA', titleKey: 'services.chatbot', desc: 'Disponible 24/7', descKey: 'services.available247', route: '/chatbot' },
     { id: 'caf', icon: Building2, iconColor: 'text-blue-600', bgColor: 'bg-blue-50', title: 'CAF', titleKey: 'services.caf', desc: 'Allocations familiales', descKey: 'services.cafDesc', route: 'https://www.caf.fr', external: true },
     { id: 'ameli', icon: Hospital, iconColor: 'text-green-600', bgColor: 'bg-green-50', title: 'Ameli', titleKey: 'services.ameli', desc: 'Assurance maladie', descKey: 'services.ameliDesc', route: 'https://www.ameli.fr', external: true },
-    { id: 'maps', icon: MapPin, iconColor: 'text-red-500', bgColor: 'bg-red-50', title: 'Maternités proches', titleKey: 'services.maps', desc: 'Trouver à proximité', descKey: 'services.mapsDesc', route: 'https://www.google.com/maps/search/maternité', external: true },
+    { id: 'maps', icon: MapPin, iconColor: 'text-red-500', bgColor: 'bg-red-50', title: 'Mairie proche', titleKey: 'services.maps', desc: 'Démarches administratives', descKey: 'services.mapsDesc', route: 'https://www.google.com/maps/search/mairie', external: true },
     { id: 'videos', icon: Video, iconColor: 'text-rose-500', bgColor: 'bg-rose-50', title: 'Vidéos', titleKey: 'services.videos', desc: 'Tutoriels YouTube', descKey: 'services.tutorials', route: 'https://www.youtube.com/results?search_query=grossesse+conseils', external: true },
   ],
 };

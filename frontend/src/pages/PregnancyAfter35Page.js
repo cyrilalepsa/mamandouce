@@ -103,7 +103,7 @@ export default function PregnancyAfter35Page() {
       <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
           <Button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/section/pregnancy')}
             variant="ghost"
             size="icon"
             className="rounded-full"
