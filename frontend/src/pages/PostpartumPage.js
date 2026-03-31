@@ -208,7 +208,7 @@ export default function PostpartumPage() {
     setActiveSection(null);
     // Si on est arrivé depuis JourneyStepsPage (avec ?section=xxx), retourner à JourneyStepsPage
     if (sectionFromUrl) {
-      navigate('/journey-steps?open=postpartum');
+      navigate('/journey-steps');
     } else {
       // Sinon, rester sur la grille postpartum
       navigate('/postpartum', { replace: true });
@@ -217,7 +217,7 @@ export default function PostpartumPage() {
   
   // Retour vers JourneyStepsPage avec l'épingle postpartum ouverte
   const goBackToJourney = () => {
-    navigate('/journey-steps?open=postpartum');
+    navigate('/journey-steps');
   };
 
   const toggleSection = (section) => {
@@ -271,7 +271,7 @@ export default function PostpartumPage() {
           {/* Header */}
           <div className="flex items-center gap-4">
             <Button
-              onClick={() => navigate('/journey-steps?open=postpartum')}
+              onClick={() => navigate('/journey-steps')}
               className="bg-white rounded-full p-2 shadow-sm"
             >
               <ArrowLeft className="w-5 h-5 text-slate-600" />
@@ -429,7 +429,7 @@ export default function PostpartumPage() {
           {/* Header */}
           <div className="flex items-center gap-4">
             <Button
-              onClick={() => navigate('/journey-steps?open=postpartum')}
+              onClick={() => navigate('/journey-steps')}
               className="bg-white rounded-full p-2 shadow-sm"
             >
               <ArrowLeft className="w-5 h-5 text-slate-600" />
@@ -612,7 +612,7 @@ export default function PostpartumPage() {
         {/* Header */}
         <div className="flex items-center gap-4">
           <Button
-            onClick={() => navigate('/journey-steps?open=postpartum')}
+            onClick={() => navigate('/journey-steps')}
             className="bg-white rounded-full p-2 shadow-sm"
           >
             <ArrowLeft className="w-5 h-5 text-slate-600" />
