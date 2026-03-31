@@ -62,8 +62,8 @@ const SECTION_META = {
 // Contenu de chaque section (cartes individuelles)
 const SECTION_ITEMS = {
   'preconception': [
-    { id: 'cycle-tracking', icon: CalendarHeart, iconColor: 'text-pink-500', bgColor: 'bg-pink-50', title: 'Suivi de cycles', titleKey: 'preconception.cycleTracking', desc: 'Règles et ovulation', descKey: 'preconception.cycleDesc', route: '/tracking' },
-    { id: 'fertility-calc', icon: LineChart, iconColor: 'text-purple-500', bgColor: 'bg-purple-50', title: 'Calculateur fertilité', titleKey: 'preconception.fertilityCalc', desc: 'Période fertile', descKey: 'preconception.fertilityDesc', route: '/tracking' },
+    { id: 'cycle-tracking', icon: CalendarHeart, iconColor: 'text-pink-500', bgColor: 'bg-pink-50', title: 'Suivi de cycles', titleKey: 'preconception.cycleTracking', desc: 'Règles, ovulation, nidation', descKey: 'preconception.cycleDesc', route: '/cycle-tracking' },
+    { id: 'fertility-calc', icon: LineChart, iconColor: 'text-purple-500', bgColor: 'bg-purple-50', title: 'Calculateur fertilité', titleKey: 'preconception.fertilityCalc', desc: 'Prochaines règles', descKey: 'preconception.fertilityDesc', route: '/cycle-tracking' },
     { id: 'preparation-advice', icon: Lightbulb, iconColor: 'text-amber-500', bgColor: 'bg-amber-50', title: 'Préparation et conseils', titleKey: 'preconception.preparationAdvice', desc: 'Acide folique, nutrition...', descKey: 'preconception.preparationDesc', route: '/preconception-tips' },
   ],
   'pregnancy': [

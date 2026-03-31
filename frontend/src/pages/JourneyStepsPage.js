@@ -72,8 +72,8 @@ const SECTIONS_ORDER = ['preconception', 'pregnancy', 'baby-preparation', 'postp
 // Items pour l'accordéon - correspondant exactement à SectionDetailPage
 const SECTION_ITEMS = {
   'preconception': [
-    { id: 'cycle-tracking', icon: '📅', name: 'Suivi de cycles', nameKey: 'preconception.cycleTracking', route: '/tracking' },
-    { id: 'fertility-calc', icon: '📊', name: 'Calculateur fertilité', nameKey: 'preconception.fertilityCalc', route: '/tracking?tab=fertility' },
+    { id: 'cycle-tracking', icon: '📅', name: 'Suivi de cycles', nameKey: 'preconception.cycleTracking', route: '/cycle-tracking' },
+    { id: 'fertility-calc', icon: '📊', name: 'Calculateur fertilité', nameKey: 'preconception.fertilityCalc', route: '/cycle-tracking' },
     { id: 'preparation-advice', icon: '💡', name: 'Préparation et conseils', nameKey: 'preconception.preparationAdvice', route: '/preconception-tips' },
   ],
   'pregnancy': [
