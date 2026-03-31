@@ -435,7 +435,7 @@ function SectionDetailPage() {
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
           <Button
-            onClick={() => navigate(`/journey-steps?open=${sectionId}`)}
+            onClick={() => navigate('/journey-steps')}
             variant="ghost"
             className="p-2 rounded-full hover:bg-white/50"
             data-testid="back-button"

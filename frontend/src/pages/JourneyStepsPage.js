@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Heart, Sparkles, Baby, Gift, HeartHandshake, Settings, ChevronRight, Check, Pin } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -372,26 +372,11 @@ function JourneyStepsPage() {
   const [selectedSectionName, setSelectedSectionName] = useState('');
   const [showDuplicatePopup, setShowDuplicatePopup] = useState(false);
   
-  // Lire le paramètre URL pour savoir quelle section ouvrir
-  const [searchParams] = useSearchParams();
-  const openSectionFromUrl = searchParams.get('open');
-  
   // État des sections épinglées/déroulées (stockées dans localStorage)
   const [pinnedSections, setPinnedSections] = useState(() => {
     const saved = localStorage.getItem('mamandouce_expanded_journey_sections');
     return saved ? JSON.parse(saved) : [];
   });
-
-  // Si on arrive avec un paramètre ?open=sectionId, ouvrir cette section
-  useEffect(() => {
-    if (openSectionFromUrl && !pinnedSections.includes(openSectionFromUrl)) {
-      setPinnedSections(prev => {
-        const newPinned = [...prev, openSectionFromUrl];
-        localStorage.setItem('mamandouce_expanded_journey_sections', JSON.stringify(newPinned));
-        return newPinned;
-      });
-    }
-  }, [openSectionFromUrl]);
 
   // Toggle épingle = dérouler/replier
   const togglePin = (sectionId) => {
