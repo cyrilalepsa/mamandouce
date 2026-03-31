@@ -107,9 +107,8 @@ function DuplicatePopup({ sectionId, sectionName, pages, onDuplicate, onCancel, 
   const [newPageName, setNewPageName] = useState('');
   
   const handleCreateAndDuplicate = () => {
-    if (newPageName.trim()) {
-      onCreatePage(newPageName.trim(), sectionId);
-    }
+    const pageName = newPageName.trim() || t('home.newPage', 'Nouvelle page');
+    onCreatePage(pageName, sectionId);
   };
   
   return (
@@ -195,8 +194,7 @@ function DuplicatePopup({ sectionId, sectionName, pages, onDuplicate, onCancel, 
               
               <button 
                 onClick={handleCreateAndDuplicate}
-                disabled={!newPageName.trim()}
-                className="w-full py-2 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 text-white text-sm font-medium shadow-sm disabled:opacity-50 transition-all active:scale-[0.98]"
+                className="w-full py-2 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 text-white text-sm font-medium shadow-sm transition-all active:scale-[0.98]"
               >
                 {t('common.create', 'Créer')}
               </button>

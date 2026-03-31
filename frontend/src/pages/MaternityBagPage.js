@@ -251,7 +251,7 @@ export default function MaternityBagPage() {
         {/* Header */}
         <div className="flex items-center gap-4">
           <Button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/section/baby-preparation')}
             className="bg-white rounded-full p-2 shadow-sm"
           >
             <ArrowLeft className="w-5 h-5 text-slate-600" />

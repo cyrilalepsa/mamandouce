@@ -6,7 +6,7 @@ import {
   Check, Pin, PinOff, CalendarHeart, ScanBarcode, Apple, History,
   Stethoscope, Bell, BookHeart, Users, ChevronRight, Crown, Lock,
   ClipboardList, Briefcase, Video, Youtube, Book, Phone, LineChart,
-  Scale, Lightbulb
+  Scale, Lightbulb, Building2, Hospital, MapPin, ExternalLink
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -94,8 +94,10 @@ const SECTION_ITEMS = {
   ],
   'services': [
     { id: 'chatbot', icon: Phone, iconColor: 'text-sky-500', bgColor: 'bg-sky-50', title: 'Assistant IA', titleKey: 'services.chatbot', desc: 'Disponible 24/7', descKey: 'services.available247', route: '/chatbot' },
-    { id: 'videos', icon: Video, iconColor: 'text-red-500', bgColor: 'bg-red-50', title: 'Vidéos', titleKey: 'services.videos', desc: 'Tutoriels', descKey: 'services.tutorials', route: '/resources' },
-    { id: 'resources', icon: Book, iconColor: 'text-amber-500', bgColor: 'bg-amber-50', title: 'Ressources', titleKey: 'services.resources', desc: 'Documents utiles', descKey: 'services.usefulDocs', route: '/resources' },
+    { id: 'caf', icon: Building2, iconColor: 'text-blue-600', bgColor: 'bg-blue-50', title: 'CAF', titleKey: 'services.caf', desc: 'Allocations familiales', descKey: 'services.cafDesc', route: 'https://www.caf.fr', external: true },
+    { id: 'ameli', icon: Hospital, iconColor: 'text-green-600', bgColor: 'bg-green-50', title: 'Ameli', titleKey: 'services.ameli', desc: 'Assurance maladie', descKey: 'services.ameliDesc', route: 'https://www.ameli.fr', external: true },
+    { id: 'maps', icon: MapPin, iconColor: 'text-red-500', bgColor: 'bg-red-50', title: 'Maternités proches', titleKey: 'services.maps', desc: 'Trouver à proximité', descKey: 'services.mapsDesc', route: 'https://www.google.com/maps/search/maternité', external: true },
+    { id: 'videos', icon: Video, iconColor: 'text-rose-500', bgColor: 'bg-rose-50', title: 'Vidéos', titleKey: 'services.videos', desc: 'Tutoriels YouTube', descKey: 'services.tutorials', route: 'https://www.youtube.com/results?search_query=grossesse+conseils', external: true },
   ],
 };
 
@@ -245,7 +247,7 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
 
   const handleClick = () => {
     if (!isLongPress.current && !isLocked) {
-      onNavigate(item.route);
+      onNavigate(item.route, item.external);
     }
   };
 
@@ -331,6 +333,13 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
         </div>
       )}
       
+      {/* Badge lien externe */}
+      {item.external && !isPartialPremium && !isLocked && (
+        <div className="absolute top-1 right-1">
+          <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+        </div>
+      )}
+      
       {/* Badge lock */}
       {isLocked && (
         <div className="absolute top-1 right-1">
@@ -369,8 +378,12 @@ function SectionDetailPage() {
   const items = SECTION_ITEMS[sectionId] || [];
 
   // Navigation
-  const handleNavigate = (route) => {
-    navigate(route);
+  const handleNavigate = (route, external = false) => {
+    if (external) {
+      window.open(route, '_blank', 'noopener,noreferrer');
+    } else {
+      navigate(route);
+    }
   };
 
   // Appui long sur une carte

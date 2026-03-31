@@ -65,7 +65,7 @@ function WeekDisplayWidget({ pregnancyProfile, t }) {
 function JourneyStepsCard({ t, navigate }) {
   return (
     <div 
-      className="relative overflow-hidden cursor-pointer select-none rounded-full px-4 py-2.5
+      className="relative overflow-hidden cursor-pointer select-none rounded-full px-5 py-3
         shadow-md hover:shadow-lg transition-all duration-300
         hover:scale-[1.02] active:scale-[0.98]"
       style={{ 
@@ -318,12 +318,7 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
   // Appui long sur page utilisateur = afficher popup de suppression
   const handleUserPageLongPressStart = (e) => {
     const pageToCheck = pages[currentPageIndex];
-    if (pageToCheck?.isDefault) return;
-    
-    // Ne pas déclencher si on clique sur un bouton ou une carte interactive
-    const clickedElement = e.target;
-    const isInteractiveElement = clickedElement.closest('button, a, [draggable="true"], input, [data-testid]');
-    if (isInteractiveElement && !clickedElement.closest('.page-transition')) return;
+    if (!pageToCheck || pageToCheck.isDefault) return;
     
     pageLongPressTimer.current = setTimeout(() => {
       if (navigator.vibrate) navigator.vibrate(50);
@@ -432,8 +427,9 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
 
   // Créer une page avec le nom du champ texte
   const handleAddPage = async () => {
-    if (newPageName.trim() && addPage) {
-      await addPage(newPageName.trim());
+    const pageName = newPageName.trim() || t('home.newPage', 'Nouvelle page');
+    if (addPage) {
+      await addPage(pageName);
       setNewPageName('');
       setShowCreatePagePrompt(false);
     }
@@ -494,7 +490,7 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
                 placeholder={t('home.pageNamePlaceholder', 'Nom de la page...')}
                 className="w-full mb-4 rounded-2xl border-slate-200 focus:border-pink-300 focus:ring-pink-200 text-center"
                 autoFocus
-                onKeyDown={(e) => e.key === 'Enter' && newPageName.trim() && handleAddPage()}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddPage()}
               />
               
               <div className="flex gap-3">
@@ -509,8 +505,7 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
                 </button>
                 <button
                   onClick={handleAddPage}
-                  disabled={!newPageName.trim()}
-                  className="flex-1 py-2.5 px-4 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-500 text-white font-medium shadow-lg shadow-pink-500/25 hover:shadow-xl hover:shadow-pink-500/30 transition-all active:scale-95 disabled:opacity-50"
+                  className="flex-1 py-2.5 px-4 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-500 text-white font-medium shadow-lg shadow-pink-500/25 hover:shadow-xl hover:shadow-pink-500/30 transition-all active:scale-95"
                 >
                   {t('common.create', 'Créer')}
                 </button>
