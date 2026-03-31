@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -28,6 +28,7 @@ import {
 
 export default function PostpartumPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { t, i18n } = useTranslation();
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -188,7 +189,16 @@ export default function PostpartumPage() {
   const canViewFullContent = hasPostpartumAccess && hasGivenBirth;
   
   // Section actuellement ouverte (une seule à la fois, en plein écran)
-  const [activeSection, setActiveSection] = useState(null);
+  // Utilise le paramètre URL si présent
+  const sectionFromUrl = searchParams.get('section');
+  const [activeSection, setActiveSection] = useState(sectionFromUrl);
+
+  // Mettre à jour activeSection si le paramètre URL change
+  useEffect(() => {
+    if (sectionFromUrl) {
+      setActiveSection(sectionFromUrl);
+    }
+  }, [sectionFromUrl]);
 
   const openSection = (sectionId) => {
     setActiveSection(sectionId);
@@ -196,6 +206,8 @@ export default function PostpartumPage() {
   
   const closeSection = () => {
     setActiveSection(null);
+    // Nettoyer le paramètre de l'URL
+    navigate('/postpartum', { replace: true });
   };
 
   const toggleSection = (section) => {

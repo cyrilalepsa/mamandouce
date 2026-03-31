@@ -91,7 +91,12 @@ const SECTION_ITEMS = {
     { id: 'preparation-tips', icon: '💝', name: 'Conseils préparation', nameKey: 'babyPrep.tips', route: '/tips' },
   ],
   'postpartum': [
-    { id: 'postpartum-content', icon: '🏥', name: 'Suivi post-partum', nameKey: 'postpartum.content', route: '/postpartum' },
+    { id: 'postpartum-appointments', icon: '🏥', name: 'RDV post-partum', nameKey: 'postpartum.appointments', route: '/postpartum?section=appointments' },
+    { id: 'postpartum-difficulties', icon: '⚠️', name: 'Difficultés courantes', nameKey: 'postpartum.difficulties', route: '/postpartum?section=difficulties' },
+    { id: 'postpartum-breastfeeding', icon: '💗', name: 'Allaitement maternel', nameKey: 'postpartum.breastfeeding', route: '/postpartum?section=breastfeeding' },
+    { id: 'postpartum-formula', icon: '🍼', name: 'Biberon & préparation', nameKey: 'postpartum.formula', route: '/postpartum?section=formula' },
+    { id: 'postpartum-diapers', icon: '💧', name: 'Couches & change', nameKey: 'postpartum.diapers', route: '/postpartum?section=diapers' },
+    { id: 'postpartum-babywearing', icon: '🤱', name: 'Portage bébé', nameKey: 'postpartum.babywearing', route: '/postpartum?section=babywearing' },
   ],
   'services': [
     { id: 'chatbot', icon: '🤖', name: 'Assistant IA', nameKey: 'services.chatbot', route: '/chatbot' },
