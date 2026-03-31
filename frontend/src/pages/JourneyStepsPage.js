@@ -69,6 +69,37 @@ const SECTION_META = {
 
 const SECTIONS_ORDER = ['preconception', 'pregnancy', 'baby-preparation', 'postpartum', 'services'];
 
+// Items simplifiés pour l'accordéon (aperçu rapide)
+const SECTION_ITEMS = {
+  'preconception': [
+    { id: 'cycle-tracking', icon: '📅', name: 'Suivi de cycles', nameKey: 'preconception.cycleTracking', route: '/tracking' },
+    { id: 'fertility-calc', icon: '📊', name: 'Calculateur fertilité', nameKey: 'preconception.fertilityCalc', route: '/tracking' },
+    { id: 'preparation-advice', icon: '💡', name: 'Préparation et conseils', nameKey: 'preconception.preparationAdvice', route: '/preconception-tips' },
+  ],
+  'pregnancy': [
+    { id: 'food-scanner', icon: '📷', name: 'Scanner aliments', nameKey: 'pregnancy.scanner', route: '/scanner' },
+    { id: 'baby-names', icon: '👶', name: 'Liste des Prénoms', nameKey: 'pregnancy.babyNames', route: '/baby-names' },
+    { id: 'tips-evolution', icon: '📖', name: 'Évolution et conseils', nameKey: 'pregnancy.tipsAndEvolution', route: '/tips' },
+    { id: 'medical-appointments', icon: '🩺', name: 'Rendez-vous médicaux', nameKey: 'pregnancy.appointments', route: '/medical' },
+    { id: 'parental-leave', icon: '⚖️', name: 'Congés parentaux', nameKey: 'pregnancy.parentalLeave', route: '/parental-leave' },
+  ],
+  'baby-preparation': [
+    { id: 'birth-list', icon: '📝', name: 'Liste de naissance', nameKey: 'babyPrep.birthList', route: '/birth-list' },
+    { id: 'maternity-bag', icon: '🧳', name: 'Valise maternité', nameKey: 'babyPrep.maternityBag', route: '/maternity-bag' },
+    { id: 'preparation-tips', icon: '💝', name: 'Conseils préparation', nameKey: 'babyPrep.tips', route: '/tips' },
+  ],
+  'postpartum': [
+    { id: 'postpartum-appointments', icon: '🏥', name: 'RDV post-partum', nameKey: 'postpartum.appointments', route: '/postpartum' },
+    { id: 'breastfeeding', icon: '🤱', name: 'Allaitement', nameKey: 'postpartum.breastfeeding', route: '/postpartum' },
+    { id: 'postpartum-tips', icon: '💜', name: 'Conseils post-partum', nameKey: 'postpartum.tips', route: '/tips' },
+  ],
+  'services': [
+    { id: 'chatbot', icon: '🤖', name: 'Assistant IA', nameKey: 'services.chatbot', route: '/chatbot' },
+    { id: 'videos', icon: '🎬', name: 'Vidéos', nameKey: 'services.videos', route: '/resources' },
+    { id: 'resources', icon: '📚', name: 'Ressources', nameKey: 'services.resources', route: '/resources' },
+  ],
+};
+
 // Popup discret pour dupliquer (style toast)
 function DuplicatePopup({ sectionId, sectionName, pages, onDuplicate, onCancel, onCreatePage, t }) {
   const userPages = pages.filter(p => !p.isDefault);
@@ -177,13 +208,15 @@ function DuplicatePopup({ sectionId, sectionName, pages, onDuplicate, onCancel, 
   );
 }
 
-// Carte de section style PILL avec gradient rose nuage
+// Carte de section style PILL avec épingle accordéon
 function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, onTogglePin }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const meta = SECTION_META[sectionId];
   const Icon = meta.icon;
   const longPressTimer = useRef(null);
   const isLongPress = useRef(false);
+  const items = SECTION_ITEMS[sectionId] || [];
 
   const handleTouchStart = () => {
     isLongPress.current = false;
@@ -204,70 +237,121 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
   };
 
   const handleClick = (e) => {
-    if (!isLongPress.current) {
-      onClick();
-    }
+    // Si appui long ou si déroulé, ne pas naviguer
+    if (isLongPress.current || isPinned) return;
+    onClick();
+  };
+
+  const handlePinClick = (e) => {
+    e.stopPropagation();
+    onTogglePin?.(sectionId);
+  };
+
+  // Navigation vers un item spécifique
+  const handleItemClick = (route) => {
+    navigate(route);
   };
 
   return (
-    <div 
-      className={`
-        relative overflow-hidden cursor-pointer select-none
-        rounded-full px-5 py-3
-        shadow-lg hover:shadow-xl
-        transition-all duration-300
-        hover:scale-[1.02] active:scale-[0.98]
-        ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''}
-      `}
-      style={{ 
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,242,248,0.9) 30%, rgba(244,114,182,0.4) 100%)',
-        boxShadow: '0 4px 20px rgba(236,72,153,0.2), inset 0 2px 10px rgba(255,255,255,0.8)',
-        WebkitUserSelect: 'none', 
-        WebkitTouchCallout: 'none' 
-      }}
-      onClick={handleClick}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onTouchMove={() => clearTimeout(longPressTimer.current)}
-      onMouseDown={handleTouchStart}
-      onMouseUp={handleTouchEnd}
-      onMouseLeave={() => clearTimeout(longPressTimer.current)}
-      onContextMenu={(e) => e.preventDefault()}
-      data-testid={`section-card-${sectionId}`}
-    >
-      {/* Effet de reflet glass en haut */}
+    <div className="transition-all duration-300">
+      {/* Carte principale pill */}
       <div 
-        className="absolute top-0 left-0 right-0 h-1/2 rounded-t-full pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, transparent 100%)' }}
-      />
-      
-      {/* Effet brillance coin */}
-      <div className="absolute top-2 left-4 w-8 h-3 bg-white/50 rounded-full blur-sm pointer-events-none" />
-      <div className="absolute bottom-3 right-6 w-4 h-4 bg-pink-200/30 rounded-full blur-md pointer-events-none" />
-      
-      {/* Badge sélection */}
-      {isSelected && (
-        <div className="absolute top-1/2 -translate-y-1/2 right-3 w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center z-10 shadow-md">
-          <Check className="w-4 h-4 text-white" />
-        </div>
-      )}
-      
-      <div className="relative flex items-center gap-3">
-        {/* Icône */}
-        <div className={`w-10 h-10 ${meta.iconBg} rounded-full flex items-center justify-center flex-shrink-0 shadow-inner`}>
-          <Icon className={`w-5 h-5 ${meta.iconColor}`} />
-        </div>
+        className={`
+          relative overflow-hidden cursor-pointer select-none
+          rounded-full px-5 py-3
+          shadow-lg hover:shadow-xl
+          transition-all duration-300
+          ${!isPinned ? 'hover:scale-[1.02] active:scale-[0.98]' : ''}
+          ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''}
+        `}
+        style={{ 
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,242,248,0.9) 30%, rgba(244,114,182,0.4) 100%)',
+          boxShadow: '0 4px 20px rgba(236,72,153,0.2), inset 0 2px 10px rgba(255,255,255,0.8)',
+          WebkitUserSelect: 'none', 
+          WebkitTouchCallout: 'none' 
+        }}
+        onClick={handleClick}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchMove={() => clearTimeout(longPressTimer.current)}
+        onMouseDown={handleTouchStart}
+        onMouseUp={handleTouchEnd}
+        onMouseLeave={() => clearTimeout(longPressTimer.current)}
+        onContextMenu={(e) => e.preventDefault()}
+        data-testid={`section-card-${sectionId}`}
+      >
+        {/* Effet de reflet glass en haut */}
+        <div 
+          className="absolute top-0 left-0 right-0 h-1/2 rounded-t-full pointer-events-none"
+          style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, transparent 100%)' }}
+        />
         
-        {/* Texte */}
-        <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-slate-700 text-sm">
-            {t(meta.nameKey, meta.name)}
-          </h3>
-          <p className="text-[11px] text-slate-500 truncate">
-            {t(meta.descKey, meta.description)}
-          </p>
+        {/* Effet brillance coin */}
+        <div className="absolute top-2 left-4 w-8 h-3 bg-white/50 rounded-full blur-sm pointer-events-none" />
+        
+        {/* Bouton épingle */}
+        <button
+          onClick={handlePinClick}
+          className={`absolute top-1/2 -translate-y-1/2 right-3 w-7 h-7 rounded-full flex items-center justify-center z-10 transition-all ${
+            isPinned 
+              ? 'bg-pink-500 text-white shadow-lg scale-110' 
+              : 'bg-white/70 text-slate-400 hover:bg-white hover:text-pink-500'
+          }`}
+          title={isPinned ? t('journey.collapse', 'Replier') : t('journey.expand', 'Dérouler')}
+        >
+          <Pin className={`w-3.5 h-3.5 transition-transform ${isPinned ? 'fill-current rotate-45' : ''}`} />
+        </button>
+        
+        {/* Badge sélection */}
+        {isSelected && (
+          <div className="absolute top-1/2 -translate-y-1/2 right-12 w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center z-10 shadow-md">
+            <Check className="w-4 h-4 text-white" />
+          </div>
+        )}
+        
+        <div className="relative flex items-center gap-3 pr-10">
+          {/* Icône */}
+          <div className={`w-10 h-10 ${meta.iconBg} rounded-full flex items-center justify-center flex-shrink-0 shadow-inner`}>
+            <Icon className={`w-5 h-5 ${meta.iconColor}`} />
+          </div>
+          
+          {/* Texte */}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-bold text-slate-700 text-sm">
+              {t(meta.nameKey, meta.name)}
+            </h3>
+            <p className="text-[11px] text-slate-500 truncate">
+              {isPinned ? t('journey.tapItemToEnter', 'Touchez un élément') : t(meta.descKey, meta.description)}
+            </p>
+          </div>
         </div>
       </div>
+
+      {/* Contenu déroulé (accordéon) */}
+      {isPinned && (
+        <div className="mt-2 ml-4 mr-2 space-y-1.5 animate-in slide-in-from-top-2 duration-200">
+          {items.slice(0, 5).map((item, index) => (
+            <button
+              key={item.id}
+              onClick={() => handleItemClick(item.route)}
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/80 hover:bg-pink-50 transition-all text-left shadow-sm border border-pink-100/50"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              <span className="text-base">{item.icon}</span>
+              <span className="text-sm text-slate-600 font-medium truncate">{t(item.nameKey, item.name)}</span>
+              <ChevronRight className="w-4 h-4 text-slate-300 ml-auto flex-shrink-0" />
+            </button>
+          ))}
+          {items.length > 5 && (
+            <button
+              onClick={() => navigate(`/section/${sectionId}`)}
+              className="w-full px-4 py-2 text-center text-xs text-pink-500 font-medium hover:text-pink-600"
+            >
+              {t('journey.seeAll', 'Voir tout')} ({items.length})
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -280,6 +364,23 @@ function JourneyStepsPage() {
   const [selectedSection, setSelectedSection] = useState(null);
   const [selectedSectionName, setSelectedSectionName] = useState('');
   const [showDuplicatePopup, setShowDuplicatePopup] = useState(false);
+  
+  // État des sections épinglées/déroulées (stockées dans localStorage)
+  const [pinnedSections, setPinnedSections] = useState(() => {
+    const saved = localStorage.getItem('mamandouce_expanded_journey_sections');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Toggle épingle = dérouler/replier
+  const togglePin = (sectionId) => {
+    setPinnedSections(prev => {
+      const newPinned = prev.includes(sectionId)
+        ? prev.filter(id => id !== sectionId)
+        : [...prev, sectionId];
+      localStorage.setItem('mamandouce_expanded_journey_sections', JSON.stringify(newPinned));
+      return newPinned;
+    });
+  };
 
   // Navigation vers la page de détail de la section
   const handleSectionClick = (sectionId) => {
@@ -354,7 +455,7 @@ function JourneyStepsPage() {
           <div className="w-10"></div>
         </div>
 
-        {/* Les 5 sections en cartes pill */}
+        {/* Les 5 sections en cartes pill avec accordéon */}
         <div className="space-y-3">
           {SECTIONS_ORDER.map((sectionId) => (
             <SectionCard
@@ -363,6 +464,8 @@ function JourneyStepsPage() {
               onClick={() => handleSectionClick(sectionId)}
               onLongPress={handleLongPress}
               isSelected={selectedSection === sectionId}
+              isPinned={pinnedSections.includes(sectionId)}
+              onTogglePin={togglePin}
             />
           ))}
         </div>

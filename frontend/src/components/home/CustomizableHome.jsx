@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Heart, X, Home, Trash2, FolderOpen } from 'lucide-react';
+import { Heart, X, Home, Trash2, FolderOpen, ChevronRight } from 'lucide-react';
 import { useHomeLayout } from '../../contexts/HomeLayoutContext';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
@@ -61,42 +61,52 @@ function WeekDisplayWidget({ pregnancyProfile, t }) {
   );
 }
 
-// Carte cliquable "Les étapes de votre plus beau voyage" - EN RELIEF
+// Carte cliquable "Les étapes de votre plus beau voyage" - Style PILL
 function JourneyStepsCard({ t, navigate }) {
   return (
-    <Card 
-      className="relative bg-gradient-to-r from-white via-pink-50/60 to-purple-50/60 rounded-2xl px-4 py-4 
-        shadow-[0_4px_20px_rgba(236,72,153,0.15)] border-2 border-pink-200/60 
-        cursor-pointer hover:shadow-[0_8px_30px_rgba(236,72,153,0.25)] hover:scale-[1.02] hover:border-pink-300/70
-        transition-all duration-300 active:scale-[0.98]"
+    <div 
+      className="relative overflow-hidden cursor-pointer select-none rounded-full px-6 py-4
+        shadow-lg hover:shadow-xl transition-all duration-300
+        hover:scale-[1.02] active:scale-[0.98]"
+      style={{ 
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,242,248,0.9) 30%, rgba(244,114,182,0.4) 100%)',
+        boxShadow: '0 4px 20px rgba(236,72,153,0.2), inset 0 2px 10px rgba(255,255,255,0.8)',
+      }}
       onClick={() => navigate('/journey-steps')}
       data-testid="journey-steps-card"
     >
-      <div className="text-center">
-        <div className="flex items-center justify-center gap-2">
-          <Heart className="w-4 h-4 text-pink-400 flex-shrink-0 animate-pulse" fill="currentColor" />
+      {/* Effet de reflet glass en haut */}
+      <div 
+        className="absolute top-0 left-0 right-0 h-1/2 rounded-t-full pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, transparent 100%)' }}
+      />
+      
+      {/* Effet brillance */}
+      <div className="absolute top-2 left-6 w-10 h-3 bg-white/50 rounded-full blur-sm pointer-events-none" />
+      
+      <div className="relative flex items-center gap-3">
+        {/* Icône cœur */}
+        <div className="w-10 h-10 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner">
+          <Heart className="w-5 h-5 text-pink-500" fill="currentColor" />
+        </div>
+        
+        {/* Texte */}
+        <div className="flex-1 min-w-0">
           <h2 
-            className="text-[15px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500 whitespace-nowrap"
+            className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500"
             style={{ fontFamily: "'Quicksand', 'Nunito', sans-serif", fontWeight: 700 }}
           >
             {t('home.journeySteps', 'Les étapes de votre plus beau voyage')}
           </h2>
-          <Heart className="w-4 h-4 text-pink-400 flex-shrink-0 animate-pulse" fill="currentColor" />
+          <p className="text-[11px] text-slate-500">
+            {t('home.journeyStepsDesc', 'De la conception à l\'arrivée de bébé')}
+          </p>
         </div>
-        <p className="text-[11px] text-slate-500 mt-1 mb-3">
-          {t('home.journeyStepsDesc', 'De la conception à l\'arrivée de bébé')}
-        </p>
         
-        {/* Bouton pill gradient */}
-        <div className="flex justify-center">
-          <button className="relative px-8 py-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-rose-400 text-white text-sm font-semibold shadow-lg shadow-pink-500/30 hover:shadow-xl hover:shadow-pink-500/40 transition-all overflow-hidden group">
-            {/* Effet de reflet glass */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-full" style={{ height: '50%' }} />
-            <span className="relative">{t('home.enter', 'Entrer')}</span>
-          </button>
-        </div>
+        {/* Flèche */}
+        <ChevronRight className="w-5 h-5 text-pink-400 flex-shrink-0" />
       </div>
-    </Card>
+    </div>
   );
 }
 
