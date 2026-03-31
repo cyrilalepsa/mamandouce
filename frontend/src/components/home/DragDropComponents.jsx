@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { FolderOpen, X, ChevronRight, GripVertical } from 'lucide-react';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
@@ -12,6 +13,8 @@ const ITEM_ICONS = {
   'postpartum': '💕',
   'services': '⚙️',
   'cycle-tracking': '📅',
+  'fertility-calculator': '📊',
+  'preconception-tips': '💡',
   'food-scanner': '📷',
   'food-library': '🍎',
   'favorites': '❤️',
@@ -19,8 +22,23 @@ const ITEM_ICONS = {
   'baby-names': '👶',
   'tips-evolution': '📖',
   'medical-appointments': '🩺',
-  'pregnancy-tracking': '📊',
+  'pregnancy-tracking': '📈',
   'reminders': '🔔',
+  'parental-leave': '⚖️',
+  'maternity-bag': '👜',
+  'birth-list': '📝',
+  'preparation-tips': '💝',
+  'postpartum-appointments': '🏥',
+  'postpartum-difficulties': '⚠️',
+  'postpartum-breastfeeding': '💗',
+  'postpartum-formula': '🍼',
+  'postpartum-diapers': '💧',
+  'postpartum-babywearing': '🤱',
+  'chatbot': '🤖',
+  'caf': '🏛️',
+  'ameli': '🏥',
+  'mairie': '📍',
+  'videos': '🎬',
 };
 
 const ITEM_NAMES = {
@@ -29,16 +47,69 @@ const ITEM_NAMES = {
   'baby-preparation': 'Préparation bébé',
   'postpartum': 'Post-partum',
   'services': 'Services',
-  'cycle-tracking': 'Cycles',
+  'cycle-tracking': 'Suivi de cycles',
+  'fertility-calculator': 'Calculateur fertilité',
+  'preconception-tips': 'Préparation et conseils',
   'food-scanner': 'Scanner',
   'food-library': 'Bibliothèque',
   'favorites': 'Favoris',
   'history': 'Historique',
   'baby-names': 'Prénoms',
   'tips-evolution': 'Conseils',
-  'medical-appointments': 'RDV',
-  'pregnancy-tracking': 'Suivi',
+  'medical-appointments': 'RDV médicaux',
+  'pregnancy-tracking': 'Suivi grossesse',
   'reminders': 'Rappels',
+  'parental-leave': 'Congés parentaux',
+  'maternity-bag': 'Valise maternité',
+  'birth-list': 'Liste de naissance',
+  'preparation-tips': 'Conseils préparation',
+  'postpartum-appointments': 'RDV post-partum',
+  'postpartum-difficulties': 'Difficultés courantes',
+  'postpartum-breastfeeding': 'Allaitement',
+  'postpartum-formula': 'Biberon',
+  'postpartum-diapers': 'Couches',
+  'postpartum-babywearing': 'Portage bébé',
+  'chatbot': 'Assistant IA',
+  'caf': 'CAF',
+  'ameli': 'Ameli',
+  'mairie': 'Mairie proche',
+  'videos': 'Vidéos',
+};
+
+// Routes pour chaque item
+const ITEM_ROUTES = {
+  'preconception': '/section/preconception',
+  'pregnancy': '/section/pregnancy',
+  'baby-preparation': '/section/baby-preparation',
+  'postpartum': '/postpartum',
+  'services': '/section/services',
+  'cycle-tracking': '/cycle-tracking',
+  'fertility-calculator': '/fertility-calculator',
+  'preconception-tips': '/preconception-tips',
+  'food-scanner': '/scanner',
+  'food-library': '/food-library',
+  'favorites': '/favorites',
+  'history': '/history',
+  'baby-names': '/baby-names',
+  'tips-evolution': '/tips',
+  'medical-appointments': '/medical',
+  'pregnancy-tracking': '/tracking',
+  'reminders': '/reminders',
+  'parental-leave': '/parental-leave',
+  'maternity-bag': '/maternity-bag',
+  'birth-list': '/birth-list',
+  'preparation-tips': '/tips',
+  'postpartum-appointments': '/postpartum?section=appointments',
+  'postpartum-difficulties': '/postpartum?section=difficulties',
+  'postpartum-breastfeeding': '/postpartum?section=breastfeeding',
+  'postpartum-formula': '/postpartum?section=formula',
+  'postpartum-diapers': '/postpartum?section=diapers',
+  'postpartum-babywearing': '/postpartum?section=babywearing',
+  'chatbot': '/chatbot',
+  'caf': 'https://www.caf.fr',
+  'ameli': 'https://www.ameli.fr',
+  'mairie': '/mairie',
+  'videos': '/videos',
 };
 
 // Composant pour un item draggable
@@ -54,12 +125,14 @@ export function DraggableItem({
   showDeleteButton = false
 }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const longPressTimer = useRef(null);
   const isLongPress = useRef(false);
   const [showDelete, setShowDelete] = useState(showDeleteButton);
   
-  const icon = ITEM_ICONS[item.id] || '📌';
+  const icon = ITEM_ICONS[item.id] || '📄';
   const name = ITEM_NAMES[item.id] || item.id;
+  const route = ITEM_ROUTES[item.id];
 
   // Synchroniser avec la prop externe
   useEffect(() => {
@@ -80,6 +153,24 @@ export function DraggableItem({
   const handleTouchEnd = (e) => {
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
+    }
+  };
+
+  // Gérer le clic pour naviguer (seulement si pas de long press)
+  const handleClick = (e) => {
+    // Ne pas naviguer si on est en mode suppression ou si c'était un long press
+    if (showDelete || isLongPress.current) {
+      if (showDelete) setShowDelete(false);
+      return;
+    }
+    
+    if (route) {
+      // Liens externes
+      if (route.startsWith('http')) {
+        window.open(route, '_blank');
+      } else {
+        navigate(route);
+      }
     }
   };
 
@@ -114,10 +205,12 @@ export function DraggableItem({
       onMouseDown={handleTouchStart}
       onMouseUp={handleTouchEnd}
       onMouseLeave={() => clearTimeout(longPressTimer.current)}
+      onClick={handleClick}
       className={`
         relative bg-white rounded-2xl p-3 shadow-sm border
-        cursor-grab active:cursor-grabbing
+        cursor-pointer
         transition-all duration-200
+        hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
         ${isDragging ? 'opacity-50 scale-95' : ''}
         ${isDropTarget ? 'ring-2 ring-pink-400 scale-105 bg-pink-50' : 'border-slate-100'}
         ${showDelete ? 'animate-wiggle' : ''}
