@@ -168,7 +168,13 @@ async def check_referral_completion(current_user: User = Depends(get_current_use
 async def get_full_subscription_status(current_user: User = Depends(get_current_user)):
     """Get complete subscription status including postpartum eligibility"""
     
+    # Chercher par id d'abord, sinon par email
     user_doc = await db.users.find_one({"id": current_user.id}, {"_id": 0})
+    if not user_doc:
+        user_doc = await db.users.find_one({"email": current_user.email}, {"_id": 0})
+    
+    if not user_doc:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
     
     subscription_status = user_doc.get("subscription_status", "free")
     subscription_start = user_doc.get("subscription_start_date")

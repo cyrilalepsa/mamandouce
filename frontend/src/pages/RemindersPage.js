@@ -30,7 +30,8 @@ function RemindersPage() {
     try {
       setLoading(true);
       const response = await api.medical.getScheduledReminders();
-      setReminders(response.data || []);
+      // L'API retourne {reminders: [...]}
+      setReminders(response.data?.reminders || []);
     } catch (error) {
       console.error('Erreur chargement rappels:', error);
       setReminders([]);

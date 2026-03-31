@@ -29,7 +29,14 @@ Application pour femmes enceintes avec une UX/UI type smartphone (iOS/Android).
 
 # CHANGELOG
 
-## 2026-03-31
+## 2026-03-31 (Session 2)
+- ✅ BUG FIX: Ajout de l'item "Rappels" manquant dans la section Grossesse (`JourneyStepsPage.js`)
+- ✅ BUG FIX: Correction route "Suivi grossesse" → `/tracking` au lieu de `/calculator`
+- ✅ BUG FIX: Correction `RemindersPage.js` - parsing correct de `response.data?.reminders`
+- ✅ BUG FIX: Correction `referral.py` - recherche alternative par email si utilisateur non trouvé par id
+- ✅ AMÉLIORATION: `PageHeader.js` utilise maintenant `navigate(-1)` par défaut pour un retour contextuel
+
+## 2026-03-31 (Session 1)
 - ✅ BUG FIX: Suppression de page fonctionne maintenant (long press sur zone vide)
 - ✅ FEATURE: Épingles ajoutées sur JourneyStepsPage (bouton sur chaque section)
 - ✅ BUG FIX: Croix de suppression apparaît seulement après appui long sur les cartes dupliquées
@@ -76,6 +83,10 @@ Application pour femmes enceintes avec une UX/UI type smartphone (iOS/Android).
 ---
 
 ## Key Files Reference
+- `/app/frontend/src/pages/JourneyStepsPage.js` - Accordéon des sections (pilules)
+- `/app/frontend/src/pages/SectionDetailPage.js` - Détail des sections (mosaïque)
+- `/app/frontend/src/pages/RemindersPage.js` - Page des rappels (grossesse)
+- `/app/frontend/src/components/PageHeader.js` - Header avec bouton retour contextuel
 - `/app/frontend/src/pages/ParentalLeavePage.js`
 - `/app/frontend/src/components/home/UpcomingRemindersCard.jsx`
 - `/app/frontend/src/components/home/CustomizableHome.jsx`
@@ -83,6 +94,7 @@ Application pour femmes enceintes avec une UX/UI type smartphone (iOS/Android).
 - `/app/frontend/src/components/home/DragDropComponents.jsx`
 - `/app/frontend/src/contexts/HomeLayoutContext.js`
 - `/app/backend/routes/user_layout.py`
+- `/app/backend/routes/referral.py`
 
 ## Areas to Watch
 - `CustomizableHome.jsx` et `HomeLayoutContext.js` deviennent denses (Drag&Drop, touch events, swipes, long press)

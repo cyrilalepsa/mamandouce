@@ -81,7 +81,8 @@ const SECTION_ITEMS = {
     { id: 'baby-names', icon: '👶', name: 'Liste des Prénoms', nameKey: 'pregnancy.babyNames', route: '/baby-names' },
     { id: 'tips-evolution', icon: '📖', name: 'Évolution et conseils', nameKey: 'pregnancy.tipsAndEvolution', route: '/tips' },
     { id: 'medical-appointments', icon: '🩺', name: 'Rendez-vous médicaux', nameKey: 'pregnancy.appointments', route: '/medical' },
-    { id: 'pregnancy-tracking', icon: '📈', name: 'Suivi grossesse', nameKey: 'pregnancy.tracking', route: '/calculator' },
+    { id: 'pregnancy-tracking', icon: '📈', name: 'Suivi grossesse', nameKey: 'pregnancy.tracking', route: '/tracking' },
+    { id: 'reminders', icon: '🔔', name: 'Rappels', nameKey: 'pregnancy.reminders', route: '/reminders' },
     { id: 'parental-leave', icon: '⚖️', name: 'Congés parentaux', nameKey: 'pregnancy.parentalLeave', route: '/parental-leave' },
   ],
   'baby-preparation': [
