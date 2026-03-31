@@ -322,25 +322,26 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
         </div>
       </div>
 
-      {/* Contenu déroulé (accordéon) */}
+      {/* Contenu déroulé (mosaïque) */}
       {isPinned && (
-        <div className="mt-2 ml-4 mr-2 space-y-1.5 animate-in slide-in-from-top-2 duration-200">
-          {items.slice(0, 5).map((item, index) => (
-            <button
-              key={item.id}
-              onClick={() => handleItemClick(item.route)}
-              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/80 hover:bg-pink-50 transition-all text-left shadow-sm border border-pink-100/50"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <span className="text-base">{item.icon}</span>
-              <span className="text-sm text-slate-600 font-medium truncate">{t(item.nameKey, item.name)}</span>
-              <ChevronRight className="w-4 h-4 text-slate-300 ml-auto flex-shrink-0" />
-            </button>
-          ))}
-          {items.length > 5 && (
+        <div className="mt-3 mx-1 animate-in slide-in-from-top-2 duration-200">
+          <div className="grid grid-cols-2 gap-2">
+            {items.slice(0, 6).map((item, index) => (
+              <button
+                key={item.id}
+                onClick={() => handleItemClick(item.route)}
+                className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white/80 hover:bg-pink-50 transition-all shadow-sm border border-pink-100/30"
+                style={{ animationDelay: `${index * 30}ms` }}
+              >
+                <span className="text-2xl">{item.icon}</span>
+                <span className="text-xs text-slate-600 font-medium text-center leading-tight">{t(item.nameKey, item.name)}</span>
+              </button>
+            ))}
+          </div>
+          {items.length > 6 && (
             <button
               onClick={() => navigate(`/section/${sectionId}`)}
-              className="w-full px-4 py-2 text-center text-xs text-pink-500 font-medium hover:text-pink-600"
+              className="w-full mt-2 px-4 py-2 text-center text-xs text-pink-500 font-medium hover:text-pink-600"
             >
               {t('journey.seeAll', 'Voir tout')} ({items.length})
             </button>

@@ -570,12 +570,14 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
-        className={`page-transition rounded-3xl min-h-[300px] ${isPageShaking ? 'animate-wiggle' : ''}`}
+        className={`page-transition rounded-3xl min-h-[300px] select-none ${isPageShaking ? 'animate-wiggle' : ''}`}
+        style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+        onContextMenu={(e) => e.preventDefault()}
         onMouseDown={isDefaultPage ? handleSocleLongPressStart : handleUserPageLongPressStart}
         onMouseUp={isDefaultPage ? handleSocleLongPressEnd : handleUserPageLongPressEnd}
         onMouseLeave={isDefaultPage ? handleSocleLongPressEnd : handleUserPageLongPressEnd}
-        onTouchStartCapture={isDefaultPage ? handleSocleLongPressStart : undefined}
-        onTouchEndCapture={isDefaultPage ? handleSocleLongPressEnd : undefined}
+        onTouchStartCapture={isDefaultPage ? handleSocleLongPressStart : handleUserPageLongPressStart}
+        onTouchEndCapture={isDefaultPage ? handleSocleLongPressEnd : handleUserPageLongPressEnd}
       >
         {/* Bouton supprimer page (quand la page utilisateur tremble) */}
         {isPageShaking && !isDefaultPage && (
@@ -621,7 +623,7 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
             {!isDefaultPage && (
               <>
                 {/* Nom de la page */}
-                <div className="text-center mb-2">
+                <div className="text-center mb-2 select-none" style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}>
                   <h2 className="text-lg font-bold text-slate-700">{currentPage?.name}</h2>
                   <p className="text-[10px] text-slate-400">
                     {t('home.dragToGroup', 'Glissez un élément sur un autre pour créer un groupe')}
