@@ -237,7 +237,7 @@ export default function PostpartumPage() {
           {/* Header */}
           <div className="flex items-center gap-4">
             <Button
-              onClick={() => navigate('/section/postpartum')}
+              onClick={() => navigate('/journey-steps')}
               className="bg-white rounded-full p-2 shadow-sm"
             >
               <ArrowLeft className="w-5 h-5 text-slate-600" />
@@ -395,7 +395,7 @@ export default function PostpartumPage() {
           {/* Header */}
           <div className="flex items-center gap-4">
             <Button
-              onClick={() => navigate('/section/postpartum')}
+              onClick={() => navigate('/journey-steps')}
               className="bg-white rounded-full p-2 shadow-sm"
             >
               <ArrowLeft className="w-5 h-5 text-slate-600" />
@@ -502,7 +502,7 @@ export default function PostpartumPage() {
         {/* Header */}
         <div className="flex items-center gap-4">
           <Button
-            onClick={() => navigate('/section/postpartum')}
+            onClick={() => navigate('/journey-steps')}
             className="bg-white rounded-full p-2 shadow-sm"
           >
             <ArrowLeft className="w-5 h-5 text-slate-600" />
@@ -554,90 +554,108 @@ export default function PostpartumPage() {
           />
         </div>
 
-        {/* Collapsible Sections */}
-        <div className="space-y-3">
+        {/* Sections en Mosaïque */}
+        <div className="grid grid-cols-2 gap-3">
           {sections.map((section) => {
             const Icon = section.icon;
             const colorClasses = getColorClasses(section.color);
             const isExpanded = expandedSections[section.id];
             
             return (
-              <Card key={section.id} className="bg-white rounded-3xl shadow-sm overflow-hidden">
-                {/* Collapsible Header */}
-                <button
-                  onClick={() => toggleSection(section.id)}
-                  className="w-full p-4 flex items-center gap-3 hover:bg-slate-50 transition-colors"
-                  data-testid={`toggle-${section.id}`}
-                >
-                  <div className={`w-10 h-10 ${colorClasses.bg} rounded-xl flex items-center justify-center`}>
-                    <Icon className={`w-5 h-5 ${colorClasses.text}`} />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-slate-700">{section.label}</h3>
-                      {section.badge && (
-                        <span className={`px-2 py-0.5 ${colorClasses.bg} ${colorClasses.text} text-xs rounded-full font-medium`}>
-                          {section.badge}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
-                    isExpanded ? `${colorClasses.bg} ${colorClasses.text}` : 'bg-slate-100 text-slate-400'
-                  }`}>
-                    {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                  </div>
-                </button>
-                
-                {/* Collapsible Content */}
-                <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                  isExpanded ? 'max-h-[10000px] opacity-100' : 'max-h-0 opacity-0'
-                }`}>
-                  <div className="px-4 pb-4 border-t border-slate-100">
-                    {/* Indicateur de traduction */}
-                    {isTranslating && currentLang !== 'fr' && (
-                      <div className="flex items-center gap-2 py-2 text-sm text-slate-500">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>{t('common.translating')}</span>
-                      </div>
-                    )}
-                    {section.id === 'appointments' && (
-                      <AppointmentsSection appointments={displayContent?.appointments} />
-                    )}
-                    {section.id === 'difficulties' && (
-                      <DifficultiesSection difficulties={displayContent?.difficulties} />
-                    )}
-                    {section.id === 'breastfeeding' && (
-                      <BreastfeedingSection breastfeeding={displayContent?.breastfeeding} />
-                    )}
-                    {section.id === 'formula' && (
-                      <FormulaSection formula={displayContent?.formula} />
-                    )}
-                    {section.id === 'diapers' && (
-                      <DiapersSection diapers={displayContent?.diapers} />
-                    )}
-                    {section.id === 'babywearing' && (
-                      <BabywearingSection babywearing={displayContent?.babywearing} />
-                    )}
-                    {section.id === 'diversification' && (
-                      <DiversificationSection diversification={displayContent?.diversification} />
-                    )}
-                    {section.id === 'recipes' && (
-                      <RecipesSection 
-                        babyRecipes={displayContent?.baby_recipes} 
-                        favorites={favorites}
-                        onFavoritesChange={setFavorites}
-                      />
-                    )}
-                    {section.id === 'precautions' && (
-                      <PrecautionsSection precautions={displayContent?.precautions} />
-                    )}
-                  </div>
+              <Card 
+                key={section.id} 
+                onClick={() => toggleSection(section.id)}
+                className={`bg-white rounded-2xl p-4 shadow-sm cursor-pointer transition-all hover:shadow-md hover:scale-[1.02] active:scale-[0.98] ${
+                  isExpanded ? 'ring-2 ring-offset-2 ' + (section.color === 'pink' ? 'ring-pink-400' : section.color === 'amber' ? 'ring-amber-400' : section.color === 'rose' ? 'ring-rose-400' : section.color === 'sky' ? 'ring-sky-400' : section.color === 'cyan' ? 'ring-cyan-400' : section.color === 'violet' ? 'ring-violet-400' : section.color === 'orange' ? 'ring-orange-400' : section.color === 'emerald' ? 'ring-emerald-400' : 'ring-slate-400') : ''
+                }`}
+                data-testid={`toggle-${section.id}`}
+              >
+                <div className={`w-12 h-12 ${colorClasses.bg} rounded-xl flex items-center justify-center mx-auto mb-2`}>
+                  <Icon className={`w-6 h-6 ${colorClasses.text}`} />
+                </div>
+                <div className="text-center">
+                  <h3 className="font-bold text-slate-700 text-sm leading-tight">{section.label}</h3>
+                  {section.badge && (
+                    <span className={`inline-block mt-1 px-2 py-0.5 ${colorClasses.bg} ${colorClasses.text} text-xs rounded-full font-medium`}>
+                      {section.badge}
+                    </span>
+                  )}
                 </div>
               </Card>
             );
           })}
         </div>
+
+        {/* Contenu de la section sélectionnée */}
+        {sections.map((section) => {
+          const isExpanded = expandedSections[section.id];
+          const colorClasses = getColorClasses(section.color);
+          const Icon = section.icon;
+          
+          if (!isExpanded) return null;
+          
+          return (
+            <Card key={`content-${section.id}`} className="bg-white rounded-3xl shadow-sm overflow-hidden animate-in slide-in-from-top-2 duration-200">
+              {/* Header de la section ouverte */}
+              <div className={`p-4 ${colorClasses.bg} flex items-center justify-between`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 bg-white/50 rounded-xl flex items-center justify-center`}>
+                    <Icon className={`w-5 h-5 ${colorClasses.text}`} />
+                  </div>
+                  <h3 className={`font-bold ${colorClasses.text}`}>{section.label}</h3>
+                </div>
+                <button 
+                  onClick={() => toggleSection(section.id)}
+                  className={`w-8 h-8 rounded-full bg-white/50 flex items-center justify-center ${colorClasses.text}`}
+                >
+                  <ChevronUp className="w-5 h-5" />
+                </button>
+              </div>
+              
+              {/* Contenu */}
+              <div className="p-4">
+                {/* Indicateur de traduction */}
+                {isTranslating && currentLang !== 'fr' && (
+                  <div className="flex items-center gap-2 py-2 text-sm text-slate-500">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>{t('common.translating')}</span>
+                  </div>
+                )}
+                {section.id === 'appointments' && (
+                  <AppointmentsSection appointments={displayContent?.appointments} />
+                )}
+                {section.id === 'difficulties' && (
+                  <DifficultiesSection difficulties={displayContent?.difficulties} />
+                )}
+                {section.id === 'breastfeeding' && (
+                  <BreastfeedingSection breastfeeding={displayContent?.breastfeeding} />
+                )}
+                {section.id === 'formula' && (
+                  <FormulaSection formula={displayContent?.formula} />
+                )}
+                {section.id === 'diapers' && (
+                  <DiapersSection diapers={displayContent?.diapers} />
+                )}
+                {section.id === 'babywearing' && (
+                  <BabywearingSection babywearing={displayContent?.babywearing} />
+                )}
+                {section.id === 'diversification' && (
+                  <DiversificationSection diversification={displayContent?.diversification} />
+                )}
+                {section.id === 'recipes' && (
+                  <RecipesSection 
+                    babyRecipes={displayContent?.baby_recipes} 
+                    favorites={favorites}
+                    onFavoritesChange={setFavorites}
+                  />
+                )}
+                {section.id === 'precautions' && (
+                  <PrecautionsSection precautions={displayContent?.precautions} />
+                )}
+              </div>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
