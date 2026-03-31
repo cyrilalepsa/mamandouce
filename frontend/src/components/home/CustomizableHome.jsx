@@ -527,40 +527,50 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
         </div>
       )}
 
-      {/* Popup confirmation suppression de page - COMPACT */}
+      {/* Popup confirmation suppression de page */}
       {showDeleteConfirm && (
         <div 
-          className="fixed inset-0 z-50 flex items-end justify-center pb-8"
+          className="fixed inset-0 z-40 flex items-center justify-center px-6"
           onClick={() => setShowDeleteConfirm(false)}
           onContextMenu={(e) => e.preventDefault()}
           style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
         >
+          {/* Overlay sombre */}
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+          
+          {/* Modal centré */}
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="bg-white/95 backdrop-blur-xl rounded-2xl px-4 py-3 shadow-lg border border-slate-100/50 mx-4 flex items-center gap-3 select-none"
+            className="relative bg-white rounded-3xl p-6 shadow-2xl max-w-sm w-full select-none"
             style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
             onContextMenu={(e) => e.preventDefault()}
           >
-            <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <Trash2 className="w-4 h-4 text-red-500" />
+            {/* Icône */}
+            <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+              <Trash2 className="w-8 h-8 text-red-500" />
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-slate-700 truncate">
-                {t('home.deletePageShort', 'Supprimer')} "{currentPage?.name}" ?
-              </p>
-            </div>
-            <div className="flex gap-2 flex-shrink-0">
+            
+            {/* Message */}
+            <h3 className="text-lg font-bold text-center text-slate-800 mb-2">
+              Supprimer "{currentPage?.name}" ?
+            </h3>
+            <p className="text-center text-slate-500 mb-6">
+              Êtes-vous sûr de vouloir supprimer cette page et tous ses items ?
+            </p>
+            
+            {/* Boutons */}
+            <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-medium"
+                className="flex-1 py-3 px-4 rounded-2xl bg-slate-100 text-slate-700 font-semibold text-base hover:bg-slate-200 transition-colors"
               >
-                {t('common.no', 'Non')}
+                Non
               </button>
               <button
                 onClick={handleDeletePage}
-                className="px-3 py-1.5 rounded-xl bg-red-500 text-white text-sm font-medium"
+                className="flex-1 py-3 px-4 rounded-2xl bg-red-500 text-white font-semibold text-base hover:bg-red-600 transition-colors shadow-lg shadow-red-500/25"
               >
-                {t('common.yes', 'Oui')}
+                Oui
               </button>
             </div>
           </div>
