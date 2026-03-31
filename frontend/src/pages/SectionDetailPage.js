@@ -362,29 +362,11 @@ function SectionDetailPage() {
   const { t } = useTranslation();
   const { pages, addPage, duplicateItemToPage } = useHomeLayout();
   
-  const [isPinned, setIsPinned] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [showDuplicatePopup, setShowDuplicatePopup] = useState(false);
 
   const meta = SECTION_META[sectionId];
   const items = SECTION_ITEMS[sectionId] || [];
-
-  // Charger l'état épinglé
-  useEffect(() => {
-    const saved = localStorage.getItem(`mamandouce_section_pinned_${sectionId}`);
-    setIsPinned(saved === 'true');
-  }, [sectionId]);
-
-  // Toggle épingle
-  const handleTogglePin = () => {
-    const newValue = !isPinned;
-    setIsPinned(newValue);
-    localStorage.setItem(`mamandouce_section_pinned_${sectionId}`, newValue.toString());
-    toast.success(newValue 
-      ? t('section.pinned', 'Section épinglée !') 
-      : t('section.unpinned', 'Section désépinglée')
-    );
-  };
 
   // Navigation
   const handleNavigate = (route) => {
@@ -459,15 +441,8 @@ function SectionDetailPage() {
             </div>
           </div>
           
-          {/* Bouton épingle */}
-          <Button
-            onClick={handleTogglePin}
-            variant="ghost"
-            className={`p-2 rounded-full transition-all ${isPinned ? 'bg-pink-100 text-pink-600' : 'hover:bg-white/50 text-slate-400'}`}
-            data-testid="pin-button"
-          >
-            {isPinned ? <Pin className="w-5 h-5" /> : <PinOff className="w-5 h-5" />}
-          </Button>
+          {/* Espace pour équilibrer le header */}
+          <div className="w-10"></div>
         </div>
 
         {/* Message d'instruction */}

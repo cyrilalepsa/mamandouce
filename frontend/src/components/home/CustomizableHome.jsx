@@ -72,11 +72,6 @@ function JourneyStepsCard({ t, navigate }) {
       onClick={() => navigate('/journey-steps')}
       data-testid="journey-steps-card"
     >
-      {/* Indicateur "Cliquez" */}
-      <div className="absolute -top-2 right-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-md">
-        {t('common.clickMe', 'Cliquez !')}
-      </div>
-      
       <div className="text-center">
         <div className="flex items-center justify-center gap-2">
           <Heart className="w-4 h-4 text-pink-400 flex-shrink-0 animate-pulse" fill="currentColor" />
@@ -88,13 +83,17 @@ function JourneyStepsCard({ t, navigate }) {
           </h2>
           <Heart className="w-4 h-4 text-pink-400 flex-shrink-0 animate-pulse" fill="currentColor" />
         </div>
-        <p className="text-[11px] text-slate-500 mt-1">
+        <p className="text-[11px] text-slate-500 mt-1 mb-3">
           {t('home.journeyStepsDesc', 'De la conception à l\'arrivée de bébé')}
         </p>
         
-        {/* Flèche indicateur */}
-        <div className="mt-2 flex justify-center">
-          <span className="text-pink-400 text-xs">→ {t('home.enterHere', 'Entrez ici')} ←</span>
+        {/* Bouton pill gradient */}
+        <div className="flex justify-center">
+          <button className="relative px-8 py-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-rose-400 text-white text-sm font-semibold shadow-lg shadow-pink-500/30 hover:shadow-xl hover:shadow-pink-500/40 transition-all overflow-hidden group">
+            {/* Effet de reflet glass */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-full" style={{ height: '50%' }} />
+            <span className="relative">{t('home.enter', 'Entrer')}</span>
+          </button>
         </div>
       </div>
     </Card>
