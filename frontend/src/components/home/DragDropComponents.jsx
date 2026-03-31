@@ -210,9 +210,11 @@ export function DraggableItem({
       onMouseUp={handleTouchEnd}
       onMouseLeave={() => clearTimeout(longPressTimer.current)}
       onClick={handleClick}
+      onContextMenu={(e) => e.preventDefault()}
+      style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
       className={`
         relative bg-white rounded-2xl p-3 shadow-sm border
-        cursor-pointer
+        cursor-pointer select-none
         transition-all duration-200
         hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
         ${isDragging ? 'opacity-50 scale-95' : ''}
@@ -286,9 +288,11 @@ export function ItemGroup({
       onDrop={handleDrop}
       onTouchStart={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
+      onContextMenu={(e) => e.preventDefault()}
+      style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
       className={`
         relative bg-gradient-to-br from-slate-50 to-slate-100 
-        rounded-2xl p-3 shadow-sm border cursor-pointer
+        rounded-2xl p-3 shadow-sm border cursor-pointer select-none
         transition-all duration-200 hover:shadow-md
         ${isDropTarget ? 'ring-2 ring-purple-400 scale-105 bg-purple-50' : 'border-slate-200'}
       `}

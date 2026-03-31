@@ -258,9 +258,11 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
           shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-violet-100 
           hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] 
           cursor-pointer transition-all col-span-2 sm:col-span-3
+          select-none
           ${isLocked ? 'opacity-60' : ''}
           ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''}
         `}
+        style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
         onClick={handleClick}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
@@ -268,6 +270,7 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
         onMouseDown={handleTouchStart}
         onMouseUp={handleTouchEnd}
         onMouseLeave={() => clearTimeout(longPressTimer.current)}
+        onContextMenu={(e) => e.preventDefault()}
         data-testid={`item-card-${item.id}`}
       >
         <div className="flex items-center gap-4">
@@ -310,9 +313,11 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
         shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 
         hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] 
         cursor-pointer transition-all text-center
+        select-none
         ${isLocked ? 'opacity-60' : ''}
         ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''}
       `}
+      style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
       onClick={handleClick}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
@@ -320,6 +325,7 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
       onMouseDown={handleTouchStart}
       onMouseUp={handleTouchEnd}
       onMouseLeave={() => clearTimeout(longPressTimer.current)}
+      onContextMenu={(e) => e.preventDefault()}
       data-testid={`item-card-${item.id}`}
     >
       {/* Badge premium */}

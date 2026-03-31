@@ -153,13 +153,15 @@ function UserSectionCard({ item, onRemove, pregnancyProfile, hasPregnancyProfile
   return (
     <div 
       data-section-card="true"
-      className={`relative transition-all duration-300 ${isShaking ? 'animate-wiggle' : ''}`}
+      className={`relative transition-all duration-300 select-none ${isShaking ? 'animate-wiggle' : ''}`}
+      style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onMouseDown={handleTouchStart}
       onMouseUp={handleTouchEnd}
       onMouseLeave={handleTouchEnd}
       onClick={handleClickOutside}
+      onContextMenu={(e) => e.preventDefault()}
     >
       {isShaking && (
         <button
