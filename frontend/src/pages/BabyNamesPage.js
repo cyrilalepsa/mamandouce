@@ -151,7 +151,7 @@ export default function BabyNamesPage() {
     if (selectedCountry) setSelectedCountry(null);
     else if (selectedRegion) setSelectedRegion(null);
     else if (selectedGender) setSelectedGender(null);
-    else navigate('/section/pregnancy');
+    else navigate('/journey-steps?open=pregnancy');
   };
 
   const getTitle = () => {

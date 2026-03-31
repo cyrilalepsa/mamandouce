@@ -184,7 +184,7 @@ function TrackingPage() {
         {/* Header */}
         <div className="flex items-center gap-4">
           <Button
-            onClick={() => navigate('/section/pregnancy')}
+            onClick={() => navigate('/journey-steps?open=pregnancy')}
             className="bg-white/80 text-slate-600 rounded-full p-2 hover:bg-white"
             data-testid="back-button"
           >

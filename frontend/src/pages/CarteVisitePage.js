@@ -53,7 +53,7 @@ export default function CarteVisitePage() {
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <Button
-          onClick={() => navigate('/section/pregnancy')}
+          onClick={() => navigate('/journey-steps?open=pregnancy')}
           className="bg-white rounded-full p-2 shadow-sm"
         >
           <ArrowLeft className="w-5 h-5 text-slate-600" />

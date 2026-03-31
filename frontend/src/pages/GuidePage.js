@@ -162,7 +162,7 @@ function GuidePage() {
               Vous avez découvert toutes les fonctionnalités principales.
             </p>
             <Button
-              onClick={() => navigate('/section/pregnancy')}
+              onClick={() => navigate('/journey-steps?open=pregnancy')}
               className="bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full px-8 py-3 font-semibold"
             >
               <Heart className="w-5 h-5 mr-2" />
@@ -175,7 +175,7 @@ function GuidePage() {
         {!allCompleted && (
           <div className="text-center pt-4">
             <Button
-              onClick={() => navigate('/section/pregnancy')}
+              onClick={() => navigate('/journey-steps?open=pregnancy')}
               variant="ghost"
               className="text-slate-400 hover:text-slate-600"
             >

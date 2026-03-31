@@ -20,7 +20,7 @@ function ParentalLeavePage() {
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <Button
-            onClick={() => navigate('/section/pregnancy')}
+            onClick={() => navigate('/journey-steps?open=pregnancy')}
             variant="ghost"
             className="p-2 rounded-full hover:bg-white/50"
           >

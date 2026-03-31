@@ -196,7 +196,7 @@ function ChatbotPage() {
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button
-              onClick={() => navigate('/section/services')}
+              onClick={() => navigate('/journey-steps?open=services')}
               variant="ghost"
               className="p-2 rounded-full hover:bg-slate-100"
             >
