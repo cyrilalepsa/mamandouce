@@ -250,11 +250,56 @@ export function ItemGroup({
   onDelete,
   onRemoveItem,
   onDrop,
-  isDropTarget
+  isDropTarget,
+  hasSelectedItem = false,
+  onAddSelectedItem
 }) {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(group.name);
+  const [showDelete, setShowDelete] = useState(false);
+  const longPressTimer = useRef(null);
+  const isLongPress = useRef(false);
+
+  const handleTouchStart = () => {
+    isLongPress.current = false;
+    longPressTimer.current = setTimeout(() => {
+      isLongPress.current = true;
+      if (navigator.vibrate) navigator.vibrate(50);
+      setShowDelete(true);
+    }, 400);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+    }
+  };
+
+  const handleTouchMove = () => {
+    clearTimeout(longPressTimer.current);
+  };
+
+  const handleClick = () => {
+    if (isLongPress.current) {
+      return;
+    }
+    
+    // Si on a un item sélectionné, l'ajouter au groupe
+    if (hasSelectedItem) {
+      onAddSelectedItem?.(group);
+      return;
+    }
+    
+    // Si on montre le bouton supprimer, le cacher
+    if (showDelete) {
+      setShowDelete(false);
+      return;
+    }
+    
+    // Ouvrir le groupe
+    onOpen?.(group);
+  };
 
   const handleRename = () => {
     if (editName.trim() && editName !== group.name) {
@@ -263,44 +308,50 @@ export function ItemGroup({
     setIsEditing(false);
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const draggedItemId = e.dataTransfer.getData('itemId');
-    const draggedType = e.dataTransfer.getData('itemType');
-    if (draggedItemId && draggedType === 'item') {
-      onDrop?.(draggedItemId, group.id);
-    }
-  };
-
   // Afficher les 4 premiers items en miniature
   const previewItems = group.items.slice(0, 4);
 
   return (
     <div
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchMove={handleTouchMove}
+      onClick={handleClick}
       className={`
         relative bg-gradient-to-br from-slate-50 to-slate-100 
         rounded-2xl p-3 shadow-sm border cursor-pointer
-        transition-all duration-200 hover:shadow-md
+        transition-all duration-200 hover:shadow-md select-none
         ${isDropTarget ? 'ring-2 ring-purple-400 scale-105 bg-purple-50' : 'border-slate-200'}
+        ${hasSelectedItem ? 'ring-1 ring-purple-200 bg-purple-50/30' : ''}
+        ${showDelete ? 'animate-wiggle' : ''}
       `}
-      onClick={() => onOpen?.(group)}
+      style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+      onContextMenu={(e) => e.preventDefault()}
     >
-      {/* Bouton supprimer groupe */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onDelete?.(group.id);
-        }}
-        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shadow-lg z-10 hover:bg-red-600 transition-colors"
-      >
-        <X className="w-3.5 h-3.5 text-white" />
-      </button>
+      {/* Badge "+" pour ajouter item */}
+      {hasSelectedItem && (
+        <div className="absolute -top-2 -left-2 w-6 h-6 bg-purple-400 rounded-full flex items-center justify-center shadow z-10">
+          <span className="text-white text-xs font-bold">+</span>
+        </div>
+      )}
+      
+      {/* Bouton supprimer groupe - visible uniquement après appui long */}
+      {showDelete && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete?.(group.id);
+          }}
+          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shadow-lg z-10 hover:bg-red-600 transition-colors animate-pulse"
+        >
+          <X className="w-3.5 h-3.5 text-white" />
+        </button>
+      )}
+
+      {/* Badge nombre d'items */}
+      <div className="absolute -top-1 -left-1 w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center shadow text-[10px] font-bold text-white z-5">
+        {group.items.length}
+      </div>
 
       {/* Grille de miniatures (style iOS) */}
       <div className="grid grid-cols-2 gap-1 mb-2">

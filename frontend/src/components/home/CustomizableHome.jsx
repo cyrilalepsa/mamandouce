@@ -780,8 +780,14 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
                         onOpen={handleOpenGroup}
                         onRename={handleRenameGroup}
                         onDelete={handleDeleteGroup}
-                        onDrop={(itemId) => handleDropOnGroup(itemId, group.id)}
-                        isDropTarget={dropTarget === group.id}
+                        hasSelectedItem={!!selectedForGroup}
+                        onAddSelectedItem={(targetGroup) => {
+                          // Ajouter l'item sélectionné au groupe
+                          if (selectedForGroup && addItemToGroup) {
+                            addItemToGroup(currentPage.id, selectedForGroup.id, targetGroup.id);
+                            setSelectedForGroup(null);
+                          }
+                        }}
                       />
                     ))}
                   </div>
