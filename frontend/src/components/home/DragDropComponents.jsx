@@ -89,16 +89,17 @@ export function DraggableItem({
   isDropTarget,
   onRemove,
   onLongPress,
+  onSelectForGroup,
+  onTapWhileSelected,
+  isSelectedForGroup = false,
+  hasSelectedItem = false,
   showDeleteButton = false
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const longPressTimer = useRef(null);
   const isLongPress = useRef(false);
-  const isDraggingTouch = useRef(false);
-  const touchStartPos = useRef({ x: 0, y: 0 });
   const [showDelete, setShowDelete] = useState(showDeleteButton);
-  const [isBeingDragged, setIsBeingDragged] = useState(false);
   
   const icon = ITEM_ICONS[item.id] || '📌';
   const name = ITEM_NAMES[item.id] || item.id;
@@ -110,74 +111,57 @@ export function DraggableItem({
   }, [showDeleteButton]);
 
   const handleTouchStart = (e) => {
-    const touch = e.touches[0];
-    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
     isLongPress.current = false;
-    isDraggingTouch.current = false;
     
     longPressTimer.current = setTimeout(() => {
       isLongPress.current = true;
       if (navigator.vibrate) navigator.vibrate(50);
-      // Préparer pour le drag ou suppression
-      onLongPress?.(item);
-    }, 400);
-  };
-
-  const handleTouchMove = (e) => {
-    const touch = e.touches[0];
-    const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
-    const deltaY = Math.abs(touch.clientY - touchStartPos.current.y);
-    
-    // Si mouvement significatif, c'est un drag
-    if (deltaX > 10 || deltaY > 10) {
-      clearTimeout(longPressTimer.current);
       
-      // Si on était en appui long, commencer le drag
-      if (isLongPress.current && !isDraggingTouch.current) {
-        isDraggingTouch.current = true;
-        setIsBeingDragged(true);
-        setShowDelete(false); // Pas de bouton supprimer pendant le drag
-        onDragStart?.(item);
+      // Si pas en mode sélection, sélectionner pour grouper
+      if (!hasSelectedItem) {
+        onSelectForGroup?.(item);
+      } else {
+        // Sinon, afficher suppression
+        setShowDelete(true);
+        onLongPress?.(item);
       }
-    }
+    }, 400);
   };
 
   const handleTouchEnd = (e) => {
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
     }
-    
-    // Si c'était un drag, terminer le drag
-    if (isDraggingTouch.current) {
-      setIsBeingDragged(false);
-      isDraggingTouch.current = false;
-      onDragEnd?.();
-      
-      // Trouver l'élément sous le doigt pour le drop
-      const touch = e.changedTouches[0];
-      const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
-      const targetItem = dropTarget?.closest('[data-draggable]');
-      if (targetItem && targetItem !== e.currentTarget) {
-        const targetId = targetItem.getAttribute('data-item-id');
-        if (targetId && targetId !== item.id) {
-          onDrop?.(item.id, targetId);
-        }
-      }
-    } else if (isLongPress.current) {
-      // Si c'était un appui long sans mouvement, montrer suppression
-      setShowDelete(true);
-    }
+  };
+
+  const handleTouchMove = () => {
+    clearTimeout(longPressTimer.current);
   };
 
   const handleClick = (e) => {
-    // Si c'est un appui long ou si on montre le bouton supprimer, ne pas naviguer
-    if (isLongPress.current || showDelete || isBeingDragged) {
-      // Cacher le bouton supprimer au prochain clic
-      if (showDelete && !isLongPress.current) {
-        setShowDelete(false);
-      }
+    // Si c'est un appui long, ne pas traiter comme clic
+    if (isLongPress.current) {
       return;
     }
+    
+    // Si on montre le bouton supprimer, le cacher
+    if (showDelete) {
+      setShowDelete(false);
+      return;
+    }
+    
+    // Si un autre item est sélectionné pour grouper, créer le groupe
+    if (hasSelectedItem && !isSelectedForGroup) {
+      onTapWhileSelected?.(item);
+      return;
+    }
+    
+    // Si cet item est sélectionné, le désélectionner
+    if (isSelectedForGroup) {
+      onSelectForGroup?.(null);
+      return;
+    }
+    
     // Naviguer vers la route de l'item
     if (route) {
       navigate(route);
@@ -207,11 +191,6 @@ export function DraggableItem({
     <div
       data-draggable="true"
       data-item-id={item.id}
-      draggable
-      onDragStart={handleDragStart}
-      onDragEnd={onDragEnd}
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onTouchMove={handleTouchMove}
@@ -220,13 +199,28 @@ export function DraggableItem({
         relative bg-white rounded-2xl p-3 shadow-sm border
         cursor-pointer active:scale-95
         transition-all duration-200 select-none
-        ${isDragging || isBeingDragged ? 'opacity-50 scale-95 shadow-lg' : ''}
+        ${isSelectedForGroup ? 'ring-2 ring-purple-500 scale-105 bg-purple-50 shadow-lg' : ''}
+        ${hasSelectedItem && !isSelectedForGroup ? 'ring-1 ring-purple-200 bg-purple-50/30' : ''}
         ${isDropTarget ? 'ring-2 ring-pink-400 scale-105 bg-pink-50' : 'border-slate-100'}
         ${showDelete ? 'animate-wiggle' : ''}
       `}
       style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
       onContextMenu={(e) => e.preventDefault()}
     >
+      {/* Badge "sélectionné" */}
+      {isSelectedForGroup && (
+        <div className="absolute -top-2 -left-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center shadow-lg z-10">
+          <span className="text-white text-xs font-bold">1</span>
+        </div>
+      )}
+      
+      {/* Indication "tap pour grouper" */}
+      {hasSelectedItem && !isSelectedForGroup && (
+        <div className="absolute -top-2 -left-2 w-6 h-6 bg-purple-300 rounded-full flex items-center justify-center shadow z-10">
+          <span className="text-white text-xs font-bold">+</span>
+        </div>
+      )}
+      
       {/* Bouton supprimer - visible seulement après appui long */}
       {onRemove && showDelete && (
         <button

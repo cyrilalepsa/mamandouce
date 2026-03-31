@@ -276,6 +276,7 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
   const [draggingItem, setDraggingItem] = useState(null);
   const [dropTarget, setDropTarget] = useState(null);
   const [openGroup, setOpenGroup] = useState(null);
+  const [selectedForGroup, setSelectedForGroup] = useState(null); // Item sélectionné pour créer un groupe
   
   // États pour le popup de création de groupe
   const [showGroupNamePopup, setShowGroupNamePopup] = useState(false);
@@ -786,21 +787,39 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
                   </div>
                 )}
 
-                {/* Items individuels (drag & drop) */}
+                {/* Items individuels */}
                 {currentPage?.items?.length > 0 && (
                   <div className="grid grid-cols-2 gap-3">
                     {currentPage.items.map((item, index) => (
                       <DraggableItem
                         key={`item-${item.id}-${index}`}
                         item={item}
-                        onDragStart={handleDragStart}
-                        onDragEnd={handleDragEnd}
-                        onDrop={(draggedId, targetId) => handleDropOnItem(draggedId, targetId)}
-                        isDragging={draggingItem?.id === item.id}
-                        isDropTarget={dropTarget === item.id && draggingItem?.id !== item.id}
+                        isSelectedForGroup={selectedForGroup?.id === item.id}
+                        hasSelectedItem={!!selectedForGroup}
+                        onSelectForGroup={(itm) => setSelectedForGroup(itm)}
+                        onTapWhileSelected={(targetItem) => {
+                          // Créer le groupe avec l'item sélectionné et celui tapé
+                          handleDropOnItem(selectedForGroup.id, targetItem.id);
+                          setSelectedForGroup(null);
+                        }}
                         onRemove={(itemId) => removeItemFromPage(itemId, currentPage.id)}
                       />
                     ))}
+                  </div>
+                )}
+                
+                {/* Instruction de sélection */}
+                {selectedForGroup && (
+                  <div className="text-center py-2 bg-purple-100 rounded-xl mt-2">
+                    <p className="text-sm text-purple-700 font-medium">
+                      Tapez sur une autre carte pour créer un groupe
+                    </p>
+                    <button 
+                      onClick={() => setSelectedForGroup(null)}
+                      className="text-xs text-purple-500 underline mt-1"
+                    >
+                      Annuler
+                    </button>
                   </div>
                 )}
 
