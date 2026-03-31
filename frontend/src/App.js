@@ -41,6 +41,7 @@ import BabyNamesPage from './pages/BabyNamesPage';
 import UpdatesHistoryPage from './pages/UpdatesHistoryPage';
 import CarteVisitePage from './pages/CarteVisitePage';
 import CycleTrackingPage from './pages/CycleTrackingPage';
+import FertilityCalculatorPage from './pages/FertilityCalculatorPage';
 import JourneyStepsPage from './pages/JourneyStepsPage';
 import SectionDetailPage from './pages/SectionDetailPage';
 import PreconceptionTipsPage from './pages/PreconceptionTipsPage';
@@ -154,6 +155,7 @@ function App() {
                 <Route path="/updates" element={<ProtectedRoute requireSubscription={false}><UpdatesHistoryPage /></ProtectedRoute>} />
                 <Route path="/carte-visite" element={<ProtectedRoute><CarteVisitePage /></ProtectedRoute>} />
                 <Route path="/cycle-tracking" element={<ProtectedRoute><CycleTrackingPage /></ProtectedRoute>} />
+                <Route path="/fertility-calculator" element={<ProtectedRoute><FertilityCalculatorPage /></ProtectedRoute>} />
                 <Route path="/journey-steps" element={<ProtectedRoute><JourneyStepsPage /></ProtectedRoute>} />
                 <Route path="/section/:sectionId" element={<ProtectedRoute><SectionDetailPage /></ProtectedRoute>} />
                 <Route path="/preconception-tips" element={<ProtectedRoute><PreconceptionTipsPage /></ProtectedRoute>} />
