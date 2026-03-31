@@ -19,6 +19,7 @@ function CycleTrackingPage() {
   const [cycleLength, setCycleLength] = useState(28);
   const [agendaData, setAgendaData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [rapportDates, setRapportDates] = useState([]);
@@ -38,6 +39,8 @@ function CycleTrackingPage() {
       }
     } catch (error) {
       console.error('Erreur chargement données:', error);
+    } finally {
+      setInitialLoading(false);
     }
   };
 
@@ -275,7 +278,11 @@ function CycleTrackingPage() {
         )}
 
         {/* Contenu principal */}
-        {agendaData ? (
+        {initialLoading ? (
+          <div className="flex justify-center py-12">
+            <div className="w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : agendaData ? (
           <div className="space-y-4">
             {/* Alerte période fertile */}
             {agendaData.inFertileWindow && (
