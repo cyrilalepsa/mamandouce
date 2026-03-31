@@ -77,7 +77,7 @@ const SECTION_ITEMS = {
     // Partie Médicale et Suivi
     { id: 'tips-evolution', icon: BookHeart, iconColor: 'text-pink-500', bgColor: 'bg-pink-50', title: 'Évolution et conseils', titleKey: 'pregnancy.tipsAndEvolution', desc: 'Semaine par semaine', descKey: 'pregnancy.weekByWeek', route: '/tips' },
     { id: 'medical-appointments', icon: Stethoscope, iconColor: 'text-sky-500', bgColor: 'bg-sky-50', title: 'Rendez-vous', titleKey: 'pregnancy.appointments', desc: 'Suivi médical', descKey: 'pregnancy.medicalFollowUp', route: '/medical' },
-    { id: 'pregnancy-tracking', icon: LineChart, iconColor: 'text-teal-500', bgColor: 'bg-teal-50', title: 'Suivi grossesse', titleKey: 'pregnancy.tracking', desc: 'Statistiques', descKey: 'pregnancy.stats', route: '/calculator' },
+    { id: 'pregnancy-tracking', icon: LineChart, iconColor: 'text-teal-500', bgColor: 'bg-teal-50', title: 'Suivi grossesse', titleKey: 'pregnancy.tracking', desc: 'Poids maman & bébé', descKey: 'pregnancy.stats', route: '/tracking' },
     { id: 'reminders', icon: Bell, iconColor: 'text-orange-500', bgColor: 'bg-orange-50', title: 'Rappels', titleKey: 'pregnancy.reminders', desc: 'Notifications', descKey: 'pregnancy.notifications', route: '/reminders' },
     // Séparateur : Congés parentaux (carte large en bas)
     { id: 'parental-leave', icon: Scale, iconColor: 'text-indigo-500', bgColor: 'bg-gradient-to-r from-indigo-50 to-blue-50', title: 'Congés parentaux', titleKey: 'pregnancy.parentalLeave', desc: 'Nouvelle loi 2024 - Vos droits', descKey: 'pregnancy.parentalLeaveDesc', route: '/parental-leave', wide: true },
