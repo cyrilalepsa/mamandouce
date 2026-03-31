@@ -203,7 +203,7 @@ function CycleTrackingPage() {
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <Button
-            onClick={() => navigate('/journey-steps')}
+            onClick={() => navigate('/section/preconception')}
             variant="ghost"
             className="p-2 rounded-full hover:bg-white/50"
             data-testid="back-button"

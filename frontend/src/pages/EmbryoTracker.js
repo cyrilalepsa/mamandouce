@@ -68,7 +68,7 @@ function EmbryoTracker() {
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
         <div className="flex items-center gap-4">
           <Button
-            onClick={() => navigate('/journey-steps')}
+            onClick={() => navigate('/section/pregnancy')}
             data-testid="back-button"
             className="bg-white text-sky-500 border border-sky-100 rounded-full p-2 hover:bg-sky-50"
           >

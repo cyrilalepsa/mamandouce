@@ -291,7 +291,7 @@ function FoodScanner() {
   return (
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-        <PageHeader title={t('scanner.title')} />
+        <PageHeader title={t('scanner.title')} backPath="/section/pregnancy" />
 
         {/* Scans Remaining Banner for free users */}
         {!subscriptionLoading && !isPremium && (

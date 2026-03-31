@@ -157,7 +157,7 @@ function BirthListPage() {
     return (
       <div className="min-h-screen gradient-bg p-6">
         <div className="max-w-2xl mx-auto">
-          <PageHeader title={t('birthList.title')} />
+          <PageHeader title={t('birthList.title')} backPath="/section/baby-preparation" />
           <Card className="bg-white rounded-3xl p-8 text-center">
             <p className="text-slate-500">{t('common.loading')}</p>
           </Card>
@@ -170,7 +170,7 @@ function BirthListPage() {
     return (
       <div className="min-h-screen gradient-bg p-6">
         <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-          <PageHeader title={t('birthList.title')} />
+          <PageHeader title={t('birthList.title')} backPath="/section/baby-preparation" />
           
           <Card className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl p-8 text-center border-0">
             <Gift className="w-20 h-20 text-pink-400 mx-auto mb-4" />
@@ -206,7 +206,7 @@ function BirthListPage() {
   return (
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-        <PageHeader title={t('birthList.title')} />
+        <PageHeader title={t('birthList.title')} backPath="/section/baby-preparation" />
 
         {/* Actions */}
         <div className="flex gap-3">

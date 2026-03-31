@@ -96,7 +96,7 @@ function NotificationsPage() {
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
         <div className="flex items-center gap-4 mb-6">
-          <PageHeader title="Rappels médicaux" />
+          <PageHeader title="Rappels médicaux" backPath="/section/pregnancy" />
           
           <Dialog open={showDialog} onOpenChange={setShowDialog}>
             <DialogTrigger asChild>

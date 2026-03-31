@@ -93,7 +93,7 @@ function FavoritesPage() {
   return (
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-        <PageHeader title={t('favorites.myFoods', 'Mes aliments favoris')} />
+        <PageHeader title={t('favorites.myFoods', 'Mes aliments favoris')} backPath="/section/pregnancy" />
 
         {loading ? (
           <Card className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 text-center">

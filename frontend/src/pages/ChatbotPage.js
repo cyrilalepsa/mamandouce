@@ -68,7 +68,7 @@ function ChatbotPage() {
     return (
       <div className="min-h-screen gradient-bg p-6">
         <div className="max-w-2xl mx-auto">
-          <PageHeader title="Assistant IA" />
+          <PageHeader title="Assistant IA" backPath="/section/services" />
           
           <Card className="bg-white rounded-3xl p-8 text-center mt-6">
             <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -196,7 +196,7 @@ function ChatbotPage() {
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button
-              onClick={() => navigate('/journey-steps')}
+              onClick={() => navigate('/section/services')}
               variant="ghost"
               className="p-2 rounded-full hover:bg-slate-100"
             >

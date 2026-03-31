@@ -208,16 +208,16 @@ export default function PostpartumPage() {
     setActiveSection(null);
     // Si on est arrivé depuis JourneyStepsPage (avec ?section=xxx), retourner à JourneyStepsPage
     if (sectionFromUrl) {
-      navigate('/journey-steps');
+      navigate('/section/postpartum');
     } else {
       // Sinon, rester sur la grille postpartum
       navigate('/postpartum', { replace: true });
     }
   };
   
-  // Retour vers JourneyStepsPage avec l'épingle postpartum ouverte
+  // Retour vers la section postpartum
   const goBackToJourney = () => {
-    navigate('/journey-steps');
+    navigate('/section/postpartum');
   };
 
   const toggleSection = (section) => {
@@ -271,7 +271,7 @@ export default function PostpartumPage() {
           {/* Header */}
           <div className="flex items-center gap-4">
             <Button
-              onClick={() => navigate('/journey-steps')}
+              onClick={() => navigate('/section/postpartum')}
               className="bg-white rounded-full p-2 shadow-sm"
             >
               <ArrowLeft className="w-5 h-5 text-slate-600" />
@@ -429,7 +429,7 @@ export default function PostpartumPage() {
           {/* Header */}
           <div className="flex items-center gap-4">
             <Button
-              onClick={() => navigate('/journey-steps')}
+              onClick={() => navigate('/section/postpartum')}
               className="bg-white rounded-full p-2 shadow-sm"
             >
               <ArrowLeft className="w-5 h-5 text-slate-600" />
