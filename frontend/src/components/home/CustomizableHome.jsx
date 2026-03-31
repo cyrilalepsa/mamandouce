@@ -766,7 +766,7 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
                 <div className="text-center mb-2 select-none" style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}>
                   <h2 className="text-lg font-bold text-slate-700">{currentPage?.name}</h2>
                   <p className="text-[10px] text-slate-400">
-                    {t('home.dragToGroup', 'Glissez un élément sur un autre pour créer un groupe')}
+                    {t('home.tapToGroup', 'Appui long sur une carte puis tapez sur une autre pour grouper')}
                   </p>
                 </div>
 
