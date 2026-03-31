@@ -106,12 +106,19 @@ function DuplicatePopup({ itemName, pages, onDuplicate, onCancel, onCreatePage, 
   const [newPageName, setNewPageName] = useState('');
   
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center pb-20 bg-black/20 backdrop-blur-[2px]">
+    <div 
+      className="fixed inset-0 z-50 flex items-end justify-center pb-20 bg-black/20 backdrop-blur-[2px] select-none"
+      onContextMenu={(e) => e.preventDefault()}
+      style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+    >
       <div 
-        className="relative bg-white/95 backdrop-blur-xl rounded-[32px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/50 mx-4 max-w-sm w-full"
+        className="relative bg-white/95 backdrop-blur-xl rounded-[32px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/50 mx-4 max-w-sm w-full select-none"
         style={{
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,242,248,0.9) 100%)'
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,242,248,0.9) 100%)',
+          WebkitUserSelect: 'none',
+          WebkitTouchCallout: 'none'
         }}
+        onContextMenu={(e) => e.preventDefault()}
       >
         {/* Flèche bulle */}
         <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/95 rotate-45 border-r border-b border-white/50"></div>

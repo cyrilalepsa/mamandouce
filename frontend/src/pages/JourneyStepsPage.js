@@ -120,12 +120,16 @@ function DuplicatePopup({ sectionId, sectionName, pages, onDuplicate, onCancel, 
   
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-end justify-center pb-6"
+      className="fixed inset-0 z-50 flex items-end justify-center pb-6 select-none"
       onClick={onCancel}
+      onContextMenu={(e) => e.preventDefault()}
+      style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="relative bg-white/98 backdrop-blur-xl rounded-3xl p-4 shadow-lg border border-slate-100/50 mx-4 max-w-xs w-full animate-in slide-in-from-bottom-4 duration-200"
+        onContextMenu={(e) => e.preventDefault()}
+        className="relative bg-white/98 backdrop-blur-xl rounded-3xl p-4 shadow-lg border border-slate-100/50 mx-4 max-w-xs w-full animate-in slide-in-from-bottom-4 duration-200 select-none"
+        style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
       >
         <div className="relative">
           {!showCreateForm ? (

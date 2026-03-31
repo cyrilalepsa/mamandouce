@@ -517,12 +517,18 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
 
       {/* Popup confirmation suppression de page */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center pb-24 bg-black/20 backdrop-blur-[2px]">
+        <div 
+          className="fixed inset-0 z-50 flex items-end justify-center pb-24 bg-black/20 backdrop-blur-[2px]"
+          onContextMenu={(e) => e.preventDefault()}
+        >
           <div 
-            className="relative bg-white/95 backdrop-blur-xl rounded-[32px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/50 mx-4 max-w-xs w-full animate-in slide-in-from-bottom-4 duration-300"
+            className="relative bg-white/95 backdrop-blur-xl rounded-[32px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/50 mx-4 max-w-xs w-full animate-in slide-in-from-bottom-4 duration-300 select-none"
             style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,226,226,0.9) 100%)'
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,226,226,0.9) 100%)',
+              WebkitUserSelect: 'none',
+              WebkitTouchCallout: 'none'
             }}
+            onContextMenu={(e) => e.preventDefault()}
           >
             {/* Petite flèche en bas pour effet bulle */}
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/95 rotate-45 border-r border-b border-white/50"></div>
