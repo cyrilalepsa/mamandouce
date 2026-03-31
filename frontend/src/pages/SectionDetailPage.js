@@ -85,7 +85,7 @@ const SECTION_ITEMS = {
   'baby-preparation': [
     { id: 'birth-list', icon: ClipboardList, iconColor: 'text-purple-500', bgColor: 'bg-purple-50', title: 'Liste de naissance', titleKey: 'babyPrep.birthList', desc: 'Préparez tout', descKey: 'babyPrep.birthListDesc', route: '/birth-list' },
     { id: 'maternity-bag', icon: Briefcase, iconColor: 'text-pink-500', bgColor: 'bg-pink-50', title: 'Valise maternité', titleKey: 'babyPrep.maternityBag', desc: 'Checklist', descKey: 'babyPrep.checklistDesc', route: '/maternity-bag' },
-    { id: 'preparation-tips', icon: BookHeart, iconColor: 'text-violet-500', bgColor: 'bg-violet-50', title: 'Conseils préparation', titleKey: 'babyPrep.tips', desc: 'Avant l\'arrivée', descKey: 'babyPrep.beforeArrival', route: '/tips' },
+    { id: 'videos-resources', icon: Video, iconColor: 'text-rose-500', bgColor: 'bg-rose-50', title: 'Vidéos & Ressources', titleKey: 'babyPrep.videosResources', desc: 'Tutoriels & conseils', descKey: 'babyPrep.videosResourcesDesc', route: '/baby-videos' },
     { id: 'maternelles-tv', icon: Youtube, iconColor: 'text-red-500', bgColor: 'bg-red-50', title: 'La Maison des Maternelles', titleKey: 'babyPrep.maternellesTv', desc: 'Vidéos France TV', descKey: 'babyPrep.maternellesTvDesc', route: 'https://www.youtube.com/@lamaisondesmaternelles', external: true },
   ],
   'postpartum': [
