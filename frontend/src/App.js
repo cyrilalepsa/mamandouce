@@ -32,6 +32,7 @@ import AdminPage from './pages/AdminPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import MaternityBagPage from './pages/MaternityBagPage';
 import BabyVideosPage from './pages/BabyVideosPage';
+import BabyPrepTipsPage from './pages/BabyPrepTipsPage';
 import PostpartumPage from './pages/PostpartumPage';
 import SharedRecipesPage from './pages/SharedRecipesPage';
 import GuidePage from './pages/GuidePage';
@@ -135,6 +136,7 @@ function App() {
                 <Route path="/birth-list" element={<ProtectedRoute><BirthListPage /></ProtectedRoute>} />
                 <Route path="/birth-list/shared/:shareId" element={<SharedBirthListPage />} />
                 <Route path="/baby-videos" element={<ProtectedRoute><BabyVideosPage /></ProtectedRoute>} />
+                <Route path="/baby-prep-tips" element={<ProtectedRoute><BabyPrepTipsPage /></ProtectedRoute>} />
                 <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
                 <Route path="/favorites" element={<ProtectedRoute><FavoritesPage /></ProtectedRoute>} />
                 <Route path="/medical" element={<ProtectedRoute><MedicalAppointmentsPage /></ProtectedRoute>} />

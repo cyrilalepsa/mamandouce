@@ -88,6 +88,7 @@ const SECTION_ITEMS = {
   'baby-preparation': [
     { id: 'birth-list', icon: '📝', name: 'Liste de naissance', nameKey: 'babyPrep.birthList', route: '/birth-list' },
     { id: 'maternity-bag', icon: '🧳', name: 'Valise maternité', nameKey: 'babyPrep.maternityBag', route: '/maternity-bag' },
+    { id: 'prep-tips', icon: '💡', name: 'Conseils & Préparation', nameKey: 'babyPrep.prepTips', route: '/baby-prep-tips' },
     { id: 'videos-resources', icon: '🎬', name: 'Vidéos & Ressources', nameKey: 'babyPrep.videosResources', route: '/baby-videos' },
   ],
   'postpartum': [
