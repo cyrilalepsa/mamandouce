@@ -89,7 +89,6 @@ const SECTION_ITEMS = {
     { id: 'birth-list', icon: '📝', name: 'Liste de naissance', nameKey: 'babyPrep.birthList', route: '/birth-list' },
     { id: 'maternity-bag', icon: '🧳', name: 'Valise maternité', nameKey: 'babyPrep.maternityBag', route: '/maternity-bag' },
     { id: 'videos-resources', icon: '🎬', name: 'Vidéos & Ressources', nameKey: 'babyPrep.videosResources', route: '/baby-videos' },
-    { id: 'maternelles-tv', icon: '📺', name: 'La Maison des Maternelles', nameKey: 'babyPrep.maternellesTv', route: 'https://www.youtube.com/@lamaisondesmaternelles', external: true },
   ],
   'postpartum': [
     { id: 'postpartum-appointments', icon: '🏥', name: 'RDV post-partum', nameKey: 'postpartum.appointments', route: '/postpartum?section=appointments' },
