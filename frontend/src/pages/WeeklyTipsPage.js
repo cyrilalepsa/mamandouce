@@ -99,7 +99,7 @@ function WeeklyTipsPage() {
   return (
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-        <PageHeader title="Conseils hebdomadaires" />
+        <PageHeader title="Conseils hebdomadaires" backPath="/section/pregnancy" />
 
         {pregnancyProfile && (
           <Card className="bg-gradient-to-br from-teal-100 to-sky-100 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-0">

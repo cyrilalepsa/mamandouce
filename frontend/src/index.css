@@ -118,6 +118,43 @@ code {
   animation: bounce-slow 2s ease-in-out infinite;
 }
 
+/* Empêcher la sélection de texte et le menu contextuel sur les éléments interactifs */
+.no-select,
+[data-testid*="section-card"],
+[data-testid*="card-"],
+.interactive-card,
+.select-none,
+/* Tous les modals et popups */
+[class*="fixed"][class*="z-50"],
+[class*="modal"],
+[class*="popup"],
+/* Tous les boutons et éléments cliquables */
+button,
+[role="button"],
+a,
+/* Les cartes et conteneurs interactifs */
+[class*="rounded-"][class*="cursor-pointer"],
+[class*="rounded-"][class*="shadow"],
+/* Zone de contenu personnalisable */
+.page-transition {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation;
+}
+
+/* Contenu des modals - empêcher sélection de tout le texte */
+[class*="fixed"][class*="z-50"] * {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
 
 /* Cacher la bannière Wake up servers d'Emergent */
 div[style*="position: fixed"][style*="bottom: 0"],

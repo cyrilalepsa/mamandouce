@@ -88,15 +88,14 @@ const SECTION_ITEMS = {
   'baby-preparation': [
     { id: 'birth-list', icon: '📝', name: 'Liste de naissance', nameKey: 'babyPrep.birthList', route: '/birth-list' },
     { id: 'maternity-bag', icon: '🧳', name: 'Valise maternité', nameKey: 'babyPrep.maternityBag', route: '/maternity-bag' },
-    { id: 'preparation-tips', icon: '💝', name: 'Conseils préparation', nameKey: 'babyPrep.tips', route: '/tips' },
+    { id: 'prep-tips', icon: '💡', name: 'Conseils & Préparation', nameKey: 'babyPrep.prepTips', route: '/baby-prep-tips' },
+    { id: 'videos-resources', icon: '🎬', name: 'Vidéos & Ressources', nameKey: 'babyPrep.videosResources', route: '/baby-videos' },
   ],
   'postpartum': [
-    { id: 'postpartum-appointments', icon: '🏥', name: 'RDV post-partum', nameKey: 'postpartum.appointments', route: '/postpartum?section=appointments' },
-    { id: 'postpartum-difficulties', icon: '⚠️', name: 'Difficultés courantes', nameKey: 'postpartum.difficulties', route: '/postpartum?section=difficulties' },
-    { id: 'postpartum-breastfeeding', icon: '💗', name: 'Allaitement maternel', nameKey: 'postpartum.breastfeeding', route: '/postpartum?section=breastfeeding' },
-    { id: 'postpartum-formula', icon: '🍼', name: 'Biberon & préparation', nameKey: 'postpartum.formula', route: '/postpartum?section=formula' },
-    { id: 'postpartum-diapers', icon: '💧', name: 'Couches & change', nameKey: 'postpartum.diapers', route: '/postpartum?section=diapers' },
-    { id: 'postpartum-babywearing', icon: '🤱', name: 'Portage bébé', nameKey: 'postpartum.babywearing', route: '/postpartum?section=babywearing' },
+    { id: 'postpartum-rdv', icon: '🩺', name: 'RDV médicaux', nameKey: 'postpartum.rdv', route: '/postpartum/rdv' },
+    { id: 'postpartum-alimentation', icon: '🍼', name: 'Alimentation', nameKey: 'postpartum.alimentation', route: '/postpartum/alimentation' },
+    { id: 'postpartum-soins', icon: '👶', name: 'Soins quotidiens', nameKey: 'postpartum.soins', route: '/postpartum/soins' },
+    { id: 'postpartum-securite', icon: '🛡️', name: 'Sécurité', nameKey: 'postpartum.securite', route: '/postpartum/securite' },
   ],
   'services': [
     { id: 'chatbot', icon: '🤖', name: 'Assistant IA', nameKey: 'services.chatbot', route: '/chatbot' },
@@ -120,12 +119,16 @@ function DuplicatePopup({ sectionId, sectionName, pages, onDuplicate, onCancel, 
   
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-end justify-center pb-6"
+      className="fixed inset-0 z-50 flex items-end justify-center pb-6 select-none"
       onClick={onCancel}
+      onContextMenu={(e) => e.preventDefault()}
+      style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="relative bg-white/98 backdrop-blur-xl rounded-3xl p-4 shadow-lg border border-slate-100/50 mx-4 max-w-xs w-full animate-in slide-in-from-bottom-4 duration-200"
+        onContextMenu={(e) => e.preventDefault()}
+        className="relative bg-white/98 backdrop-blur-xl rounded-3xl p-4 shadow-lg border border-slate-100/50 mx-4 max-w-xs w-full animate-in slide-in-from-bottom-4 duration-200 select-none"
+        style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
       >
         <div className="relative">
           {!showCreateForm ? (
@@ -223,7 +226,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
   const isLongPress = useRef(false);
   const items = SECTION_ITEMS[sectionId] || [];
 
-  const handleTouchStart = () => {
+  const handleTouchStart = (e) => {
     isLongPress.current = false;
     longPressTimer.current = setTimeout(() => {
       isLongPress.current = true;
@@ -236,9 +239,15 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
     }
-    if (isLongPress.current) {
-      e.preventDefault();
+    // Si c'était un appui court (pas un long press), simuler le clic
+    if (!isLongPress.current) {
+      // Le handleClick sera déclenché naturellement
     }
+  };
+  
+  const handleTouchMove = (e) => {
+    // Annuler le long press si l'utilisateur bouge
+    clearTimeout(longPressTimer.current);
   };
 
   const handleClick = (e) => {
@@ -282,7 +291,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
         onClick={handleClick}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        onTouchMove={() => clearTimeout(longPressTimer.current)}
+        onTouchMove={handleTouchMove}
         onMouseDown={handleTouchStart}
         onMouseUp={handleTouchEnd}
         onMouseLeave={() => clearTimeout(longPressTimer.current)}
@@ -438,7 +447,7 @@ function JourneyStepsPage() {
 
   return (
     <div className="min-h-screen gradient-bg">
-      <div className="max-w-2xl mx-auto p-4 sm:p-6">
+      <div className="max-w-2xl mx-auto p-4 sm:p-6 pt-8 sm:pt-10">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <Button

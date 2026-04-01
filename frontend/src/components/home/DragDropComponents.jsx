@@ -122,6 +122,10 @@ export function DraggableItem({
   isDropTarget,
   onRemove,
   onLongPress,
+  onSelectForGroup,
+  onTapWhileSelected,
+  isSelectedForGroup = false,
+  hasSelectedItem = false,
   showDeleteButton = false
 }) {
   const { t } = useTranslation();
@@ -143,13 +147,20 @@ export function DraggableItem({
     // Empêcher la propagation vers le handler de suppression de page
     e.stopPropagation();
     isLongPress.current = false;
+    
     longPressTimer.current = setTimeout(() => {
       isLongPress.current = true;
       if (navigator.vibrate) navigator.vibrate(50);
-      // Après appui long, montrer le bouton supprimer
-      setShowDelete(true);
-      onLongPress?.(item);
-    }, 500);
+      
+      // Si pas en mode sélection, sélectionner pour grouper
+      if (!hasSelectedItem) {
+        onSelectForGroup?.(item);
+      } else {
+        // Sinon, afficher suppression
+        setShowDelete(true);
+        onLongPress?.(item);
+      }
+    }, 400);
   };
 
   const handleTouchEnd = (e) => {
@@ -180,6 +191,7 @@ export function DraggableItem({
   const handleDragStart = (e) => {
     e.dataTransfer.setData('itemId', item.id);
     e.dataTransfer.setData('itemType', 'item');
+    setShowDelete(false);
     onDragStart?.(item);
   };
 
@@ -221,7 +233,23 @@ export function DraggableItem({
         ${isDropTarget ? 'ring-2 ring-pink-400 scale-105 bg-pink-50' : 'border-slate-100'}
         ${showDelete ? 'animate-wiggle' : ''}
       `}
+      style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+      onContextMenu={(e) => e.preventDefault()}
     >
+      {/* Badge "sélectionné" */}
+      {isSelectedForGroup && (
+        <div className="absolute -top-2 -left-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center shadow-lg z-10">
+          <span className="text-white text-xs font-bold">1</span>
+        </div>
+      )}
+      
+      {/* Indication "tap pour grouper" */}
+      {hasSelectedItem && !isSelectedForGroup && (
+        <div className="absolute -top-2 -left-2 w-6 h-6 bg-purple-300 rounded-full flex items-center justify-center shadow z-10">
+          <span className="text-white text-xs font-bold">+</span>
+        </div>
+      )}
+      
       {/* Bouton supprimer - visible seulement après appui long */}
       {onRemove && showDelete && (
         <button
@@ -235,9 +263,8 @@ export function DraggableItem({
         </button>
       )}
       
-      <div className="flex items-center gap-2">
-        <GripVertical className="w-4 h-4 text-slate-300" />
-        <span className="text-xl">{icon}</span>
+      <div className="flex items-center justify-center gap-2">
+        <span className="text-2xl">{icon}</span>
         <span className="text-sm font-medium text-slate-700 truncate">{name}</span>
       </div>
     </div>
@@ -252,30 +279,62 @@ export function ItemGroup({
   onDelete,
   onRemoveItem,
   onDrop,
-  isDropTarget
+  isDropTarget,
+  hasSelectedItem = false,
+  onAddSelectedItem
 }) {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(group.name);
+  const [showDelete, setShowDelete] = useState(false);
+  const longPressTimer = useRef(null);
+  const isLongPress = useRef(false);
+
+  const handleTouchStart = () => {
+    isLongPress.current = false;
+    longPressTimer.current = setTimeout(() => {
+      isLongPress.current = true;
+      if (navigator.vibrate) navigator.vibrate(50);
+      setShowDelete(true);
+    }, 400);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+    }
+  };
+
+  const handleTouchMove = () => {
+    clearTimeout(longPressTimer.current);
+  };
+
+  const handleClick = () => {
+    if (isLongPress.current) {
+      return;
+    }
+    
+    // Si on a un item sélectionné, l'ajouter au groupe
+    if (hasSelectedItem) {
+      onAddSelectedItem?.(group);
+      return;
+    }
+    
+    // Si on montre le bouton supprimer, le cacher
+    if (showDelete) {
+      setShowDelete(false);
+      return;
+    }
+    
+    // Ouvrir le groupe
+    onOpen?.(group);
+  };
 
   const handleRename = () => {
     if (editName.trim() && editName !== group.name) {
       onRename?.(group.id, editName.trim());
     }
     setIsEditing(false);
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const draggedItemId = e.dataTransfer.getData('itemId');
-    const draggedType = e.dataTransfer.getData('itemType');
-    if (draggedItemId && draggedType === 'item') {
-      onDrop?.(draggedItemId, group.id);
-    }
   };
 
   // Afficher les 4 premiers items en miniature
@@ -295,19 +354,36 @@ export function ItemGroup({
         rounded-2xl p-3 shadow-sm border cursor-pointer select-none
         transition-all duration-200 hover:shadow-md
         ${isDropTarget ? 'ring-2 ring-purple-400 scale-105 bg-purple-50' : 'border-slate-200'}
+        ${hasSelectedItem ? 'ring-1 ring-purple-200 bg-purple-50/30' : ''}
+        ${showDelete ? 'animate-wiggle' : ''}
       `}
-      onClick={() => onOpen?.(group)}
+      style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+      onContextMenu={(e) => e.preventDefault()}
     >
-      {/* Bouton supprimer groupe */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onDelete?.(group.id);
-        }}
-        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shadow-lg z-10 hover:bg-red-600 transition-colors"
-      >
-        <X className="w-3.5 h-3.5 text-white" />
-      </button>
+      {/* Badge "+" pour ajouter item */}
+      {hasSelectedItem && (
+        <div className="absolute -top-2 -left-2 w-6 h-6 bg-purple-400 rounded-full flex items-center justify-center shadow z-10">
+          <span className="text-white text-xs font-bold">+</span>
+        </div>
+      )}
+      
+      {/* Bouton supprimer groupe - visible uniquement après appui long */}
+      {showDelete && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete?.(group.id);
+          }}
+          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shadow-lg z-10 hover:bg-red-600 transition-colors animate-pulse"
+        >
+          <X className="w-3.5 h-3.5 text-white" />
+        </button>
+      )}
+
+      {/* Badge nombre d'items */}
+      <div className="absolute -top-1 -left-1 w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center shadow text-[10px] font-bold text-white z-5">
+        {group.items.length}
+      </div>
 
       {/* Grille de miniatures (style iOS) */}
       <div className="grid grid-cols-2 gap-1 mb-2">

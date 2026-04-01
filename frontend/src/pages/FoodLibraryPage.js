@@ -151,7 +151,7 @@ function FoodLibraryPage() {
   return (
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
-        <PageHeader title={t('library.title')} />
+        <PageHeader title={t('library.title')} backPath="/section/pregnancy" />
 
         {/* Stats Card */}
         <Card className="bg-gradient-to-br from-green-100 to-sky-100 rounded-3xl p-6 border-0">

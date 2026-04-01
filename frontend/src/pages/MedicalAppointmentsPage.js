@@ -289,7 +289,7 @@ function MedicalAppointmentsPage() {
   return (
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-        <PageHeader title="Rendez-vous médicaux" />
+        <PageHeader title="Rendez-vous médicaux" backPath="/section/pregnancy" />
 
         {loading ? (
           <Card className="bg-white rounded-3xl p-8 text-center">

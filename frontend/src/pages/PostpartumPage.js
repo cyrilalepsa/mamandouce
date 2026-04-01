@@ -215,7 +215,7 @@ export default function PostpartumPage() {
     }
   };
   
-  // Retour vers JourneyStepsPage avec l'épingle postpartum ouverte
+  // Retour vers la section postpartum
   const goBackToJourney = () => {
     navigate('/journey-steps');
   };

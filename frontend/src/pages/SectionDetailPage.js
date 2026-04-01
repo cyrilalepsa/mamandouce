@@ -6,7 +6,7 @@ import {
   Check, Pin, PinOff, CalendarHeart, ScanBarcode, Apple, History,
   Stethoscope, Bell, BookHeart, Users, ChevronRight, Crown, Lock,
   ClipboardList, Briefcase, Video, Youtube, Book, Phone, LineChart,
-  Scale, Lightbulb, Building2, Hospital, MapPin, ExternalLink
+  Scale, Lightbulb, Building2, Hospital, MapPin, ExternalLink, Utensils, Shield
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -85,10 +85,14 @@ const SECTION_ITEMS = {
   'baby-preparation': [
     { id: 'birth-list', icon: ClipboardList, iconColor: 'text-purple-500', bgColor: 'bg-purple-50', title: 'Liste de naissance', titleKey: 'babyPrep.birthList', desc: 'Préparez tout', descKey: 'babyPrep.birthListDesc', route: '/birth-list' },
     { id: 'maternity-bag', icon: Briefcase, iconColor: 'text-pink-500', bgColor: 'bg-pink-50', title: 'Valise maternité', titleKey: 'babyPrep.maternityBag', desc: 'Checklist', descKey: 'babyPrep.checklistDesc', route: '/maternity-bag' },
-    { id: 'preparation-tips', icon: BookHeart, iconColor: 'text-violet-500', bgColor: 'bg-violet-50', title: 'Conseils préparation', titleKey: 'babyPrep.tips', desc: 'Avant l\'arrivée', descKey: 'babyPrep.beforeArrival', route: '/tips' },
+    { id: 'prep-tips', icon: BookHeart, iconColor: 'text-violet-500', bgColor: 'bg-violet-50', title: 'Conseils & Préparation', titleKey: 'babyPrep.prepTips', desc: 'Guide complet', descKey: 'babyPrep.prepTipsDesc', route: '/baby-prep-tips' },
+    { id: 'videos-resources', icon: Video, iconColor: 'text-rose-500', bgColor: 'bg-rose-50', title: 'Vidéos & Ressources', titleKey: 'babyPrep.videosResources', desc: 'Tutoriels & conseils', descKey: 'babyPrep.videosResourcesDesc', route: '/baby-videos' },
   ],
   'postpartum': [
-    { id: 'postpartum-content', icon: Stethoscope, iconColor: 'text-rose-500', bgColor: 'bg-rose-50', title: 'Suivi post-partum', titleKey: 'postpartum.content', desc: 'RDV, allaitement, soins', descKey: 'postpartum.contentDesc', route: '/postpartum' },
+    { id: 'postpartum-rdv', icon: Stethoscope, iconColor: 'text-rose-500', bgColor: 'bg-rose-50', title: 'RDV médicaux', titleKey: 'postpartum.rdv', desc: 'Suivi post-accouchement', descKey: 'postpartum.rdvDesc', route: '/postpartum/rdv' },
+    { id: 'postpartum-alimentation', icon: Utensils, iconColor: 'text-amber-500', bgColor: 'bg-amber-50', title: 'Alimentation', titleKey: 'postpartum.alimentation', desc: 'Allaitement, biberons, diversification', descKey: 'postpartum.alimentationDesc', route: '/postpartum/alimentation' },
+    { id: 'postpartum-soins', icon: Baby, iconColor: 'text-sky-500', bgColor: 'bg-sky-50', title: 'Soins quotidiens', titleKey: 'postpartum.soins', desc: 'Coucher, change, portage', descKey: 'postpartum.soinsDesc', route: '/postpartum/soins' },
+    { id: 'postpartum-securite', icon: Shield, iconColor: 'text-violet-500', bgColor: 'bg-violet-50', title: 'Sécurité', titleKey: 'postpartum.securite', desc: 'Difficultés, précautions', descKey: 'postpartum.securiteDesc', route: '/postpartum/securite' },
   ],
   'services': [
     { id: 'chatbot', icon: Phone, iconColor: 'text-sky-500', bgColor: 'bg-sky-50', title: 'Assistant IA', titleKey: 'services.chatbot', desc: 'Disponible 24/7', descKey: 'services.available247', route: '/chatbot' },
@@ -106,12 +110,19 @@ function DuplicatePopup({ itemName, pages, onDuplicate, onCancel, onCreatePage, 
   const [newPageName, setNewPageName] = useState('');
   
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center pb-20 bg-black/20 backdrop-blur-[2px]">
+    <div 
+      className="fixed inset-0 z-50 flex items-end justify-center pb-20 bg-black/20 backdrop-blur-[2px] select-none"
+      onContextMenu={(e) => e.preventDefault()}
+      style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+    >
       <div 
-        className="relative bg-white/95 backdrop-blur-xl rounded-[32px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/50 mx-4 max-w-sm w-full"
+        className="relative bg-white/95 backdrop-blur-xl rounded-[32px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/50 mx-4 max-w-sm w-full select-none"
         style={{
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,242,248,0.9) 100%)'
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,242,248,0.9) 100%)',
+          WebkitUserSelect: 'none',
+          WebkitTouchCallout: 'none'
         }}
+        onContextMenu={(e) => e.preventDefault()}
       >
         {/* Flèche bulle */}
         <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/95 rotate-45 border-r border-b border-white/50"></div>
@@ -225,7 +236,7 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
   const isLocked = item.premium === 'full' && !isPremium;
   const isPartialPremium = item.premium === 'partial' && !isPremium;
   
-  const handleTouchStart = () => {
+  const handleTouchStart = (e) => {
     isLongPress.current = false;
     longPressTimer.current = setTimeout(() => {
       isLongPress.current = true;
@@ -238,9 +249,10 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
     }
-    if (isLongPress.current) {
-      e.preventDefault();
-    }
+  };
+  
+  const handleTouchMove = () => {
+    clearTimeout(longPressTimer.current);
   };
 
   const handleClick = () => {
@@ -254,7 +266,7 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
     return (
       <Card 
         className={`
-          relative ${item.bgColor} rounded-2xl p-4 
+          relative ${item.bgColor} rounded-2xl p-4 select-none
           shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-violet-100 
           hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] 
           cursor-pointer transition-all col-span-2 sm:col-span-3
@@ -266,7 +278,7 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
         onClick={handleClick}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        onTouchMove={() => clearTimeout(longPressTimer.current)}
+        onTouchMove={handleTouchMove}
         onMouseDown={handleTouchStart}
         onMouseUp={handleTouchEnd}
         onMouseLeave={() => clearTimeout(longPressTimer.current)}
@@ -309,7 +321,7 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
   return (
     <Card 
       className={`
-        relative bg-white rounded-2xl p-4 
+        relative bg-white rounded-2xl p-4 select-none
         shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 
         hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] 
         cursor-pointer transition-all text-center
@@ -321,7 +333,7 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
       onClick={handleClick}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      onTouchMove={() => clearTimeout(longPressTimer.current)}
+      onTouchMove={handleTouchMove}
       onMouseDown={handleTouchStart}
       onMouseUp={handleTouchEnd}
       onMouseLeave={() => clearTimeout(longPressTimer.current)}

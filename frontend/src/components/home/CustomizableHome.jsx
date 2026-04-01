@@ -282,6 +282,12 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
   const [draggingItem, setDraggingItem] = useState(null);
   const [dropTarget, setDropTarget] = useState(null);
   const [openGroup, setOpenGroup] = useState(null);
+  const [selectedForGroup, setSelectedForGroup] = useState(null); // Item sélectionné pour créer un groupe
+  
+  // États pour le popup de création de groupe
+  const [showGroupNamePopup, setShowGroupNamePopup] = useState(false);
+  const [pendingGroupItems, setPendingGroupItems] = useState(null);
+  const [newGroupName, setNewGroupName] = useState('');
 
   // Swipe entre pages
   const onTouchStart = (e) => {
@@ -367,12 +373,32 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
   const handleDropOnItem = async (draggedItemId, targetItemId) => {
     if (!currentPage || currentPage.isDefault) return;
     
-    // Demander le nom du groupe
-    const groupName = prompt(t('home.groupNamePrompt', 'Nom du groupe :'), t('home.newGroup', 'Nouveau groupe'));
-    if (groupName && createGroupFromItems) {
-      await createGroupFromItems(currentPage.id, draggedItemId, targetItemId, groupName);
-    }
+    // Stocker les items et afficher le popup de nom
+    setPendingGroupItems({ draggedItemId, targetItemId });
+    setNewGroupName(t('home.newGroup', 'Nouveau groupe'));
+    setShowGroupNamePopup(true);
     handleDragEnd();
+  };
+
+  // Confirmer la création du groupe
+  const handleConfirmGroupCreation = async () => {
+    if (!pendingGroupItems || !newGroupName.trim()) return;
+    
+    const { draggedItemId, targetItemId } = pendingGroupItems;
+    if (createGroupFromItems) {
+      await createGroupFromItems(currentPage.id, draggedItemId, targetItemId, newGroupName.trim());
+    }
+    
+    setShowGroupNamePopup(false);
+    setPendingGroupItems(null);
+    setNewGroupName('');
+  };
+
+  // Annuler la création du groupe
+  const handleCancelGroupCreation = () => {
+    setShowGroupNamePopup(false);
+    setPendingGroupItems(null);
+    setNewGroupName('');
   };
 
   // Quand on dépose un item sur un groupe existant
@@ -533,48 +559,148 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
         </div>
       )}
 
-      {/* Popup confirmation suppression de page */}
+      {/* Popup confirmation suppression de page - Style nuage doux */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center pb-24 bg-black/20 backdrop-blur-[2px]">
+        <div 
+          className="fixed inset-0 z-40 flex items-center justify-center px-6"
+          onClick={() => setShowDeleteConfirm(false)}
+          onContextMenu={(e) => e.preventDefault()}
+          style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+        >
+          {/* Overlay doux */}
+          <div className="absolute inset-0 bg-pink-100/40 backdrop-blur-md"></div>
+          
+          {/* Modal nuage */}
           <div 
-            className="relative bg-white/95 backdrop-blur-xl rounded-[32px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/50 mx-4 max-w-xs w-full animate-in slide-in-from-bottom-4 duration-300"
-            style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,226,226,0.9) 100%)'
-            }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative max-w-sm w-full select-none"
+            style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+            onContextMenu={(e) => e.preventDefault()}
           >
-            {/* Petite flèche en bas pour effet bulle */}
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/95 rotate-45 border-r border-b border-white/50"></div>
+            {/* Effet nuage - formes arrondies */}
+            <div className="absolute -top-4 -left-4 w-20 h-20 bg-white/60 rounded-full blur-2xl"></div>
+            <div className="absolute -top-2 -right-6 w-16 h-16 bg-pink-100/60 rounded-full blur-2xl"></div>
+            <div className="absolute -bottom-4 left-1/2 w-24 h-16 bg-blue-100/50 rounded-full blur-2xl"></div>
             
-            {/* Décoration nuage */}
-            <div className="absolute -top-3 -right-3 w-16 h-16 bg-red-100/50 rounded-full blur-2xl"></div>
-            <div className="absolute -bottom-2 -left-2 w-12 h-12 bg-rose-100/50 rounded-full blur-xl"></div>
-            
-            <div className="relative text-center">
-              <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-red-400 to-rose-400 rounded-2xl flex items-center justify-center shadow-lg">
-                <Trash2 className="w-6 h-6 text-white" />
+            {/* Contenu */}
+            <div 
+              className="relative rounded-[32px] p-6 shadow-[0_8px_40px_rgba(236,72,153,0.15)] border border-white/60"
+              style={{
+                background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(253,242,248,0.9) 50%, rgba(239,246,255,0.9) 100%)'
+              }}
+            >
+              {/* Icône douce */}
+              <div className="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, #fce7f3 0%, #fecdd3 100%)'
+                }}
+              >
+                <Trash2 className="w-7 h-7 text-rose-400" />
               </div>
-              <h3 className="text-lg font-bold text-slate-700 mb-1">
-                {t('home.deletePage', 'Supprimer cette page ?')}
+              
+              {/* Message */}
+              <h3 className="text-lg font-bold text-center text-slate-700 mb-2">
+                Supprimer "{currentPage?.name}" ?
               </h3>
-              <p className="text-sm text-slate-500 mb-2">
-                <span className="font-medium text-slate-700">{currentPage?.name}</span>
-              </p>
-              <p className="text-xs text-red-500 mb-4 bg-red-50 rounded-xl py-2 px-3">
-                {t('home.deletePageWarning', 'Tout ce qui s\'y trouve sera également supprimé.')}
+              <p className="text-center text-slate-500 text-sm mb-6 leading-relaxed">
+                Êtes-vous sûr de vouloir supprimer cette page et tous ses items ?
               </p>
               
+              {/* Boutons doux */}
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 py-2.5 px-4 rounded-2xl bg-slate-100/80 text-slate-600 font-medium hover:bg-slate-200/80 transition-all active:scale-95"
+                  className="flex-1 py-3 px-4 rounded-2xl bg-white/80 text-slate-600 font-semibold text-base border border-slate-100 hover:bg-white transition-all"
                 >
-                  {t('common.no', 'Non')}
+                  Non
                 </button>
                 <button
                   onClick={handleDeletePage}
-                  className="flex-1 py-2.5 px-4 rounded-2xl bg-gradient-to-r from-red-500 to-rose-500 text-white font-medium shadow-lg shadow-red-500/25 hover:shadow-xl transition-all active:scale-95"
+                  className="flex-1 py-3 px-4 rounded-2xl text-white font-semibold text-base transition-all"
+                  style={{
+                    background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 100%)',
+                    boxShadow: '0 4px 15px rgba(236,72,153,0.3)'
+                  }}
                 >
-                  {t('common.yes', 'Oui')}
+                  Oui
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Popup création de groupe - Style nuage doux */}
+      {showGroupNamePopup && (
+        <div 
+          className="fixed inset-0 z-40 flex items-center justify-center px-6"
+          onClick={handleCancelGroupCreation}
+          onContextMenu={(e) => e.preventDefault()}
+          style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+        >
+          {/* Overlay doux */}
+          <div className="absolute inset-0 bg-pink-100/40 backdrop-blur-md"></div>
+          
+          {/* Modal nuage */}
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="relative max-w-xs w-full select-none"
+            style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+            onContextMenu={(e) => e.preventDefault()}
+          >
+            {/* Effet nuage */}
+            <div className="absolute -top-4 -left-4 w-16 h-16 bg-white/60 rounded-full blur-2xl"></div>
+            <div className="absolute -top-2 -right-6 w-14 h-14 bg-purple-100/60 rounded-full blur-2xl"></div>
+            <div className="absolute -bottom-3 left-1/2 w-20 h-14 bg-blue-100/50 rounded-full blur-2xl"></div>
+            
+            {/* Contenu */}
+            <div 
+              className="relative rounded-[28px] p-5 shadow-[0_8px_40px_rgba(147,51,234,0.15)] border border-white/60"
+              style={{
+                background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(243,232,255,0.9) 50%, rgba(239,246,255,0.9) 100%)'
+              }}
+            >
+              {/* Icône */}
+              <div className="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, #e9d5ff 0%, #c4b5fd 100%)'
+                }}
+              >
+                <FolderOpen className="w-6 h-6 text-purple-500" />
+              </div>
+              
+              {/* Titre */}
+              <h3 className="text-base font-bold text-center text-slate-700 mb-3">
+                {t('home.groupNamePrompt', 'Nom du groupe')}
+              </h3>
+              
+              {/* Input */}
+              <Input
+                type="text"
+                value={newGroupName}
+                onChange={(e) => setNewGroupName(e.target.value)}
+                className="w-full mb-4 rounded-xl border-purple-200 bg-white/80 text-center font-medium"
+                autoFocus
+                onKeyDown={(e) => e.key === 'Enter' && handleConfirmGroupCreation()}
+              />
+              
+              {/* Boutons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={handleCancelGroupCreation}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-white/80 text-slate-600 font-semibold text-sm border border-slate-100 hover:bg-white transition-all"
+                >
+                  {t('common.cancel', 'Annuler')}
+                </button>
+                <button
+                  onClick={handleConfirmGroupCreation}
+                  className="flex-1 py-2.5 px-4 rounded-xl text-white font-semibold text-sm transition-all"
+                  style={{
+                    background: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)',
+                    boxShadow: '0 4px 15px rgba(139,92,246,0.3)'
+                  }}
+                >
+                  OK
                 </button>
               </div>
             </div>
@@ -597,11 +723,13 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
         onTouchStartCapture={isDefaultPage ? handleSocleLongPressStart : handleUserPageLongPressStart}
         onTouchEndCapture={isDefaultPage ? handleSocleLongPressEnd : handleUserPageLongPressEnd}
       >
-        {/* Bouton supprimer page (quand la page utilisateur tremble) */}
-        {isPageShaking && !isDefaultPage && (
+        {/* Bouton supprimer page (uniquement si page vide et utilisateur) */}
+        {isPageShaking && !isDefaultPage && 
+         (!currentPage?.items || currentPage.items.length === 0) && 
+         (!currentPage?.groups || currentPage.groups.length === 0) && (
           <div className="flex justify-center mb-4">
             <button
-              onClick={handleDeletePage}
+              onClick={() => setShowDeleteConfirm(true)}
               className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center gap-2 shadow-lg animate-pulse"
             >
               <X className="w-4 h-4" />
@@ -644,7 +772,7 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
                 <div className="text-center mb-2 select-none" style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}>
                   <h2 className="text-lg font-bold text-slate-700">{currentPage?.name}</h2>
                   <p className="text-[10px] text-slate-400">
-                    {t('home.dragToGroup', 'Glissez un élément sur un autre pour créer un groupe')}
+                    {t('home.tapToGroup', 'Appui long sur une carte puis tapez sur une autre pour grouper')}
                   </p>
                 </div>
 
@@ -658,28 +786,52 @@ export function CustomizableHome({ pregnancyProfile, hasPregnancyProfile }) {
                         onOpen={handleOpenGroup}
                         onRename={handleRenameGroup}
                         onDelete={handleDeleteGroup}
-                        onDrop={(itemId) => handleDropOnGroup(itemId, group.id)}
-                        isDropTarget={dropTarget === group.id}
+                        hasSelectedItem={!!selectedForGroup}
+                        onAddSelectedItem={(targetGroup) => {
+                          // Ajouter l'item sélectionné au groupe
+                          if (selectedForGroup && addItemToGroup) {
+                            addItemToGroup(currentPage.id, selectedForGroup.id, targetGroup.id);
+                            setSelectedForGroup(null);
+                          }
+                        }}
                       />
                     ))}
                   </div>
                 )}
 
-                {/* Items individuels (drag & drop) */}
+                {/* Items individuels */}
                 {currentPage?.items?.length > 0 && (
                   <div className="grid grid-cols-2 gap-3">
                     {currentPage.items.map((item, index) => (
                       <DraggableItem
                         key={`item-${item.id}-${index}`}
                         item={item}
-                        onDragStart={handleDragStart}
-                        onDragEnd={handleDragEnd}
-                        onDrop={(draggedId, targetId) => handleDropOnItem(draggedId, targetId)}
-                        isDragging={draggingItem?.id === item.id}
-                        isDropTarget={dropTarget === item.id && draggingItem?.id !== item.id}
+                        isSelectedForGroup={selectedForGroup?.id === item.id}
+                        hasSelectedItem={!!selectedForGroup}
+                        onSelectForGroup={(itm) => setSelectedForGroup(itm)}
+                        onTapWhileSelected={(targetItem) => {
+                          // Créer le groupe avec l'item sélectionné et celui tapé
+                          handleDropOnItem(selectedForGroup.id, targetItem.id);
+                          setSelectedForGroup(null);
+                        }}
                         onRemove={(itemId) => removeItemFromPage(itemId, currentPage.id)}
                       />
                     ))}
+                  </div>
+                )}
+                
+                {/* Instruction de sélection */}
+                {selectedForGroup && (
+                  <div className="text-center py-2 bg-purple-100 rounded-xl mt-2">
+                    <p className="text-sm text-purple-700 font-medium">
+                      Tapez sur une autre carte pour créer un groupe
+                    </p>
+                    <button 
+                      onClick={() => setSelectedForGroup(null)}
+                      className="text-xs text-purple-500 underline mt-1"
+                    >
+                      Annuler
+                    </button>
                   </div>
                 )}
 
