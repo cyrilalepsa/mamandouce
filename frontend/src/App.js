@@ -34,6 +34,19 @@ import MaternityBagPage from './pages/MaternityBagPage';
 import BabyVideosPage from './pages/BabyVideosPage';
 import BabyPrepTipsPage from './pages/BabyPrepTipsPage';
 import PostpartumPage from './pages/PostpartumPage';
+// Nouvelles pages postpartum
+import PostpartumRdvPage from './pages/PostpartumRdvPage';
+import PostpartumAlimentationPage from './pages/PostpartumAlimentationPage';
+import PostpartumSoinsPage from './pages/PostpartumSoinsPage';
+import PostpartumSecuritePage from './pages/PostpartumSecuritePage';
+import PostpartumAllaitementPage from './pages/PostpartumAllaitementPage';
+import PostpartumBiberonsPage from './pages/PostpartumBiberonsPage';
+import PostpartumDiversificationPage from './pages/PostpartumDiversificationPage';
+import PostpartumRecettesPage from './pages/PostpartumRecettesPage';
+import PostpartumCoucherChangePage from './pages/PostpartumCoucherChangePage';
+import PostpartumPortagePage from './pages/PostpartumPortagePage';
+import PostpartumDifficultesPage from './pages/PostpartumDifficultesPage';
+import PostpartumPrecautionsPage from './pages/PostpartumPrecautionsPage';
 import SharedRecipesPage from './pages/SharedRecipesPage';
 import GuidePage from './pages/GuidePage';
 import ChatbotPage from './pages/ChatbotPage';
@@ -151,6 +164,22 @@ function App() {
                 <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
                 <Route path="/maternity-bag" element={<ProtectedRoute><MaternityBagPage /></ProtectedRoute>} />
                 <Route path="/postpartum" element={<ProtectedRoute><PostpartumPage /></ProtectedRoute>} />
+                {/* Routes post-partum niveau 2 */}
+                <Route path="/postpartum/rdv" element={<ProtectedRoute><PostpartumRdvPage /></ProtectedRoute>} />
+                <Route path="/postpartum/alimentation" element={<ProtectedRoute><PostpartumAlimentationPage /></ProtectedRoute>} />
+                <Route path="/postpartum/soins" element={<ProtectedRoute><PostpartumSoinsPage /></ProtectedRoute>} />
+                <Route path="/postpartum/securite" element={<ProtectedRoute><PostpartumSecuritePage /></ProtectedRoute>} />
+                {/* Routes post-partum niveau 3 - Alimentation */}
+                <Route path="/postpartum/alimentation/allaitement" element={<ProtectedRoute><PostpartumAllaitementPage /></ProtectedRoute>} />
+                <Route path="/postpartum/alimentation/biberons" element={<ProtectedRoute><PostpartumBiberonsPage /></ProtectedRoute>} />
+                <Route path="/postpartum/alimentation/diversification" element={<ProtectedRoute><PostpartumDiversificationPage /></ProtectedRoute>} />
+                <Route path="/postpartum/alimentation/recettes" element={<ProtectedRoute><PostpartumRecettesPage /></ProtectedRoute>} />
+                {/* Routes post-partum niveau 3 - Soins */}
+                <Route path="/postpartum/soins/coucher-change" element={<ProtectedRoute><PostpartumCoucherChangePage /></ProtectedRoute>} />
+                <Route path="/postpartum/soins/portage" element={<ProtectedRoute><PostpartumPortagePage /></ProtectedRoute>} />
+                {/* Routes post-partum niveau 3 - Sécurité */}
+                <Route path="/postpartum/securite/difficultes" element={<ProtectedRoute><PostpartumDifficultesPage /></ProtectedRoute>} />
+                <Route path="/postpartum/securite/precautions" element={<ProtectedRoute><PostpartumPrecautionsPage /></ProtectedRoute>} />
                 <Route path="/recipes/shared/:shareCode" element={<SharedRecipesPage />} />
                 <Route path="/guide" element={<ProtectedRoute><GuidePage /></ProtectedRoute>} />
                 <Route path="/chatbot" element={<ProtectedRoute><ChatbotPage /></ProtectedRoute>} />

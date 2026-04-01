@@ -92,12 +92,10 @@ const SECTION_ITEMS = {
     { id: 'videos-resources', icon: '🎬', name: 'Vidéos & Ressources', nameKey: 'babyPrep.videosResources', route: '/baby-videos' },
   ],
   'postpartum': [
-    { id: 'postpartum-appointments', icon: '🏥', name: 'RDV post-partum', nameKey: 'postpartum.appointments', route: '/postpartum?section=appointments' },
-    { id: 'postpartum-difficulties', icon: '⚠️', name: 'Difficultés courantes', nameKey: 'postpartum.difficulties', route: '/postpartum?section=difficulties' },
-    { id: 'postpartum-breastfeeding', icon: '💗', name: 'Allaitement maternel', nameKey: 'postpartum.breastfeeding', route: '/postpartum?section=breastfeeding' },
-    { id: 'postpartum-formula', icon: '🍼', name: 'Biberon & préparation', nameKey: 'postpartum.formula', route: '/postpartum?section=formula' },
-    { id: 'postpartum-diapers', icon: '💧', name: 'Couches & change', nameKey: 'postpartum.diapers', route: '/postpartum?section=diapers' },
-    { id: 'postpartum-babywearing', icon: '🤱', name: 'Portage bébé', nameKey: 'postpartum.babywearing', route: '/postpartum?section=babywearing' },
+    { id: 'postpartum-rdv', icon: '🩺', name: 'RDV médicaux', nameKey: 'postpartum.rdv', route: '/postpartum/rdv' },
+    { id: 'postpartum-alimentation', icon: '🍼', name: 'Alimentation', nameKey: 'postpartum.alimentation', route: '/postpartum/alimentation' },
+    { id: 'postpartum-soins', icon: '👶', name: 'Soins quotidiens', nameKey: 'postpartum.soins', route: '/postpartum/soins' },
+    { id: 'postpartum-securite', icon: '🛡️', name: 'Sécurité', nameKey: 'postpartum.securite', route: '/postpartum/securite' },
   ],
   'services': [
     { id: 'chatbot', icon: '🤖', name: 'Assistant IA', nameKey: 'services.chatbot', route: '/chatbot' },

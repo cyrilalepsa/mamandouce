@@ -6,7 +6,7 @@ import {
   Check, Pin, PinOff, CalendarHeart, ScanBarcode, Apple, History,
   Stethoscope, Bell, BookHeart, Users, ChevronRight, Crown, Lock,
   ClipboardList, Briefcase, Video, Youtube, Book, Phone, LineChart,
-  Scale, Lightbulb, Building2, Hospital, MapPin, ExternalLink
+  Scale, Lightbulb, Building2, Hospital, MapPin, ExternalLink, Utensils, Shield
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -89,7 +89,10 @@ const SECTION_ITEMS = {
     { id: 'videos-resources', icon: Video, iconColor: 'text-rose-500', bgColor: 'bg-rose-50', title: 'Vidéos & Ressources', titleKey: 'babyPrep.videosResources', desc: 'Tutoriels & conseils', descKey: 'babyPrep.videosResourcesDesc', route: '/baby-videos' },
   ],
   'postpartum': [
-    { id: 'postpartum-content', icon: Stethoscope, iconColor: 'text-rose-500', bgColor: 'bg-rose-50', title: 'Suivi post-partum', titleKey: 'postpartum.content', desc: 'RDV, allaitement, soins', descKey: 'postpartum.contentDesc', route: '/postpartum' },
+    { id: 'postpartum-rdv', icon: Stethoscope, iconColor: 'text-rose-500', bgColor: 'bg-rose-50', title: 'RDV médicaux', titleKey: 'postpartum.rdv', desc: 'Suivi post-accouchement', descKey: 'postpartum.rdvDesc', route: '/postpartum/rdv' },
+    { id: 'postpartum-alimentation', icon: Utensils, iconColor: 'text-amber-500', bgColor: 'bg-amber-50', title: 'Alimentation', titleKey: 'postpartum.alimentation', desc: 'Allaitement, biberons, diversification', descKey: 'postpartum.alimentationDesc', route: '/postpartum/alimentation' },
+    { id: 'postpartum-soins', icon: Baby, iconColor: 'text-sky-500', bgColor: 'bg-sky-50', title: 'Soins quotidiens', titleKey: 'postpartum.soins', desc: 'Coucher, change, portage', descKey: 'postpartum.soinsDesc', route: '/postpartum/soins' },
+    { id: 'postpartum-securite', icon: Shield, iconColor: 'text-violet-500', bgColor: 'bg-violet-50', title: 'Sécurité', titleKey: 'postpartum.securite', desc: 'Difficultés, précautions', descKey: 'postpartum.securiteDesc', route: '/postpartum/securite' },
   ],
   'services': [
     { id: 'chatbot', icon: Phone, iconColor: 'text-sky-500', bgColor: 'bg-sky-50', title: 'Assistant IA', titleKey: 'services.chatbot', desc: 'Disponible 24/7', descKey: 'services.available247', route: '/chatbot' },
