@@ -24,9 +24,8 @@ app = FastAPI(
     title="MamanDouce API",
     description="API pour l'application MamanDouce - Accompagnement grossesse",
     version="2.1.0",
-    # Disable docs in production to save memory
-    docs_url="/api/docs" if os.environ.get('DEBUG') == 'true' else None,
-    redoc_url=None,  # Disable redoc to save memory
+    docs_url="/api/docs",  # Swagger UI accessible
+    redoc_url="/api/redoc",  # ReDoc accessible
 )
 
 # CORS
