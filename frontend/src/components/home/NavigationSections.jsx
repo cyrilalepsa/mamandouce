@@ -426,6 +426,27 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
         </div>
       </PastelPillCard>
 
+      {/* Widget Évolution 3D - Pill pleine largeur avec mise en valeur */}
+      <PastelPillCard color="pink" onClick={() => navigate('/baby-evolution')} testId="baby-evolution-nav" className="mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-pink-100 to-rose-200 flex-shrink-0"
+            style={{ boxShadow: 'inset 0 2px 6px rgba(255,255,255,0.9), 0 4px 12px rgba(255, 183, 197, 0.3)' }}
+          >
+            <Baby className="w-6 h-6 text-pink-500" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-base font-bold text-slate-700 flex items-center gap-2">
+              {t('pregnancy.babyEvolution3D', 'Évolution de votre bébé en 3D')}
+              <Sparkles className="w-4 h-4 text-pink-400" />
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {t('pregnancy.compareWithFruit', 'Découvrez la taille de bébé comparée à un fruit')}
+            </p>
+          </div>
+          <ChevronRight className="w-6 h-6 text-pink-400" />
+        </div>
+      </PastelPillCard>
+
       {/* RDV, Évolution et conseils, Suivi de grossesse, Rappels */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {/* Évolution et conseils - format carré comme les autres */}
