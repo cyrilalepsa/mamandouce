@@ -1,0 +1,91 @@
+{
+  "summary": "Completed testing of Admin Export CSV and Scheduler Alerts features. All 14 backend tests passed (100%). All frontend features working correctly including Export CSV button, Scheduler status, Send now button disabled state, and filter buttons.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_export_csv_scheduler_alerts.py",
+    "/app/test_reports/pytest/pytest_export_alerts.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_export_csv_scheduler_alerts.py"
+  ],
+  "success_rate": {
+    "backend": "100% (14/14 tests passed)",
+    "frontend": "100%"
+  },
+  "test_credentials": {
+    "email": "cyrilalepsa@gmail.com",
+    "password": "Cyc@dmin9630"
+  },
+  "seed_data_creation": "No new seed data created - used existing reminder data",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Export CSV and Scheduler Alerts features are fully functional. CSV export opens in new tab with auth token. Alerts section only appears when health != healthy (when alerts array has items). Current state: scheduler running, health=healthy, no alerts.",
+  "features_tested": {
+    "export_csv_button": {
+      "status": "PASS",
+      "data_testid": "export-csv-btn",
+      "description": "Button visible in Scheduler section, opens export URL in new tab with token"
+    },
+    "export_csv_api": {
+      "status": "PASS",
+      "endpoint": "GET /api/admin/reminders/export-csv",
+      "returns": "CSV file with reminders and optionally history sections",
+      "headers": "Content-Type: text/csv, Content-Disposition: attachment"
+    },
+    "scheduler_alerts_api": {
+      "status": "PASS",
+      "endpoint": "GET /api/admin/scheduler/alerts",
+      "returns": ["health", "alerts[]", "scheduler{running, next_run}", "stats"],
+      "health_values": ["healthy", "warning", "critical"]
+    },
+    "alertes_scheduler_section": {
+      "status": "PASS (correctly hidden when no alerts)",
+      "description": "Section only appears when alerts.alerts.length > 0. Shows badge 'Critique' or 'Attention' based on health level"
+    },
+    "alert_types": {
+      "status": "PASS",
+      "types": ["scheduler_stopped (critical)", "overdue_reminders (warning)", "recent_failures (warning)"],
+      "description": "Alerts generated based on: scheduler running status, reminders overdue >5min, failures in last hour"
+    },
+    "send_now_button_state": {
+      "status": "PASS",
+      "data_testid": "send-reminders-now",
+      "description": "Button disabled when stats.due_now=0, enabled when due_now>0"
+    },
+    "filter_buttons": {
+      "status": "PASS",
+      "filters": ["Tous", "En attente", "Envoyés"],
+      "description": "All filter buttons clickable and functional"
+    },
+    "api_auth_protection": {
+      "status": "PASS",
+      "description": "export-csv and scheduler/alerts return 401/403 without auth"
+    }
+  },
+  "backend_tests_run": [
+    "test_export_csv_returns_valid_csv",
+    "test_export_csv_with_history",
+    "test_export_csv_without_history",
+    "test_export_csv_unauthorized",
+    "test_scheduler_alerts_returns_correct_structure",
+    "test_scheduler_alerts_health_values",
+    "test_scheduler_alerts_alerts_array",
+    "test_scheduler_alerts_scheduler_info",
+    "test_scheduler_alerts_stats",
+    "test_scheduler_alerts_unauthorized",
+    "test_scheduler_running_when_healthy",
+    "test_test_alert_endpoint",
+    "test_test_alert_unauthorized",
+    "test_alert_structure_when_alerts_exist"
+  ]
+}

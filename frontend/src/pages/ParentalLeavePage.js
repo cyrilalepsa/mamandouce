@@ -1,0 +1,653 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { ArrowLeft, Heart, Scale, Baby, Calendar, Clock, Euro, FileText, ChevronDown, ChevronUp, Info, Gift, Users, Stethoscope } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
+
+function ParentalLeavePage() {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const [expandedSection, setExpandedSection] = useState(null);
+
+  const toggleSection = (id) => {
+    setExpandedSection(expandedSection === id ? null : id);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-slate-50">
+      <div className="max-w-2xl mx-auto p-4 sm:p-6">
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            onClick={() => navigate(-1)}
+            variant="ghost"
+            className="p-2 rounded-full hover:bg-white/50"
+          >
+            <ArrowLeft className="w-6 h-6 text-slate-600" />
+          </Button>
+          <div className="flex-1 text-center">
+            <div className="flex items-center justify-center gap-2">
+              <Scale className="w-5 h-5 text-indigo-500" />
+              <h1 className="text-lg font-bold text-indigo-600">
+                {t('parentalLeave.title', 'Congés parentaux')}
+              </h1>
+            </div>
+            <p className="text-xs text-slate-500 mt-1">
+              {t('parentalLeave.subtitle', 'Vos droits en France - Mise à jour 2024')}
+            </p>
+          </div>
+          <div className="w-10"></div>
+        </div>
+
+        {/* Alerte nouvelle loi */}
+        <Card className="bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-2xl p-4 mb-4">
+          <div className="flex items-start gap-3">
+            <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-bold text-sm">
+                {t('parentalLeave.newLaw', 'Nouvelle loi 2024')}
+              </h3>
+              <p className="text-xs opacity-90 mt-1">
+                {t('parentalLeave.newLawDesc', 'Le congé paternité est passé de 11 à 25 jours (+3 jours naissance). Applicable depuis juillet 2021.')}
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        {/* NOUVEAU : Congé supplémentaire de naissance 2026 */}
+        <Card className="bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-2xl p-4 mb-6">
+          <div className="flex items-start gap-3">
+            <Gift className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-bold text-sm">
+                {t('parentalLeave.newLaw2026', 'Réforme 2026 : Congé supplémentaire de naissance')}
+              </h3>
+              <p className="text-xs opacity-90 mt-1">
+                {t('parentalLeave.newLaw2026Desc', 'Nouveau dispositif adopté dans la Loi de financement de la Sécurité sociale pour 2026. Période plus courte mais beaucoup mieux rémunérée.')}
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        {/* Détails du congé supplémentaire de naissance - Style bombé pill */}
+        <div 
+          className="relative overflow-hidden rounded-full mb-4"
+          style={{
+            background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(245,243,255,0.95) 30%, rgba(237,233,254,0.85) 60%, rgba(221,214,254,0.7) 100%)',
+            boxShadow: '0 8px 24px -4px rgba(139,92,246,0.2), 0 4px 8px -2px rgba(139,92,246,0.1), inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(139,92,246,0.08)',
+            border: '2px solid rgba(139,92,246,0.3)'
+          }}
+        >
+          {/* Effet de reflet bombé */}
+          <div 
+            className="absolute top-0 left-8 right-8 h-1/2 rounded-t-full pointer-events-none"
+            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
+          />
+          
+          <button 
+            onClick={() => toggleSection('supplementary')}
+            className="relative w-full flex items-center justify-between p-4"
+          >
+            <div className="flex items-center gap-3">
+              <div 
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255,255,255,0.4)'
+                }}
+              >
+                <Gift className="w-5 h-5 text-violet-600" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-bold text-violet-700">
+                  {t('parentalLeave.supplementaryLeave', 'Congé supplémentaire de naissance')}
+                </h3>
+                <p className="text-xs text-violet-500 font-medium">1 à 2 mois par parent (mieux rémunéré)</p>
+              </div>
+            </div>
+            {expandedSection === 'supplementary' ? (
+              <ChevronUp className="w-5 h-5 text-violet-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-violet-400" />
+            )}
+          </button>
+          
+          {expandedSection === 'supplementary' && (
+            <div className="mt-4 pt-4 border-t border-violet-100 space-y-4">
+              <div className="bg-violet-50 rounded-xl p-3">
+                <p className="text-xs text-violet-700">
+                  <strong>Contrairement à l'ancien congé parental</strong> (qui pouvait durer jusqu'à 3 ans mais était très peu indemnisé), ce nouveau dispositif vise à offrir une période plus courte mais beaucoup mieux rémunérée.
+                </p>
+              </div>
+              
+              <div className="flex items-start gap-2">
+                <Calendar className="w-4 h-4 text-violet-500 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">1. Durée et Flexibilité</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    • <strong>Durée :</strong> Chaque parent peut bénéficier de <strong>1 ou 2 mois</strong> de congé supplémentaire
+                    <br />• <strong>Cumul :</strong> Si les deux parents le prennent, cela représente jusqu'à <strong>4 mois de présence parentale</strong> en plus des congés maternité et paternité classiques
+                    <br />• <strong>Fractionnement :</strong> Le congé peut être pris en une seule fois ou fractionné en deux périodes d'un mois chacune
+                    <br />• <strong>Délai :</strong> Il doit être pris dans les <strong>9 mois</strong> suivant la naissance (ou l'adoption)
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-2">
+                <Euro className="w-4 h-4 text-violet-500 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">2. Indemnisation (mieux rémunéré)</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    • L'indemnisation sera <strong>bien supérieure</strong> à l'ancienne PreParE
+                    <br />• Basée sur un pourcentage du salaire (détails à confirmer par décret)
+                    <br />• Objectif : permettre aux parents de rester auprès de leur enfant sans perte de revenus significative
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-2">
+                <Users className="w-4 h-4 text-violet-500 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">3. Bénéficiaires</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    • Les deux parents peuvent en bénéficier (mère ET père/second parent)
+                    <br />• Applicable aux salariés du secteur privé
+                    <br />• Conditions d'ancienneté à préciser par décret
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-2">
+                <Clock className="w-4 h-4 text-violet-500 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">4. Entrée en vigueur</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    • <strong>2026</strong> - Date exacte à confirmer par décret d'application
+                    <br />• Remplace progressivement l'ancien congé parental d'éducation
+                  </p>
+                </div>
+              </div>
+              
+              <div className="bg-amber-50 rounded-xl p-3 mt-2">
+                <p className="text-xs text-amber-700">
+                  <strong>💡 Conseil :</strong> Cette réforme est récente. Consultez régulièrement service-public.fr pour les mises à jour des décrets d'application.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Congé de naissance - Style bombé pill */}
+        <div 
+          className="relative overflow-hidden rounded-full mb-4"
+          style={{
+            background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(236,253,245,0.95) 30%, rgba(209,250,229,0.85) 60%, rgba(167,243,208,0.7) 100%)',
+            boxShadow: '0 8px 24px -4px rgba(16,185,129,0.2), 0 4px 8px -2px rgba(16,185,129,0.1), inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(16,185,129,0.08)',
+            border: '2px solid rgba(16,185,129,0.3)'
+          }}
+        >
+          {/* Effet de reflet bombé */}
+          <div 
+            className="absolute top-0 left-8 right-8 h-1/2 rounded-t-full pointer-events-none"
+            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
+          />
+          
+          <button 
+            onClick={() => toggleSection('birth')}
+            className="relative w-full flex items-center justify-between p-4"
+          >
+            <div className="flex items-center gap-3">
+              <div 
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255,255,255,0.4)'
+                }}
+              >
+                <Gift className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-bold text-emerald-700">
+                  {t('parentalLeave.birthLeave', 'Congé de naissance')}
+                </h3>
+                <p className="text-xs text-emerald-500 font-medium">3 jours (payés par l'employeur)</p>
+              </div>
+            </div>
+            {expandedSection === 'birth' ? (
+              <ChevronUp className="w-5 h-5 text-emerald-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-emerald-400" />
+            )}
+          </button>
+          
+          {expandedSection === 'birth' && (
+            <div className="mt-4 pt-4 border-t border-emerald-100 space-y-3">
+              <div className="flex items-start gap-2">
+                <Calendar className="w-4 h-4 text-emerald-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Durée</p>
+                  <p className="text-xs text-slate-500">
+                    • <strong>3 jours ouvrables</strong> pour chaque naissance
+                    <br />• Peut aller jusqu'à <strong>4 jours</strong> selon les conventions collectives
+                    <br />• S'ajoute au congé paternité (non cumulable avec les 4 jours obligatoires)
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Clock className="w-4 h-4 text-emerald-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Quand le prendre ?</p>
+                  <p className="text-xs text-slate-500">
+                    • À prendre <strong>immédiatement</strong> après la naissance
+                    <br />• Dans un délai maximum de <strong>15 jours</strong> autour de la naissance
+                    <br />• Jours consécutifs (sauf accord de l'employeur)
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Euro className="w-4 h-4 text-emerald-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Indemnisation</p>
+                  <p className="text-xs text-slate-500">
+                    • <strong>100% du salaire</strong> maintenu
+                    <br />• Payé directement par l'employeur (pas la Sécu)
+                    <br />• Aucune condition d'ancienneté requise
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Users className="w-4 h-4 text-emerald-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Qui peut en bénéficier ?</p>
+                  <p className="text-xs text-slate-500">
+                    • Le père de l'enfant
+                    <br />• Le/la conjoint(e), concubin(e) ou partenaire PACS de la mère
+                    <br />• Applicable aux salariés du secteur privé et public
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Congés supplémentaires pour événements familiaux - Style bombé pill */}
+        <div 
+          className="relative overflow-hidden rounded-full mb-4"
+          style={{
+            background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,249,195,0.95) 30%, rgba(254,240,138,0.85) 60%, rgba(253,224,71,0.7) 100%)',
+            boxShadow: '0 8px 24px -4px rgba(245,158,11,0.2), 0 4px 8px -2px rgba(245,158,11,0.1), inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(245,158,11,0.08)',
+            border: '2px solid rgba(245,158,11,0.3)'
+          }}
+        >
+          {/* Effet de reflet bombé */}
+          <div 
+            className="absolute top-0 left-8 right-8 h-1/2 rounded-t-full pointer-events-none"
+            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
+          />
+          
+          <button 
+            onClick={() => toggleSection('family')}
+            className="relative w-full flex items-center justify-between p-4"
+          >
+            <div className="flex items-center gap-3">
+              <div 
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255,255,255,0.4)'
+                }}
+              >
+                <Heart className="w-5 h-5 text-amber-600" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-bold text-amber-700">
+                  {t('parentalLeave.familyEvents', 'Congés événements familiaux')}
+                </h3>
+                <p className="text-xs text-amber-500 font-medium">Mariage, adoption, enfant malade...</p>
+              </div>
+            </div>
+            {expandedSection === 'family' ? (
+              <ChevronUp className="w-5 h-5 text-amber-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-amber-400" />
+            )}
+          </button>
+          
+          {expandedSection === 'family' && (
+            <div className="mt-4 pt-4 border-t border-amber-100 space-y-3">
+              <div className="flex items-start gap-2">
+                <Gift className="w-4 h-4 text-amber-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Mariage / PACS</p>
+                  <p className="text-xs text-slate-500">
+                    • Mariage du salarié : <strong>4 jours</strong>
+                    <br />• PACS : <strong>4 jours</strong>
+                    <br />• Mariage d'un enfant : <strong>1 jour</strong>
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Baby className="w-4 h-4 text-amber-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Adoption</p>
+                  <p className="text-xs text-slate-500">
+                    • Arrivée d'un enfant adopté : <strong>3 jours</strong> (congé naissance)
+                    <br />• Congé d'adoption : <strong>16 semaines</strong> (partageable entre les parents)
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Stethoscope className="w-4 h-4 text-amber-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Enfant malade</p>
+                  <p className="text-xs text-slate-500">
+                    • <strong>3 jours/an</strong> par enfant de moins de 16 ans
+                    <br />• <strong>5 jours/an</strong> si enfant de moins de 1 an ou si 3 enfants ou plus
+                    <br />• Non rémunérés (sauf convention collective plus favorable)
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Calendar className="w-4 h-4 text-amber-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Annonce handicap</p>
+                  <p className="text-xs text-slate-500">
+                    • Annonce du handicap d'un enfant : <strong>5 jours</strong> (nouvelle loi 2024)
+                    <br />• Annonce d'une maladie chronique : <strong>2 jours</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Congé maternité - Style bombé pill */}
+        <div 
+          className="relative overflow-hidden rounded-full mb-4"
+          style={{
+            background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(252,231,243,0.95) 30%, rgba(251,207,232,0.85) 60%, rgba(249,168,212,0.7) 100%)',
+            boxShadow: '0 8px 24px -4px rgba(236,72,153,0.2), 0 4px 8px -2px rgba(236,72,153,0.1), inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(236,72,153,0.08)',
+            border: '2px solid rgba(236,72,153,0.3)'
+          }}
+        >
+          {/* Effet de reflet bombé */}
+          <div 
+            className="absolute top-0 left-8 right-8 h-1/2 rounded-t-full pointer-events-none"
+            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
+          />
+          
+          <button 
+            onClick={() => toggleSection('maternity')}
+            className="relative w-full flex items-center justify-between p-4"
+          >
+            <div className="flex items-center gap-3">
+              <div 
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255,255,255,0.4)'
+                }}
+              >
+                <Baby className="w-5 h-5 text-pink-600" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-bold text-pink-700">
+                  {t('parentalLeave.maternityLeave', 'Congé maternité')}
+                </h3>
+                <p className="text-xs text-pink-500 font-medium">16 semaines minimum</p>
+              </div>
+            </div>
+            {expandedSection === 'maternity' ? (
+              <ChevronUp className="w-5 h-5 text-slate-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400" />
+            )}
+          </button>
+          
+          {expandedSection === 'maternity' && (
+            <div className="mt-4 pt-4 border-t border-pink-100 space-y-3">
+              <div className="flex items-start gap-2">
+                <Calendar className="w-4 h-4 text-pink-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Durée</p>
+                  <p className="text-xs text-slate-500">
+                    • 1er ou 2ème enfant : <strong>16 semaines</strong> (6 avant + 10 après)
+                    <br />• 3ème enfant ou + : <strong>26 semaines</strong> (8 avant + 18 après)
+                    <br />• Jumeaux : <strong>34 semaines</strong>
+                    <br />• Triplés ou + : <strong>46 semaines</strong>
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Euro className="w-4 h-4 text-pink-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Indemnisation</p>
+                  <p className="text-xs text-slate-500">
+                    Indemnités journalières versées par la Sécurité sociale = salaire journalier de base (plafonné à 100,36€/jour en 2024)
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <FileText className="w-4 h-4 text-pink-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Conditions</p>
+                  <p className="text-xs text-slate-500">
+                    Être salariée et avoir travaillé au moins 150h au cours des 3 mois précédents
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Congé paternité - Style bombé pill */}
+        <div 
+          className="relative overflow-hidden rounded-full mb-4"
+          style={{
+            background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(224,242,254,0.95) 30%, rgba(186,230,253,0.85) 60%, rgba(125,211,252,0.7) 100%)',
+            boxShadow: '0 8px 24px -4px rgba(56,189,248,0.2), 0 4px 8px -2px rgba(56,189,248,0.1), inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(56,189,248,0.08)',
+            border: '2px solid rgba(56,189,248,0.3)'
+          }}
+        >
+          {/* Effet de reflet bombé */}
+          <div 
+            className="absolute top-0 left-8 right-8 h-1/2 rounded-t-full pointer-events-none"
+            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
+          />
+          
+          <button 
+            onClick={() => toggleSection('paternity')}
+            className="relative w-full flex items-center justify-between p-4"
+          >
+            <div className="flex items-center gap-3">
+              <div 
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255,255,255,0.4)'
+                }}
+              >
+                <Baby className="w-5 h-5 text-sky-600" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-bold text-sky-700">
+                  {t('parentalLeave.paternityLeave', 'Congé paternité')}
+                </h3>
+                <p className="text-xs text-sky-500 font-medium">28 jours (dont 7 obligatoires)</p>
+              </div>
+            </div>
+            {expandedSection === 'paternity' ? (
+              <ChevronUp className="w-5 h-5 text-sky-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-sky-400" />
+            )}
+          </button>
+          
+          {expandedSection === 'paternity' && (
+            <div className="mt-4 pt-4 border-t border-sky-100 space-y-3 px-4 pb-4">
+              <div className="flex items-start gap-2">
+                <Calendar className="w-4 h-4 text-sky-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Durée totale : 28 jours</p>
+                  <p className="text-xs text-slate-500">
+                    • <strong>3 jours</strong> de congé naissance (obligatoires, à prendre immédiatement)
+                    <br />• <strong>4 jours</strong> obligatoires après la naissance
+                    <br />• <strong>21 jours</strong> facultatifs (fractionnables en 2 périodes)
+                    <br />• Naissances multiples : <strong>+7 jours</strong>
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Clock className="w-4 h-4 text-sky-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Délai</p>
+                  <p className="text-xs text-slate-500">
+                    Les 21 jours facultatifs doivent être pris dans les <strong>6 mois</strong> suivant la naissance
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Euro className="w-4 h-4 text-sky-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Indemnisation</p>
+                  <p className="text-xs text-slate-500">
+                    Indemnités journalières de la Sécurité sociale (même calcul que le congé maternité)
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Congé parental d'éducation - Style bombé pill */}
+        <div 
+          className="relative overflow-hidden rounded-full mb-4"
+          style={{
+            background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(243,232,255,0.95) 30%, rgba(233,213,255,0.85) 60%, rgba(216,180,254,0.7) 100%)',
+            boxShadow: '0 8px 24px -4px rgba(168,85,247,0.2), 0 4px 8px -2px rgba(168,85,247,0.1), inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(168,85,247,0.08)',
+            border: '2px solid rgba(168,85,247,0.3)'
+          }}
+        >
+          {/* Effet de reflet bombé */}
+          <div 
+            className="absolute top-0 left-8 right-8 h-1/2 rounded-t-full pointer-events-none"
+            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
+          />
+          
+          <button 
+            onClick={() => toggleSection('parental')}
+            className="relative w-full flex items-center justify-between p-4"
+          >
+            <div className="flex items-center gap-3">
+              <div 
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255,255,255,0.4)'
+                }}
+              >
+                <Heart className="w-5 h-5 text-purple-600" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-bold text-purple-700">
+                  {t('parentalLeave.parentalEducation', 'Congé parental d\'éducation')}
+                </h3>
+                <p className="text-xs text-purple-500 font-medium">Jusqu'à 3 ans</p>
+              </div>
+            </div>
+            {expandedSection === 'parental' ? (
+              <ChevronUp className="w-5 h-5 text-purple-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-purple-400" />
+            )}
+          </button>
+          
+          {expandedSection === 'parental' && (
+            <div className="mt-4 pt-4 border-t border-purple-100 space-y-3">
+              <div className="flex items-start gap-2">
+                <Calendar className="w-4 h-4 text-purple-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Durée</p>
+                  <p className="text-xs text-slate-500">
+                    • Temps complet ou temps partiel (min. 16h/semaine)
+                    <br />• 1er enfant : max 1 an
+                    <br />• À partir du 2ème : jusqu'aux 3 ans de l'enfant
+                    <br />• Renouvelable plusieurs fois
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Euro className="w-4 h-4 text-purple-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">PreParE (CAF)</p>
+                  <p className="text-xs text-slate-500">
+                    • Temps complet : ~428€/mois
+                    <br />• Mi-temps : ~277€/mois
+                    <br />• Temps partiel (50-80%) : ~160€/mois
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <FileText className="w-4 h-4 text-purple-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Conditions</p>
+                  <p className="text-xs text-slate-500">
+                    1 an d'ancienneté minimum dans l'entreprise à la date de naissance
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Points importants - Style bombé */}
+        <div 
+          className="relative overflow-hidden rounded-3xl p-4"
+          style={{
+            background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,249,195,0.95) 30%, rgba(254,240,138,0.85) 60%, rgba(253,224,71,0.65) 100%)',
+            boxShadow: '0 8px 24px -4px rgba(245,158,11,0.15), inset 0 2px 4px rgba(255,255,255,0.9)',
+            border: '2px solid rgba(245,158,11,0.25)'
+          }}
+        >
+          <div 
+            className="absolute top-0 left-4 right-4 h-2/5 rounded-t-full pointer-events-none"
+            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
+          />
+          
+          <h3 className="relative font-bold text-amber-700 mb-2 flex items-center gap-2">
+            <Info className="w-4 h-4" />
+            {t('parentalLeave.importantPoints', 'Points importants')}
+          </h3>
+          <ul className="relative text-xs text-amber-700 space-y-1">
+            <li>• Votre contrat de travail est suspendu mais pas rompu</li>
+            <li>• Protection contre le licenciement pendant le congé</li>
+            <li>• Vous retrouvez votre poste ou un poste équivalent au retour</li>
+            <li>• Délai de prévenance : 1 mois avant la date de départ</li>
+            <li>• Possibilité de cumuler différents congés</li>
+          </ul>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-8 text-center">
+          <div className="flex items-center justify-center gap-2">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-indigo-200 to-transparent"></div>
+            <Scale className="w-4 h-4 text-indigo-300" />
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-indigo-200 to-transparent"></div>
+          </div>
+          <p className="text-xs text-slate-400 mt-4">
+            {t('parentalLeave.disclaimer', 'Informations à titre indicatif. Consultez service-public.fr pour les détails officiels.')}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default ParentalLeavePage;

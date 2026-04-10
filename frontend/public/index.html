@@ -1,13 +1,53 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr" translate="no">
     <head>
         <meta charset="utf-8" />
+        <meta name="google" content="notranslate" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#000000" />
-        <meta name="description" content="A product of emergent.sh" />
+        <meta name="theme-color" content="#ec4899" />
+        <meta name="description" content="MamanDouce - Application de suivi de grossesse complète. Calculateur de grossesse, scanner alimentaire, liste de prénoms (1000+ prénoms français), rendez-vous médicaux, liste de naissance et plus encore." />
+        
+        <!-- SEO Meta Tags -->
+        <meta name="keywords" content="grossesse, suivi grossesse, application grossesse, prénoms bébé, prénoms français, calculateur grossesse, alimentation grossesse, liste naissance, sac maternité, rendez-vous médicaux grossesse" />
+        <meta name="author" content="MamanDouce - CycaFamily" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://cycafamily.com/" />
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://cycafamily.com/" />
+        <meta property="og:title" content="MamanDouce - Votre compagnon de grossesse" />
+        <meta property="og:description" content="Application complète de suivi de grossesse. 1000+ prénoms français, calculateur de dates, scanner alimentaire et plus encore." />
+        <meta property="og:image" content="https://cycafamily.com/app-icon-512.png" />
+        <meta property="og:locale" content="fr_FR" />
+        
+        <!-- Twitter -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content="https://cycafamily.com/" />
+        <meta name="twitter:title" content="MamanDouce - Votre compagnon de grossesse" />
+        <meta name="twitter:description" content="Application complète de suivi de grossesse. 1000+ prénoms français, calculateur de dates, scanner alimentaire." />
+        <meta name="twitter:image" content="https://cycafamily.com/app-icon-512.png" />
+        <!-- Force no-cache for PWA updates -->
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="0" />
+        <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="MamanDouce" />
+        <link rel="apple-touch-icon" href="%PUBLIC_URL%/app-icon-512.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/app-icon-512.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="%PUBLIC_URL%/app-icon-512.png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="%PUBLIC_URL%/app-icon-512.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/app-icon-512.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/app-icon-512.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet" />
+        
+        <!-- Google Model Viewer - Composant 3D Web stable pour React 19 -->
+        <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+        
         <!--
         manifest.json provides metadata used when your web app is installed on a
         user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -21,12 +61,225 @@
         work correctly both with client-side routing and a non-root public URL.
         Learn how to configure a non-root public URL by running `npm run build`.
         -->
-        <title>Emergent | Fullstack App</title>
+        <title>MamanDouce - Compagnon de Grossesse</title>
         <script>window.addEventListener("error",function(e){if(e.error instanceof DOMException&&e.error.name==="DataCloneError"&&e.message&&e.message.includes("PerformanceServerTiming")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
         <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
+        <!-- App Version for cache busting -->
+        <script>
+            window.APP_VERSION = '2.5.0';
+            // Check version and reload if needed
+            (function() {
+                var lastVersion = localStorage.getItem('app_version');
+                if (lastVersion !== window.APP_VERSION) {
+                    localStorage.setItem('app_version', window.APP_VERSION);
+                    if (lastVersion) {
+                        // Only reload if there was a previous version (not first visit)
+                        window.location.reload(true);
+                    }
+                }
+            })();
+        </script>
     </head>
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
+        
+        <!-- Écran de chargement initial - s'affiche AVANT React -->
+        <div id="initial-loader" style="
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #e0f2fe 0%, #fce7f3 50%, #f3e8ff 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 999999;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        ">
+            <!-- Bulle 3D bombée glossy -->
+            <div style="
+                position: relative;
+                width: 220px;
+                height: 220px;
+                border-radius: 60px;
+                background: linear-gradient(145deg, #a5d8ff 0%, #c4b5fd 35%, #f9a8d4 70%, #fda4af 100%);
+                box-shadow: 
+                    0 20px 60px rgba(196, 181, 253, 0.4),
+                    0 10px 30px rgba(249, 168, 212, 0.3),
+                    inset 0 -8px 20px rgba(0, 0, 0, 0.1);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+            ">
+                <!-- Effet reflet glossy en haut -->
+                <div style="
+                    position: absolute;
+                    top: 8px;
+                    left: 20px;
+                    right: 20px;
+                    height: 45%;
+                    background: linear-gradient(to bottom, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+                    border-radius: 50px 50px 100px 100px;
+                    pointer-events: none;
+                "></div>
+                
+                <!-- Icône petits pieds BLANCS (même style que l'emoji 👣) -->
+                <div style="font-size: 52px; margin-bottom: 6px; position: relative; z-index: 1; filter: grayscale(1) brightness(10) drop-shadow(0 2px 8px rgba(0,0,0,0.15));">👣</div>
+                
+                <!-- Logo MamanDouce - PLUS GROS -->
+                <h1 style="
+                    font-size: 32px;
+                    font-weight: bold;
+                    color: white;
+                    margin: 0;
+                    position: relative;
+                    z-index: 1;
+                    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                    font-family: 'Dancing Script', cursive, sans-serif;
+                    white-space: nowrap;
+                ">MamanDouce</h1>
+                
+                <!-- Message de chargement -->
+                <p id="loader-message" style="
+                    color: rgba(255, 255, 255, 0.9);
+                    margin: 6px 0 0 0;
+                    font-size: 13px;
+                    position: relative;
+                    z-index: 1;
+                    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+                ">Chargement...</p>
+            </div>
+            
+            <!-- Points de chargement animés -->
+            <div style="display: flex; justify-content: center; gap: 6px; margin-top: 24px;">
+                <div class="loader-dot" style="width: 10px; height: 10px; background: linear-gradient(135deg, #f9a8d4, #c4b5fd); border-radius: 50%; animation: pulse 1.4s ease-in-out infinite; box-shadow: 0 2px 8px rgba(249, 168, 212, 0.4);"></div>
+                <div class="loader-dot" style="width: 10px; height: 10px; background: linear-gradient(135deg, #c4b5fd, #a5d8ff); border-radius: 50%; animation: pulse 1.4s ease-in-out 0.2s infinite; box-shadow: 0 2px 8px rgba(196, 181, 253, 0.4);"></div>
+                <div class="loader-dot" style="width: 10px; height: 10px; background: linear-gradient(135deg, #a5d8ff, #f9a8d4); border-radius: 50%; animation: pulse 1.4s ease-in-out 0.4s infinite; box-shadow: 0 2px 8px rgba(165, 216, 255, 0.4);"></div>
+            </div>
+        </div>
+        
+        <style>
+            @keyframes pulse {
+                0%, 100% { opacity: 0.4; transform: scale(1); }
+                50% { opacity: 1; transform: scale(1.2); }
+            }
+            /* Cacher TOUTES les bannières Emergent - version ultra-agressive */
+            [class*="wake"], [class*="spinning"], [class*="preview-banner"],
+            [class*="Wake"], [class*="Spinning"], [class*="Preview"],
+            [class*="emergent"], [class*="Emergent"],
+            [id*="wake"], [id*="spinning"], [id*="emergent"],
+            div[style*="Spinning"], div[style*="spinning"],
+            div[style*="position: fixed"][style*="bottom"],
+            .emergent-toast, .emergent-notification,
+            /* Cacher les toasts/pills en position fixed en bas */
+            div[style*="fixed"][style*="z-index"]:not(#initial-loader):not(#root):not(.App) {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+        </style>
+        
+        <script>
+            // Cacher le loader initial quand React est prêt
+            window.hideInitialLoader = function() {
+                var loader = document.getElementById('initial-loader');
+                if (loader) {
+                    loader.style.transition = 'opacity 0.3s';
+                    loader.style.opacity = '0';
+                    setTimeout(function() { loader.style.display = 'none'; }, 300);
+                }
+            };
+            // Timeout de secours - cacher après 5 secondes max
+            setTimeout(window.hideInitialLoader, 5000);
+            
+            // Script ultra-agressif pour cacher TOUTES les bannières Emergent
+            (function hideEmergentBanner() {
+                var keywords = ['spinning', 'wake up', 'waking', 'made with emergent', 'servers', 'starting'];
+                
+                function shouldHide(el) {
+                    if (!el || el.id === 'initial-loader' || el.id === 'root' || el.id === 'emergent-badge') return false;
+                    if (el.tagName === 'HTML' || el.tagName === 'BODY') return false;
+                    
+                    var text = (el.innerText || el.textContent || '').toLowerCase();
+                    var style = (el.getAttribute('style') || '').toLowerCase();
+                    
+                    // Vérifier le texte
+                    for (var i = 0; i < keywords.length; i++) {
+                        if (text.includes(keywords[i])) return true;
+                    }
+                    
+                    // Vérifier les éléments fixed en bas (sauf nos éléments)
+                    if (style.includes('fixed') && style.includes('bottom') && !el.closest('#root')) {
+                        return true;
+                    }
+                    
+                    return false;
+                }
+                
+                function hideElement(el) {
+                    el.style.cssText = 'display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;width:0!important;overflow:hidden!important;pointer-events:none!important;position:absolute!important;top:-9999px!important;left:-9999px!important;';
+                    el.setAttribute('aria-hidden', 'true');
+                }
+                
+                function hide() {
+                    // Parcourir tous les éléments
+                    document.querySelectorAll('div, span, p, section, aside, footer').forEach(function(el) {
+                        if (shouldHide(el)) {
+                            hideElement(el);
+                        }
+                    });
+                    
+                    // Cacher spécifiquement les iframes ou scripts Emergent
+                    document.querySelectorAll('iframe[src*="emergent"], script[src*="emergent"]').forEach(function(el) {
+                        if (el.id !== 'emergent-badge') {
+                            el.style.display = 'none';
+                        }
+                    });
+                }
+                
+                // Exécuter immédiatement
+                hide();
+                
+                // Exécuter périodiquement (toutes les 200ms pendant 10 secondes, puis toutes les 2 secondes)
+                var count = 0;
+                var fastInterval = setInterval(function() {
+                    hide();
+                    count++;
+                    if (count > 50) {
+                        clearInterval(fastInterval);
+                        setInterval(hide, 2000);
+                    }
+                }, 200);
+                
+                // Observer les mutations DOM
+                if (typeof MutationObserver !== 'undefined') {
+                    var observer = new MutationObserver(function(mutations) {
+                        mutations.forEach(function(mutation) {
+                            mutation.addedNodes.forEach(function(node) {
+                                if (node.nodeType === 1 && shouldHide(node)) {
+                                    hideElement(node);
+                                }
+                            });
+                        });
+                        hide();
+                    });
+                    
+                    if (document.body) {
+                        observer.observe(document.body, { childList: true, subtree: true });
+                    } else {
+                        document.addEventListener('DOMContentLoaded', function() {
+                            observer.observe(document.body, { childList: true, subtree: true });
+                        });
+                    }
+                }
+            })();
+        </script>
+        
         <div id="root"></div>
         <!--
       This HTML file is a template.
@@ -45,26 +298,30 @@
             style="
                 display: inline-flex !important;
                 box-sizing: border-box;
-                width: 178px;
-                height: 40px;
-                padding: 8px 12px 8px 12px;
+                width: auto;
+                height: 20px;
+                padding: 2px 6px;
                 align-items: center !important;
-                gap: 8px;
+                gap: 4px;
                 border-radius: 50px !important;
-                background: #000 !important;
+                background: rgba(0, 0, 0, 0.3) !important;
                 position: fixed !important;
-                bottom: 16px;
-                right: 16px;
+                bottom: 6px;
+                right: 6px;
                 text-decoration: none;
                 font-family: -apple-system, BlinkMacSystemFont,
                     &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell,
                     &quot;Open Sans&quot;, &quot;Helvetica Neue&quot;,
                     sans-serif !important;
-                font-size: 12px !important;
+                font-size: 8px !important;
                 z-index: 9999 !important;
+                opacity: 0.4;
+                transition: opacity 0.2s ease;
             "
+            onmouseover="this.style.opacity='0.8'"
+            onmouseout="this.style.opacity='0.4'"
         >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 16 16" fill="none">
                 <path d="M15.5702 8.13142C15.7729 8.0412 16.0007 8.18878 15.9892 8.4103C15.8374 11.3192 14.0965 14.0405 11.2531 15.3065C8.40964 16.5725 5.2224 16.0453 2.95912 14.2117C2.78676 14.072 2.82955 13.804 3.03219 13.7137L4.95677 12.8568C5.04866 12.8159 5.15446 12.823 5.24204 12.8725C6.73377 13.7153 8.59176 13.8649 10.2772 13.1145C11.9626 12.3641 13.0947 10.8833 13.4665 9.21075C13.4883 9.11256 13.5539 9.02918 13.6457 8.98827L15.5702 8.13142Z" fill="white"/>
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M15.3066 4.74698L15.5067 5.19653C15.5759 5.35178 15.5061 5.53366 15.3508 5.60278L1.29992 11.8586C1.14467 11.9278 0.962794 11.8579 0.893675 11.7027L0.701732 11.2716L0.693457 11.2531C-1.10317 7.21778 0.711626 2.49007 4.74692 0.693443C8.78221 -1.10318 13.51 0.711693 15.3066 4.74698ZM2.82356 8.55367C2.63552 8.63739 2.41991 8.51617 2.40853 8.31065C2.28373 6.05724 3.53858 3.85787 5.72286 2.88536C7.90715 1.91286 10.3813 2.45199 11.9724 4.05256C12.1175 4.19854 12.0633 4.43988 11.8753 4.5236L2.82356 8.55367Z" fill="white"/>
             </svg>
@@ -72,15 +329,15 @@
                 style="
                     color: #FFF !important;
                     font-family: 'Inter', sans-serif !important;
-                    font-size: 13px !important;
+                    font-size: 8px !important;
                     font-style: normal !important;
-                    font-weight: 600 !important;
-                    line-height: 20px !important;
+                    font-weight: 500 !important;
+                    line-height: 12px !important;
                     margin: 0 !important;
                     white-space: nowrap !important;
                 "
             >
-                Made with Emergent
+                Emergent
             </p>
         </a>
         <script>

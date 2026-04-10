@@ -1,0 +1,90 @@
+{
+  "version": "2.5.0",
+  "last_updated": "2024-03-22",
+  "features": [
+    {
+      "id": "unique-views-counter",
+      "date": "2024-03-22",
+      "title": "Top 10 prénoms amélioré",
+      "message": "Le classement des prénoms les plus populaires est maintenant basé sur les vues uniques ! Chaque utilisatrice ne compte qu'une seule fois par prénom, pour un classement plus juste et représentatif.",
+      "category": "improvement",
+      "notified": true,
+      "notified_at": "2026-03-22T23:27:01.263875+00:00",
+      "notified_by": "cyrilalepsa@gmail.com"
+    },
+    {
+      "id": "name-card-design",
+      "date": "2024-03-22",
+      "title": "Nouveau design des fiches prénoms",
+      "message": "Les fiches de prénoms ont été entièrement redessinées avec un effet nuage doux et chaleureux. La signification et la personnalité sont maintenant affichées dans de jolies bulles colorées !",
+      "category": "design",
+      "notified": true,
+      "notified_at": "2026-03-22T23:54:49.155911+00:00",
+      "notified_by": "cyrilalepsa@gmail.com"
+    },
+    {
+      "id": "test-users-separation",
+      "date": "2024-03-22",
+      "title": "Gestion admin améliorée",
+      "message": "Les comptes de test sont maintenant séparés des vrais utilisateurs dans l'administration, pour des statistiques plus précises.",
+      "category": "admin",
+      "notified": false
+    },
+    {
+      "id": "collapsible-menus",
+      "date": "2024-03-21",
+      "title": "Menus déroulants sur l'accueil",
+      "message": "Les sections de la page d'accueil sont maintenant organisées en menus déroulants pour une navigation plus fluide et un accès rapide aux informations.",
+      "category": "ux",
+      "notified": true
+    },
+    {
+      "id": "camera-button",
+      "date": "2024-03-21",
+      "title": "Photo de profil facilitée",
+      "message": "Vous pouvez maintenant prendre votre photo de profil directement avec l'appareil photo de votre téléphone, ou choisir une image depuis votre galerie !",
+      "category": "feature",
+      "notified": true
+    },
+    {
+      "id": "dark-mode",
+      "date": "2024-03-20",
+      "title": "Mode sombre disponible",
+      "message": "Activez le mode sombre dans les paramètres pour une expérience plus confortable, surtout le soir. Vos yeux vous remercieront !",
+      "category": "feature",
+      "notified": true
+    },
+    {
+      "id": "popularity-stats",
+      "date": "2024-03-20",
+      "title": "Statistiques de popularité",
+      "message": "Découvrez le Top 10 des prénoms les plus consultés ! Voyez quels prénoms sont les plus populaires auprès des autres mamans.",
+      "category": "feature",
+      "notified": true
+    },
+    {
+      "id": "cloud-favorites",
+      "date": "2024-03-19",
+      "title": "Synchronisation des favoris",
+      "message": "Vos prénoms favoris sont maintenant sauvegardés dans le cloud ! Retrouvez-les sur tous vos appareils en vous connectant à votre compte.",
+      "category": "feature",
+      "notified": true
+    },
+    {
+      "id": "advanced-filters",
+      "date": "2024-03-19",
+      "title": "Filtres avancés pour les prénoms",
+      "message": "Trouvez le prénom parfait grâce aux nouveaux filtres : par longueur, par terminaison, ou par origine. La recherche n'a jamais été aussi facile !",
+      "category": "feature",
+      "notified": true
+    },
+    {
+      "id": "french-names-database",
+      "date": "2024-03-18",
+      "title": "1000+ prénoms français ajoutés",
+      "message": "Notre base de données s'enrichit avec plus de 1000 prénoms français modernes et traditionnels, chacun avec sa signification et sa personnalité !",
+      "category": "content",
+      "notified": true
+    }
+  ]
+}

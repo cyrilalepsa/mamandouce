@@ -1,89 +1,169 @@
+"""
+MamanDouce API Server
+Main FastAPI application with modular routes
+Optimized for Low Memory Profile (Railway)
+"""
 from fastapi import FastAPI, APIRouter
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
-import uuid
-from datetime import datetime, timezone
 
-
+# Load environment
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# Configure logging - Reduce verbosity in production
+log_level = logging.DEBUG if os.environ.get('DEBUG') == 'true' else logging.INFO
+logging.basicConfig(level=log_level)
+logger = logging.getLogger(__name__)
 
-# Create the main app without a prefix
-app = FastAPI()
+# Create FastAPI app with optimized settings
+app = FastAPI(
+    title="MamanDouce API",
+    description="API pour l'application MamanDouce - Accompagnement grossesse",
+    version="2.1.0",
+    # Disable docs in production to save memory
+    docs_url="/api/docs" if os.environ.get('DEBUG') == 'true' else None,
+    redoc_url=None,  # Disable redoc to save memory
+)
 
-# Create a router with the /api prefix
-api_router = APIRouter(prefix="/api")
-
-
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
-class StatusCheckCreate(BaseModel):
-    client_name: str
-
-# Add your routes to the router instead of directly to app
-@api_router.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
-
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
-
-# Include the router in the main app
-app.include_router(api_router)
-
+# CORS
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+# Create main API router
+api_router = APIRouter(prefix="/api")
+
+# Import and include all route modules
+from routes.auth import router as auth_router
+from routes.pregnancy import router as pregnancy_router
+from routes.food import router as food_router
+from routes.medical import router as medical_router
+from routes.birth_list import router as birth_list_router
+from routes.admin import router as admin_router
+from routes.contact import router as contact_router
+from routes.push_notifications import router as push_notifications_router
+from routes.payments import router as payments_router
+from routes.tips import router as tips_router
+from routes.postpartum import router as postpartum_router
+from routes.referral import router as referral_router
+from routes.preferences import router as preferences_router
+from routes.chatbot import router as chatbot_router
+from routes.favorites import router as favorites_router
+from routes.name_stats import router as name_stats_router
+from routes.translation import router as translation_router
+from routes.user_layout import router as user_layout_router
+from routes.guardian import router as guardian_router
+from routes.solidarity import router as solidarity_router
+from routes.contributions import router as contributions_router
+from routes.accounting import router as accounting_router
+from routes.emotional import router as emotional_router
+from routes.tirelire import router as tirelire_router
+from routes.babynames import router as babynames_router
+
+# Include all routers
+api_router.include_router(auth_router)
+api_router.include_router(pregnancy_router)
+api_router.include_router(food_router)
+api_router.include_router(medical_router)
+api_router.include_router(birth_list_router)
+api_router.include_router(admin_router)
+api_router.include_router(contact_router)
+api_router.include_router(push_notifications_router)
+api_router.include_router(payments_router, prefix="/payments")
+api_router.include_router(tips_router)
+api_router.include_router(postpartum_router)
+api_router.include_router(referral_router)
+api_router.include_router(preferences_router)
+api_router.include_router(chatbot_router)
+api_router.include_router(favorites_router)
+api_router.include_router(name_stats_router)
+api_router.include_router(translation_router)
+api_router.include_router(user_layout_router)
+api_router.include_router(guardian_router)
+api_router.include_router(solidarity_router)
+api_router.include_router(contributions_router)
+api_router.include_router(accounting_router)
+api_router.include_router(emotional_router)
+api_router.include_router(tirelire_router)
+api_router.include_router(babynames_router)
+
+# Include main router
+app.include_router(api_router)
+
+# Health check endpoint
+@app.get("/api/health")
+async def health_check():
+    """Simple health check endpoint for server wake-up detection"""
+    return {"status": "ok", "message": "MamanDouce API is running", "version": "2.1.0"}
+
+# Memory stats endpoint (for monitoring)
+@app.get("/api/health/memory")
+async def memory_stats():
+    """Get memory usage statistics for monitoring"""
+    from core.memory_optimizer import memory_optimizer
+    return memory_optimizer.get_memory_stats()
+
+# Manual cleanup endpoint (admin only in production)
+@app.post("/api/health/cleanup")
+async def trigger_cleanup():
+    """Trigger a manual memory cleanup"""
+    from core.memory_optimizer import memory_optimizer
+    freed, temp_cleaned = await memory_optimizer.run_cleanup()
+    return {
+        "status": "ok",
+        "gc_objects_freed": freed,
+        "temp_files_cleaned": temp_cleaned
+    }
+
+# Startup/Shutdown events
+@app.on_event("startup")
+async def startup_db_client():
+    from core.database import client
+    from core.scheduler import start_scheduler
+    from services.guardian_agent import guardian_agent
+    from core.memory_optimizer import memory_optimizer
+    
+    logger.info("Connected to MongoDB")
+    
+    # Start background scheduler for reminders
+    start_scheduler()
+    logger.info("Background scheduler started")
+    
+    # Start Guardian Agent
+    await guardian_agent.start()
+    logger.info("🛡️ Gardien Maman Douce started")
+    
+    # Start Memory Optimizer
+    await memory_optimizer.start()
+    logger.info("🧹 Memory Optimizer started")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
+    from core.database import client
+    from core.scheduler import stop_scheduler
+    from services.guardian_agent import guardian_agent
+    from core.memory_optimizer import memory_optimizer
+    
+    # Stop Memory Optimizer
+    await memory_optimizer.stop()
+    
+    # Stop Guardian
+    await guardian_agent.stop()
+    
+    # Stop scheduler
+    stop_scheduler()
+    
     client.close()
+    logger.info("Disconnected from MongoDB")
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8001)

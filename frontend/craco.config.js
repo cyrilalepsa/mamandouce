@@ -38,6 +38,24 @@ let webpackConfig = {
     },
     configure: (webpackConfig) => {
 
+      // Exclude test files from the build to prevent devDependencies errors in production
+      webpackConfig.module.rules.forEach((rule) => {
+        if (rule.oneOf) {
+          rule.oneOf.forEach((oneOfRule) => {
+            if (oneOfRule.test && oneOfRule.test.toString().includes('jsx')) {
+              // Add exclusion for test files
+              if (!oneOfRule.exclude) {
+                oneOfRule.exclude = [];
+              }
+              if (Array.isArray(oneOfRule.exclude)) {
+                oneOfRule.exclude.push(/\.test\.(js|jsx|ts|tsx)$/);
+                oneOfRule.exclude.push(/__tests__/);
+              }
+            }
+          });
+        }
+      });
+
       // Add ignored patterns to reduce watched directories
         webpackConfig.watchOptions = {
           ...webpackConfig.watchOptions,
@@ -48,6 +66,9 @@ let webpackConfig = {
             '**/dist/**',
             '**/coverage/**',
             '**/public/**',
+            '**/__tests__/**',
+            '**/*.test.js',
+            '**/*.test.jsx',
         ],
       };
 
