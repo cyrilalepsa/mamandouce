@@ -98,11 +98,47 @@ api_router.include_router(babynames_router)
 # Include main router
 app.include_router(api_router)
 
-# Health check endpoint
+# Health check endpoint - Simple and fast, no dependencies
 @app.get("/api/health")
 async def health_check():
-    """Simple health check endpoint for server wake-up detection"""
-    return {"status": "ok", "message": "MamanDouce API is running", "version": "2.1.0"}
+    """Simple health check endpoint for Railway healthcheck"""
+    return {"status": "ok"}
+
+# Detailed health check with database and services status
+@app.get("/api/health/detailed")
+async def detailed_health_check():
+    """Detailed health check with all service statuses"""
+    status = {
+        "status": "ok",
+        "message": "MamanDouce API is running",
+        "version": "2.1.0",
+        "services": {}
+    }
+    
+    # Check MongoDB
+    try:
+        from core.database import client
+        client.admin.command('ping')
+        status["services"]["mongodb"] = "connected"
+    except Exception as e:
+        status["services"]["mongodb"] = f"error: {str(e)}"
+        status["status"] = "degraded"
+    
+    # Check Guardian
+    try:
+        from services.guardian_agent import guardian_agent
+        status["services"]["guardian"] = "active" if guardian_agent else "inactive"
+    except:
+        status["services"]["guardian"] = "unavailable"
+    
+    # Check Memory Optimizer
+    try:
+        from core.memory_optimizer import memory_optimizer
+        status["services"]["memory_optimizer"] = "active" if memory_optimizer else "inactive"
+    except:
+        status["services"]["memory_optimizer"] = "unavailable"
+    
+    return status
 
 # Memory stats endpoint (for monitoring)
 @app.get("/api/health/memory")
@@ -126,43 +162,69 @@ async def trigger_cleanup():
 # Startup/Shutdown events
 @app.on_event("startup")
 async def startup_db_client():
-    from core.database import client
-    from core.scheduler import start_scheduler
-    from services.guardian_agent import guardian_agent
-    from core.memory_optimizer import memory_optimizer
+    try:
+        from core.database import client
+        logger.info("✅ Connected to MongoDB")
+    except Exception as e:
+        logger.error(f"❌ MongoDB connection failed: {e}")
+        # Don't fail startup if MongoDB is not available yet
     
-    logger.info("Connected to MongoDB")
+    # Start background services (non-blocking, with error handling)
+    try:
+        from core.scheduler import start_scheduler
+        start_scheduler()
+        logger.info("✅ Background scheduler started")
+    except Exception as e:
+        logger.warning(f"⚠️  Scheduler failed to start: {e}")
     
-    # Start background scheduler for reminders
-    start_scheduler()
-    logger.info("Background scheduler started")
+    # Start Guardian Agent (optional, don't block startup)
+    try:
+        from services.guardian_agent import guardian_agent
+        await guardian_agent.start()
+        logger.info("✅ 🛡️ Gardien Maman Douce started")
+    except Exception as e:
+        logger.warning(f"⚠️  Guardian Agent failed to start: {e}")
     
-    # Start Guardian Agent
-    await guardian_agent.start()
-    logger.info("🛡️ Gardien Maman Douce started")
+    # Start Memory Optimizer (optional, don't block startup)
+    try:
+        from core.memory_optimizer import memory_optimizer
+        await memory_optimizer.start()
+        logger.info("✅ 🧹 Memory Optimizer started")
+    except Exception as e:
+        logger.warning(f"⚠️  Memory Optimizer failed to start: {e}")
     
-    # Start Memory Optimizer
-    await memory_optimizer.start()
-    logger.info("🧹 Memory Optimizer started")
+    logger.info("🚀 MamanDouce API startup complete")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
-    from core.database import client
-    from core.scheduler import stop_scheduler
-    from services.guardian_agent import guardian_agent
-    from core.memory_optimizer import memory_optimizer
-    
-    # Stop Memory Optimizer
-    await memory_optimizer.stop()
-    
-    # Stop Guardian
-    await guardian_agent.stop()
-    
-    # Stop scheduler
-    stop_scheduler()
-    
-    client.close()
-    logger.info("Disconnected from MongoDB")
+    try:
+        from core.database import client
+        from core.scheduler import stop_scheduler
+        from services.guardian_agent import guardian_agent
+        from core.memory_optimizer import memory_optimizer
+        
+        # Stop Memory Optimizer
+        try:
+            await memory_optimizer.stop()
+        except Exception as e:
+            logger.warning(f"Memory Optimizer stop error: {e}")
+        
+        # Stop Guardian
+        try:
+            await guardian_agent.stop()
+        except Exception as e:
+            logger.warning(f"Guardian stop error: {e}")
+        
+        # Stop scheduler
+        try:
+            stop_scheduler()
+        except Exception as e:
+            logger.warning(f"Scheduler stop error: {e}")
+        
+        client.close()
+        logger.info("✅ Disconnected from MongoDB")
+    except Exception as e:
+        logger.error(f"❌ Shutdown error: {e}")
 
 if __name__ == "__main__":
     import uvicorn
