@@ -159,72 +159,27 @@ async def trigger_cleanup():
         "temp_files_cleaned": temp_cleaned
     }
 
-# Startup/Shutdown events
+# Startup/Shutdown events - SIMPLIFIED FOR RAILWAY
 @app.on_event("startup")
 async def startup_db_client():
+    """Minimal startup - only essential services"""
     try:
         from core.database import client
-        logger.info("✅ Connected to MongoDB")
+        logger.info("✅ MongoDB connection initialized")
     except Exception as e:
-        logger.error(f"❌ MongoDB connection failed: {e}")
-        # Don't fail startup if MongoDB is not available yet
+        logger.warning(f"⚠️ MongoDB: {e}")
     
-    # Start background services (non-blocking, with error handling)
-    try:
-        from core.scheduler import start_scheduler
-        start_scheduler()
-        logger.info("✅ Background scheduler started")
-    except Exception as e:
-        logger.warning(f"⚠️  Scheduler failed to start: {e}")
-    
-    # Start Guardian Agent (optional, don't block startup)
-    try:
-        from services.guardian_agent import guardian_agent
-        await guardian_agent.start()
-        logger.info("✅ 🛡️ Gardien Maman Douce started")
-    except Exception as e:
-        logger.warning(f"⚠️  Guardian Agent failed to start: {e}")
-    
-    # Start Memory Optimizer (optional, don't block startup)
-    try:
-        from core.memory_optimizer import memory_optimizer
-        await memory_optimizer.start()
-        logger.info("✅ 🧹 Memory Optimizer started")
-    except Exception as e:
-        logger.warning(f"⚠️  Memory Optimizer failed to start: {e}")
-    
-    logger.info("🚀 MamanDouce API startup complete")
+    logger.info("🚀 MamanDouce API startup complete - Railway ready")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
+    """Minimal shutdown"""
     try:
         from core.database import client
-        from core.scheduler import stop_scheduler
-        from services.guardian_agent import guardian_agent
-        from core.memory_optimizer import memory_optimizer
-        
-        # Stop Memory Optimizer
-        try:
-            await memory_optimizer.stop()
-        except Exception as e:
-            logger.warning(f"Memory Optimizer stop error: {e}")
-        
-        # Stop Guardian
-        try:
-            await guardian_agent.stop()
-        except Exception as e:
-            logger.warning(f"Guardian stop error: {e}")
-        
-        # Stop scheduler
-        try:
-            stop_scheduler()
-        except Exception as e:
-            logger.warning(f"Scheduler stop error: {e}")
-        
         client.close()
-        logger.info("✅ Disconnected from MongoDB")
+        logger.info("✅ MongoDB disconnected")
     except Exception as e:
-        logger.error(f"❌ Shutdown error: {e}")
+        logger.warning(f"⚠️ Shutdown: {e}")
 
 if __name__ == "__main__":
     import uvicorn
