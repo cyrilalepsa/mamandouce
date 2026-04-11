@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import AppTitle from '../components/AppTitle';
 import { AvatarPreview } from '../components/profile/AvatarBuilder';
+import PremiumSunAvatar from '../components/profile/PremiumSunAvatar';
 import { isNameCelebratedToday } from '../data/saintsCalendar';
 import LanguageBubble from '../components/LanguageBubble';
 import {
@@ -181,32 +182,16 @@ function HomePage() {
 
               {/* Salutation avec avatar CLIQUABLE - hauteur fixe pour éviter le layout shift */}
               <div className="flex flex-col items-center gap-3 min-h-[100px]">
-                {/* Avatar cliquable pour modification (sans icône crayon) */}
-                <div 
-                  className="w-16 h-16 rounded-full overflow-hidden border-4 border-white shadow-lg flex-shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition-transform"
+                {/* Avatar Premium avec aura solaire */}
+                <PremiumSunAvatar
+                  isPremium={isPremium}
+                  userAvatar={userAvatar}
+                  userAvatarConfig={userAvatarConfig}
+                  size={64}
                   onClick={handleAvatarClick}
                   title={t('profile.editAvatar', 'Modifier mon avatar')}
-                  data-testid="clickable-avatar"
-                >
-                  {userAvatar ? (
-                    <img 
-                      src={userAvatar} 
-                      alt="Avatar" 
-                      className="w-full h-full object-cover"
-                      data-testid="home-user-avatar"
-                    />
-                  ) : userAvatarConfig ? (
-                    <AvatarPreview config={userAvatarConfig} size={64} />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center" data-testid="home-default-avatar">
-                      <svg viewBox="0 0 24 24" className="w-10 h-10 text-white/90" fill="currentColor">
-                        <circle cx="12" cy="6" r="4" />
-                        <path d="M12 12c-4 0-6 2-6 4v1c0 .5.2 1 .6 1.3.5.4 1.2.7 2.4.7h6c1.2 0 1.9-.3 2.4-.7.4-.3.6-.8.6-1.3v-1c0-2-2-4-6-4z" />
-                        <path d="M9 19c-.3 1.5-.5 2.5-.5 3h7c0-.5-.2-1.5-.5-3H9z" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
+                  testId="home-avatar"
+                />
                 <h2 className="text-2xl sm:text-3xl text-center" data-testid="user-welcome">
                   <span className="text-slate-500 font-medium" style={{ fontFamily: "'Quicksand', sans-serif" }}>{t('home.welcome')}, </span>
                   <span 
