@@ -171,43 +171,83 @@ function PremiumSunAvatar({
         {renderAvatar()}
       </div>
       
-      {/* SCINTILLEMENTS BLANCS - 15 DIVS AVEC CLASSE */}
-      <div className="sparkle" style={{ top: '15%', left: '60%', animationDuration: '2.5s', animationDelay: '0s' }}></div>
-      <div className="sparkle" style={{ top: '20%', left: '75%', animationDuration: '3s', animationDelay: '0.3s' }}></div>
-      <div className="sparkle" style={{ top: '35%', left: '85%', animationDuration: '2.8s', animationDelay: '0.6s' }}></div>
-      <div className="sparkle" style={{ top: '50%', left: '90%', animationDuration: '3.2s', animationDelay: '0.9s' }}></div>
-      <div className="sparkle" style={{ top: '65%', left: '80%', animationDuration: '2.7s', animationDelay: '1.2s' }}></div>
-      <div className="sparkle" style={{ top: '80%', left: '65%', animationDuration: '3.1s', animationDelay: '1.5s' }}></div>
-      <div className="sparkle" style={{ top: '85%', left: '50%', animationDuration: '2.9s', animationDelay: '1.8s' }}></div>
-      <div className="sparkle" style={{ top: '80%', left: '35%', animationDuration: '3.3s', animationDelay: '2.1s' }}></div>
-      <div className="sparkle" style={{ top: '65%', left: '20%', animationDuration: '2.6s', animationDelay: '0.2s' }}></div>
-      <div className="sparkle" style={{ top: '50%', left: '10%', animationDuration: '3.4s', animationDelay: '0.5s' }}></div>
-      <div className="sparkle" style={{ top: '35%', left: '15%', animationDuration: '2.4s', animationDelay: '0.8s' }}></div>
-      <div className="sparkle" style={{ top: '20%', left: '25%', animationDuration: '3.5s', animationDelay: '1.1s' }}></div>
-      <div className="sparkle" style={{ top: '25%', left: '45%', animationDuration: '2.8s', animationDelay: '1.4s' }}></div>
-      <div className="sparkle" style={{ top: '70%', left: '55%', animationDuration: '3.6s', animationDelay: '1.7s' }}></div>
-      <div className="sparkle" style={{ top: '40%', left: '70%', animationDuration: '3s', animationDelay: '2s' }}></div>
+      {/* SCINTILLEMENTS BLANCS - 30 DIVS DISPERSÉS TOUT AUTOUR */}
+      {/* Zone Haut-Droite */}
+      <div className="sparkle" style={{ top: '8%', left: '75%', width: '2px', height: '2px', animationDuration: '2.5s', animationDelay: '0s' }}></div>
+      <div className="sparkle" style={{ top: '15%', left: '85%', width: '3px', height: '3px', animationDuration: '3s', animationDelay: '0.2s' }}></div>
+      <div className="sparkle" style={{ top: '22%', left: '92%', width: '1px', height: '1px', animationDuration: '2.8s', animationDelay: '0.4s' }}></div>
+      
+      {/* Zone Droite */}
+      <div className="sparkle" style={{ top: '35%', left: '90%', width: '2px', height: '2px', animationDuration: '3.2s', animationDelay: '0.6s' }}></div>
+      <div className="sparkle" style={{ top: '48%', left: '94%', width: '1px', height: '1px', animationDuration: '2.7s', animationDelay: '0.8s' }}></div>
+      <div className="sparkle" style={{ top: '58%', left: '88%', width: '3px', height: '3px', animationDuration: '3.1s', animationDelay: '1s' }}></div>
+      
+      {/* Zone Bas-Droite */}
+      <div className="sparkle" style={{ top: '70%', left: '82%', width: '2px', height: '2px', animationDuration: '2.9s', animationDelay: '1.2s' }}></div>
+      <div className="sparkle" style={{ top: '80%', left: '72%', width: '1px', height: '1px', animationDuration: '3.3s', animationDelay: '1.4s' }}></div>
+      <div className="sparkle" style={{ top: '88%', left: '62%', width: '2px', height: '2px', animationDuration: '2.6s', animationDelay: '1.6s' }}></div>
+      
+      {/* Zone Bas */}
+      <div className="sparkle" style={{ top: '92%', left: '50%', width: '3px', height: '3px', animationDuration: '3.4s', animationDelay: '1.8s' }}></div>
+      <div className="sparkle" style={{ top: '90%', left: '38%', width: '1px', height: '1px', animationDuration: '2.4s', animationDelay: '2s' }}></div>
+      
+      {/* Zone Bas-Gauche */}
+      <div className="sparkle" style={{ top: '85%', left: '28%', width: '2px', height: '2px', animationDuration: '3.5s', animationDelay: '2.2s' }}></div>
+      <div className="sparkle" style={{ top: '78%', left: '18%', width: '3px', height: '3px', animationDuration: '2.8s', animationDelay: '2.4s' }}></div>
+      <div className="sparkle" style={{ top: '68%', left: '10%', width: '1px', height: '1px', animationDuration: '3.6s', animationDelay: '2.6s' }}></div>
+      
+      {/* Zone Gauche */}
+      <div className="sparkle" style={{ top: '55%', left: '6%', width: '2px', height: '2px', animationDuration: '3s', animationDelay: '2.8s' }}></div>
+      <div className="sparkle" style={{ top: '42%', left: '8%', width: '3px', height: '3px', animationDuration: '2.7s', animationDelay: '0.1s' }}></div>
+      <div className="sparkle" style={{ top: '30%', left: '12%', width: '1px', height: '1px', animationDuration: '3.1s', animationDelay: '0.3s' }}></div>
+      
+      {/* Zone Haut-Gauche */}
+      <div className="sparkle" style={{ top: '18%', left: '15%', width: '2px', height: '2px', animationDuration: '2.9s', animationDelay: '0.5s' }}></div>
+      <div className="sparkle" style={{ top: '10%', left: '25%', width: '1px', height: '1px', animationDuration: '3.3s', animationDelay: '0.7s' }}></div>
+      <div className="sparkle" style={{ top: '5%', left: '38%', width: '2px', height: '2px', animationDuration: '2.5s', animationDelay: '0.9s' }}></div>
+      
+      {/* Zone Haut */}
+      <div className="sparkle" style={{ top: '4%', left: '52%', width: '3px', height: '3px', animationDuration: '3.2s', animationDelay: '1.1s' }}></div>
+      <div className="sparkle" style={{ top: '7%', left: '65%', width: '1px', height: '1px', animationDuration: '2.6s', animationDelay: '1.3s' }}></div>
+      
+      {/* Points intermédiaires pour remplissage harmonieux */}
+      <div className="sparkle" style={{ top: '25%', left: '70%', width: '2px', height: '2px', animationDuration: '3.4s', animationDelay: '1.5s' }}></div>
+      <div className="sparkle" style={{ top: '45%', left: '78%', width: '3px', height: '3px', animationDuration: '2.8s', animationDelay: '1.7s' }}></div>
+      <div className="sparkle" style={{ top: '65%', left: '65%', width: '1px', height: '1px', animationDuration: '3.5s', animationDelay: '1.9s' }}></div>
+      <div className="sparkle" style={{ top: '75%', left: '45%', width: '2px', height: '2px', animationDuration: '2.7s', animationDelay: '2.1s' }}></div>
+      <div className="sparkle" style={{ top: '62%', left: '32%', width: '3px', height: '3px', animationDuration: '3.1s', animationDelay: '2.3s' }}></div>
+      <div className="sparkle" style={{ top: '38%', left: '22%', width: '1px', height: '1px', animationDuration: '2.9s', animationDelay: '2.5s' }}></div>
+      <div className="sparkle" style={{ top: '20%', left: '48%', width: '2px', height: '2px', animationDuration: '3.3s', animationDelay: '2.7s' }}></div>
+      <div className="sparkle" style={{ top: '12%', left: '58%', width: '3px', height: '3px', animationDuration: '2.4s', animationDelay: '2.9s' }}></div>
       
       {/* STYLES CSS POUR SCINTILLEMENTS */}
       <style>{`
         .sparkle {
-          width: 3px;
-          height: 3px;
           background: white;
           border-radius: 50%;
           position: absolute;
           z-index: 2000 !important;
           pointer-events: none;
-          animation: flash ease-in-out infinite;
-          box-shadow: 0 0 4px white;
+          animation: sparkle-magic ease-in-out infinite;
+          box-shadow: 0 0 8px white;
         }
         
-        @keyframes flash {
+        @keyframes sparkle-magic {
           0%, 100% {
             opacity: 0;
+            transform: translate(0, 0);
+          }
+          25% {
+            opacity: 0.6;
+            transform: translate(1px, -1px);
           }
           50% {
             opacity: 1;
+            transform: translate(2px, 1px);
+          }
+          75% {
+            opacity: 0.7;
+            transform: translate(-1px, 2px);
           }
         }
       `}</style>
