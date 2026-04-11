@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { AvatarPreview } from './AvatarBuilder';
 
 /**
  * PremiumSunAvatar - Avatar avec effet "MAMAN SOLEIL VAPOREUSE"
- * Présence lumineuse évanescente - Dégradé extrême, rayons diffus qui s'évaporent
+ * Présence lumineuse évanescente + Poussière d'étoiles JavaScript dynamique
  * Ultra-doux, apaisant, pas technique
  */
 function PremiumSunAvatar({ 
@@ -15,6 +15,66 @@ function PremiumSunAvatar({
   title,
   testId = "premium-sun-avatar"
 }) {
+  
+  const sparkleContainerRef = useRef(null);
+  
+  // Générer dynamiquement les scintillements avec JavaScript
+  useEffect(() => {
+    if (!isPremium || !sparkleContainerRef.current) return;
+    
+    const container = sparkleContainerRef.current;
+    const sparkleCount = 18; // 18 points scintillants
+    
+    // Nettoyer les anciens scintillements
+    container.innerHTML = '';
+    
+    // Créer les scintillements dynamiquement
+    for (let i = 0; i < sparkleCount; i++) {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle-point';
+      
+      // Position aléatoire en cercle autour de l'avatar
+      const angle = (360 / sparkleCount) * i + Math.random() * 20;
+      const distance = 35 + Math.random() * 20; // 35-55px du centre
+      const x = Math.cos(angle * Math.PI / 180) * distance;
+      const y = Math.sin(angle * Math.PI / 180) * distance;
+      
+      // Taille aléatoire (1-3px)
+      const sparkleSize = 1 + Math.random() * 2;
+      
+      // Animation avec délai aléatoire
+      const animationDuration = 2 + Math.random() * 3; // 2-5s
+      const animationDelay = Math.random() * 3; // 0-3s
+      
+      // Appliquer les styles
+      Object.assign(sparkle.style, {
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+        width: `${sparkleSize}px`,
+        height: `${sparkleSize}px`,
+        transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+        background: 'radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 50%, transparent 100%)',
+        borderRadius: '50%',
+        boxShadow: `
+          0 0 8px rgba(255, 255, 255, 1),
+          0 0 15px rgba(255, 255, 255, 0.8),
+          0 0 25px rgba(255, 255, 255, 0.5)
+        `,
+        animation: `sparkle-twinkle ${animationDuration}s ease-in-out infinite`,
+        animationDelay: `${animationDelay}s`,
+        opacity: '0',
+        zIndex: '20',
+        pointerEvents: 'none'
+      });
+      
+      container.appendChild(sparkle);
+    }
+    
+    return () => {
+      if (container) container.innerHTML = '';
+    };
+  }, [isPremium]);
   
   // Avatar de base (sans aura)
   const renderAvatar = () => (
@@ -96,9 +156,8 @@ function PremiumSunAvatar({
           key={`vapor-ray-${i}`}
           className="absolute"
           style={{
-            width: '8px', // Plus larges pour effet vaporeux
+            width: '8px',
             height: `${rayLength}px`,
-            // Dégradé extrême : lumineux au centre → transparent très rapidement
             background: `
               radial-gradient(ellipse at center, 
                 rgba(255, 250, 240, 0.85) 0%,
@@ -117,10 +176,9 @@ function PremiumSunAvatar({
             left: '50%',
             bottom: '50%',
             transform: `translateX(-50%) rotate(${i * 20}deg) translateY(-${size / 2 + 5}px)`,
-            opacity: 0.5, // Opacity réduite pour effet vaporeux
+            opacity: 0.5,
             animation: `ray-vapor-float ${12 + (i % 4) * 3}s ease-in-out infinite`,
             animationDelay: `${i * 0.4}s`,
-            // Blur EXTRÊME pour effet vaporeux
             filter: 'blur(10px)',
             '--ray-rotation': `${i * 20}deg`
           }}
@@ -135,7 +193,6 @@ function PremiumSunAvatar({
           style={{
             width: '6px',
             height: `${rayLength * 0.75}px`,
-            // Dégradé ultra-rapide vers transparent
             background: `
               radial-gradient(ellipse at center,
                 rgba(255, 247, 205, 0.7) 0%,
@@ -154,46 +211,17 @@ function PremiumSunAvatar({
             opacity: 0.45,
             animation: `ray-vapor-float-slow ${15 + (i % 3) * 3}s ease-in-out infinite`,
             animationDelay: `${i * 0.5}s`,
-            filter: 'blur(12px)' // Encore plus flou
+            filter: 'blur(12px)'
           }}
         />
       ))}
       
-      {/* POUSSIÈRE D'ÉTOILES BLANCHES MAGIQUES - AU PREMIER PLAN (20 points VISIBLES) */}
-      {[...Array(20)].map((_, i) => {
-        const angle = (i * 18) * (Math.PI / 180);
-        const distance = size * 0.55 + (i % 4) * 14;
-        const x = Math.cos(angle) * distance;
-        const y = Math.sin(angle) * distance;
-        const sparkleSize = 3 + (i % 3) * 1.5; // Plus gros : 3-6px
-        
-        return (
-          <div
-            key={`sparkle-${i}`}
-            className="sparkle absolute rounded-full"
-            style={{
-              width: `${sparkleSize}px`,
-              height: `${sparkleSize}px`,
-              left: '50%',
-              top: '50%',
-              transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-              // Blanc pur avec glow fort
-              background: 'radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.95) 40%, rgba(255, 255, 255, 0.7) 70%, transparent 100%)',
-              animation: `sparkle-magic ${2 + (i % 6) * 0.8}s ease-in-out infinite`,
-              animationDelay: `${i * 0.15}s`,
-              // Box-shadow FORT pour visibilité maximale
-              boxShadow: `
-                0 0 12px rgba(255, 255, 255, 1),
-                0 0 20px rgba(255, 255, 255, 0.8),
-                0 0 30px rgba(255, 255, 255, 0.5)
-              `,
-              zIndex: 15, // AU-DESSUS DE TOUT
-              opacity: 0,
-              pointerEvents: 'none'
-            }}
-          />
-        );
-      })}
+      {/* CONTENEUR POUR SCINTILLEMENTS JAVASCRIPT */}
+      <div 
+        ref={sparkleContainerRef}
+        className="absolute inset-0"
+        style={{ pointerEvents: 'none' }}
+      />
       
       {/* HALO DORÉ VAPOREUX PROCHE */}
       <div 
@@ -222,7 +250,7 @@ function PremiumSunAvatar({
         {renderAvatar()}
       </div>
       
-      {/* STYLES CSS - ANIMATIONS MAMAN SOLEIL VAPOREUSE */}
+      {/* STYLES CSS - ANIMATIONS + SCINTILLEMENTS */}
       <style jsx>{`
         @keyframes maman-breathe {
           0%, 100% {
@@ -269,96 +297,26 @@ function PremiumSunAvatar({
           }
         }
         
-        @keyframes sparkle-magic {
+        @keyframes sparkle-twinkle {
           0%, 100% {
             opacity: 0;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0);
+            transform: translate(-50%, -50%) scale(0);
           }
-          10% {
-            opacity: 0.5;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.8);
+          15% {
+            opacity: 0.7;
+            transform: translate(-50%, -50%) scale(1.2);
           }
-          20% {
+          30% {
             opacity: 1;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.3);
+            transform: translate(-50%, -50%) scale(1);
           }
-          40% {
-            opacity: 1;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.1);
+          70% {
+            opacity: 0.9;
+            transform: translate(-50%, -50%) scale(1);
           }
-          60% {
-            opacity: 1;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(1);
-          }
-          80% {
-            opacity: 0.6;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.7);
-          }
-          90% {
-            opacity: 0.2;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.3);
-          }
-        }
-        
-        @keyframes firefly-glow {
-          0%, 100% {
-            opacity: 0;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.2);
-          }
-          6% {
-            opacity: 0.35;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.7);
-          }
-          18% {
-            opacity: 0.95;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.25);
-          }
-          35% {
-            opacity: 1;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.05);
-          }
-          65% {
-            opacity: 0.92;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.95);
-          }
-          82% {
-            opacity: 0.48;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.65);
-          }
-          94% {
-            opacity: 0.15;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.35);
-          }
-        }
-        
-        @keyframes firefly-glow-delayed {
-          0%, 100% {
-            opacity: 0;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.15);
-          }
-          10% {
-            opacity: 0.42;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.75);
-          }
-          25% {
-            opacity: 0.88;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.15);
-          }
-          40% {
-            opacity: 1;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.95);
-          }
-          60% {
-            opacity: 0.85;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.85);
-          }
-          78% {
-            opacity: 0.38;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.55);
-          }
-          90% {
-            opacity: 0.12;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.28);
+          85% {
+            opacity: 0.4;
+            transform: translate(-50%, -50%) scale(0.8);
           }
         }
         
