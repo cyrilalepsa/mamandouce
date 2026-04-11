@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { AvatarPreview } from './AvatarBuilder';
 
 /**
  * PremiumSunAvatar - Avatar avec effet "MAMAN SOLEIL VAPOREUSE"
- * Présence lumineuse évanescente + Poussière d'étoiles JavaScript dynamique
+ * Présence lumineuse évanescente + 20 scintillements blancs physiques
  * Ultra-doux, apaisant, pas technique
  */
 function PremiumSunAvatar({ 
@@ -15,66 +15,6 @@ function PremiumSunAvatar({
   title,
   testId = "premium-sun-avatar"
 }) {
-  
-  const sparkleContainerRef = useRef(null);
-  
-  // Générer dynamiquement les scintillements avec JavaScript
-  useEffect(() => {
-    if (!isPremium || !sparkleContainerRef.current) return;
-    
-    const container = sparkleContainerRef.current;
-    const sparkleCount = 18; // 18 points scintillants
-    
-    // Nettoyer les anciens scintillements
-    container.innerHTML = '';
-    
-    // Créer les scintillements dynamiquement
-    for (let i = 0; i < sparkleCount; i++) {
-      const sparkle = document.createElement('div');
-      sparkle.className = 'sparkle-point';
-      
-      // Position aléatoire en cercle autour de l'avatar
-      const angle = (360 / sparkleCount) * i + Math.random() * 20;
-      const distance = 35 + Math.random() * 20; // 35-55px du centre
-      const x = Math.cos(angle * Math.PI / 180) * distance;
-      const y = Math.sin(angle * Math.PI / 180) * distance;
-      
-      // Taille aléatoire (1-3px)
-      const sparkleSize = 1 + Math.random() * 2;
-      
-      // Animation avec délai aléatoire
-      const animationDuration = 2 + Math.random() * 3; // 2-5s
-      const animationDelay = Math.random() * 3; // 0-3s
-      
-      // Appliquer les styles
-      Object.assign(sparkle.style, {
-        position: 'absolute',
-        left: '50%',
-        top: '50%',
-        width: `${sparkleSize}px`,
-        height: `${sparkleSize}px`,
-        transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-        background: 'radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 50%, transparent 100%)',
-        borderRadius: '50%',
-        boxShadow: `
-          0 0 8px rgba(255, 255, 255, 1),
-          0 0 15px rgba(255, 255, 255, 0.8),
-          0 0 25px rgba(255, 255, 255, 0.5)
-        `,
-        animation: `sparkle-twinkle ${animationDuration}s ease-in-out infinite`,
-        animationDelay: `${animationDelay}s`,
-        opacity: '0',
-        zIndex: '20',
-        pointerEvents: 'none'
-      });
-      
-      container.appendChild(sparkle);
-    }
-    
-    return () => {
-      if (container) container.innerHTML = '';
-    };
-  }, [isPremium]);
   
   // Avatar de base (sans aura)
   const renderAvatar = () => (
@@ -216,12 +156,168 @@ function PremiumSunAvatar({
         />
       ))}
       
-      {/* CONTENEUR POUR SCINTILLEMENTS JAVASCRIPT */}
-      <div 
-        ref={sparkleContainerRef}
-        className="absolute inset-0"
-        style={{ pointerEvents: 'none' }}
-      />
+      {/* CONTENEUR POUR SCINTILLEMENTS - 20 POINTS BLANCS PHYSIQUES */}
+      <div className="absolute inset-0" style={{ pointerEvents: 'none', zIndex: 9999 }}>
+        {/* Point 1 */}
+        <div className="sparkle" style={{ 
+          width: '2px', height: '2px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% + 40px), calc(-50% + 10px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 3s ease-in-out infinite', animationDelay: '0s'
+        }} />
+        
+        {/* Point 2 */}
+        <div className="sparkle" style={{ 
+          width: '2px', height: '2px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% + 35px), calc(-50% - 20px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 2.5s ease-in-out infinite', animationDelay: '0.3s'
+        }} />
+        
+        {/* Point 3 */}
+        <div className="sparkle" style={{ 
+          width: '3px', height: '3px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% + 20px), calc(-50% - 35px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 3.5s ease-in-out infinite', animationDelay: '0.6s'
+        }} />
+        
+        {/* Point 4 */}
+        <div className="sparkle" style={{ 
+          width: '2px', height: '2px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% - 10px), calc(-50% - 40px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 2.8s ease-in-out infinite', animationDelay: '0.9s'
+        }} />
+        
+        {/* Point 5 */}
+        <div className="sparkle" style={{ 
+          width: '2px', height: '2px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% - 35px), calc(-50% - 25px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 3.2s ease-in-out infinite', animationDelay: '1.2s'
+        }} />
+        
+        {/* Point 6 */}
+        <div className="sparkle" style={{ 
+          width: '3px', height: '3px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% - 45px), calc(-50% + 5px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 2.7s ease-in-out infinite', animationDelay: '1.5s'
+        }} />
+        
+        {/* Point 7 */}
+        <div className="sparkle" style={{ 
+          width: '2px', height: '2px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% - 38px), calc(-50% + 30px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 3.1s ease-in-out infinite', animationDelay: '1.8s'
+        }} />
+        
+        {/* Point 8 */}
+        <div className="sparkle" style={{ 
+          width: '2px', height: '2px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% - 15px), calc(-50% + 42px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 2.9s ease-in-out infinite', animationDelay: '2.1s'
+        }} />
+        
+        {/* Point 9 */}
+        <div className="sparkle" style={{ 
+          width: '3px', height: '3px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% + 15px), calc(-50% + 45px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 3.3s ease-in-out infinite', animationDelay: '2.4s'
+        }} />
+        
+        {/* Point 10 */}
+        <div className="sparkle" style={{ 
+          width: '2px', height: '2px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% + 38px), calc(-50% + 32px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 2.6s ease-in-out infinite', animationDelay: '2.7s'
+        }} />
+        
+        {/* Point 11 */}
+        <div className="sparkle" style={{ 
+          width: '2px', height: '2px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% + 48px), calc(-50% - 8px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 3.4s ease-in-out infinite', animationDelay: '0.2s'
+        }} />
+        
+        {/* Point 12 */}
+        <div className="sparkle" style={{ 
+          width: '3px', height: '3px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% + 28px), calc(-50% - 28px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 2.4s ease-in-out infinite', animationDelay: '0.5s'
+        }} />
+        
+        {/* Point 13 */}
+        <div className="sparkle" style={{ 
+          width: '2px', height: '2px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% - 5px), calc(-50% - 48px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 3.6s ease-in-out infinite', animationDelay: '0.8s'
+        }} />
+        
+        {/* Point 14 */}
+        <div className="sparkle" style={{ 
+          width: '2px', height: '2px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% - 28px), calc(-50% - 32px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 2.8s ease-in-out infinite', animationDelay: '1.1s'
+        }} />
+        
+        {/* Point 15 */}
+        <div className="sparkle" style={{ 
+          width: '3px', height: '3px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% - 50px), calc(-50% - 10px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 3s ease-in-out infinite', animationDelay: '1.4s'
+        }} />
+        
+        {/* Point 16 */}
+        <div className="sparkle" style={{ 
+          width: '2px', height: '2px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% - 42px), calc(-50% + 20px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 2.7s ease-in-out infinite', animationDelay: '1.7s'
+        }} />
+        
+        {/* Point 17 */}
+        <div className="sparkle" style={{ 
+          width: '2px', height: '2px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% - 25px), calc(-50% + 48px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 3.2s ease-in-out infinite', animationDelay: '2s'
+        }} />
+        
+        {/* Point 18 */}
+        <div className="sparkle" style={{ 
+          width: '3px', height: '3px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% + 5px), calc(-50% + 50px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 2.5s ease-in-out infinite', animationDelay: '2.3s'
+        }} />
+        
+        {/* Point 19 */}
+        <div className="sparkle" style={{ 
+          width: '2px', height: '2px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% + 32px), calc(-50% + 38px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 3.1s ease-in-out infinite', animationDelay: '2.6s'
+        }} />
+        
+        {/* Point 20 */}
+        <div className="sparkle" style={{ 
+          width: '2px', height: '2px', background: 'white', borderRadius: '50%', position: 'absolute',
+          left: '50%', top: '50%', transform: 'translate(calc(-50% + 45px), calc(-50% + 18px))',
+          boxShadow: '0 0 6px white, 0 0 12px rgba(255,255,255,0.8)',
+          animation: 'sparkle-blink 2.9s ease-in-out infinite', animationDelay: '2.9s'
+        }} />
+      </div>
       
       {/* HALO DORÉ VAPOREUX PROCHE */}
       <div 
@@ -294,6 +390,15 @@ function PremiumSunAvatar({
           66% {
             opacity: 0.48;
             transform: translateX(-50%) rotate(calc(var(--ray-rotation, 0deg) - 1.1deg)) translateY(-${size / 2 + 5}px) scaleY(0.95);
+          }
+        }
+        
+        @keyframes sparkle-blink {
+          0%, 100% {
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
           }
         }
         
