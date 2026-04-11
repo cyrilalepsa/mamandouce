@@ -210,13 +210,13 @@ function PremiumSunAvatar({
       {/* STYLES CSS POUR SCINTILLEMENTS */}
       <style>{`
         .sparkle {
-          background: white;
+          background: #ffffff;
           border-radius: 50%;
           position: absolute;
-          z-index: 9999 !important;
+          z-index: 10000 !important;
           pointer-events: none;
           animation: sparkle-magic ease-in-out infinite;
-          box-shadow: 0 0 10px 2px white;
+          box-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 15px #ffffff;
         }
         
         @keyframes sparkle-magic {
@@ -225,7 +225,7 @@ function PremiumSunAvatar({
             transform: translate(0, 0);
           }
           25% {
-            opacity: 0.6;
+            opacity: 0.8;
             transform: translate(1px, -1px);
           }
           50% {
@@ -233,7 +233,7 @@ function PremiumSunAvatar({
             transform: translate(2px, 1px);
           }
           75% {
-            opacity: 0.7;
+            opacity: 0.9;
             transform: translate(-1px, 2px);
           }
         }
