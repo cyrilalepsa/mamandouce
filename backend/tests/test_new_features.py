@@ -88,7 +88,7 @@ class TestPricingConfiguration:
             f"{BASE_URL}/api/payments/checkout/session",
             json={
                 "package_id": "annual",
-                "origin_url": "https://tirelire-staging.preview.emergentagent.com"
+                "origin_url": "https://nacre-preview.preview.emergentagent.com"
             },
             headers={"Authorization": f"Bearer {token}"}
         )
@@ -111,7 +111,7 @@ class TestPricingConfiguration:
             f"{BASE_URL}/api/payments/checkout/session",
             json={
                 "package_id": "postpartum",
-                "origin_url": "https://tirelire-staging.preview.emergentagent.com"
+                "origin_url": "https://nacre-preview.preview.emergentagent.com"
             },
             headers={"Authorization": f"Bearer {token}"}
         )
