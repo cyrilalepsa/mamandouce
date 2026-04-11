@@ -2,9 +2,9 @@ import React from 'react';
 import { AvatarPreview } from './AvatarBuilder';
 
 /**
- * PremiumSunAvatar - Avatar avec effet "AURORE STELLAIRE" VERSION FINALE
- * Rayons jaunes à ondulation lente + Poussière d'étoiles blanches scintillantes
- * Chaleureux, sophistiqué et plein de vie
+ * PremiumSunAvatar - Avatar avec effet "MAMAN SOLEIL VAPOREUSE"
+ * Présence lumineuse évanescente - Dégradé extrême, rayons diffus qui s'évaporent
+ * Ultra-doux, apaisant, pas technique
  */
 function PremiumSunAvatar({ 
   isPremium = false, 
@@ -55,9 +55,9 @@ function PremiumSunAvatar({
     );
   }
 
-  // RENDU PREMIUM - AURORE STELLAIRE FINALE
+  // RENDU PREMIUM - MAMAN SOLEIL VAPOREUSE
   const auraSize = size + 90; // 154px total
-  const rayLength = size * 0.9; // ~58px
+  const rayLength = size * 1.1; // Rayons plus longs pour fade progressif
 
   return (
     <div 
@@ -68,149 +68,175 @@ function PremiumSunAvatar({
       }}
       data-testid={`${testId}-premium`}
     >
-      {/* GRANDE AURA DORÉE TRÈS DIFFUSE - Base chaude */}
+      {/* GRANDE AURA DORÉE VAPOREUSE - Base ultra-diffuse */}
       <div 
         className="absolute inset-0 rounded-full"
         style={{
-          background: 'radial-gradient(circle, rgba(255, 247, 205, 0.7) 0%, rgba(254, 240, 138, 0.6) 15%, rgba(253, 224, 71, 0.45) 30%, rgba(250, 204, 21, 0.3) 50%, rgba(252, 211, 77, 0.15) 70%, rgba(251, 191, 36, 0.05) 85%, transparent 100%)',
-          filter: 'blur(12px)',
-          animation: 'aurora-breathe 4s ease-in-out infinite'
+          background: 'radial-gradient(circle, rgba(255, 250, 240, 0.8) 0%, rgba(255, 247, 205, 0.7) 10%, rgba(254, 240, 138, 0.6) 20%, rgba(253, 230, 100, 0.45) 35%, rgba(250, 215, 60, 0.3) 50%, rgba(252, 211, 77, 0.18) 65%, rgba(251, 200, 50, 0.08) 78%, rgba(250, 204, 21, 0.03) 88%, transparent 100%)',
+          filter: 'blur(16px)',
+          animation: 'maman-breathe 5s ease-in-out infinite'
         }}
       />
       
-      {/* COUCHE INTERMÉDIAIRE DORÉE */}
+      {/* COUCHE INTERMÉDIAIRE VAPOREUSE */}
       <div 
         className="absolute rounded-full"
         style={{
-          width: `${size + 60}px`,
-          height: `${size + 60}px`,
-          background: 'radial-gradient(circle, rgba(255, 247, 205, 0.6) 0%, rgba(254, 240, 138, 0.45) 30%, rgba(253, 224, 71, 0.25) 60%, transparent 100%)',
-          filter: 'blur(8px)',
-          animation: 'aurora-breathe 3.5s ease-in-out infinite alternate'
+          width: `${size + 70}px`,
+          height: `${size + 70}px`,
+          background: 'radial-gradient(circle, rgba(255, 250, 240, 0.75) 0%, rgba(255, 247, 205, 0.65) 15%, rgba(254, 240, 138, 0.5) 30%, rgba(253, 224, 71, 0.32) 50%, rgba(250, 204, 21, 0.15) 70%, transparent 90%)',
+          filter: 'blur(14px)',
+          animation: 'maman-breathe 4.5s ease-in-out infinite alternate'
         }}
       />
       
-      {/* RAYONS JAUNES DORÉS - Ondulation TRÈS LENTE (18 rayons principaux) */}
+      {/* RAYONS JAUNES VAPOREUX - Dégradé extrême, très diffus (18 rayons) */}
       {[...Array(18)].map((_, i) => (
         <div
-          key={`golden-ray-${i}`}
+          key={`vapor-ray-${i}`}
           className="absolute"
           style={{
-            width: '3px',
+            width: '8px', // Plus larges pour effet vaporeux
             height: `${rayLength}px`,
-            background: 'linear-gradient(to bottom, rgba(254, 240, 138, 0.9) 0%, rgba(253, 224, 71, 0.8) 25%, rgba(250, 204, 21, 0.6) 50%, rgba(252, 211, 77, 0.4) 75%, transparent 100%)',
+            // Dégradé extrême : lumineux au centre → transparent très rapidement
+            background: `
+              radial-gradient(ellipse at center, 
+                rgba(255, 250, 240, 0.85) 0%,
+                rgba(255, 247, 205, 0.75) 5%,
+                rgba(254, 240, 138, 0.6) 12%,
+                rgba(253, 230, 100, 0.45) 20%,
+                rgba(252, 220, 80, 0.3) 30%,
+                rgba(250, 204, 21, 0.18) 42%,
+                rgba(248, 195, 30, 0.1) 55%,
+                rgba(245, 185, 25, 0.05) 68%,
+                rgba(240, 175, 20, 0.02) 80%,
+                transparent 92%
+              )
+            `,
             transformOrigin: 'center bottom',
             left: '50%',
             bottom: '50%',
             transform: `translateX(-50%) rotate(${i * 20}deg) translateY(-${size / 2 + 5}px)`,
-            opacity: 0.75,
-            animation: `ray-slow-float ${10 + (i % 4) * 2}s ease-in-out infinite`,
-            animationDelay: `${i * 0.3}s`,
-            filter: 'drop-shadow(0 0 3px rgba(254, 240, 138, 0.6))',
+            opacity: 0.5, // Opacity réduite pour effet vaporeux
+            animation: `ray-vapor-float ${12 + (i % 4) * 3}s ease-in-out infinite`,
+            animationDelay: `${i * 0.4}s`,
+            // Blur EXTRÊME pour effet vaporeux
+            filter: 'blur(10px)',
             '--ray-rotation': `${i * 20}deg`
           }}
         />
       ))}
       
-      {/* RAYONS JAUNES SECONDAIRES - Ondulation encore plus lente (18 rayons) */}
+      {/* RAYONS SECONDAIRES ENCORE PLUS VAPOREUX (18 rayons) */}
       {[...Array(18)].map((_, i) => (
         <div
-          key={`secondary-golden-ray-${i}`}
+          key={`secondary-vapor-ray-${i}`}
           className="absolute"
           style={{
-            width: '2px',
-            height: `${rayLength * 0.7}px`,
-            background: 'linear-gradient(to bottom, rgba(253, 224, 71, 0.7) 0%, rgba(250, 204, 21, 0.6) 40%, rgba(252, 211, 77, 0.4) 70%, transparent 100%)',
+            width: '6px',
+            height: `${rayLength * 0.75}px`,
+            // Dégradé ultra-rapide vers transparent
+            background: `
+              radial-gradient(ellipse at center,
+                rgba(255, 247, 205, 0.7) 0%,
+                rgba(254, 240, 138, 0.55) 8%,
+                rgba(253, 224, 71, 0.38) 18%,
+                rgba(250, 210, 50, 0.22) 32%,
+                rgba(248, 200, 40, 0.12) 48%,
+                rgba(245, 190, 30, 0.06) 65%,
+                transparent 85%
+              )
+            `,
             transformOrigin: 'center bottom',
             left: '50%',
             bottom: '50%',
             transform: `translateX(-50%) rotate(${i * 20 + 10}deg) translateY(-${size / 2 + 5}px)`,
-            opacity: 0.65,
-            animation: `ray-ultra-slow-float ${13 + (i % 3) * 2}s ease-in-out infinite`,
-            animationDelay: `${i * 0.4}s`,
-            filter: 'drop-shadow(0 0 2px rgba(253, 224, 71, 0.5))'
+            opacity: 0.45,
+            animation: `ray-vapor-float-slow ${15 + (i % 3) * 3}s ease-in-out infinite`,
+            animationDelay: `${i * 0.5}s`,
+            filter: 'blur(12px)' // Encore plus flou
           }}
         />
       ))}
       
-      {/* COUCHE POUSSIÈRE D'ÉTOILES BLANCHES - Scintillement aléatoire (25 étoiles) */}
-      {[...Array(25)].map((_, i) => {
-        const angle = (i * 14.4) * (Math.PI / 180);
+      {/* LUCIOLES BLANCHES - Nuée de petits points scintillants (30 lucioles) */}
+      {[...Array(30)].map((_, i) => {
+        const angle = (i * 12) * (Math.PI / 180);
         const distance = size * 0.6 + (i % 5) * 10;
         const x = Math.cos(angle) * distance;
         const y = Math.sin(angle) * distance;
-        const starSize = 1.5 + (i % 3) * 0.5;
+        const fireflSize = 1.2 + (i % 3) * 0.6;
         
         return (
           <div
-            key={`star-dust-${i}`}
+            key={`firefly-${i}`}
             className="absolute rounded-full"
             style={{
-              width: `${starSize}px`,
-              height: `${starSize}px`,
+              width: `${fireflSize}px`,
+              height: `${fireflSize}px`,
               left: '50%',
               top: '50%',
               transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-              background: 'radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 30%, transparent 70%)',
-              animation: `star-fade ${3 + (i % 7) * 0.8}s ease-in-out infinite`,
-              animationDelay: `${i * 0.2}s`,
-              boxShadow: '0 0 8px rgba(255, 255, 255, 0.9), 0 0 4px rgba(254, 240, 138, 0.5)',
-              zIndex: 6,
+              background: 'radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.95) 25%, rgba(255, 250, 240, 0.7) 50%, transparent 80%)',
+              animation: `firefly-glow ${2.5 + (i % 8) * 0.9}s ease-in-out infinite`,
+              animationDelay: `${i * 0.18}s`,
+              boxShadow: '0 0 10px rgba(255, 255, 255, 0.95), 0 0 6px rgba(255, 250, 240, 0.7)',
+              zIndex: 8,
               opacity: 0
             }}
           />
         );
       })}
       
-      {/* POUSSIÈRE D'ÉTOILES BLANCHES SUPPLÉMENTAIRE - Cercle extérieur (20 étoiles) */}
-      {[...Array(20)].map((_, i) => {
-        const angle = (i * 18 + 9) * (Math.PI / 180);
-        const distance = size * 0.75 + (i % 4) * 8;
+      {/* LUCIOLES EXTÉRIEURES - Cercle plus large (25 lucioles) */}
+      {[...Array(25)].map((_, i) => {
+        const angle = (i * 14.4 + 7) * (Math.PI / 180);
+        const distance = size * 0.75 + (i % 4) * 9;
         const x = Math.cos(angle) * distance;
         const y = Math.sin(angle) * distance;
-        const starSize = 1 + (i % 2) * 0.5;
+        const fireflSize = 1 + (i % 2) * 0.5;
         
         return (
           <div
-            key={`outer-star-dust-${i}`}
+            key={`outer-firefly-${i}`}
             className="absolute rounded-full"
             style={{
-              width: `${starSize}px`,
-              height: `${starSize}px`,
+              width: `${fireflSize}px`,
+              height: `${fireflSize}px`,
               left: '50%',
               top: '50%',
               transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-              background: 'radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 40%, transparent 80%)',
-              animation: `star-fade-delayed ${4 + (i % 6) * 0.7}s ease-in-out infinite`,
-              animationDelay: `${i * 0.25 + 1}s`,
-              boxShadow: '0 0 6px rgba(255, 255, 255, 0.8)',
-              zIndex: 5,
+              background: 'radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 30%, rgba(255, 250, 240, 0.6) 60%, transparent 85%)',
+              animation: `firefly-glow-delayed ${3.5 + (i % 7) * 0.8}s ease-in-out infinite`,
+              animationDelay: `${i * 0.22 + 1.2}s`,
+              boxShadow: '0 0 8px rgba(255, 255, 255, 0.9)',
+              zIndex: 7,
               opacity: 0
             }}
           />
         );
       })}
       
-      {/* HALO DORÉ PROCHE */}
+      {/* HALO DORÉ VAPOREUX PROCHE */}
       <div 
         className="absolute rounded-full"
         style={{
-          width: `${size + 35}px`,
-          height: `${size + 35}px`,
-          background: 'radial-gradient(circle, rgba(255, 247, 205, 0.5) 0%, rgba(254, 240, 138, 0.35) 40%, rgba(253, 224, 71, 0.2) 70%, transparent 100%)',
-          filter: 'blur(5px)',
-          animation: 'halo-pulse 3.5s ease-in-out infinite alternate'
+          width: `${size + 40}px`,
+          height: `${size + 40}px`,
+          background: 'radial-gradient(circle, rgba(255, 250, 240, 0.65) 0%, rgba(255, 247, 205, 0.5) 25%, rgba(254, 240, 138, 0.35) 50%, rgba(253, 224, 71, 0.18) 75%, transparent 95%)',
+          filter: 'blur(8px)',
+          animation: 'halo-vapor-pulse 4s ease-in-out infinite alternate'
         }}
       />
       
-      {/* AVATAR CENTRAL avec BORDURE DORÉE */}
+      {/* AVATAR CENTRAL avec BORDURE DORÉE DOUCE */}
       <div 
         className="relative rounded-full overflow-hidden border-4 shadow-2xl flex-shrink-0 cursor-pointer hover:scale-110 active:scale-95 transition-all z-10"
         style={{ 
           width: `${size}px`, 
           height: `${size}px`,
-          borderColor: '#fbbf24',
-          boxShadow: '0 0 25px rgba(254, 240, 138, 0.6), 0 0 45px rgba(253, 224, 71, 0.3), inset 0 0 15px rgba(255, 255, 255, 0.4)'
+          borderColor: '#f5c842',
+          boxShadow: '0 0 30px rgba(255, 247, 205, 0.5), 0 0 50px rgba(254, 240, 138, 0.25), inset 0 0 20px rgba(255, 255, 255, 0.35)'
         }}
         onClick={onClick}
         title={title}
@@ -218,123 +244,123 @@ function PremiumSunAvatar({
         {renderAvatar()}
       </div>
       
-      {/* STYLES CSS - ANIMATIONS FINALES HARMONIEUSES */}
+      {/* STYLES CSS - ANIMATIONS MAMAN SOLEIL VAPOREUSE */}
       <style jsx>{`
-        @keyframes aurora-breathe {
+        @keyframes maman-breathe {
           0%, 100% {
-            opacity: 0.75;
+            opacity: 0.7;
             transform: scale(1) rotate(0deg);
           }
           50% {
-            opacity: 1;
-            transform: scale(1.08) rotate(3deg);
+            opacity: 0.95;
+            transform: scale(1.1) rotate(4deg);
           }
         }
         
-        @keyframes ray-slow-float {
+        @keyframes ray-vapor-float {
           0%, 100% {
-            opacity: 0.65;
-            transform: translateX(-50%) rotate(var(--ray-rotation, 0deg)) translateY(-${size / 2 + 5}px) scaleY(0.96);
-          }
-          25% {
-            opacity: 0.8;
-            transform: translateX(-50%) rotate(calc(var(--ray-rotation, 0deg) + 1.5deg)) translateY(-${size / 2 + 5}px) scaleY(1.02);
-          }
-          50% {
-            opacity: 0.75;
-            transform: translateX(-50%) rotate(calc(var(--ray-rotation, 0deg) + 0.5deg)) translateY(-${size / 2 + 5}px) scaleY(1.04);
-          }
-          75% {
-            opacity: 0.7;
-            transform: translateX(-50%) rotate(calc(var(--ray-rotation, 0deg) - 1deg)) translateY(-${size / 2 + 5}px) scaleY(0.98);
-          }
-        }
-        
-        @keyframes ray-ultra-slow-float {
-          0%, 100% {
-            opacity: 0.55;
+            opacity: 0.45;
             transform: translateX(-50%) rotate(var(--ray-rotation, 0deg)) translateY(-${size / 2 + 5}px) scaleY(0.94);
           }
+          25% {
+            opacity: 0.65;
+            transform: translateX(-50%) rotate(calc(var(--ray-rotation, 0deg) + 1.2deg)) translateY(-${size / 2 + 5}px) scaleY(1.03);
+          }
+          50% {
+            opacity: 0.55;
+            transform: translateX(-50%) rotate(calc(var(--ray-rotation, 0deg) + 0.4deg)) translateY(-${size / 2 + 5}px) scaleY(1.05);
+          }
+          75% {
+            opacity: 0.5;
+            transform: translateX(-50%) rotate(calc(var(--ray-rotation, 0deg) - 0.9deg)) translateY(-${size / 2 + 5}px) scaleY(0.97);
+          }
+        }
+        
+        @keyframes ray-vapor-float-slow {
+          0%, 100% {
+            opacity: 0.38;
+            transform: translateX(-50%) rotate(var(--ray-rotation, 0deg)) translateY(-${size / 2 + 5}px) scaleY(0.92);
+          }
           33% {
-            opacity: 0.75;
-            transform: translateX(-50%) rotate(calc(var(--ray-rotation, 0deg) + 1deg)) translateY(-${size / 2 + 5}px) scaleY(1.03);
+            opacity: 0.6;
+            transform: translateX(-50%) rotate(calc(var(--ray-rotation, 0deg) + 1deg)) translateY(-${size / 2 + 5}px) scaleY(1.04);
           }
           66% {
-            opacity: 0.65;
-            transform: translateX(-50%) rotate(calc(var(--ray-rotation, 0deg) - 1.2deg)) translateY(-${size / 2 + 5}px) scaleY(0.97);
+            opacity: 0.48;
+            transform: translateX(-50%) rotate(calc(var(--ray-rotation, 0deg) - 1.1deg)) translateY(-${size / 2 + 5}px) scaleY(0.95);
           }
         }
         
-        @keyframes star-fade {
-          0%, 100% {
-            opacity: 0;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.3);
-          }
-          5% {
-            opacity: 0.3;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.6);
-          }
-          15% {
-            opacity: 0.9;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.2);
-          }
-          30% {
-            opacity: 1;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(1);
-          }
-          70% {
-            opacity: 0.95;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.95);
-          }
-          85% {
-            opacity: 0.5;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.7);
-          }
-          95% {
-            opacity: 0.1;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.4);
-          }
-        }
-        
-        @keyframes star-fade-delayed {
+        @keyframes firefly-glow {
           0%, 100% {
             opacity: 0;
             transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.2);
           }
-          8% {
-            opacity: 0.4;
+          6% {
+            opacity: 0.35;
             transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.7);
           }
-          20% {
-            opacity: 0.85;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.1);
+          18% {
+            opacity: 0.95;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.25);
           }
           35% {
             opacity: 1;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.9);
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.05);
           }
           65% {
-            opacity: 0.9;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.85);
+            opacity: 0.92;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.95);
           }
-          80% {
-            opacity: 0.4;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.6);
+          82% {
+            opacity: 0.48;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.65);
           }
-          92% {
+          94% {
             opacity: 0.15;
-            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.3);
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.35);
           }
         }
         
-        @keyframes halo-pulse {
+        @keyframes firefly-glow-delayed {
+          0%, 100% {
+            opacity: 0;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.15);
+          }
+          10% {
+            opacity: 0.42;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.75);
+          }
+          25% {
+            opacity: 0.88;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.15);
+          }
+          40% {
+            opacity: 1;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.95);
+          }
+          60% {
+            opacity: 0.85;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.85);
+          }
+          78% {
+            opacity: 0.38;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.55);
+          }
+          90% {
+            opacity: 0.12;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.28);
+          }
+        }
+        
+        @keyframes halo-vapor-pulse {
           0% {
-            opacity: 0.65;
-            transform: scale(0.98);
+            opacity: 0.6;
+            transform: scale(0.96);
           }
           100% {
             opacity: 0.85;
-            transform: scale(1.02);
+            transform: scale(1.04);
           }
         }
       `}</style>
