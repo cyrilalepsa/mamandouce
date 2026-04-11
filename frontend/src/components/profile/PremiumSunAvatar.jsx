@@ -159,59 +159,37 @@ function PremiumSunAvatar({
         />
       ))}
       
-      {/* LUCIOLES BLANCHES - Nuée de petits points scintillants (30 lucioles) */}
-      {[...Array(30)].map((_, i) => {
-        const angle = (i * 12) * (Math.PI / 180);
-        const distance = size * 0.6 + (i % 5) * 10;
+      {/* POUSSIÈRE D'ÉTOILES BLANCHES MAGIQUES - AU PREMIER PLAN (20 points VISIBLES) */}
+      {[...Array(20)].map((_, i) => {
+        const angle = (i * 18) * (Math.PI / 180);
+        const distance = size * 0.55 + (i % 4) * 14;
         const x = Math.cos(angle) * distance;
         const y = Math.sin(angle) * distance;
-        const fireflSize = 1.2 + (i % 3) * 0.6;
+        const sparkleSize = 3 + (i % 3) * 1.5; // Plus gros : 3-6px
         
         return (
           <div
-            key={`firefly-${i}`}
-            className="absolute rounded-full"
+            key={`sparkle-${i}`}
+            className="sparkle absolute rounded-full"
             style={{
-              width: `${fireflSize}px`,
-              height: `${fireflSize}px`,
+              width: `${sparkleSize}px`,
+              height: `${sparkleSize}px`,
               left: '50%',
               top: '50%',
               transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-              background: 'radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.95) 25%, rgba(255, 250, 240, 0.7) 50%, transparent 80%)',
-              animation: `firefly-glow ${2.5 + (i % 8) * 0.9}s ease-in-out infinite`,
-              animationDelay: `${i * 0.18}s`,
-              boxShadow: '0 0 10px rgba(255, 255, 255, 0.95), 0 0 6px rgba(255, 250, 240, 0.7)',
-              zIndex: 8,
-              opacity: 0
-            }}
-          />
-        );
-      })}
-      
-      {/* LUCIOLES EXTÉRIEURES - Cercle plus large (25 lucioles) */}
-      {[...Array(25)].map((_, i) => {
-        const angle = (i * 14.4 + 7) * (Math.PI / 180);
-        const distance = size * 0.75 + (i % 4) * 9;
-        const x = Math.cos(angle) * distance;
-        const y = Math.sin(angle) * distance;
-        const fireflSize = 1 + (i % 2) * 0.5;
-        
-        return (
-          <div
-            key={`outer-firefly-${i}`}
-            className="absolute rounded-full"
-            style={{
-              width: `${fireflSize}px`,
-              height: `${fireflSize}px`,
-              left: '50%',
-              top: '50%',
-              transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-              background: 'radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 30%, rgba(255, 250, 240, 0.6) 60%, transparent 85%)',
-              animation: `firefly-glow-delayed ${3.5 + (i % 7) * 0.8}s ease-in-out infinite`,
-              animationDelay: `${i * 0.22 + 1.2}s`,
-              boxShadow: '0 0 8px rgba(255, 255, 255, 0.9)',
-              zIndex: 7,
-              opacity: 0
+              // Blanc pur avec glow fort
+              background: 'radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.95) 40%, rgba(255, 255, 255, 0.7) 70%, transparent 100%)',
+              animation: `sparkle-magic ${2 + (i % 6) * 0.8}s ease-in-out infinite`,
+              animationDelay: `${i * 0.15}s`,
+              // Box-shadow FORT pour visibilité maximale
+              boxShadow: `
+                0 0 12px rgba(255, 255, 255, 1),
+                0 0 20px rgba(255, 255, 255, 0.8),
+                0 0 30px rgba(255, 255, 255, 0.5)
+              `,
+              zIndex: 15, // AU-DESSUS DE TOUT
+              opacity: 0,
+              pointerEvents: 'none'
             }}
           />
         );
@@ -288,6 +266,37 @@ function PremiumSunAvatar({
           66% {
             opacity: 0.48;
             transform: translateX(-50%) rotate(calc(var(--ray-rotation, 0deg) - 1.1deg)) translateY(-${size / 2 + 5}px) scaleY(0.95);
+          }
+        }
+        
+        @keyframes sparkle-magic {
+          0%, 100% {
+            opacity: 0;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0);
+          }
+          10% {
+            opacity: 0.5;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.8);
+          }
+          20% {
+            opacity: 1;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.3);
+          }
+          40% {
+            opacity: 1;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.1);
+          }
+          60% {
+            opacity: 1;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(1);
+          }
+          80% {
+            opacity: 0.6;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.7);
+          }
+          90% {
+            opacity: 0.2;
+            transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.3);
           }
         }
         
