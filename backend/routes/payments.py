@@ -16,10 +16,15 @@ from models.schemas import User
 logger = logging.getLogger(__name__)
 billing_logger = logging.getLogger("billing_alerts")
 
-# Setup billing alerts file handler
-_billing_handler = logging.FileHandler("/app/backend/billing_alerts.log")
-_billing_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
-billing_logger.addHandler(_billing_handler)
+# Setup billing alerts file handler - relative path for Railway compatibility
+try:
+    _log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "billing_alerts.log")
+    _billing_handler = logging.FileHandler(_log_path)
+    _billing_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+    billing_logger.addHandler(_billing_handler)
+except Exception:
+    # Fallback: log to stderr if file creation fails (e.g. read-only filesystem)
+    pass
 billing_logger.setLevel(logging.WARNING)
 
 router = APIRouter()
