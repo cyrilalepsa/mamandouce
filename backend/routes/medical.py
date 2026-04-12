@@ -397,7 +397,7 @@ async def send_due_reminders():
                                     Ceci est un rappel pour votre rendez-vous médical prévu prochainement.
                                 </p>
                                 <div style="text-align: center; margin: 30px 0;">
-                                    <a href="https://nacre-preview.preview.emergentagent.com/medical" 
+                                    <a href="https://premium-ui-27.preview.emergentagent.com/medical" 
                                        style="background: linear-gradient(135deg, #ec4899, #8b5cf6); 
                                               color: white; 
                                               text-decoration: none; 
