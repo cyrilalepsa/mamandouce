@@ -1,7 +1,7 @@
 # Routes pour les paiements Stripe
 from fastapi import APIRouter, Request, HTTPException, Depends
 from pydantic import BaseModel
-from typing import Dict
+from typing import Dict, Optional
 from datetime import datetime, timezone
 import os
 import logging
@@ -14,6 +14,14 @@ from core.security import get_current_user
 from models.schemas import User
 
 logger = logging.getLogger(__name__)
+billing_logger = logging.getLogger("billing_alerts")
+
+# Setup billing alerts file handler
+_billing_handler = logging.FileHandler("/app/backend/billing_alerts.log")
+_billing_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+billing_logger.addHandler(_billing_handler)
+billing_logger.setLevel(logging.WARNING)
+
 router = APIRouter()
 
 STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "sk_test_emergent")
@@ -23,12 +31,14 @@ stripe.api_key = STRIPE_API_KEY
 SUBSCRIPTION_PACKAGES = {
     "annual": {
         "name": "MamanDouce Premium - 9 mois d'accès",
-        "amount": 30.00,  # Nouveau prix 30€
+        "price_id": "annual",
+        "amount": 30.00,
         "currency": "eur"
     },
     "postpartum": {
         "name": "MamanDouce Suivi Post-partum - 6 mois",
-        "amount": 10.00,  # Nouveau prix 10€
+        "price_id": "postpartum",
+        "amount": 10.00,
         "currency": "eur"
     }
 }
@@ -46,17 +56,62 @@ async def notify_admin_new_subscription(user_email: str, package_name: str, amou
     except Exception as e:
         logger.error(f"Error notifying admin: {e}")
 
-class CheckoutRequest(BaseModel):
-    package_id: str
+
+async def _record_billing_alert(alert_type: str, details: dict):
+    """Record a billing alert in DB and log file"""
+    alert_doc = {
+        "type": alert_type,
+        "details": details,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "resolved": False
+    }
+    await db.billing_alerts.insert_one(alert_doc)
+    billing_logger.warning(f"BILLING ALERT [{alert_type}]: {details}")
+
+
+class SecureCheckoutRequest(BaseModel):
+    price_id: Optional[str] = None
+    package_id: Optional[str] = None  # Legacy compat
     origin_url: str
+    promo_code: Optional[str] = None
+
 
 @router.post("/checkout/session")
-async def create_checkout_session(checkout_req: CheckoutRequest, request: Request):
-    """Créer une session de paiement Stripe"""
-    if checkout_req.package_id not in SUBSCRIPTION_PACKAGES:
+async def create_checkout_session(checkout_req: SecureCheckoutRequest, request: Request):
+    """Créer une session de paiement Stripe - prix calculé côté serveur uniquement"""
+    # Accept both price_id and package_id for backward compatibility
+    pkg_key = checkout_req.price_id or checkout_req.package_id
+    if not pkg_key or pkg_key not in SUBSCRIPTION_PACKAGES:
         raise HTTPException(status_code=400, detail="Package invalide")
     
-    package = SUBSCRIPTION_PACKAGES[checkout_req.package_id]
+    package = SUBSCRIPTION_PACKAGES[pkg_key]
+    server_amount = package["amount"]
+    
+    # 2. If promo code provided, verify with Stripe and compute discount server-side
+    discount_amount = 0.0
+    promo_metadata = {}
+    if checkout_req.promo_code:
+        try:
+            promo_codes = stripe.PromotionCode.list(code=checkout_req.promo_code, active=True, limit=1)
+            if promo_codes.data:
+                promo = promo_codes.data[0]
+                coupon = promo.coupon
+                if coupon.percent_off:
+                    discount_amount = round(server_amount * coupon.percent_off / 100, 2)
+                elif coupon.amount_off:
+                    discount_amount = round(coupon.amount_off / 100, 2)  # Stripe stores in cents
+                promo_metadata = {
+                    "promo_code": checkout_req.promo_code,
+                    "promo_id": promo.id,
+                    "discount_amount": str(discount_amount)
+                }
+                logger.info(f"Promo code '{checkout_req.promo_code}' validated: -{discount_amount}€")
+            else:
+                logger.warning(f"Invalid promo code attempted: {checkout_req.promo_code}")
+        except stripe.error.StripeError as e:
+            logger.warning(f"Stripe promo verification error: {e}")
+    
+    final_amount = max(server_amount - discount_amount, 0.50)
     
     success_url = f"{checkout_req.origin_url}/subscription/success?session_id={{CHECKOUT_SESSION_ID}}"
     cancel_url = f"{checkout_req.origin_url}/subscription/cancel"
@@ -67,12 +122,14 @@ async def create_checkout_session(checkout_req: CheckoutRequest, request: Reques
     stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
     
     metadata = {
-        "package_id": checkout_req.package_id,
-        "package_name": package["name"]
+        "package_id": pkg_key,
+        "package_name": package["name"],
+        "server_expected_amount": str(final_amount),
+        **promo_metadata
     }
     
     checkout_request = CheckoutSessionRequest(
-        amount=package["amount"],
+        amount=final_amount,
         currency=package["currency"],
         success_url=success_url,
         cancel_url=cancel_url,
@@ -84,6 +141,7 @@ async def create_checkout_session(checkout_req: CheckoutRequest, request: Reques
         return {"url": session.url, "session_id": session.session_id}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur: {str(e)}")
+
 
 @router.get("/checkout/status/{session_id}")
 async def get_checkout_status(session_id: str):
@@ -103,13 +161,12 @@ async def get_checkout_status(session_id: str):
 
 @router.post("/webhook/stripe")
 async def stripe_webhook(request: Request):
-    """Gérer les webhooks Stripe"""
+    """Gérer les webhooks Stripe - avec vérification de montant (Garagiste)"""
     body = await request.body()
     signature = request.headers.get("Stripe-Signature")
     
     logger.info(f"Webhook received with signature: {signature[:30] if signature else 'None'}...")
     
-    # Vérifier la signature du webhook si le secret est configuré
     event = None
     if STRIPE_WEBHOOK_SECRET:
         try:
@@ -124,7 +181,6 @@ async def stripe_webhook(request: Request):
             logger.error(f"Webhook error: {e}")
             raise HTTPException(status_code=400, detail=str(e))
     else:
-        # Fallback sans vérification (développement)
         import json
         try:
             event = json.loads(body)
@@ -132,11 +188,9 @@ async def stripe_webhook(request: Request):
         except Exception:
             pass
     
-    # Traiter les événements Stripe
     if event:
         event_type = event.get('type', '')
         
-        # Paiement réussi
         if event_type == 'checkout.session.completed':
             session = event['data']['object']
             customer_email = session.get('customer_email') or session.get('customer_details', {}).get('email')
@@ -144,18 +198,36 @@ async def stripe_webhook(request: Request):
             metadata = session.get('metadata', {})
             package_id = metadata.get('package_id', 'unknown')
             
+            amount_total = session.get('amount_total', 0) / 100  # cents → euros
+            
+            # === LE GARAGISTE: Vérification du montant ===
+            server_expected = metadata.get('server_expected_amount')
+            if server_expected:
+                expected_amount = float(server_expected)
+                if abs(amount_total - expected_amount) > 0.01:
+                    alert_details = {
+                        "customer_email": customer_email or "unknown",
+                        "package_id": package_id,
+                        "expected_amount": expected_amount,
+                        "received_amount": amount_total,
+                        "difference": round(amount_total - expected_amount, 2),
+                        "payment_intent": payment_intent_id,
+                        "session_id": session.get('id', 'unknown')
+                    }
+                    await _record_billing_alert("AMOUNT_MISMATCH", alert_details)
+                    logger.error(f"BILLING ALERT: Amount mismatch! Expected {expected_amount}€, got {amount_total}€ for {customer_email}")
+                else:
+                    logger.info(f"Amount verified OK: {amount_total}€ matches expected {expected_amount}€")
+            
             logger.info(f"Checkout completed for {customer_email}, package: {package_id}")
             
             if customer_email:
-                # Déterminer le type d'abonnement basé sur le metadata ou le montant
-                amount_total = session.get('amount_total', 0) / 100  # Convertir centimes en euros
-                
                 update_data = {
                     "stripe_payment_intent_id": payment_intent_id,
                     "last_payment_date": datetime.now(timezone.utc).isoformat()
                 }
                 
-                if package_id == 'postpartum' or amount_total == 8:
+                if package_id == 'postpartum' or amount_total == 10:
                     update_data["postpartum_purchased"] = True
                     update_data["postpartum_purchase_date"] = datetime.now(timezone.utc).isoformat()
                     update_data["postpartum_unlocked"] = True
@@ -172,18 +244,58 @@ async def stripe_webhook(request: Request):
                 
                 if result.modified_count > 0:
                     logger.info(f"User {customer_email} updated successfully")
-                    # Notifier l'admin
                     await notify_admin_new_subscription(customer_email, package_id, amount_total)
                 else:
                     logger.warning(f"No user found with email {customer_email}")
         
-        # Remboursement effectué
         elif event_type == 'charge.refunded':
             charge = event['data']['object']
             payment_intent_id = charge.get('payment_intent')
             logger.info(f"Refund processed for payment_intent: {payment_intent_id}")
     
     return {"status": "success", "received": True}
+
+
+# ==================== BILLING ALERTS (Le Garagiste) ====================
+
+@router.get("/billing-alerts")
+async def get_billing_alerts(current_user: User = Depends(get_current_user)):
+    """Get billing alerts for admin dashboard"""
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    alerts = await db.billing_alerts.find(
+        {}, {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    
+    unresolved_count = await db.billing_alerts.count_documents({"resolved": False})
+    
+    return {
+        "alerts": alerts,
+        "unresolved_count": unresolved_count,
+        "has_critical": unresolved_count > 0
+    }
+
+
+@router.post("/billing-alerts/{alert_index}/resolve")
+async def resolve_billing_alert(alert_index: int, current_user: User = Depends(get_current_user)):
+    """Mark a billing alert as resolved"""
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    alerts = await db.billing_alerts.find(
+        {"resolved": False}
+    ).sort("created_at", -1).to_list(100)
+    
+    if alert_index < 0 or alert_index >= len(alerts):
+        raise HTTPException(status_code=404, detail="Alerte non trouvée")
+    
+    await db.billing_alerts.update_one(
+        {"_id": alerts[alert_index]["_id"]},
+        {"$set": {"resolved": True, "resolved_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"success": True, "message": "Alerte résolue"}
 
 # ==================== REFUND ENDPOINT ====================
 

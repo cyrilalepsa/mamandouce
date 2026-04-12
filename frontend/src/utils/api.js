@@ -260,6 +260,9 @@ export const api = {
     exportRemindersCSV: (includeHistory = true) => `${API}/admin/reminders/export-csv?include_history=${includeHistory}`,
     getSchedulerAlerts: () => axios.get(`${API}/admin/scheduler/alerts`, getAuthHeaders()),
     testSchedulerAlert: () => axios.post(`${API}/admin/scheduler/test-alert`, {}, getAuthHeaders()),
+    // Billing Alerts (Le Garagiste)
+    getBillingAlerts: () => axios.get(`${API}/payments/billing-alerts`, getAuthHeaders()),
+    resolveBillingAlert: (index) => axios.post(`${API}/payments/billing-alerts/${index}/resolve`, {}, getAuthHeaders()),
     // Android Export
     getAndroidInfo: () => axios.get(`${API}/admin/android/info`, getAuthHeaders()),
     downloadAndroidProject: () => `${API}/admin/android/download`,

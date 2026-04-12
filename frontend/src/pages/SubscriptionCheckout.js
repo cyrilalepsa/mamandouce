@@ -108,7 +108,7 @@ function SubscriptionCheckout() {
     try {
       const originUrl = window.location.origin;
       const response = await api.subscription.createCheckout({
-        package_id: product === 'postpartum' ? 'postpartum' : packageType,
+        price_id: product === 'postpartum' ? 'postpartum' : packageType,
         origin_url: originUrl
       });
       window.location.href = response.data.url;
@@ -128,13 +128,13 @@ function SubscriptionCheckout() {
       
       if (plan === 'premium') {
         const response = await api.subscription.createCheckout({
-          package_id: 'annual',
+          price_id: 'annual',
           origin_url: originUrl
         });
         window.location.href = response.data.url;
       } else if (plan === 'postpartum') {
         const response = await api.subscription.createCheckout({
-          package_id: 'postpartum',
+          price_id: 'postpartum',
           origin_url: originUrl
         });
         window.location.href = response.data.url;

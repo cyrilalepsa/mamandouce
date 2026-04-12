@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
-import { Users, MessageSquare, Apple, TrendingUp, BarChart3, Euro, RefreshCw, Download, ChevronDown } from 'lucide-react';
+import { Users, MessageSquare, Apple, TrendingUp, BarChart3, Euro, RefreshCw, Download, ChevronDown, AlertTriangle } from 'lucide-react';
 import api from '../../utils/api';
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
@@ -14,9 +14,11 @@ export function DashboardTab({ globalStats, codeStats, setActiveTab, messageStat
   const [loadingAdvanced, setLoadingAdvanced] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [showCharts, setShowCharts] = useState(false);
+  const [billingAlerts, setBillingAlerts] = useState({ alerts: [], unresolved_count: 0, has_critical: false });
 
   useEffect(() => {
     loadAdvancedStats();
+    loadBillingAlerts();
   }, []);
 
   const loadAdvancedStats = async () => {
@@ -29,6 +31,26 @@ export function DashboardTab({ globalStats, codeStats, setActiveTab, messageStat
       setLoadingAdvanced(false);
     }
   };
+
+  const loadBillingAlerts = async () => {
+    try {
+      const response = await api.admin.getBillingAlerts();
+      setBillingAlerts(response.data);
+    } catch (error) {
+      console.error('Erreur chargement alertes billing:', error);
+    }
+  };
+
+  const handleResolveBillingAlert = async (index) => {
+    try {
+      await api.admin.resolveBillingAlert(index);
+      toast.success('Alerte résolue');
+      loadBillingAlerts();
+    } catch (error) {
+      toast.error('Erreur lors de la résolution');
+    }
+  };
+
 
   const handleExportCSV = async () => {
     setExporting(true);
@@ -88,6 +110,51 @@ export function DashboardTab({ globalStats, codeStats, setActiveTab, messageStat
         </Button>
       </div>
       
+      {/* VOYANT GARAGISTE - Billing Alerts */}
+      {billingAlerts.has_critical && (
+        <Card className="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-4 border-2 border-red-300 animate-pulse" data-testid="billing-alert-critical">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+              <AlertTriangle className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-white font-bold text-sm">ALERTE FACTURATION</h3>
+              <p className="text-red-100 text-xs">{billingAlerts.unresolved_count} écart(s) de montant détecté(s)</p>
+            </div>
+          </div>
+          <div className="space-y-2 max-h-40 overflow-y-auto">
+            {billingAlerts.alerts.filter(a => !a.resolved).map((alert, i) => (
+              <div key={i} className="bg-white/10 rounded-lg p-2 flex items-center justify-between">
+                <div className="text-white text-xs">
+                  <span className="font-mono">{alert.details?.customer_email || '?'}</span>
+                  {' — '}
+                  Attendu: <strong>{alert.details?.expected_amount}€</strong>,
+                  Reçu: <strong>{alert.details?.received_amount}€</strong>
+                  {' '}({alert.details?.difference > 0 ? '+' : ''}{alert.details?.difference}€)
+                </div>
+                <Button
+                  onClick={() => handleResolveBillingAlert(i)}
+                  data-testid={`resolve-billing-alert-${i}`}
+                  className="bg-white/20 text-white text-xs px-2 py-1 rounded-full hover:bg-white/30 h-auto"
+                >
+                  Résoudre
+                </Button>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+      
+      {/* Voyant vert si pas d'alerte */}
+      {!billingAlerts.has_critical && (
+        <Card className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-3 border border-emerald-200" data-testid="billing-status-ok">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-emerald-500 rounded-full" style={{ boxShadow: '0 0 6px #10b981' }} />
+            <span className="text-emerald-700 text-xs font-medium">Tunnel d'achat OK — Aucun écart de facturation</span>
+          </div>
+        </Card>
+      )}
+
       {/* Main Stats Cards */}
       <div className="grid grid-cols-4 gap-3">
         <Card className="bg-gradient-to-br from-sky-400 to-sky-500 rounded-xl p-3 text-white">

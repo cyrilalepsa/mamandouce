@@ -65,7 +65,8 @@ function PremiumSunAvatar({
       style={{ 
         width: `${auraSize}px`, 
         height: `${auraSize}px`,
-        overflow: 'visible'
+        overflow: 'visible',
+        animation: 'floating-avatar 10s ease-in-out infinite'
       }}
       data-testid={`${testId}-premium`}
     >
@@ -172,40 +173,30 @@ function PremiumSunAvatar({
         {renderAvatar()}
       </div>
       
-      {/* SCINTILLEMENTS BLANCS - 30 ÉTOILES EN RÉPARTITION RADIALE AUTOUR DE L'AVATAR */}
-      {/* Couronne extérieure - positions de -10% à 110% pour entourer l'avatar */}
-      <div className="sparkle" style={{ top: '-5%', left: '50%', width: '3px', height: '3px', animationDuration: '2.5s', animationDelay: '0s' }}></div>
-      <div className="sparkle" style={{ top: '0%', left: '85%', width: '2px', height: '2px', animationDuration: '3s', animationDelay: '0.2s' }}></div>
-      <div className="sparkle" style={{ top: '5%', left: '105%', width: '1px', height: '1px', animationDuration: '2.8s', animationDelay: '0.4s' }}></div>
-      <div className="sparkle" style={{ top: '20%', left: '115%', width: '2px', height: '2px', animationDuration: '3.2s', animationDelay: '0.6s' }}></div>
-      <div className="sparkle" style={{ top: '40%', left: '118%', width: '3px', height: '3px', animationDuration: '2.7s', animationDelay: '0.8s' }}></div>
-      <div className="sparkle" style={{ top: '55%', left: '112%', width: '1px', height: '1px', animationDuration: '3.1s', animationDelay: '1s' }}></div>
-      <div className="sparkle" style={{ top: '75%', left: '105%', width: '2px', height: '2px', animationDuration: '2.9s', animationDelay: '1.2s' }}></div>
-      <div className="sparkle" style={{ top: '90%', left: '88%', width: '3px', height: '3px', animationDuration: '3.3s', animationDelay: '1.4s' }}></div>
-      <div className="sparkle" style={{ top: '102%', left: '65%', width: '1px', height: '1px', animationDuration: '2.6s', animationDelay: '1.6s' }}></div>
-      <div className="sparkle" style={{ top: '108%', left: '48%', width: '2px', height: '2px', animationDuration: '3.4s', animationDelay: '1.8s' }}></div>
-      <div className="sparkle" style={{ top: '105%', left: '30%', width: '3px', height: '3px', animationDuration: '2.4s', animationDelay: '2s' }}></div>
-      <div className="sparkle" style={{ top: '95%', left: '12%', width: '1px', height: '1px', animationDuration: '3.5s', animationDelay: '2.2s' }}></div>
-      <div className="sparkle" style={{ top: '82%', left: '-5%', width: '2px', height: '2px', animationDuration: '2.8s', animationDelay: '2.4s' }}></div>
-      <div className="sparkle" style={{ top: '65%', left: '-12%', width: '3px', height: '3px', animationDuration: '3.6s', animationDelay: '2.6s' }}></div>
-      <div className="sparkle" style={{ top: '45%', left: '-15%', width: '1px', height: '1px', animationDuration: '3s', animationDelay: '2.8s' }}></div>
-      <div className="sparkle" style={{ top: '25%', left: '-10%', width: '2px', height: '2px', animationDuration: '2.7s', animationDelay: '0.1s' }}></div>
-      <div className="sparkle" style={{ top: '8%', left: '5%', width: '3px', height: '3px', animationDuration: '3.1s', animationDelay: '0.3s' }}></div>
-      <div className="sparkle" style={{ top: '2%', left: '22%', width: '1px', height: '1px', animationDuration: '2.9s', animationDelay: '0.5s' }}></div>
-      
-      {/* Couronne intermédiaire - entre 10% et 90% */}
-      <div className="sparkle" style={{ top: '12%', left: '78%', width: '2px', height: '2px', animationDuration: '3.3s', animationDelay: '0.7s' }}></div>
-      <div className="sparkle" style={{ top: '18%', left: '92%', width: '1px', height: '1px', animationDuration: '2.5s', animationDelay: '0.9s' }}></div>
-      <div className="sparkle" style={{ top: '35%', left: '95%', width: '3px', height: '3px', animationDuration: '3.2s', animationDelay: '1.1s' }}></div>
-      <div className="sparkle" style={{ top: '62%', left: '90%', width: '2px', height: '2px', animationDuration: '2.6s', animationDelay: '1.3s' }}></div>
-      <div className="sparkle" style={{ top: '85%', left: '75%', width: '1px', height: '1px', animationDuration: '3.4s', animationDelay: '1.5s' }}></div>
-      <div className="sparkle" style={{ top: '92%', left: '52%', width: '3px', height: '3px', animationDuration: '2.8s', animationDelay: '1.7s' }}></div>
-      <div className="sparkle" style={{ top: '88%', left: '28%', width: '2px', height: '2px', animationDuration: '3.5s', animationDelay: '1.9s' }}></div>
-      <div className="sparkle" style={{ top: '72%', left: '8%', width: '1px', height: '1px', animationDuration: '2.7s', animationDelay: '2.1s' }}></div>
-      <div className="sparkle" style={{ top: '48%', left: '5%', width: '3px', height: '3px', animationDuration: '3.1s', animationDelay: '2.3s' }}></div>
-      <div className="sparkle" style={{ top: '28%', left: '10%', width: '2px', height: '2px', animationDuration: '2.9s', animationDelay: '2.5s' }}></div>
-      <div className="sparkle" style={{ top: '15%', left: '35%', width: '1px', height: '1px', animationDuration: '3.3s', animationDelay: '2.7s' }}></div>
-      <div className="sparkle" style={{ top: '10%', left: '62%', width: '3px', height: '3px', animationDuration: '2.4s', animationDelay: '2.9s' }}></div>
+      {/* SCINTILLEMENTS DIAMANT - 30 étoiles dispersées aléatoirement sur toute la surface du halo */}
+      {[
+        { t: '-8%', l: '42%', s: 3 }, { t: '3%', l: '78%', s: 2 }, { t: '-3%', l: '15%', s: 2 },
+        { t: '10%', l: '105%', s: 1 }, { t: '22%', l: '-8%', s: 3 }, { t: '15%', l: '95%', s: 2 },
+        { t: '30%', l: '110%', s: 1 }, { t: '45%', l: '-12%', s: 2 }, { t: '60%', l: '115%', s: 3 },
+        { t: '75%', l: '-10%', s: 1 }, { t: '88%', l: '20%', s: 2 }, { t: '95%', l: '70%', s: 3 },
+        { t: '105%', l: '45%', s: 1 }, { t: '100%', l: '85%', s: 2 }, { t: '5%', l: '60%', s: 3 },
+        { t: '18%', l: '30%', s: 1 }, { t: '35%', l: '75%', s: 2 }, { t: '50%', l: '8%', s: 3 },
+        { t: '65%', l: '92%', s: 1 }, { t: '80%', l: '55%', s: 2 }, { t: '42%', l: '48%', s: 1 },
+        { t: '55%', l: '25%', s: 3 }, { t: '70%', l: '68%', s: 2 }, { t: '12%', l: '50%', s: 1 },
+        { t: '28%', l: '88%', s: 3 }, { t: '82%', l: '38%', s: 2 }, { t: '92%', l: '10%', s: 1 },
+        { t: '38%', l: '-5%', s: 2 }, { t: '108%', l: '58%', s: 3 }, { t: '48%', l: '102%', s: 1 },
+      ].map((sp, i) => (
+        <div
+          key={`sparkle-${i}`}
+          className="sparkle"
+          style={{
+            top: sp.t, left: sp.l,
+            width: `${sp.s}px`, height: `${sp.s}px`,
+            animationDuration: `${2.3 + (i * 0.13) % 1.5}s`,
+            animationDelay: `${(i * 0.37) % 3}s`,
+          }}
+        />
+      ))}
       
       {/* STYLES CSS POUR SCINTILLEMENTS */}
       <style>{`
@@ -222,19 +213,28 @@ function PremiumSunAvatar({
         @keyframes sparkle-magic {
           0%, 100% {
             opacity: 0;
-            transform: translate(0, 0);
+            transform: scale(0.5);
           }
           25% {
-            opacity: 0.8;
-            transform: translate(1px, -1px);
+            opacity: 0.7;
+            transform: scale(1.2) translate(1px, -1px);
           }
           50% {
             opacity: 1;
-            transform: translate(2px, 1px);
+            transform: scale(1) translate(2px, 1px);
           }
           75% {
-            opacity: 0.9;
-            transform: translate(-1px, 2px);
+            opacity: 0.8;
+            transform: scale(1.1) translate(-1px, 2px);
+          }
+        }
+        
+        @keyframes floating-avatar {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-5px);
           }
         }
       `}</style>
