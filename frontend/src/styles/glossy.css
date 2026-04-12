@@ -63,7 +63,8 @@ body,
 }
 
 /* ============================================
-   CARTES CHAMALLOW 3D FLOTTANTES - NACRE AMÉLIORÉ
+   CARTES — BLANC PUR OPAQUE + OMBRES 3D
+   Zéro blur, zéro opacité, zéro brouillard
    ============================================ */
 [class*="rounded-"][class*="bg-white"]:not(.admin-drawer),
 [class*="rounded-"][class*="bg-slate-"]:not(.admin-drawer),
@@ -74,51 +75,22 @@ body,
 [data-testid*="card"],
 .Card,
 [class*="Card"] {
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  /* NEUMORPHISM NACRE - Ombres 3D bien visibles */
+  background: #FFFFFF !important;
   box-shadow: 
-    12px 12px 24px rgba(180, 160, 175, 0.25),
-    -8px -8px 20px rgba(255, 255, 255, 0.9),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+    8px 8px 20px rgba(160, 140, 160, 0.3),
+    -6px -6px 16px rgba(255, 255, 255, 1),
+    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
   border-radius: 20px !important;
-  border: 1px solid rgba(255, 220, 230, 0.4) !important;
+  border: 1px solid rgba(200, 180, 200, 0.25) !important;
   position: relative;
   overflow: hidden;
 }
 
-/* Cartes blanches (bg-white) → teinte pastel rose pour le relief */
-[class*="rounded-"][class*="bg-white"] {
-  background: linear-gradient(135deg, #FFF0F5 0%, #FFF5F8 50%, #FFF0F5 100%) !important;
-}
-
-/* Coloration pastel automatique par position pour variété visuelle */
-[class*="rounded-2xl"][class*="shadow"]:nth-child(4n+1) { background: linear-gradient(135deg, #FFF0F5 0%, #FFE4EC 100%) !important; }
-[class*="rounded-2xl"][class*="shadow"]:nth-child(4n+2) { background: linear-gradient(135deg, #F0F7FF 0%, #E0EFFF 100%) !important; }
-[class*="rounded-2xl"][class*="shadow"]:nth-child(4n+3) { background: linear-gradient(135deg, #F0FFF4 0%, #E0FFE8 100%) !important; }
-[class*="rounded-2xl"][class*="shadow"]:nth-child(4n)   { background: linear-gradient(135deg, #F5F0FF 0%, #EDE4FF 100%) !important; }
-
-/* Cartes avec gradient existant → ne pas écraser leur couleur */
-[class*="rounded-"][class*="from-sky"],
-[class*="rounded-"][class*="from-pink"],
-[class*="rounded-"][class*="from-rose"],
-[class*="rounded-"][class*="from-amber"],
-[class*="rounded-"][class*="from-emerald"],
-[class*="rounded-"][class*="from-green"],
-[class*="rounded-"][class*="from-purple"],
-[class*="rounded-"][class*="from-blue"],
-[class*="rounded-"][class*="from-orange"],
-[class*="rounded-"][class*="from-teal"],
-[class*="rounded-"][class*="from-indigo"],
-[class*="rounded-"][class*="bg-gradient"] {
-  background: unset;
-}
-
-/* Effet reflet glossy sur le dessus des cartes (perle de gel) */
-[class*="rounded-"][class*="bg-white"]::before,
-[class*="rounded-xl"][class*="shadow"]::before,
-[class*="rounded-2xl"][class*="shadow"]::before,
-[class*="rounded-3xl"][class*="shadow"]::before,
+/* Reflet glossy bombé sur le haut des cartes */
+[class*="rounded-"][class*="bg-white"]:not(.admin-drawer)::before,
+[class*="rounded-xl"][class*="shadow"]:not(.admin-drawer)::before,
+[class*="rounded-2xl"][class*="shadow"]:not(.admin-drawer)::before,
+[class*="rounded-3xl"][class*="shadow"]:not(.admin-drawer)::before,
 .glossy-card::before,
 .Card::before,
 [class*="Card"]::before {
@@ -127,11 +99,11 @@ body,
   top: 0;
   left: 10%;
   right: 10%;
-  height: 40%;
+  height: 35%;
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0.15) 50%,
     transparent 100%
   );
   border-radius: inherit;
@@ -140,16 +112,16 @@ body,
 }
 
 /* ============================================
-   TYPOGRAPHIE - GRIS FONCÉ DOUX #4A4A4A
+   TYPOGRAPHIE - NOIR PUR #000000
    ============================================ */
 h1:not([data-testid="mamandouce-logo"]), 
 h2, h3, h4, h5, h6 {
-  color: #4A4A4A !important;
+  color: #000000 !important;
 }
 
 p, span:not(.mamandouce-title):not([data-testid="user-name"]):not(.user-name-display), 
 label, a, li, td, th {
-  color: #4A4A4A;
+  color: #000000;
 }
 
 /* Exceptions pour les éléments qui doivent garder leur couleur */
@@ -259,24 +231,21 @@ button:not([data-testid^="drawer-"])[class*="bg-rose"],
 button:not([data-testid^="drawer-"])[class*="rounded-full"],
 .btn-glossy {
   position: relative;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-  /* NEUMORPHISM 3D - Ombres visibles */
+  /* Boutons BLANC PUR + ombre 3D */
   box-shadow: 
-    10px 10px 22px rgba(180, 160, 175, 0.3),
-    -8px -8px 18px rgba(255, 255, 255, 0.95),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+    8px 8px 18px rgba(160, 140, 160, 0.3),
+    -6px -6px 14px rgba(255, 255, 255, 1),
+    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
   border-radius: 16px !important;
-  border: 1px solid rgba(200, 180, 190, 0.35) !important;
+  border: 1px solid rgba(200, 180, 190, 0.3) !important;
   overflow: hidden;
   font-weight: 600 !important;
   transition: all 0.2s ease !important;
 }
 
-/* Boutons SANS gradient Tailwind → teinte pastel rose */
-button:not([class*="bg-"]):not([class*="from-"]) {
-  background: linear-gradient(145deg, #FFF0F5, #FFE8EF) !important;
-  color: #2D2A32 !important;
+/* Boutons SANS gradient Tailwind — gardent leur fond natif */
+button:not([class*="bg-"]):not([class*="from-"]):not([data-testid^="drawer-"]) {
+  color: #000000 !important;
 }
 
 /* Boutons avec couleur de fond spécifique - garder leur couleur + ajouter neumorphism */
@@ -294,7 +263,7 @@ button[class*="from-teal"] {
     -10px -10px 20px #FFFFFF !important;
 }
 
-/* Reflet glossy brillant sur les boutons (effet perle de gel) */
+/* Reflet glossy subtil sur les boutons */
 button:not([data-testid^="drawer-"])::after,
 .btn-glossy::after {
   content: '';
@@ -302,11 +271,11 @@ button:not([data-testid^="drawer-"])::after,
   top: 0;
   left: 15%;
   right: 15%;
-  height: 50%;
+  height: 40%;
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.8) 0%,
-    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
     transparent 100%
   );
   border-radius: inherit;
@@ -1028,24 +997,27 @@ span.user-name-display,
    TUILES ADMIN DASHBOARD — OVERRIDE TOTAL
    Priorité maximale pour contrer les sélecteurs génériques
    ============================================ */
-.admin-drawer {
+.admin-drawer,
+.admin-drawer.rounded-3xl,
+div.admin-drawer[data-testid] {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   border: 1px solid rgba(255,255,255,0.3) !important;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15), inset 0 -5px 10px rgba(0,0,0,0.1), inset 0 5px 10px rgba(255,255,255,0.8) !important;
   overflow: hidden !important;
 }
 .admin-drawer::before {
   display: none !important;
 }
-.admin-drawer[data-testid="drawer-community-wrap"] {
-  background: linear-gradient(145deg, #E9D5FF, #D8B4FE) !important;
+div.admin-drawer[data-testid="drawer-community-wrap"] {
+  background: linear-gradient(145deg, #A78BFA, #8B5CF6) !important;
 }
-.admin-drawer[data-testid="drawer-messaging-wrap"] {
-  background: linear-gradient(145deg, #FECDD3, #FDA4AF) !important;
+div.admin-drawer[data-testid="drawer-messaging-wrap"] {
+  background: linear-gradient(145deg, #FB7185, #F43F5E) !important;
 }
-.admin-drawer[data-testid="drawer-finances-wrap"] {
-  background: linear-gradient(145deg, #A7F3D0, #6EE7B7) !important;
+div.admin-drawer[data-testid="drawer-finances-wrap"] {
+  background: linear-gradient(145deg, #34D399, #10B981) !important;
 }
-.admin-drawer[data-testid="drawer-tools-wrap"] {
-  background: linear-gradient(145deg, #BAE6FD, #7DD3FC) !important;
+div.admin-drawer[data-testid="drawer-tools-wrap"] {
+  background: linear-gradient(145deg, #38BDF8, #0EA5E9) !important;
 }

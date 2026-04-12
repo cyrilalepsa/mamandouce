@@ -302,8 +302,8 @@ function AdminPage() {
         position: 'relative',
         overflow: 'hidden',
       }}>
-        {/* Reflet glossy miroir */}
-        <div style={{ position:'absolute', top:0, left:'8%', right:'8%', height:'50%', background:'linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.25) 50%, transparent 100%)', borderRadius:'inherit', pointerEvents:'none', zIndex:1 }} />
+        {/* Reflet glossy subtil — ne couvre pas la couleur */}
+        <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:'35%', background:'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.1) 50%, transparent 100%)', borderRadius:'inherit', pointerEvents:'none', zIndex:1 }} />
         
         <button
           onClick={() => toggleDrawer(id)}
@@ -312,13 +312,13 @@ function AdminPage() {
           style={{ background:'transparent', transition:'transform 0.15s ease' }}
         >
           <div className="flex items-center gap-3">
-            <Icon className="w-7 h-7" style={{ color:'#0f172a' }} strokeWidth={2.5} />
-            <span style={{ color:'#0f172a', fontWeight:900, fontSize:'15px', letterSpacing:'0.5px' }}>{label}</span>
+            <Icon className="w-7 h-7" style={{ color:'#FFFFFF' }} strokeWidth={2.5} />
+            <span style={{ color:'#FFFFFF', fontWeight:900, fontSize:'15px', letterSpacing:'0.5px' }}>{label}</span>
             {count > 0 && (
-              <span className="rounded-full text-xs font-bold px-2.5 py-0.5" style={{ background:'rgba(255,255,255,0.6)', color:'#0f172a' }}>{count}</span>
+              <span className="rounded-full text-xs font-bold px-2.5 py-0.5" style={{ background:'rgba(255,255,255,0.3)', color:'#FFFFFF' }}>{count}</span>
             )}
           </div>
-          <ChevronDown className={`w-6 h-6 transition-transform duration-300 ${openDrawers[id] ? 'rotate-180' : ''}`} style={{ color:'#0f172a' }} />
+          <ChevronDown className={`w-6 h-6 transition-transform duration-300 ${openDrawers[id] ? 'rotate-180' : ''}`} style={{ color:'#FFFFFF' }} />
         </button>
         
         {openDrawers[id] && (
