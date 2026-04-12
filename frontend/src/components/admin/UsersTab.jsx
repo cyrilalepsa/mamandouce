@@ -551,8 +551,8 @@ export function UsersTab({ users, testUsers = [], userStats, loadUsers }) {
         </Card>
       </div>
 
-      {/* Carte des utilisateurs de test - uniquement en développement */}
-      {isDevelopment && testUsers.length > 0 && (
+      {/* Carte des utilisateurs de test - toujours visible pour l'admin */}
+      {testUsers.length > 0 && (
         <Card className="bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-dashed border-orange-300 rounded-3xl p-4">
           <button
             onClick={() => setShowTestUsers(!showTestUsers)}
@@ -571,7 +571,7 @@ export function UsersTab({ users, testUsers = [], userStats, loadUsers }) {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs bg-orange-200 text-orange-700 px-2 py-1 rounded-full font-medium">
-                Dev Only
+                Comptes internes
               </span>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${showTestUsers ? 'bg-orange-200 text-orange-700' : 'bg-orange-100 text-orange-400'}`}>
                 {showTestUsers ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
