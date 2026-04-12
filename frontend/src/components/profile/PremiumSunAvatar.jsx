@@ -173,13 +173,9 @@ function PremiumSunAvatar({
         {renderAvatar()}
       </div>
       
-      {/* 50 SCINTILLEMENTS DIAMANT — positions en px absolues sur le halo */}
+      {/* 35 SCINTILLEMENTS DIAMANT — positions en px absolues sur le halo */}
       {(() => {
         const sparkles = [];
-        const cx = auraSize / 2;
-        const cy = auraSize / 2;
-        const maxR = auraSize / 2 + 12;
-        // Pseudo-random seed based on index for deterministic but scattered look
         const coords = [
           [0.72,0.14],[0.28,0.05],[0.91,0.33],[0.08,0.41],[0.55,0.02],
           [0.95,0.62],[0.03,0.68],[0.82,0.88],[0.18,0.92],[0.50,1.05],
@@ -188,12 +184,9 @@ function PremiumSunAvatar({
           [0.40,0.42],[0.90,0.50],[0.10,0.55],[0.68,0.30],[0.32,0.65],
           [0.55,0.20],[0.45,0.80],[0.78,0.60],[0.20,0.35],[0.62,0.85],
           [0.05,0.15],[0.98,0.82],[0.35,0.50],[0.70,0.48],[0.15,0.85],
-          [0.88,0.08],[0.52,0.70],[0.42,0.28],[0.75,0.92],[0.25,0.12],
-          [-.02,0.30],[1.05,0.70],[0.58,0.45],[0.30,0.55],[0.85,0.42],
-          [0.48,0.12],[0.65,0.95],[0.18,0.62],[0.92,0.25],[0.08,0.88],
         ];
-        const sizes = [4,3,5,3,4,6,3,5,4,3,5,4,3,6,4,5,3,4,5,3,4,6,3,5,4,3,5,4,6,3,4,5,3,4,6,5,3,4,5,3,6,4,5,3,4,5,3,6,4,5];
-        for (let i = 0; i < 50; i++) {
+        const sizes = [4,3,5,3,4,6,3,5,4,3,5,4,3,6,4,5,3,4,5,3,4,6,3,5,4,3,5,4,6,3,4,5,3,4,6];
+        for (let i = 0; i < 35; i++) {
           const [rx, ry] = coords[i];
           const x = rx * auraSize;
           const y = ry * auraSize;
