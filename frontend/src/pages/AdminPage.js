@@ -28,7 +28,7 @@ function AdminPage() {
   const { t } = useTranslation();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('users');
   
   // Global Stats
   const [globalStats, setGlobalStats] = useState({
@@ -261,18 +261,18 @@ function AdminPage() {
   }
 
   const tabs = [
-    { id: 'dashboard', label: t('admin.tabs.dashboard'), icon: LayoutDashboard, count: null },
+    { id: 'users', label: 'Inscrites', icon: Users, count: userStats.total },
+    { id: 'messages', label: 'Messages', icon: MessageSquare, count: messageStats.unread },
+    { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard, count: null },
+    { id: 'refunds', label: 'Remboursements', icon: HandCoins, count: refundStats.pending },
+    { id: 'codes', label: 'Codes promo', icon: Gift, count: codeStats.available },
     { id: 'accounting', label: 'Expert IA', icon: Calculator, count: null },
     { id: 'contributions', label: 'Contributions', icon: CheckCircle, count: null },
+    { id: 'foods', label: 'Aliments', icon: Apple, count: foodStats.pending },
+    { id: 'reminders', label: 'Rappels', icon: Bell, count: null },
     { id: 'guardian', label: 'Santé App', icon: Shield, count: null },
     { id: 'solidarity', label: 'Solidarité', icon: HandHeart, count: null },
-    { id: 'users', label: t('admin.tabs.users'), icon: Users, count: userStats.total },
-    { id: 'messages', label: t('admin.tabs.messages'), icon: MessageSquare, count: messageStats.unread },
-    { id: 'reminders', label: t('admin.tabs.reminders'), icon: Bell, count: null },
-    { id: 'foods', label: t('admin.tabs.foods'), icon: Apple, count: foodStats.pending },
-    { id: 'codes', label: t('admin.tabs.codes'), icon: Gift, count: codeStats.available },
-    { id: 'refunds', label: t('admin.tabs.refunds'), icon: HandCoins, count: refundStats.pending },
-    { id: 'android', label: t('admin.tabs.android'), icon: Smartphone, count: null },
+    { id: 'android', label: 'Android', icon: Smartphone, count: null },
   ];
 
   return (
@@ -329,29 +329,70 @@ function AdminPage() {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-2 bg-white rounded-2xl p-2 shadow-sm overflow-x-auto">
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-all min-w-[80px] ${
-                activeTab === tab.id
-                  ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
-                  : 'text-slate-600 hover:bg-slate-100'
-              }`}
-            >
-              <tab.icon className="w-5 h-5" />
-              <span className="hidden sm:inline">{tab.label}</span>
-              {tab.count > 0 && (
-                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                  activeTab === tab.id ? 'bg-white/20' : tab.id === 'messages' && messageStats.unread > 0 ? 'bg-red-100 text-red-600' : 'bg-pink-100 text-pink-600'
-                }`}>
-                  {tab.count}
-                </span>
-              )}
-            </button>
-          ))}
+        {/* Tabs — 2 boutons principaux + menu déroulant pour le reste */}
+        <div className="space-y-2">
+          {/* ROW 1 : Inscrites + Messages — toujours visibles */}
+          <div className="grid grid-cols-2 gap-3">
+            {tabs.slice(0, 2).map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                data-testid={`admin-tab-${tab.id}`}
+                className={`flex items-center justify-center gap-2 py-3 px-4 rounded-2xl font-bold text-sm transition-all ${
+                  activeTab === tab.id
+                    ? 'text-white'
+                    : 'text-slate-700'
+                }`}
+                style={activeTab === tab.id ? {
+                  background: tab.id === 'users' 
+                    ? 'linear-gradient(135deg, #C084FC, #A855F7)' 
+                    : 'linear-gradient(135deg, #38BDF8, #0EA5E9)',
+                  boxShadow: '0 4px 15px rgba(168,85,247,0.4)'
+                } : {
+                  background: tab.id === 'users'
+                    ? 'linear-gradient(135deg, #F3E8FF, #EDE9FE)'
+                    : 'linear-gradient(135deg, #E0F2FE, #DBEAFE)',
+                  boxShadow: '6px 6px 14px #D1D9E6, -6px -6px 14px #FFFFFF'
+                }}
+              >
+                <tab.icon className="w-5 h-5" />
+                <span>{tab.label}</span>
+                {tab.count > 0 && (
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                    activeTab === tab.id ? 'bg-white/30 text-white' : 'bg-white text-purple-600'
+                  }`}>
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+          
+          {/* ROW 2 : Autres onglets — scrollable */}
+          <div className="flex gap-2 rounded-2xl p-2 overflow-x-auto" style={{ background: 'linear-gradient(135deg, #FFF5F7, #F0F4FF)', boxShadow: '6px 6px 14px #D1D9E6, -6px -6px 14px #FFFFFF' }}>
+            {tabs.slice(2).map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                data-testid={`admin-tab-${tab.id}`}
+                className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl font-semibold transition-all min-w-fit whitespace-nowrap text-xs ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md'
+                    : 'text-slate-600 hover:bg-white/60'
+                }`}
+              >
+                <tab.icon className="w-4 h-4" />
+                <span>{tab.label}</span>
+                {tab.count > 0 && (
+                  <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+                    activeTab === tab.id ? 'bg-white/20' : 'bg-pink-100 text-pink-600'
+                  }`}>
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
         {activeTab === 'dashboard' && (
