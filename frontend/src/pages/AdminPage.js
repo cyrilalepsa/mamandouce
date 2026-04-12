@@ -65,6 +65,8 @@ function AdminPage() {
   
   // Tiroirs accordéon
   const [openDrawers, setOpenDrawers] = useState({ community: true });
+  // Sous-accordéons imbriqués
+  const [openSubs, setOpenSubs] = useState({});
 
   useEffect(() => {
     checkAdmin();
@@ -289,12 +291,39 @@ function AdminPage() {
     tools:     '#BAE6FD, #7DD3FC',   // bleu
   };
 
+  const toggleSub = (id) => setOpenSubs(prev => ({ ...prev, [id]: !prev[id] }));
+
+  const SubDrawer = ({ id, label, icon: SIcon, children, defaultOpen }) => {
+    const isOpen = openSubs[id] ?? defaultOpen ?? false;
+    return (
+      <div className="rounded-2xl bg-white border border-slate-200 mb-2" style={{ overflow:'hidden' }}>
+        <button
+          onClick={() => toggleSub(id)}
+          data-testid={`sub-${id}`}
+          className="w-full px-4 py-3 flex items-center justify-between"
+          style={{ background:'transparent' }}
+        >
+          <div className="flex items-center gap-2">
+            {SIcon && <SIcon className="w-4 h-4" style={{ color:'#6B21A8' }} />}
+            <span style={{ color:'#000000', fontWeight:700, fontSize:'13px' }}>{label}</span>
+          </div>
+          <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} style={{ color:'#64748b' }} />
+        </button>
+        {isOpen && (
+          <div className="px-3 pb-3" style={{ color:'#000000' }}>
+            {children}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const DrawerTile = ({ id, icon: Icon, label, children, count }) => {
     const colors = drawerColors[id] || drawerColors.community;
     return (
       <div className="admin-drawer rounded-3xl" data-testid={`drawer-${id}-wrap`} style={{
         background: `linear-gradient(145deg, ${colors})`,
-        border: '1px solid rgba(255,255,255,0.3)',
+        border: '1px solid rgba(255,255,255,0.15)',
         boxShadow: openDrawers[id]
           ? '0 4px 10px rgba(0,0,0,0.1), inset 0 -3px 6px rgba(0,0,0,0.08), inset 0 3px 6px rgba(255,255,255,0.6)'
           : '0 10px 20px rgba(0,0,0,0.15), inset 0 -5px 10px rgba(0,0,0,0.1), inset 0 5px 10px rgba(255,255,255,0.8)',
@@ -302,7 +331,7 @@ function AdminPage() {
         position: 'relative',
         overflow: 'hidden',
       }}>
-        {/* Reflet glossy subtil — ne couvre pas la couleur */}
+        {/* Reflet glossy subtil */}
         <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:'35%', background:'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.1) 50%, transparent 100%)', borderRadius:'inherit', pointerEvents:'none', zIndex:1 }} />
         
         <button
@@ -322,7 +351,7 @@ function AdminPage() {
         </button>
         
         {openDrawers[id] && (
-          <div className="px-3 pb-4 animate-fade-in" style={{ color:'#0f172a' }}>
+          <div className="px-3 pb-4" style={{ color:'#000000' }}>
             {children}
           </div>
         )}
@@ -333,56 +362,61 @@ function AdminPage() {
   return (
     <div className="min-h-screen gradient-bg p-4">
       <div className="max-w-4xl mx-auto space-y-4 animate-fade-in">
-        {/* Titre seul — aucune barre de navigation */}
         <div className="flex items-center justify-between pt-2 pb-1">
           <PageHeader title="Administration" />
           <GuardianStatusIndicator onClick={() => toggleDrawer('tools')} />
         </div>
 
-        {/* === 4 TUILES ACCORDÉON === */}
-
-        {/* 1. LILAS — GESTION COMMUNAUTÉ */}
+        {/* 1. VIOLET — GESTION COMMUNAUTÉ */}
         <DrawerTile id="community" icon={Users} label="GESTION COMMUNAUTÉ" count={userStats.total}>
-          <UsersTab users={users} testUsers={testUsers} userStats={userStats} loadUsers={loadUsers} />
-          <div className="mt-3">
+          <SubDrawer id="inscrites" label="Liste des Inscrites" icon={Users} defaultOpen={false}>
+            <UsersTab users={users} testUsers={testUsers} userStats={userStats} loadUsers={loadUsers} />
+          </SubDrawer>
+          <SubDrawer id="contributions" label="Contributions à valider" icon={CheckCircle}>
             <ContributionsManager />
-          </div>
+          </SubDrawer>
+          <SubDrawer id="solidarity" label="Solidarité" icon={HandHeart}>
+            <SolidarityTab />
+          </SubDrawer>
         </DrawerTile>
 
         {/* 2. ROSE — MESSAGERIE & SUPPORT */}
         <DrawerTile id="messaging" icon={MessageSquare} label="MESSAGERIE & SUPPORT" count={messageStats.unread}>
-          <MessagesTab messages={messages} messageStats={messageStats} loadMessages={loadMessages} />
-          <div className="mt-3">
+          <SubDrawer id="messages" label="Messages reçus" icon={MessageSquare}>
+            <MessagesTab messages={messages} messageStats={messageStats} loadMessages={loadMessages} />
+          </SubDrawer>
+          <SubDrawer id="reminders" label="Rappels & Notifications" icon={Bell}>
             <RemindersTab />
-          </div>
+          </SubDrawer>
         </DrawerTile>
 
-        {/* 3. VERT MENTHE — FINANCES & STRIPE */}
+        {/* 3. VERT — FINANCES & STRIPE */}
         <DrawerTile id="finances" icon={HandCoins} label="FINANCES & STRIPE" count={refundStats.pending}>
-          <DashboardTab globalStats={globalStats} codeStats={codeStats} setActiveTab={() => {}} messageStats={messageStats} />
-          <div className="mt-3">
+          <SubDrawer id="stats" label="Tableau de bord" icon={LayoutDashboard}>
+            <DashboardTab globalStats={globalStats} codeStats={codeStats} setActiveTab={() => {}} messageStats={messageStats} />
+          </SubDrawer>
+          <SubDrawer id="accounting" label="Expert IA Comptable" icon={Calculator}>
             <AccountingDashboard />
-          </div>
-          <div className="mt-3">
+          </SubDrawer>
+          <SubDrawer id="codes" label="Codes Promo" icon={Gift}>
             <CodesTab codes={codes} codeStats={codeStats} loadCodes={loadCodes} />
-          </div>
-          <div className="mt-3">
+          </SubDrawer>
+          <SubDrawer id="refunds" label="Remboursements" icon={HandCoins}>
             <RefundsTab refundRequests={refundRequests} refundStats={refundStats} loadRefundRequests={loadRefundRequests} />
-          </div>
+          </SubDrawer>
         </DrawerTile>
 
-        {/* 4. BLEU CIEL — OUTILS BUSINESS & BUILDS */}
+        {/* 4. BLEU — OUTILS BUSINESS & BUILDS */}
         <DrawerTile id="tools" icon={Smartphone} label="OUTILS BUSINESS & BUILDS">
-          <AndroidExportTab />
-          <div className="mt-3">
+          <SubDrawer id="android" label="Kit Business & Play Store" icon={Smartphone}>
+            <AndroidExportTab />
+          </SubDrawer>
+          <SubDrawer id="guardian" label="Santé de l'App" icon={Shield}>
             <GuardianTab />
-          </div>
-          <div className="mt-3">
-            <SolidarityTab />
-          </div>
-          <div className="mt-3">
+          </SubDrawer>
+          <SubDrawer id="foods" label="Aliments à valider" icon={Apple}>
             <FoodsTab pendingFoods={pendingFoods} foodStats={foodStats} loadPendingFoods={loadPendingFoods} />
-          </div>
+          </SubDrawer>
         </DrawerTile>
 
         <div className="h-20" />
