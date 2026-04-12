@@ -65,11 +65,11 @@ body,
 /* ============================================
    CARTES CHAMALLOW 3D FLOTTANTES - NACRE AMÉLIORÉ
    ============================================ */
-[class*="rounded-"][class*="bg-white"],
-[class*="rounded-"][class*="bg-slate-"],
-[class*="rounded-xl"][class*="shadow"],
-[class*="rounded-2xl"][class*="shadow"],
-[class*="rounded-3xl"][class*="shadow"],
+[class*="rounded-"][class*="bg-white"]:not(.admin-drawer),
+[class*="rounded-"][class*="bg-slate-"]:not(.admin-drawer),
+[class*="rounded-xl"][class*="shadow"]:not(.admin-drawer),
+[class*="rounded-2xl"][class*="shadow"]:not(.admin-drawer),
+[class*="rounded-3xl"][class*="shadow"]:not(.admin-drawer),
 .glossy-card,
 [data-testid*="card"],
 .Card,
@@ -245,18 +245,18 @@ textarea::placeholder {
 /* ============================================
    BOUTONS CHAMALLOW 3D FLOTTANTS - CONTRASTE AMÉLIORÉ
    ============================================ */
-button,
-button[class*="bg-gradient"],
-button[class*="bg-pink"],
-button[class*="bg-purple"],
-button[class*="bg-emerald"],
-button[class*="bg-teal"],
-button[class*="bg-cyan"],
-button[class*="bg-green"],
-button[class*="bg-blue"],
-button[class*="bg-amber"],
-button[class*="bg-rose"],
-button[class*="rounded-full"],
+button:not([data-testid^="drawer-"]),
+button:not([data-testid^="drawer-"])[class*="bg-gradient"],
+button:not([data-testid^="drawer-"])[class*="bg-pink"],
+button:not([data-testid^="drawer-"])[class*="bg-purple"],
+button:not([data-testid^="drawer-"])[class*="bg-emerald"],
+button:not([data-testid^="drawer-"])[class*="bg-teal"],
+button:not([data-testid^="drawer-"])[class*="bg-cyan"],
+button:not([data-testid^="drawer-"])[class*="bg-green"],
+button:not([data-testid^="drawer-"])[class*="bg-blue"],
+button:not([data-testid^="drawer-"])[class*="bg-amber"],
+button:not([data-testid^="drawer-"])[class*="bg-rose"],
+button:not([data-testid^="drawer-"])[class*="rounded-full"],
 .btn-glossy {
   position: relative;
   backdrop-filter: blur(8px) !important;
@@ -295,7 +295,7 @@ button[class*="from-teal"] {
 }
 
 /* Reflet glossy brillant sur les boutons (effet perle de gel) */
-button::after,
+button:not([data-testid^="drawer-"])::after,
 .btn-glossy::after {
   content: '';
   position: absolute;
@@ -314,7 +314,7 @@ button::after,
   z-index: 1;
 }
 
-button:hover {
+button:not([data-testid^="drawer-"]):hover {
   /* Effet hover - légèrement enfoncé */
   box-shadow: 
     8px 8px 16px #D1D9E6,
@@ -323,7 +323,7 @@ button:hover {
   transform: translateY(-1px);
 }
 
-button:active {
+button:not([data-testid^="drawer-"]):active {
   /* Effet pressé */
   box-shadow: 
     inset 4px 4px 8px #D1D9E6,
@@ -1022,4 +1022,30 @@ span.user-name-display,
 @keyframes spin-slow {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   TUILES ADMIN DASHBOARD — OVERRIDE TOTAL
+   Priorité maximale pour contrer les sélecteurs génériques
+   ============================================ */
+.admin-drawer {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+  overflow: hidden !important;
+}
+.admin-drawer::before {
+  display: none !important;
+}
+.admin-drawer[data-testid="drawer-community-wrap"] {
+  background: linear-gradient(145deg, #E9D5FF, #D8B4FE) !important;
+}
+.admin-drawer[data-testid="drawer-messaging-wrap"] {
+  background: linear-gradient(145deg, #FECDD3, #FDA4AF) !important;
+}
+.admin-drawer[data-testid="drawer-finances-wrap"] {
+  background: linear-gradient(145deg, #A7F3D0, #6EE7B7) !important;
+}
+.admin-drawer[data-testid="drawer-tools-wrap"] {
+  background: linear-gradient(145deg, #BAE6FD, #7DD3FC) !important;
 }

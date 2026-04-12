@@ -28,7 +28,7 @@ function AdminPage() {
   const { t } = useTranslation();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('users');
+  const [activeTab, setActiveTab] = useState('users'); // kept for sub-component compat
   
   // Global Stats
   const [globalStats, setGlobalStats] = useState({
@@ -62,6 +62,9 @@ function AdminPage() {
   
   // Menu "Voir comme"
   const [showViewMenu, setShowViewMenu] = useState(false);
+  
+  // Tiroirs accordéon
+  const [openDrawers, setOpenDrawers] = useState({ community: true });
 
   useEffect(() => {
     checkAdmin();
@@ -275,199 +278,114 @@ function AdminPage() {
     { id: 'android', label: 'Android', icon: Smartphone, count: null },
   ];
 
-  return (
-    <div className="min-h-screen gradient-bg p-6">
-      <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
-        <div className="flex items-center justify-between">
+  const toggleDrawer = (id) => {
+    setOpenDrawers(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const drawerColors = {
+    community: '#E9D5FF, #D8B4FE',  // lilas
+    messaging: '#FECDD3, #FDA4AF',   // rose
+    finances:  '#A7F3D0, #6EE7B7',   // menthe
+    tools:     '#BAE6FD, #7DD3FC',   // bleu
+  };
+
+  const DrawerTile = ({ id, icon: Icon, label, children, count }) => {
+    const colors = drawerColors[id] || drawerColors.community;
+    return (
+      <div className="admin-drawer rounded-3xl" data-testid={`drawer-${id}-wrap`} style={{
+        background: `linear-gradient(145deg, ${colors})`,
+        border: '1px solid rgba(255,255,255,0.3)',
+        boxShadow: openDrawers[id]
+          ? '0 4px 10px rgba(0,0,0,0.1), inset 0 -3px 6px rgba(0,0,0,0.08), inset 0 3px 6px rgba(255,255,255,0.6)'
+          : '0 10px 20px rgba(0,0,0,0.15), inset 0 -5px 10px rgba(0,0,0,0.1), inset 0 5px 10px rgba(255,255,255,0.8)',
+        transition: 'all 0.2s ease',
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        {/* Reflet glossy miroir */}
+        <div style={{ position:'absolute', top:0, left:'8%', right:'8%', height:'50%', background:'linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.25) 50%, transparent 100%)', borderRadius:'inherit', pointerEvents:'none', zIndex:1 }} />
+        
+        <button
+          onClick={() => toggleDrawer(id)}
+          data-testid={`drawer-${id}`}
+          className="w-full px-5 py-5 flex items-center justify-between relative z-10 active:scale-[0.98]"
+          style={{ background:'transparent', transition:'transform 0.15s ease' }}
+        >
           <div className="flex items-center gap-3">
-            <PageHeader title="Administration" />
-            {/* Voyant lumineux Guardian */}
-            <GuardianStatusIndicator onClick={() => setActiveTab('guardian')} />
-          </div>
-          
-          {/* Menu "Voir comme" */}
-          <div className="relative">
-            <Button
-              onClick={() => setShowViewMenu(!showViewMenu)}
-              data-testid="view-as-menu-btn"
-              className="bg-gradient-to-r from-sky-500 to-purple-500 text-white rounded-full px-4 py-2 hover:opacity-90 flex items-center gap-2"
-            >
-              <Eye className="w-4 h-4" />
-              {t('admin.viewAs')}
-              <ChevronDown className={`w-4 h-4 transition-transform ${showViewMenu ? 'rotate-180' : ''}`} />
-            </Button>
-            
-            {showViewMenu && (
-              <div className="absolute right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50 min-w-[220px] animate-fade-in">
-                <button
-                  onClick={() => handleViewAs('normal')}
-                  className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center gap-3 transition-colors"
-                >
-                  <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center">
-                    <Users className="w-4 h-4 text-slate-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-slate-700">{t('admin.freeUser')}</p>
-                    <p className="text-xs text-slate-500">{t('admin.basicInterface')}</p>
-                  </div>
-                </button>
-                
-                <button
-                  onClick={() => handleViewAs('premium')}
-                  className="w-full px-4 py-3 text-left hover:bg-amber-50 flex items-center gap-3 transition-colors border-t border-slate-100"
-                >
-                  <div className="w-8 h-8 bg-gradient-to-r from-amber-400 to-pink-400 rounded-full flex items-center justify-center">
-                    <Crown className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-slate-700">{t('admin.fullPremium')}</p>
-                    <p className="text-xs text-slate-500">{t('admin.premiumPostpartumActive')}</p>
-                  </div>
-                </button>
-              </div>
+            <Icon className="w-7 h-7" style={{ color:'#0f172a' }} strokeWidth={2.5} />
+            <span style={{ color:'#0f172a', fontWeight:900, fontSize:'15px', letterSpacing:'0.5px' }}>{label}</span>
+            {count > 0 && (
+              <span className="rounded-full text-xs font-bold px-2.5 py-0.5" style={{ background:'rgba(255,255,255,0.6)', color:'#0f172a' }}>{count}</span>
             )}
           </div>
+          <ChevronDown className={`w-6 h-6 transition-transform duration-300 ${openDrawers[id] ? 'rotate-180' : ''}`} style={{ color:'#0f172a' }} />
+        </button>
+        
+        {openDrawers[id] && (
+          <div className="px-3 pb-4 animate-fade-in" style={{ color:'#0f172a' }}>
+            {children}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen gradient-bg p-4">
+      <div className="max-w-4xl mx-auto space-y-4 animate-fade-in">
+        {/* Titre seul — aucune barre de navigation */}
+        <div className="flex items-center justify-between pt-2 pb-1">
+          <PageHeader title="Administration" />
+          <GuardianStatusIndicator onClick={() => toggleDrawer('tools')} />
         </div>
 
-        {/* Tabs — 2 boutons principaux + menu déroulant pour le reste */}
-        <div className="space-y-2">
-          {/* ROW 1 : Inscrites + Messages — toujours visibles */}
-          <div className="grid grid-cols-2 gap-3">
-            {tabs.slice(0, 2).map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                data-testid={`admin-tab-${tab.id}`}
-                className={`flex items-center justify-center gap-2 py-3 px-4 rounded-2xl font-bold text-sm transition-all ${
-                  activeTab === tab.id
-                    ? 'text-white'
-                    : 'text-slate-700'
-                }`}
-                style={activeTab === tab.id ? {
-                  background: tab.id === 'users' 
-                    ? 'linear-gradient(135deg, #C084FC, #A855F7)' 
-                    : 'linear-gradient(135deg, #38BDF8, #0EA5E9)',
-                  boxShadow: '0 4px 15px rgba(168,85,247,0.4)'
-                } : {
-                  background: tab.id === 'users'
-                    ? 'linear-gradient(135deg, #F3E8FF, #EDE9FE)'
-                    : 'linear-gradient(135deg, #E0F2FE, #DBEAFE)',
-                  boxShadow: '6px 6px 14px #D1D9E6, -6px -6px 14px #FFFFFF'
-                }}
-              >
-                <tab.icon className="w-5 h-5" />
-                <span>{tab.label}</span>
-                {tab.count > 0 && (
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                    activeTab === tab.id ? 'bg-white/30 text-white' : 'bg-white text-purple-600'
-                  }`}>
-                    {tab.count}
-                  </span>
-                )}
-              </button>
-            ))}
+        {/* === 4 TUILES ACCORDÉON === */}
+
+        {/* 1. LILAS — GESTION COMMUNAUTÉ */}
+        <DrawerTile id="community" icon={Users} label="GESTION COMMUNAUTÉ" count={userStats.total}>
+          <UsersTab users={users} testUsers={testUsers} userStats={userStats} loadUsers={loadUsers} />
+          <div className="mt-3">
+            <ContributionsManager />
           </div>
-          
-          {/* ROW 2 : Autres onglets — scrollable */}
-          <div className="flex gap-2 rounded-2xl p-2 overflow-x-auto" style={{ background: 'linear-gradient(135deg, #FFF5F7, #F0F4FF)', boxShadow: '6px 6px 14px #D1D9E6, -6px -6px 14px #FFFFFF' }}>
-            {tabs.slice(2).map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                data-testid={`admin-tab-${tab.id}`}
-                className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl font-semibold transition-all min-w-fit whitespace-nowrap text-xs ${
-                  activeTab === tab.id
-                    ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md'
-                    : 'text-slate-600 hover:bg-white/60'
-                }`}
-              >
-                <tab.icon className="w-4 h-4" />
-                <span>{tab.label}</span>
-                {tab.count > 0 && (
-                  <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
-                    activeTab === tab.id ? 'bg-white/20' : 'bg-pink-100 text-pink-600'
-                  }`}>
-                    {tab.count}
-                  </span>
-                )}
-              </button>
-            ))}
+        </DrawerTile>
+
+        {/* 2. ROSE — MESSAGERIE & SUPPORT */}
+        <DrawerTile id="messaging" icon={MessageSquare} label="MESSAGERIE & SUPPORT" count={messageStats.unread}>
+          <MessagesTab messages={messages} messageStats={messageStats} loadMessages={loadMessages} />
+          <div className="mt-3">
+            <RemindersTab />
           </div>
-        </div>
+        </DrawerTile>
 
-        {activeTab === 'dashboard' && (
-          <DashboardTab 
-            globalStats={globalStats}
-            codeStats={codeStats}
-            setActiveTab={setActiveTab}
-            messageStats={messageStats}
-          />
-        )}
+        {/* 3. VERT MENTHE — FINANCES & STRIPE */}
+        <DrawerTile id="finances" icon={HandCoins} label="FINANCES & STRIPE" count={refundStats.pending}>
+          <DashboardTab globalStats={globalStats} codeStats={codeStats} setActiveTab={() => {}} messageStats={messageStats} />
+          <div className="mt-3">
+            <AccountingDashboard />
+          </div>
+          <div className="mt-3">
+            <CodesTab codes={codes} codeStats={codeStats} loadCodes={loadCodes} />
+          </div>
+          <div className="mt-3">
+            <RefundsTab refundRequests={refundRequests} refundStats={refundStats} loadRefundRequests={loadRefundRequests} />
+          </div>
+        </DrawerTile>
 
-        {activeTab === 'accounting' && (
-          <AccountingDashboard />
-        )}
-
-        {activeTab === 'contributions' && (
-          <ContributionsManager />
-        )}
-
-        {activeTab === 'guardian' && (
-          <GuardianTab />
-        )}
-
-        {activeTab === 'solidarity' && (
-          <SolidarityTab />
-        )}
-
-        {activeTab === 'users' && (
-          <UsersTab 
-            users={users}
-            testUsers={testUsers}
-            userStats={userStats}
-            loadUsers={loadUsers}
-          />
-        )}
-
-        {activeTab === 'messages' && (
-          <MessagesTab 
-            messages={messages}
-            messageStats={messageStats}
-            loadMessages={loadMessages}
-          />
-        )}
-
-        {activeTab === 'reminders' && (
-          <RemindersTab />
-        )}
-
-        {activeTab === 'foods' && (
-          <FoodsTab 
-            pendingFoods={pendingFoods}
-            foodStats={foodStats}
-            loadPendingFoods={loadPendingFoods}
-          />
-        )}
-
-        {activeTab === 'codes' && (
-          <CodesTab 
-            codes={codes}
-            codeStats={codeStats}
-            loadCodes={loadCodes}
-          />
-        )}
-
-        {activeTab === 'refunds' && (
-          <RefundsTab 
-            refundRequests={refundRequests}
-            refundStats={refundStats}
-            loadRefundRequests={loadRefundRequests}
-          />
-        )}
-
-        {activeTab === 'android' && (
+        {/* 4. BLEU CIEL — OUTILS BUSINESS & BUILDS */}
+        <DrawerTile id="tools" icon={Smartphone} label="OUTILS BUSINESS & BUILDS">
           <AndroidExportTab />
-        )}
+          <div className="mt-3">
+            <GuardianTab />
+          </div>
+          <div className="mt-3">
+            <SolidarityTab />
+          </div>
+          <div className="mt-3">
+            <FoodsTab pendingFoods={pendingFoods} foodStats={foodStats} loadPendingFoods={loadPendingFoods} />
+          </div>
+        </DrawerTile>
+
+        <div className="h-20" />
       </div>
     </div>
   );
