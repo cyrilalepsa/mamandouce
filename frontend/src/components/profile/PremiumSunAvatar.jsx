@@ -225,19 +225,15 @@ function PremiumSunAvatar({
         @keyframes sparkle-magic {
           0%, 100% {
             opacity: 0;
-            transform: scale(0.4);
           }
-          30% {
-            opacity: 0.9;
-            transform: scale(1.3) translate(1px, -1px);
+          35% {
+            opacity: 1;
           }
           50% {
-            opacity: 1;
-            transform: scale(1) translate(2px, 1px);
+            opacity: 0.9;
           }
-          70% {
-            opacity: 0.85;
-            transform: scale(1.15) translate(-1px, 2px);
+          65% {
+            opacity: 1;
           }
         }
         

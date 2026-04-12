@@ -115,13 +115,16 @@ export function JourneyStepsCard({ t, navigate }) {
     <div 
       className="flex flex-col items-center cursor-pointer select-none w-full px-2"
       onClick={() => navigate('/journey-steps')}
-      data-testid="journey-steps-card"
+      data-testid="journey-steps-link"
       style={{
         transform: 'translateZ(0)',
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden',
         contain: 'layout paint',
         background: 'transparent',
+        backdropFilter: 'none',
+        WebkitBackdropFilter: 'none',
+        boxShadow: 'none',
       }}
     >
       {/* Container avec cœurs 3D flottants de chaque côté - FOND TRANSPARENT */}
@@ -135,27 +138,11 @@ export function JourneyStepsCard({ t, navigate }) {
           <GlossyHeart size={10} color="#d946ef" rotation={-35} top={28} left={26} />
         </div>
 
-        {/* La bulle centrale - STYLE CHAMALLOW 3D EXACT */}
+        {/* La bulle centrale - TRANSPARENTE, texte seul */}
         <div 
-          className="relative overflow-hidden rounded-full px-4 py-2 active:scale-[0.98] flex-1"
-          style={{ 
-            /* STYLE CHAMALLOW 3D EXACT */
-            background: 'rgba(255, 255, 255, 0.7)',
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)',
-            /* NEUMORPHISM CHAMALLOW 3D EXACT */
-            boxShadow: '10px 10px 20px #D1D9E6, -10px -10px 20px #FFFFFF',
-            borderRadius: '20px',
-          }}
+          className="relative px-4 py-2 active:scale-[0.98] flex-1"
+          style={{ background: 'transparent' }}
         >
-          {/* Effet de reflet bombé en haut */}
-          <div 
-            className="absolute top-0 left-4 right-4 h-2/5 rounded-t-full pointer-events-none"
-            style={{ 
-              background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)',
-            }}
-          />
-          
           {/* Contenu centré */}
           <div className="relative flex items-center justify-center">
             <span 

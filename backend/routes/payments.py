@@ -32,6 +32,9 @@ router = APIRouter()
 STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "sk_test_emergent")
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 stripe.api_key = STRIPE_API_KEY
+# Route through Emergent proxy if using test key
+if "sk_test_emergent" in STRIPE_API_KEY:
+    stripe.api_base = "https://integrations.emergentagent.com/stripe"
 
 SUBSCRIPTION_PACKAGES = {
     "annual": {
@@ -83,67 +86,42 @@ class SecureCheckoutRequest(BaseModel):
 
 @router.post("/checkout/session")
 async def create_checkout_session(checkout_req: SecureCheckoutRequest, request: Request):
-    """Créer une session de paiement Stripe - prix calculé côté serveur uniquement"""
-    # Accept both price_id and package_id for backward compatibility
+    """Créer une session de paiement Stripe — prix serveur + codes promo Stripe activés"""
     pkg_key = checkout_req.price_id or checkout_req.package_id
     if not pkg_key or pkg_key not in SUBSCRIPTION_PACKAGES:
         raise HTTPException(status_code=400, detail="Package invalide")
     
     package = SUBSCRIPTION_PACKAGES[pkg_key]
     server_amount = package["amount"]
-    
-    # 2. If promo code provided, verify with Stripe and compute discount server-side
-    discount_amount = 0.0
-    promo_metadata = {}
-    if checkout_req.promo_code:
-        try:
-            promo_codes = stripe.PromotionCode.list(code=checkout_req.promo_code, active=True, limit=1)
-            if promo_codes.data:
-                promo = promo_codes.data[0]
-                coupon = promo.coupon
-                if coupon.percent_off:
-                    discount_amount = round(server_amount * coupon.percent_off / 100, 2)
-                elif coupon.amount_off:
-                    discount_amount = round(coupon.amount_off / 100, 2)  # Stripe stores in cents
-                promo_metadata = {
-                    "promo_code": checkout_req.promo_code,
-                    "promo_id": promo.id,
-                    "discount_amount": str(discount_amount)
-                }
-                logger.info(f"Promo code '{checkout_req.promo_code}' validated: -{discount_amount}€")
-            else:
-                logger.warning(f"Invalid promo code attempted: {checkout_req.promo_code}")
-        except stripe.error.StripeError as e:
-            logger.warning(f"Stripe promo verification error: {e}")
-    
-    final_amount = max(server_amount - discount_amount, 0.50)
+    amount_cents = int(server_amount * 100)
     
     success_url = f"{checkout_req.origin_url}/subscription/success?session_id={{CHECKOUT_SESSION_ID}}"
     cancel_url = f"{checkout_req.origin_url}/subscription/cancel"
     
-    host_url = str(request.base_url).rstrip('/')
-    webhook_url = f"{host_url}/api/payments/webhook/stripe"
-    
-    stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
-    
     metadata = {
         "package_id": pkg_key,
         "package_name": package["name"],
-        "server_expected_amount": str(final_amount),
-        **promo_metadata
+        "server_expected_amount": str(server_amount),
     }
     
-    checkout_request = CheckoutSessionRequest(
-        amount=final_amount,
-        currency=package["currency"],
-        success_url=success_url,
-        cancel_url=cancel_url,
-        metadata=metadata
-    )
-    
     try:
-        session = await stripe_checkout.create_checkout_session(checkout_request)
-        return {"url": session.url, "session_id": session.session_id}
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{
+                "price_data": {
+                    "currency": package["currency"],
+                    "product_data": {"name": package["name"]},
+                    "unit_amount": amount_cents,
+                },
+                "quantity": 1,
+            }],
+            mode="payment",
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata=metadata,
+            allow_promotion_codes=True,
+        )
+        return {"url": session.url, "session_id": session.id}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur: {str(e)}")
 
@@ -209,20 +187,45 @@ async def stripe_webhook(request: Request):
             server_expected = metadata.get('server_expected_amount')
             if server_expected:
                 expected_amount = float(server_expected)
-                if abs(amount_total - expected_amount) > 0.01:
-                    alert_details = {
-                        "customer_email": customer_email or "unknown",
-                        "package_id": package_id,
-                        "expected_amount": expected_amount,
-                        "received_amount": amount_total,
-                        "difference": round(amount_total - expected_amount, 2),
-                        "payment_intent": payment_intent_id,
-                        "session_id": session.get('id', 'unknown')
-                    }
-                    await _record_billing_alert("AMOUNT_MISMATCH", alert_details)
-                    logger.error(f"BILLING ALERT: Amount mismatch! Expected {expected_amount}€, got {amount_total}€ for {customer_email}")
+                # Check if Stripe applied a promotion code (discount)
+                total_details = session.get('total_details', {})
+                stripe_discount = (total_details.get('amount_discount', 0) or 0) / 100
+                
+                if stripe_discount > 0:
+                    # Promo code used on Stripe — verify discounted amount is correct
+                    expected_after_discount = expected_amount - stripe_discount
+                    if amount_total > expected_amount + 0.01:
+                        # Paid MORE than full price — suspicious
+                        alert_details = {
+                            "customer_email": customer_email or "unknown",
+                            "package_id": package_id,
+                            "expected_amount": expected_amount,
+                            "received_amount": amount_total,
+                            "stripe_discount": stripe_discount,
+                            "difference": round(amount_total - expected_amount, 2),
+                            "payment_intent": payment_intent_id,
+                            "session_id": session.get('id', 'unknown')
+                        }
+                        await _record_billing_alert("AMOUNT_OVER_EXPECTED", alert_details)
+                        logger.error(f"BILLING ALERT: Overpayment! Expected max {expected_amount}€, got {amount_total}€")
+                    else:
+                        logger.info(f"Amount OK with Stripe promo: {amount_total}€ (base {expected_amount}€, discount -{stripe_discount}€)")
                 else:
-                    logger.info(f"Amount verified OK: {amount_total}€ matches expected {expected_amount}€")
+                    # No discount — amount must match exactly
+                    if abs(amount_total - expected_amount) > 0.01:
+                        alert_details = {
+                            "customer_email": customer_email or "unknown",
+                            "package_id": package_id,
+                            "expected_amount": expected_amount,
+                            "received_amount": amount_total,
+                            "difference": round(amount_total - expected_amount, 2),
+                            "payment_intent": payment_intent_id,
+                            "session_id": session.get('id', 'unknown')
+                        }
+                        await _record_billing_alert("AMOUNT_MISMATCH", alert_details)
+                        logger.error(f"BILLING ALERT: Amount mismatch! Expected {expected_amount}€, got {amount_total}€ for {customer_email}")
+                    else:
+                        logger.info(f"Amount verified OK: {amount_total}€ matches expected {expected_amount}€")
             
             logger.info(f"Checkout completed for {customer_email}, package: {package_id}")
             
