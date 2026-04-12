@@ -499,6 +499,7 @@ export function UsersTab({ users, testUsers = [], userStats, loadUsers }) {
   const [expandedMonths, setExpandedMonths] = useState({});
   const [filterStatus, setFilterStatus] = useState('all'); // all, premium, free, trial
   const [showTestUsers, setShowTestUsers] = useState(false);
+  const [initialized, setInitialized] = useState(false);
   
   // Vérifier si on est en environnement de développement/preview
   const isDevelopment = window.location.hostname.includes('preview') || 
@@ -515,6 +516,22 @@ export function UsersTab({ users, testUsers = [], userStats, loadUsers }) {
   });
   
   const { grouped, sortedYears } = groupUsersByDate(filteredUsers);
+  
+  // Auto-expand all years and most recent month on first load
+  if (!initialized && sortedYears.length > 0) {
+    const autoYears = {};
+    const autoMonths = {};
+    sortedYears.forEach(year => {
+      autoYears[year] = true;
+      const months = Object.keys(grouped[year]).sort((a, b) => b - a);
+      if (months.length > 0) {
+        autoMonths[`${year}-${months[0]}`] = true;
+      }
+    });
+    setExpandedYears(autoYears);
+    setExpandedMonths(autoMonths);
+    setInitialized(true);
+  }
   
   const toggleYear = (year) => {
     setExpandedYears(prev => ({ ...prev, [year]: !prev[year] }));
@@ -644,19 +661,20 @@ export function UsersTab({ users, testUsers = [], userStats, loadUsers }) {
               const totalUsersInYear = monthsInYear.reduce((sum, month) => sum + grouped[year][month].length, 0);
               
               return (
-                <div key={year} className="border border-slate-200 rounded-xl overflow-hidden">
-                  {/* Header Année */}
+                <div key={year} className="border-2 border-slate-300 rounded-xl overflow-hidden">
+                  {/* Header Année — fond coloré, texte foncé */}
                   <button
                     onClick={() => toggleYear(year)}
-                    className="w-full px-4 py-3 bg-gradient-to-r from-sky-50 to-sky-100 flex items-center justify-between hover:from-sky-100 hover:to-sky-150 transition-colors"
+                    className="w-full px-4 py-3 flex items-center justify-between transition-colors"
+                    style={{ background: 'linear-gradient(135deg, #DBEAFE 0%, #C7D2FE 100%)' }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-sky-500 rounded-xl flex items-center justify-center">
+                      <div className="w-10 h-10 bg-sky-600 rounded-xl flex items-center justify-center">
                         <span className="text-white font-bold">{year.slice(-2)}</span>
                       </div>
                       <div className="text-left">
-                        <p className="font-bold text-slate-700">{year}</p>
-                        <p className="text-xs text-slate-500">{totalUsersInYear} utilisateur{totalUsersInYear > 1 ? 's' : ''}</p>
+                        <p className="font-bold text-slate-800 text-base">{year}</p>
+                        <p className="text-xs text-slate-600 font-medium">{totalUsersInYear} utilisateur{totalUsersInYear > 1 ? 's' : ''}</p>
                       </div>
                     </div>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isYearExpanded ? 'bg-sky-200 text-sky-700' : 'bg-slate-100 text-slate-400'}`}>
@@ -673,18 +691,19 @@ export function UsersTab({ users, testUsers = [], userStats, loadUsers }) {
                         const usersInMonth = grouped[year][month];
                         
                         return (
-                          <div key={monthKey} className="border border-slate-100 rounded-lg overflow-hidden">
-                            {/* Header Mois */}
+                          <div key={monthKey} className="border border-slate-200 rounded-lg overflow-hidden">
+                            {/* Header Mois — fond rose, texte foncé */}
                             <button
                               onClick={() => toggleMonth(year, month)}
-                              className="w-full px-3 py-2 bg-slate-50 flex items-center justify-between hover:bg-slate-100 transition-colors"
+                              className="w-full px-3 py-2 flex items-center justify-between transition-colors"
+                              style={{ background: 'linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%)' }}
                             >
                               <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 bg-pink-100 text-pink-600 rounded-lg flex items-center justify-center">
+                                <div className="w-8 h-8 bg-pink-500 text-white rounded-lg flex items-center justify-center">
                                   <span className="font-semibold text-xs">{getMonthName(parseInt(month)).slice(0, 3)}</span>
                                 </div>
                                 <div className="text-left">
-                                  <p className="font-semibold text-slate-600 text-sm">{getMonthName(parseInt(month))}</p>
+                                  <p className="font-semibold text-slate-800 text-sm">{getMonthName(parseInt(month))}</p>
                                 </div>
                               </div>
                               <div className="flex items-center gap-2">
