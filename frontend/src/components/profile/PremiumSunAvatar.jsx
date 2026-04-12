@@ -173,59 +173,71 @@ function PremiumSunAvatar({
         {renderAvatar()}
       </div>
       
-      {/* SCINTILLEMENTS DIAMANT - 30 étoiles dispersées aléatoirement sur toute la surface du halo */}
-      {[
-        { t: '-8%', l: '42%', s: 3 }, { t: '3%', l: '78%', s: 2 }, { t: '-3%', l: '15%', s: 2 },
-        { t: '10%', l: '105%', s: 1 }, { t: '22%', l: '-8%', s: 3 }, { t: '15%', l: '95%', s: 2 },
-        { t: '30%', l: '110%', s: 1 }, { t: '45%', l: '-12%', s: 2 }, { t: '60%', l: '115%', s: 3 },
-        { t: '75%', l: '-10%', s: 1 }, { t: '88%', l: '20%', s: 2 }, { t: '95%', l: '70%', s: 3 },
-        { t: '105%', l: '45%', s: 1 }, { t: '100%', l: '85%', s: 2 }, { t: '5%', l: '60%', s: 3 },
-        { t: '18%', l: '30%', s: 1 }, { t: '35%', l: '75%', s: 2 }, { t: '50%', l: '8%', s: 3 },
-        { t: '65%', l: '92%', s: 1 }, { t: '80%', l: '55%', s: 2 }, { t: '42%', l: '48%', s: 1 },
-        { t: '55%', l: '25%', s: 3 }, { t: '70%', l: '68%', s: 2 }, { t: '12%', l: '50%', s: 1 },
-        { t: '28%', l: '88%', s: 3 }, { t: '82%', l: '38%', s: 2 }, { t: '92%', l: '10%', s: 1 },
-        { t: '38%', l: '-5%', s: 2 }, { t: '108%', l: '58%', s: 3 }, { t: '48%', l: '102%', s: 1 },
-      ].map((sp, i) => (
-        <div
-          key={`sparkle-${i}`}
-          className="sparkle"
-          style={{
-            top: sp.t, left: sp.l,
-            width: `${sp.s}px`, height: `${sp.s}px`,
-            animationDuration: `${2.3 + (i * 0.13) % 1.5}s`,
-            animationDelay: `${(i * 0.37) % 3}s`,
-          }}
-        />
-      ))}
-      
-      {/* STYLES CSS POUR SCINTILLEMENTS */}
-      <style>{`
-        .sparkle {
-          background: #ffffff;
-          border-radius: 50%;
-          position: absolute;
-          z-index: 10000 !important;
-          pointer-events: none;
-          animation: sparkle-magic ease-in-out infinite;
-          box-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 15px #ffffff;
+      {/* 50 SCINTILLEMENTS DIAMANT — positions en px absolues sur le halo */}
+      {(() => {
+        const sparkles = [];
+        const cx = auraSize / 2;
+        const cy = auraSize / 2;
+        const maxR = auraSize / 2 + 12;
+        // Pseudo-random seed based on index for deterministic but scattered look
+        const coords = [
+          [0.72,0.14],[0.28,0.05],[0.91,0.33],[0.08,0.41],[0.55,0.02],
+          [0.95,0.62],[0.03,0.68],[0.82,0.88],[0.18,0.92],[0.50,1.05],
+          [0.38,0.15],[0.65,0.08],[1.02,0.48],[-.04,0.52],[0.48,0.95],
+          [0.85,0.18],[0.12,0.22],[0.76,0.72],[0.22,0.78],[0.60,0.58],
+          [0.40,0.42],[0.90,0.50],[0.10,0.55],[0.68,0.30],[0.32,0.65],
+          [0.55,0.20],[0.45,0.80],[0.78,0.60],[0.20,0.35],[0.62,0.85],
+          [0.05,0.15],[0.98,0.82],[0.35,0.50],[0.70,0.48],[0.15,0.85],
+          [0.88,0.08],[0.52,0.70],[0.42,0.28],[0.75,0.92],[0.25,0.12],
+          [-.02,0.30],[1.05,0.70],[0.58,0.45],[0.30,0.55],[0.85,0.42],
+          [0.48,0.12],[0.65,0.95],[0.18,0.62],[0.92,0.25],[0.08,0.88],
+        ];
+        const sizes = [4,3,5,3,4,6,3,5,4,3,5,4,3,6,4,5,3,4,5,3,4,6,3,5,4,3,5,4,6,3,4,5,3,4,6,5,3,4,5,3,6,4,5,3,4,5,3,6,4,5];
+        for (let i = 0; i < 50; i++) {
+          const [rx, ry] = coords[i];
+          const x = rx * auraSize;
+          const y = ry * auraSize;
+          const s = sizes[i];
+          sparkles.push(
+            <div
+              key={`sp-${i}`}
+              style={{
+                position: 'absolute',
+                left: `${x}px`,
+                top: `${y}px`,
+                width: `${s}px`,
+                height: `${s}px`,
+                background: '#ffffff',
+                borderRadius: '50%',
+                zIndex: 10000,
+                pointerEvents: 'none',
+                boxShadow: '0 0 4px 1px #fff, 0 0 8px 2px rgba(255,255,255,0.8), 0 0 14px 3px rgba(255,255,255,0.5)',
+                animation: `sparkle-magic ${2.2 + (i * 0.07) % 1.8}s ease-in-out ${(i * 0.31) % 3}s infinite`,
+              }}
+            />
+          );
         }
-        
+        return sparkles;
+      })()}
+      
+      {/* STYLES CSS — animations uniquement */}
+      <style>{`
         @keyframes sparkle-magic {
           0%, 100% {
             opacity: 0;
-            transform: scale(0.5);
+            transform: scale(0.4);
           }
-          25% {
-            opacity: 0.7;
-            transform: scale(1.2) translate(1px, -1px);
+          30% {
+            opacity: 0.9;
+            transform: scale(1.3) translate(1px, -1px);
           }
           50% {
             opacity: 1;
             transform: scale(1) translate(2px, 1px);
           }
-          75% {
-            opacity: 0.8;
-            transform: scale(1.1) translate(-1px, 2px);
+          70% {
+            opacity: 0.85;
+            transform: scale(1.15) translate(-1px, 2px);
           }
         }
         
