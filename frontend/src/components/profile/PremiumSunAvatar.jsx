@@ -160,12 +160,12 @@ function PremiumSunAvatar({
       
       {/* AVATAR CENTRAL avec BORDURE DORÉE DOUCE */}
       <div 
-        className="relative rounded-full overflow-hidden border-4 shadow-2xl flex-shrink-0 cursor-pointer hover:scale-110 active:scale-95 transition-all z-10"
+        className="relative rounded-full overflow-hidden border-4 flex-shrink-0 cursor-pointer hover:scale-110 active:scale-95 transition-all z-10"
         style={{ 
           width: `${size}px`, 
           height: `${size}px`,
           borderColor: '#f5c842',
-          boxShadow: '0 0 30px rgba(255, 247, 205, 0.5), 0 0 50px rgba(254, 240, 138, 0.25), inset 0 0 20px rgba(255, 255, 255, 0.35)'
+          boxShadow: 'none'
         }}
         onClick={onClick}
         title={title}

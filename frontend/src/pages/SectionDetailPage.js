@@ -122,7 +122,7 @@ function DuplicatePopup({ itemName, pages, onDuplicate, onCancel, onCreatePage, 
         className="relative rounded-[28px] p-5 mx-4 max-w-[300px] w-full select-none animate-in zoom-in-95 duration-200"
         style={{ 
           background: 'rgba(60, 60, 67, 0.45)',
-          backdropFilter: 'blur(40px)',
+          backdropFilter: 'none',
           WebkitBackdropFilter: 'blur(40px)',
           WebkitUserSelect: 'none', 
           WebkitTouchCallout: 'none' 

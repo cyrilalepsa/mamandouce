@@ -714,17 +714,16 @@ export function InfoButton({ onClick }) {
   return (
     <button
       onClick={onClick}
-      className="fixed bottom-20 left-6 z-[60] w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+      className="fixed bottom-6 left-4 z-[60] w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95"
       style={{
-        /* VERT DÉGRADÉ NUAGE BOMBÉ GLOSSY 3D */
-        background: 'linear-gradient(145deg, rgba(167, 243, 208, 0.95) 0%, rgba(110, 231, 183, 0.9) 40%, rgba(52, 211, 153, 0.85) 100%)',
-        boxShadow: '10px 10px 20px #D1D9E6, -10px -10px 20px #FFFFFF, 0 0 20px rgba(16, 185, 129, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.9), inset 0 -2px 6px rgba(5, 150, 105, 0.2)',
+        background: '#10B981',
+        boxShadow: '0 4px 12px rgba(16,185,129,0.4)',
         border: 'none',
-        borderRadius: '20px',
+        borderRadius: '50%',
       }}
       data-testid="tutorial-info-button"
     >
-      <Info className="w-5 h-5" style={{ color: '#065f46' }} />
+      <Info className="w-5 h-5" style={{ color: '#FFFFFF' }} />
     </button>
   );
 }

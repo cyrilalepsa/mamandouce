@@ -289,7 +289,7 @@ const BabyEvolutionWidget = () => {
         className="relative mb-6 p-8 flex items-center justify-center gap-8"
         style={{
           background: 'linear-gradient(135deg, rgba(255, 250, 252, 0.95) 0%, rgba(255, 245, 248, 0.9) 100%)',
-          backdropFilter: 'blur(12px)',
+          backdropFilter: 'none',
           borderRadius: '32px',
           boxShadow: '0 8px 32px rgba(255, 183, 197, 0.15), 0 2px 8px rgba(255, 183, 197, 0.1)',
           border: '1px solid rgba(255, 220, 230, 0.5)',

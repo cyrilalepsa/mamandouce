@@ -623,7 +623,7 @@ export default function Fetus3DRealistic({
               ? `linear-gradient(135deg, ${currentAccentColor}60 0%, ${currentAccentColor}30 100%)`
               : 'rgba(255,255,255,0.95)',
             color: isDarkMode ? '#ffffff' : '#6b5f7a',
-            backdropFilter: 'blur(12px)',
+            backdropFilter: 'none',
             border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.15)' : 'rgba(232,164,184,0.4)'}`,
             boxShadow: isDarkMode 
               ? `0 6px 20px rgba(0,0,0,0.4), 0 0 30px ${currentAccentColor}25`

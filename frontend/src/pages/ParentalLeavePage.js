@@ -94,7 +94,7 @@ function ParentalLeavePage() {
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
-                  backdropFilter: 'blur(8px)',
+                  backdropFilter: 'none',
                   border: '1px solid rgba(255,255,255,0.4)'
                 }}
               >
@@ -203,7 +203,7 @@ function ParentalLeavePage() {
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
-                  backdropFilter: 'blur(8px)',
+                  backdropFilter: 'none',
                   border: '1px solid rgba(255,255,255,0.4)'
                 }}
               >
@@ -297,7 +297,7 @@ function ParentalLeavePage() {
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
-                  backdropFilter: 'blur(8px)',
+                  backdropFilter: 'none',
                   border: '1px solid rgba(255,255,255,0.4)'
                 }}
               >
@@ -389,7 +389,7 @@ function ParentalLeavePage() {
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
-                  backdropFilter: 'blur(8px)',
+                  backdropFilter: 'none',
                   border: '1px solid rgba(255,255,255,0.4)'
                 }}
               >
@@ -469,7 +469,7 @@ function ParentalLeavePage() {
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
-                  backdropFilter: 'blur(8px)',
+                  backdropFilter: 'none',
                   border: '1px solid rgba(255,255,255,0.4)'
                 }}
               >
@@ -549,7 +549,7 @@ function ParentalLeavePage() {
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
-                  backdropFilter: 'blur(8px)',
+                  backdropFilter: 'none',
                   border: '1px solid rgba(255,255,255,0.4)'
                 }}
               >

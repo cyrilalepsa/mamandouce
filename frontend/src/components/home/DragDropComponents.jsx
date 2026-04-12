@@ -1089,7 +1089,7 @@ export function GroupContentPopup({ group, onClose, onRemoveItem, onChangeColor,
         className="relative w-full max-w-[300px] rounded-[28px] p-5"
         style={{
           background: 'rgba(60, 60, 67, 0.45)',
-          backdropFilter: 'blur(40px)',
+          backdropFilter: 'none',
           WebkitBackdropFilter: 'blur(40px)',
         }}
         onClick={(e) => e.stopPropagation()}

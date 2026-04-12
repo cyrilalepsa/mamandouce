@@ -824,7 +824,7 @@ export default function PostpartumPage() {
                   className={`relative w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3`}
                   style={{
                     background: `linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)`,
-                    backdropFilter: 'blur(8px)',
+                    backdropFilter: 'none',
                     border: '1px solid rgba(255,255,255,0.3)',
                     boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.5)'
                   }}

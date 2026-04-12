@@ -431,7 +431,7 @@ function MedicalAppointmentsPage() {
                         background: isLocked 
                           ? 'linear-gradient(135deg, rgba(148,163,184,0.3) 0%, rgba(148,163,184,0.15) 100%)'
                           : 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.08) 100%)',
-                        backdropFilter: 'blur(8px)',
+                        backdropFilter: 'none',
                         border: '1px solid rgba(255,255,255,0.4)',
                         boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.5)'
                       }}

@@ -12,7 +12,7 @@ function BabyEvolutionPage() {
       <div className="sticky top-0 z-30 px-4 py-4 mb-4" 
         style={{
           background: 'linear-gradient(180deg, rgba(255, 248, 249, 0.98) 0%, rgba(255, 248, 249, 0.95) 100%)',
-          backdropFilter: 'blur(12px)',
+          backdropFilter: 'none',
           borderBottom: '1px solid rgba(255, 220, 230, 0.3)',
           boxShadow: '0 2px 12px rgba(255, 183, 197, 0.08)'
         }}

@@ -134,7 +134,7 @@ function DuplicatePopup({ sectionId, sectionName, pages, onDuplicate, onCancel, 
         className="relative rounded-[28px] p-5 mx-4 max-w-[300px] w-full select-none animate-in zoom-in-95 duration-200"
         style={{ 
           background: 'rgba(60, 60, 67, 0.45)',
-          backdropFilter: 'blur(40px)',
+          backdropFilter: 'none',
           WebkitBackdropFilter: 'blur(40px)',
           WebkitUserSelect: 'none', 
           WebkitTouchCallout: 'none' 
@@ -260,18 +260,18 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
     if (isDarkMode) {
       return 'linear-gradient(145deg, rgba(30,41,59,0.95) 0%, rgba(30,41,59,0.9) 50%, rgba(15,23,42,0.85) 100%)';
     }
-    // Mode clair : STYLE CHAMALLOW 3D semi-transparent pour laisser voir le fond nacré
+    // Mode clair : couleurs VIVES OPAQUES par catégorie
     switch(id) {
       case 'preconception':
-        return 'rgba(254, 243, 199, 0.7)'; // Ambre/jaune
+        return '#FEF3C7'; // Ambre vif opaque
       case 'pregnancy':
-        return 'rgba(224, 247, 250, 0.7)'; // Cyan/bleu
+        return '#CFFAFE'; // Cyan vif opaque
       case 'baby-preparation':
-        return 'rgba(220, 252, 231, 0.7)'; // Vert menthe
+        return '#D1FAE5'; // Vert menthe vif opaque
       case 'postpartum':
-        return 'rgba(255, 240, 245, 0.7)'; // Rose
+        return '#FFE4E6'; // Rose vif opaque
       default:
-        return 'rgba(243, 232, 255, 0.7)'; // Violet
+        return '#EDE9FE'; // Violet vif opaque
     }
   };
   
@@ -348,9 +348,8 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
       {/* Carte principale - style pill fine avec coins demi-cercle et effet bombé */}
       <div 
         className={`
-          relative overflow-hidden cursor-pointer select-none
+          relative overflow-hidden cursor-pointer select-none section-card
           rounded-full px-5 py-2.5
-          backdrop-blur-sm
           transition-all duration-300
           ${!isPinned ? 'hover:scale-[1.02] active:scale-[0.98]' : ''}
           ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''}
@@ -359,10 +358,10 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
           background: getCardBackground(sectionId),
           border: getCardBorder(sectionId),
           boxShadow: getCardShadow(sectionId),
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
+          backdropFilter: 'none',
+          WebkitBackdropFilter: 'none',
           borderRadius: '20px',
-          color: '#4A4A4A',
+          color: '#000000',
           WebkitUserSelect: 'none', 
           WebkitTouchCallout: 'none' 
         }}
@@ -436,7 +435,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
               background: isPinned 
                 ? 'rgba(244, 114, 182, 0.15)' 
                 : 'rgba(255, 255, 255, 0.25)',
-              backdropFilter: 'blur(8px)',
+              backdropFilter: 'none',
               border: isPinned 
                 ? '1px solid rgba(244, 114, 182, 0.3)' 
                 : '1px solid rgba(255, 255, 255, 0.5)',

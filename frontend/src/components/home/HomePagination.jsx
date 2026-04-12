@@ -74,10 +74,10 @@ export function PageDots({ pages, currentIndex, onPageChange, onSetAsHome, onCre
       id="page-dots"
       className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center gap-2.5 py-2 px-4"
       style={{
-        /* STYLE CHAMALLOW 3D EXACT */
-        background: 'rgba(255, 255, 255, 0.7)',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
+        /* Fond BLANC OPAQUE, pas de blur */
+        background: '#FFFFFF',
+        backdropFilter: 'none',
+        WebkitBackdropFilter: 'none',
         /* NEUMORPHISM CHAMALLOW 3D EXACT */
         boxShadow: '10px 10px 20px #D1D9E6, -10px -10px 20px #FFFFFF',
         borderRadius: '20px',

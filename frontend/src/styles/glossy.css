@@ -66,13 +66,13 @@ body,
    CARTES — BLANC PUR OPAQUE + OMBRES 3D
    Zéro blur, zéro opacité, zéro brouillard
    ============================================ */
-[class*="rounded-"][class*="bg-white"]:not(.admin-drawer),
-[class*="rounded-"][class*="bg-slate-"]:not(.admin-drawer),
-[class*="rounded-xl"][class*="shadow"]:not(.admin-drawer),
-[class*="rounded-2xl"][class*="shadow"]:not(.admin-drawer),
-[class*="rounded-3xl"][class*="shadow"]:not(.admin-drawer),
+[class*="rounded-"][class*="bg-white"]:not(.admin-drawer):not(.section-card),
+[class*="rounded-"][class*="bg-slate-"]:not(.admin-drawer):not(.section-card),
+[class*="rounded-xl"][class*="shadow"]:not(.admin-drawer):not(.section-card),
+[class*="rounded-2xl"][class*="shadow"]:not(.admin-drawer):not(.section-card),
+[class*="rounded-3xl"][class*="shadow"]:not(.admin-drawer):not(.section-card),
 .glossy-card,
-[data-testid*="card"],
+[data-testid*="card"]:not(.section-card),
 .Card,
 [class*="Card"] {
   background: #FFFFFF !important;
@@ -87,10 +87,10 @@ body,
 }
 
 /* Reflet glossy bombé sur le haut des cartes */
-[class*="rounded-"][class*="bg-white"]:not(.admin-drawer)::before,
-[class*="rounded-xl"][class*="shadow"]:not(.admin-drawer)::before,
-[class*="rounded-2xl"][class*="shadow"]:not(.admin-drawer)::before,
-[class*="rounded-3xl"][class*="shadow"]:not(.admin-drawer)::before,
+[class*="rounded-"][class*="bg-white"]:not(.admin-drawer):not(.section-card)::before,
+[class*="rounded-xl"][class*="shadow"]:not(.admin-drawer):not(.section-card)::before,
+[class*="rounded-2xl"][class*="shadow"]:not(.admin-drawer):not(.section-card)::before,
+[class*="rounded-3xl"][class*="shadow"]:not(.admin-drawer):not(.section-card)::before,
 .glossy-card::before,
 .Card::before,
 [class*="Card"]::before {

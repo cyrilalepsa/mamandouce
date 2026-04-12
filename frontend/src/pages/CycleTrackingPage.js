@@ -117,9 +117,12 @@ function CycleTrackingPage() {
       if (response.data && response.data.analysis) {
         setCycleAnalysis(response.data.analysis);
         
-        // Si pas assez de données, proposer la configuration initiale
+        // Si pas assez de données ET jamais configuré, proposer la configuration
         if (!response.data.analysis.has_enough_data) {
-          setShowInitialSetup(true);
+          const alreadySetup = localStorage.getItem('cycle_initial_setup_done');
+          if (!alreadySetup) {
+            setShowInitialSetup(true);
+          }
         } else if (response.data.analysis.recommended_cycle_length) {
           // Mettre à jour la durée recommandée par l'IA
           setCycleLength(response.data.analysis.recommended_cycle_length);
@@ -169,6 +172,7 @@ function CycleTrackingPage() {
         toast.success('Historique enregistré ! L\'IA analyse vos cycles...');
         setCycleAnalysis(response.data.analysis);
         setShowInitialSetup(false);
+        localStorage.setItem('cycle_initial_setup_done', 'true');
         
         // Mettre à jour la durée de cycle recommandée
         if (response.data.analysis?.recommended_cycle_length) {
@@ -1166,7 +1170,7 @@ function CycleTrackingPage() {
               
               <div className="flex gap-3 pt-4">
                 <Button
-                  onClick={() => setShowInitialSetup(false)}
+                  onClick={() => { setShowInitialSetup(false); localStorage.setItem('cycle_initial_setup_done', 'true'); }}
                   variant="outline"
                   className={`flex-1 rounded-xl ${isDarkMode ? 'border-slate-600 text-slate-300' : ''}`}
                 >

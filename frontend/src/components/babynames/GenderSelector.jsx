@@ -89,7 +89,7 @@ export default function GenderSelector({
                   className="w-10 h-10 rounded-xl flex items-center justify-center"
                   style={{
                     background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.08) 100%)',
-                    backdropFilter: 'blur(8px)',
+                    backdropFilter: 'none',
                     border: '1px solid rgba(255,255,255,0.3)',
                   }}
                 >
@@ -134,7 +134,7 @@ export default function GenderSelector({
                 className="w-12 h-12 rounded-xl flex items-center justify-center"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
-                  backdropFilter: 'blur(8px)',
+                  backdropFilter: 'none',
                   border: '1px solid rgba(255,255,255,0.4)',
                   boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.5)'
                 }}
@@ -177,7 +177,7 @@ export default function GenderSelector({
                 className="w-12 h-12 rounded-xl flex items-center justify-center"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
-                  backdropFilter: 'blur(8px)',
+                  backdropFilter: 'none',
                   border: '1px solid rgba(255,255,255,0.4)',
                   boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.5)'
                 }}
