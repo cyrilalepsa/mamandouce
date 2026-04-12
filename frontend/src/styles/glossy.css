@@ -74,11 +74,9 @@ body,
 [data-testid*="card"],
 .Card,
 [class*="Card"] {
-  /* STYLE NACRE DOUX - Rose poudré ultra-léger au lieu de blanc pur */
-  background: linear-gradient(135deg, rgba(255, 250, 252, 0.95) 0%, rgba(255, 245, 248, 0.9) 50%, rgba(255, 250, 252, 0.95) 100%) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
-  /* NEUMORPHISM NACRE - Ombres plus marquées pour le contraste */
+  /* NEUMORPHISM NACRE - Ombres 3D bien visibles */
   box-shadow: 
     12px 12px 24px rgba(180, 160, 175, 0.25),
     -8px -8px 20px rgba(255, 255, 255, 0.9),
@@ -87,6 +85,33 @@ body,
   border: 1px solid rgba(255, 220, 230, 0.4) !important;
   position: relative;
   overflow: hidden;
+}
+
+/* Cartes blanches (bg-white) → teinte pastel rose pour le relief */
+[class*="rounded-"][class*="bg-white"] {
+  background: linear-gradient(135deg, #FFF0F5 0%, #FFF5F8 50%, #FFF0F5 100%) !important;
+}
+
+/* Coloration pastel automatique par position pour variété visuelle */
+[class*="rounded-2xl"][class*="shadow"]:nth-child(4n+1) { background: linear-gradient(135deg, #FFF0F5 0%, #FFE4EC 100%) !important; }
+[class*="rounded-2xl"][class*="shadow"]:nth-child(4n+2) { background: linear-gradient(135deg, #F0F7FF 0%, #E0EFFF 100%) !important; }
+[class*="rounded-2xl"][class*="shadow"]:nth-child(4n+3) { background: linear-gradient(135deg, #F0FFF4 0%, #E0FFE8 100%) !important; }
+[class*="rounded-2xl"][class*="shadow"]:nth-child(4n)   { background: linear-gradient(135deg, #F5F0FF 0%, #EDE4FF 100%) !important; }
+
+/* Cartes avec gradient existant → ne pas écraser leur couleur */
+[class*="rounded-"][class*="from-sky"],
+[class*="rounded-"][class*="from-pink"],
+[class*="rounded-"][class*="from-rose"],
+[class*="rounded-"][class*="from-amber"],
+[class*="rounded-"][class*="from-emerald"],
+[class*="rounded-"][class*="from-green"],
+[class*="rounded-"][class*="from-purple"],
+[class*="rounded-"][class*="from-blue"],
+[class*="rounded-"][class*="from-orange"],
+[class*="rounded-"][class*="from-teal"],
+[class*="rounded-"][class*="from-indigo"],
+[class*="rounded-"][class*="bg-gradient"] {
+  background: unset;
 }
 
 /* Effet reflet glossy sur le dessus des cartes (perle de gel) */
@@ -234,11 +259,9 @@ button[class*="bg-rose"],
 button[class*="rounded-full"],
 .btn-glossy {
   position: relative;
-  /* STYLE NACRE 3D - Rose poudré doux */
-  background: linear-gradient(145deg, rgba(255, 250, 252, 0.95) 0%, rgba(255, 245, 248, 0.9) 100%) !important;
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
-  /* NEUMORPHISM NACRE - Ombres plus marquées */
+  /* NEUMORPHISM 3D - Ombres visibles */
   box-shadow: 
     10px 10px 22px rgba(180, 160, 175, 0.3),
     -8px -8px 18px rgba(255, 255, 255, 0.95),
@@ -246,24 +269,29 @@ button[class*="rounded-full"],
   border-radius: 16px !important;
   border: 1px solid rgba(200, 180, 190, 0.35) !important;
   overflow: hidden;
-  /* Texte gris anthracite foncé */
-  color: #2D2A32 !important;
   font-weight: 600 !important;
   transition: all 0.2s ease !important;
 }
 
-/* Boutons avec couleur de fond spécifique - garder leur couleur mais ajouter neumorphism */
+/* Boutons SANS gradient Tailwind → teinte pastel rose */
+button:not([class*="bg-"]):not([class*="from-"]) {
+  background: linear-gradient(145deg, #FFF0F5, #FFE8EF) !important;
+  color: #2D2A32 !important;
+}
+
+/* Boutons avec couleur de fond spécifique - garder leur couleur + ajouter neumorphism */
 button[class*="bg-gradient-to"],
 button[class*="from-pink"],
 button[class*="from-purple"],
 button[class*="from-emerald"],
-button[class*="from-green"] {
-  background: linear-gradient(145deg, rgba(255, 182, 193, 0.85), rgba(255, 192, 203, 0.75)) !important;
-  backdrop-filter: blur(5px) !important;
+button[class*="from-green"],
+button[class*="from-sky"],
+button[class*="from-rose"],
+button[class*="from-amber"],
+button[class*="from-teal"] {
   box-shadow: 
     10px 10px 20px #D1D9E6,
     -10px -10px 20px #FFFFFF !important;
-  color: #4A4A4A !important;
 }
 
 /* Reflet glossy brillant sur les boutons (effet perle de gel) */
