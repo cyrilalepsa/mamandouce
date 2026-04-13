@@ -381,22 +381,20 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
         )}
         
         <div className="relative flex items-center gap-4 pr-4">
-          {/* Icône dans une bulle nacre bombée glossy */}
+          {/* Icône dans bulle COLORÉE pleine + icône blanche */}
           <div 
             className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
             style={{
-              background: 'linear-gradient(160deg, #ffffff 0%, #f0f0f2 30%, #dcdcdf 70%, #c5c5ca 100%)',
-              boxShadow: '0 3px 8px -1px rgba(0,0,0,0.1), inset -2px -2px 6px rgba(0,0,0,0.06), inset 2px 2px 6px rgba(255,255,255,0.9)',
-              border: '1px solid rgba(255,255,255,0.7)',
+              background: sectionId === 'preconception' ? 'linear-gradient(145deg, #fbbf24, #f59e0b)'
+                : sectionId === 'pregnancy' ? 'linear-gradient(145deg, #60a5fa, #3b82f6)'
+                : sectionId === 'baby-preparation' ? 'linear-gradient(145deg, #4ade80, #22c55e)'
+                : sectionId === 'postpartum' ? 'linear-gradient(145deg, #f87171, #ef4444)'
+                : 'linear-gradient(145deg, #a78bfa, #8b5cf6)',
+              boxShadow: '0 4px 10px -2px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.3)',
+              border: 'none',
             }}
           >
-            <Icon className={`w-5 h-5 ${
-              sectionId === 'preconception' ? 'text-yellow-500' :
-              sectionId === 'pregnancy' ? 'text-sky-500' :
-              sectionId === 'baby-preparation' ? 'text-green-500' :
-              sectionId === 'postpartum' ? 'text-red-500' :
-              'text-violet-500'
-            }`} />
+            <Icon className="w-5 h-5 text-white" />
           </div>
           
           {/* Texte */}

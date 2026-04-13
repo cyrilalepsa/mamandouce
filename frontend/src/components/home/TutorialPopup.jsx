@@ -714,16 +714,16 @@ export function InfoButton({ onClick }) {
   return (
     <button
       onClick={onClick}
-      className="fixed bottom-6 left-4 z-[60] w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+      className="fixed bottom-4 left-4 z-[45] w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95"
       style={{
         background: '#10B981',
-        boxShadow: '0 4px 12px rgba(16,185,129,0.4)',
+        boxShadow: '0 3px 8px rgba(16,185,129,0.3)',
         border: 'none',
         borderRadius: '50%',
       }}
       data-testid="tutorial-info-button"
     >
-      <Info className="w-5 h-5" style={{ color: '#FFFFFF' }} />
+      <Info className="w-4 h-4" style={{ color: '#FFFFFF' }} />
     </button>
   );
 }

@@ -6,7 +6,7 @@ import {
   Check, Pin, PinOff, CalendarHeart, ScanBarcode, Apple, History,
   Stethoscope, Bell, BookHeart, Users, ChevronRight, Crown, Lock,
   ClipboardList, Briefcase, Video, Youtube, Book, Phone, LineChart,
-  Scale, Lightbulb, Building2, Hospital, MapPin, ExternalLink, Utensils, Shield
+  Scale, Lightbulb, Building2, Hospital, MapPin, ExternalLink, Utensils, Shield, FileText
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -101,6 +101,7 @@ const SECTION_ITEMS = {
     { id: 'ameli', icon: Hospital, iconColor: 'text-green-600', bgColor: 'green', title: 'Ameli', titleKey: 'services.ameli', desc: 'Assurance maladie', descKey: 'services.ameliDesc', route: 'https://www.ameli.fr', external: true },
     { id: 'maps', icon: MapPin, iconColor: 'text-red-600', bgColor: 'red', title: 'Mairie proche', titleKey: 'services.maps', desc: 'Démarches administratives', descKey: 'services.mapsDesc', route: 'https://www.google.com/maps/search/mairie', external: true },
     { id: 'videos', icon: Video, iconColor: 'text-violet-600', bgColor: 'violet', title: 'Vidéos', titleKey: 'services.videos', desc: 'Tutoriels YouTube', descKey: 'services.tutorials', route: 'https://www.youtube.com/results?search_query=grossesse+conseils', external: true },
+    { id: 'guide-cpam', icon: FileText, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'Guide CPAM/CAF', titleKey: 'services.guideCpam', desc: 'Déclaration de grossesse', descKey: 'services.guideCpamDesc', route: '/guide' },
   ],
 };
 
@@ -235,9 +236,9 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
   const isLocked = item.premium === 'full' && !isPremium;
   const isPartialPremium = item.premium === 'partial' && !isPremium;
   
-  // Couleur du texte en fonction du mode sombre (noir sur cartes pastel en dark mode)
-  const textColorTitle = isDarkMode ? 'text-black' : 'text-slate-700';
-  const textColorDesc = isDarkMode ? 'text-slate-800' : 'text-slate-500';
+  // Couleur du texte — TOUJOURS NOIR PUR #000000
+  const textColorTitle = 'text-black';
+  const textColorDesc = 'text-black';
   
   // Déterminer la couleur principale de l'item à partir de bgColor
   const getColorFromBgColor = () => {
@@ -265,6 +266,18 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
   };
   
   const colorInfo = getColorFromBgColor();
+  
+  // Gradient coloré plein pour la bulle de logo
+  const getBubbleGradient = () => {
+    switch(item.bgColor) {
+      case 'yellow': case 'amber': return 'linear-gradient(145deg, #fbbf24, #f59e0b)';
+      case 'blue': case 'sky': return 'linear-gradient(145deg, #60a5fa, #3b82f6)';
+      case 'green': case 'emerald': return 'linear-gradient(145deg, #4ade80, #22c55e)';
+      case 'red': case 'rose': case 'pink': return 'linear-gradient(145deg, #f87171, #ef4444)';
+      case 'violet': case 'purple': return 'linear-gradient(145deg, #a78bfa, #8b5cf6)';
+      default: return 'linear-gradient(145deg, #94a3b8, #64748b)';
+    }
+  };
   
   // Générer les styles de fond — NACRE BOMBÉ GLOSSY ARGENTÉ
   const getVibrantBackground = () => {
@@ -338,16 +351,16 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
         />
         
         <div className="relative flex items-center gap-2">
-          {/* Icône dans bulle nacre bombée glossy */}
+          {/* Icône dans bulle COLORÉE pleine + icône blanche */}
           <div 
             className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
             style={{
-              background: 'linear-gradient(160deg, #ffffff 0%, #f0f0f2 30%, #dcdcdf 70%, #c5c5ca 100%)',
-              boxShadow: '0 3px 6px -1px rgba(0,0,0,0.08), inset -2px -2px 5px rgba(0,0,0,0.05), inset 2px 2px 5px rgba(255,255,255,0.8)',
-              border: '1px solid rgba(255,255,255,0.6)',
+              background: getBubbleGradient(),
+              boxShadow: '0 3px 8px -1px rgba(0,0,0,0.15), inset 0 1px 3px rgba(255,255,255,0.3)',
+              border: 'none',
             }}
           >
-            <Icon className={`w-3.5 h-3.5 ${item.iconColor}`} />
+            <Icon className="w-3.5 h-3.5 text-white" />
           </div>
           <div className="flex-1 text-left">
             <div className="flex items-center gap-2">
@@ -440,16 +453,16 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
         </div>
       )}
       
-      {/* Icône dans bulle nacre bombée glossy */}
+      {/* Icône dans bulle COLORÉE pleine + icône blanche */}
       <div 
         className="w-9 h-9 rounded-lg flex items-center justify-center mx-auto mb-1"
         style={{
-          background: 'linear-gradient(160deg, #ffffff 0%, #f0f0f2 30%, #dcdcdf 70%, #c5c5ca 100%)',
-          boxShadow: '0 3px 6px -1px rgba(0,0,0,0.08), inset -2px -2px 5px rgba(0,0,0,0.05), inset 2px 2px 5px rgba(255,255,255,0.8)',
-          border: '1px solid rgba(255,255,255,0.6)',
+          background: getBubbleGradient(),
+          boxShadow: '0 3px 8px -1px rgba(0,0,0,0.15), inset 0 1px 3px rgba(255,255,255,0.3)',
+          border: 'none',
         }}
       >
-        <Icon className={`w-4 h-4 ${item.iconColor}`} />
+        <Icon className="w-4 h-4 text-white" />
       </div>
       <h3 className={`text-sm font-semibold ${textColorTitle} leading-tight relative z-10`}>
         {t(item.titleKey, item.title)}

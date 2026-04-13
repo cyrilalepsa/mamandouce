@@ -271,27 +271,29 @@ function HomePage() {
         {/* Icône Trophée 3D - Accès à la page Trophées */}
         <button
           onClick={() => navigate('/trophies')}
-          className="fixed bottom-32 left-4 z-40 w-14 h-14 bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-110 flex items-center justify-center group"
+          className="fixed top-4 left-4 z-40 w-10 h-10 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 flex items-center justify-center"
+          style={{
+            background: 'linear-gradient(145deg, #fbbf24, #f59e0b)',
+            boxShadow: '0 3px 8px rgba(245,158,11,0.3)',
+          }}
           data-testid="trophy-button"
           aria-label="Mes Trophées"
         >
-          <Trophy className="w-7 h-7 text-white group-hover:animate-bounce" />
-          <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            Mes Trophées
-          </div>
+          <Trophy className="w-5 h-5 text-white" />
         </button>
         
         {/* Icône Tirelire - Accès à la page Tirelire */}
         <button
           onClick={() => navigate('/tirelire')}
-          className="fixed bottom-48 left-4 z-40 w-14 h-14 bg-gradient-to-br from-pink-400 via-rose-500 to-pink-600 rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-110 flex items-center justify-center group"
+          className="fixed top-4 right-14 z-40 w-10 h-10 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 flex items-center justify-center"
+          style={{
+            background: 'linear-gradient(145deg, #f472b6, #ec4899)',
+            boxShadow: '0 3px 8px rgba(236,72,153,0.3)',
+          }}
           data-testid="tirelire-button"
           aria-label="Ma Tirelire"
         >
-          <PiggyBank className="w-7 h-7 text-white group-hover:animate-bounce" />
-          <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            Ma Tirelire
-          </div>
+          <PiggyBank className="w-5 h-5 text-white" />
         </button>
       </div>
   );

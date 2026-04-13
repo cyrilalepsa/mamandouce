@@ -72,8 +72,8 @@ export function NewsBubble({ hasNews, onClick }) {
     <button
       onClick={onClick}
       className={`
-        fixed bottom-6 right-4 z-[60]
-        w-10 h-10 flex items-center justify-center
+        fixed bottom-4 left-14 z-[45]
+        w-9 h-9 flex items-center justify-center
         transition-all duration-300 ease-out
         ${hasNews ? 'hover:scale-110' : 'hover:scale-105'}
       `}
