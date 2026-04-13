@@ -424,7 +424,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
             }}
             data-testid={`pin-${sectionId}`}
           >
-            <Pin className={`w-4 h-4 ${isPinned ? 'text-pink-500 rotate-45' : 'text-slate-400'}`} />
+            <Pin className={`w-4 h-4 ${isPinned ? 'text-pink-500 rotate-45' : 'text-red-300'}`} />
           </button>
         </div>
       </div>

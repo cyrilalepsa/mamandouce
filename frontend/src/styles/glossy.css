@@ -63,37 +63,39 @@ body,
 }
 
 /* ============================================
-   CARTES — BLANC PUR OPAQUE + OMBRES 3D
-   Zéro blur, zéro opacité, zéro brouillard
+   CARTES — NACRE BOMBÉ GLOSSY ARGENTÉ
+   Blanc brillant → Gris argenté, effet perle
+   Zéro blur, zéro opacité
    ============================================ */
-[class*="rounded-"][class*="bg-white"]:not(.admin-drawer):not(.section-card),
-[class*="rounded-"][class*="bg-slate-"]:not(.admin-drawer):not(.section-card),
-[class*="rounded-xl"][class*="shadow"]:not(.admin-drawer):not(.section-card),
-[class*="rounded-2xl"][class*="shadow"]:not(.admin-drawer):not(.section-card),
-[class*="rounded-3xl"][class*="shadow"]:not(.admin-drawer):not(.section-card),
+[class*="rounded-"][class*="bg-white"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar),
+[class*="rounded-"][class*="bg-slate-"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar),
+[class*="rounded-xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar),
+[class*="rounded-2xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar),
+[class*="rounded-3xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar),
 .glossy-card,
-[data-testid*="card"]:not(.section-card),
-.Card,
-[class*="Card"] {
-  background: #FFFFFF !important;
+[data-testid*="card"]:not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour),
+.Card:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar),
+[class*="Card"]:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar) {
+  background: linear-gradient(160deg, #ffffff 0%, #f5f5f5 20%, #e8e8ea 50%, #d5d5d8 80%, #c0c0c5 100%) !important;
   box-shadow: 
-    8px 8px 20px rgba(160, 140, 160, 0.3),
-    -6px -6px 16px rgba(255, 255, 255, 1),
-    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+    0 6px 18px -2px rgba(0,0,0,0.12),
+    0 3px 8px -1px rgba(0,0,0,0.06),
+    inset -4px -4px 10px rgba(0,0,0,0.06),
+    inset 4px 4px 10px rgba(255,255,255,0.9) !important;
   border-radius: 20px !important;
-  border: 1px solid rgba(200, 180, 200, 0.25) !important;
+  border: 1px solid rgba(255,255,255,0.7) !important;
   position: relative;
   overflow: hidden;
 }
 
 /* Reflet glossy bombé sur le haut des cartes */
-[class*="rounded-"][class*="bg-white"]:not(.admin-drawer):not(.section-card)::before,
-[class*="rounded-xl"][class*="shadow"]:not(.admin-drawer):not(.section-card)::before,
-[class*="rounded-2xl"][class*="shadow"]:not(.admin-drawer):not(.section-card)::before,
-[class*="rounded-3xl"][class*="shadow"]:not(.admin-drawer):not(.section-card)::before,
+[class*="rounded-"][class*="bg-white"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::before,
+[class*="rounded-xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::before,
+[class*="rounded-2xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::before,
+[class*="rounded-3xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::before,
 .glossy-card::before,
-.Card::before,
-[class*="Card"]::before {
+.Card:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::before,
+[class*="Card"]:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::before {
   content: '';
   position: absolute;
   top: 0;
@@ -231,13 +233,14 @@ button:not([data-testid^="drawer-"])[class*="bg-rose"],
 button:not([data-testid^="drawer-"])[class*="rounded-full"],
 .btn-glossy {
   position: relative;
-  /* Boutons BLANC PUR + ombre 3D */
+  /* Boutons NACRE BOMBÉ ARGENTÉ */
   box-shadow: 
-    8px 8px 18px rgba(160, 140, 160, 0.3),
-    -6px -6px 14px rgba(255, 255, 255, 1),
-    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+    0 4px 12px -2px rgba(0,0,0,0.1),
+    0 2px 6px -1px rgba(0,0,0,0.05),
+    inset -3px -3px 8px rgba(0,0,0,0.05),
+    inset 3px 3px 8px rgba(255,255,255,0.8) !important;
   border-radius: 16px !important;
-  border: 1px solid rgba(200, 180, 190, 0.3) !important;
+  border: 1px solid rgba(255,255,255,0.6) !important;
   overflow: hidden;
   font-weight: 600 !important;
   transition: all 0.2s ease !important;
