@@ -266,12 +266,12 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
   
   const colorInfo = getColorFromBgColor();
   
-  // Générer les styles de fond — GRIS DÉGRADÉ BLANC GLOSSY NACRÉ (toutes les cartes)
+  // Générer les styles de fond — NACRE BOMBÉ GLOSSY ARGENTÉ
   const getVibrantBackground = () => {
     return {
-      bg: 'linear-gradient(145deg, #eaeaec 0%, #f0f0f2 25%, #f5f5f7 50%, #fafafa 75%, #ffffff 100%)',
-      border: 'rgba(200,200,210,0.3)',
-      shadow: '160,140,160'
+      bg: 'linear-gradient(160deg, #ffffff 0%, #f5f5f5 20%, #e8e8ea 50%, #d5d5d8 80%, #c0c0c5 100%)',
+      border: 'rgba(255,255,255,0.7)',
+      shadow: '0,0,0'
     };
   };
   
@@ -317,7 +317,7 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
         style={{ 
           background: vibrantStyle.bg,
           border: `2px solid ${vibrantStyle.border}`,
-          boxShadow: `8px 8px 20px rgba(160,140,160,0.2), -6px -6px 16px rgba(255,255,255,0.9), inset 0 2px 4px rgba(255,255,255,0.95), inset 0 -2px 4px rgba(160,140,160,0.05)`,
+          boxShadow: `0 6px 18px -2px rgba(0,0,0,0.12), 0 3px 8px -1px rgba(0,0,0,0.06), inset -4px -4px 10px rgba(0,0,0,0.06), inset 4px 4px 10px rgba(255,255,255,0.9)`,
           WebkitUserSelect: 'none', 
           WebkitTouchCallout: 'none' 
         }}
@@ -338,12 +338,13 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
         />
         
         <div className="relative flex items-center gap-2">
-          {/* Icône dans bulle gris dégradé glossy */}
+          {/* Icône dans bulle nacre bombée glossy */}
           <div 
             className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
             style={{
-              background: 'linear-gradient(145deg, #eaeaec 0%, #f2f2f4 40%, #fafafa 70%, #ffffff 100%)',
-              boxShadow: '3px 3px 8px rgba(160,140,160,0.15), -2px -2px 6px rgba(255,255,255,0.9), inset 0 1px 2px rgba(255,255,255,0.8)'
+              background: 'linear-gradient(160deg, #ffffff 0%, #f0f0f2 30%, #dcdcdf 70%, #c5c5ca 100%)',
+              boxShadow: '0 3px 6px -1px rgba(0,0,0,0.08), inset -2px -2px 5px rgba(0,0,0,0.05), inset 2px 2px 5px rgba(255,255,255,0.8)',
+              border: '1px solid rgba(255,255,255,0.6)',
             }}
           >
             <Icon className={`w-3.5 h-3.5 ${item.iconColor}`} />
@@ -389,7 +390,7 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
       style={{ 
         background: vibrantStyle.bg,
         border: `1px solid ${vibrantStyle.border}`,
-        boxShadow: `6px 6px 16px rgba(160,140,160,0.2), -4px -4px 12px rgba(255,255,255,0.9), inset 0 2px 4px rgba(255,255,255,0.95), inset 0 -2px 4px rgba(160,140,160,0.05)`,
+        boxShadow: `0 5px 14px -2px rgba(0,0,0,0.1), 0 2px 6px -1px rgba(0,0,0,0.05), inset -3px -3px 8px rgba(0,0,0,0.06), inset 3px 3px 8px rgba(255,255,255,0.9)`,
         WebkitUserSelect: 'none', 
         WebkitTouchCallout: 'none' 
       }}
@@ -439,12 +440,13 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
         </div>
       )}
       
-      {/* Icône dans bulle gris dégradé glossy */}
+      {/* Icône dans bulle nacre bombée glossy */}
       <div 
         className="w-9 h-9 rounded-lg flex items-center justify-center mx-auto mb-1"
         style={{
-          background: 'linear-gradient(145deg, #eaeaec 0%, #f2f2f4 40%, #fafafa 70%, #ffffff 100%)',
-          boxShadow: '3px 3px 8px rgba(160,140,160,0.15), -2px -2px 6px rgba(255,255,255,0.9), inset 0 1px 2px rgba(255,255,255,0.8)'
+          background: 'linear-gradient(160deg, #ffffff 0%, #f0f0f2 30%, #dcdcdf 70%, #c5c5ca 100%)',
+          boxShadow: '0 3px 6px -1px rgba(0,0,0,0.08), inset -2px -2px 5px rgba(0,0,0,0.05), inset 2px 2px 5px rgba(255,255,255,0.8)',
+          border: '1px solid rgba(255,255,255,0.6)',
         }}
       >
         <Icon className={`w-4 h-4 ${item.iconColor}`} />

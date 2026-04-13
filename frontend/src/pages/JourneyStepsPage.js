@@ -260,8 +260,8 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
     if (isDarkMode) {
       return 'linear-gradient(145deg, rgba(30,41,59,0.95) 0%, rgba(30,41,59,0.9) 50%, rgba(15,23,42,0.85) 100%)';
     }
-    // Mode clair : Gris dégradé vers blanc glossy nacré
-    return 'linear-gradient(145deg, #f0f0f2 0%, #f5f5f7 30%, #fafafa 60%, #ffffff 100%)';
+    // Mode clair : Nacre Bombé — blanc brillant en haut → gris argenté en bas
+    return 'linear-gradient(160deg, #ffffff 0%, #f5f5f5 20%, #e8e8ea 50%, #d5d5d8 80%, #c0c0c5 100%)';
   };
   
   // Bordure des cartes
@@ -275,15 +275,17 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
         default: return '2px solid rgba(139,92,246,0.4)';
       }
     }
-    return '1px solid rgba(200, 200, 210, 0.3)';
+    // Bordure perle — blanc semi-transparent
+    return '1px solid rgba(255,255,255,0.7)';
   };
   
-  // Box shadow des cartes - NEUMORPHISM GLOSSY NACRÉ
+  // Box shadow des cartes - NACRE BOMBÉ GLOSSY
   const getCardShadow = (id) => {
     if (isDarkMode) {
       return '0 8px 20px -4px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.1)';
     }
-    return '8px 8px 20px rgba(160,140,160,0.25), -6px -6px 16px rgba(255,255,255,1), inset 0 1px 0 rgba(255,255,255,1)';
+    // Double box-shadow : ombre portée + ombre interne pour volume bombé
+    return '0 6px 18px -2px rgba(0,0,0,0.12), 0 3px 8px -1px rgba(0,0,0,0.06), inset -4px -4px 10px rgba(0,0,0,0.06), inset 4px 4px 10px rgba(255,255,255,0.9)';
   };
 
   const handleTouchStart = (e) => {
@@ -379,13 +381,13 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
         )}
         
         <div className="relative flex items-center gap-4 pr-4">
-          {/* Icône dans une bulle gris dégradé blanc glossy */}
+          {/* Icône dans une bulle nacre bombée glossy */}
           <div 
             className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
             style={{
-              background: 'linear-gradient(145deg, #eaeaec 0%, #f2f2f4 40%, #fafafa 70%, #ffffff 100%)',
-              boxShadow: '4px 4px 10px rgba(160,140,160,0.2), -3px -3px 8px rgba(255,255,255,0.9), inset 0 1px 2px rgba(255,255,255,0.8)',
-              border: '1px solid rgba(200,200,210,0.25)',
+              background: 'linear-gradient(160deg, #ffffff 0%, #f0f0f2 30%, #dcdcdf 70%, #c5c5ca 100%)',
+              boxShadow: '0 3px 8px -1px rgba(0,0,0,0.1), inset -2px -2px 6px rgba(0,0,0,0.06), inset 2px 2px 6px rgba(255,255,255,0.9)',
+              border: '1px solid rgba(255,255,255,0.7)',
             }}
           >
             <Icon className={`w-5 h-5 ${
@@ -407,18 +409,18 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
             </p>
           </div>
           
-          {/* Bouton épingle - bulle gris dégradé blanc glossy */}
+          {/* Bouton épingle - bulle nacre bombée */}
           <button
             onClick={handlePinClick}
             className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
             style={{
               background: isPinned 
                 ? 'linear-gradient(145deg, #fce7f3, #fbcfe8)' 
-                : 'linear-gradient(145deg, #eaeaec 0%, #f5f5f7 50%, #ffffff 100%)',
+                : 'linear-gradient(160deg, #ffffff 0%, #ededef 40%, #d5d5d8 100%)',
               border: isPinned 
                 ? '1px solid rgba(244, 114, 182, 0.3)' 
-                : '1px solid rgba(200,200,210,0.25)',
-              boxShadow: '3px 3px 8px rgba(160,140,160,0.15), -2px -2px 6px rgba(255,255,255,0.9), inset 0 1px 2px rgba(255,255,255,0.7)'
+                : '1px solid rgba(255,255,255,0.7)',
+              boxShadow: '0 3px 6px -1px rgba(0,0,0,0.08), inset -2px -2px 5px rgba(0,0,0,0.05), inset 2px 2px 5px rgba(255,255,255,0.8)'
             }}
             data-testid={`pin-${sectionId}`}
           >
@@ -438,9 +440,9 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
                   onClick={() => handleItemClick(item.route, item.external)}
                   className="relative flex flex-col items-center gap-1 p-3 rounded-xl transition-all active:scale-95"
                   style={{ 
-                    background: isDarkMode ? 'rgba(30,41,59,0.9)' : 'linear-gradient(145deg, #eaeaec 0%, #f2f2f4 30%, #fafafa 60%, #ffffff 100%)',
-                    border: isDarkMode ? '1px solid rgba(71,85,105,0.5)' : '1px solid rgba(200,200,210,0.25)',
-                    boxShadow: isDarkMode ? '0 2px 8px rgba(0,0,0,0.06)' : '4px 4px 10px rgba(160,140,160,0.15), -3px -3px 8px rgba(255,255,255,0.9), inset 0 1px 0 rgba(255,255,255,0.8)',
+                    background: isDarkMode ? 'rgba(30,41,59,0.9)' : 'linear-gradient(160deg, #ffffff 0%, #f0f0f2 25%, #e0e0e3 55%, #c8c8cd 100%)',
+                    border: isDarkMode ? '1px solid rgba(71,85,105,0.5)' : '1px solid rgba(255,255,255,0.7)',
+                    boxShadow: isDarkMode ? '0 2px 8px rgba(0,0,0,0.06)' : '0 4px 12px -2px rgba(0,0,0,0.1), inset -2px -2px 6px rgba(0,0,0,0.05), inset 2px 2px 6px rgba(255,255,255,0.85)',
                     animationDelay: `${index * 30}ms` 
                   }}
                 >
