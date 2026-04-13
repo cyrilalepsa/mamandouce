@@ -88,7 +88,7 @@ class TestPricingConfiguration:
             f"{BASE_URL}/api/payments/checkout/session",
             json={
                 "package_id": "annual",
-                "origin_url": "https://premium-ui-27.preview.emergentagent.com"
+                "origin_url": "https://nacre-glossy-ui.preview.emergentagent.com"
             },
             headers={"Authorization": f"Bearer {token}"}
         )
@@ -111,7 +111,7 @@ class TestPricingConfiguration:
             f"{BASE_URL}/api/payments/checkout/session",
             json={
                 "package_id": "postpartum",
-                "origin_url": "https://premium-ui-27.preview.emergentagent.com"
+                "origin_url": "https://nacre-glossy-ui.preview.emergentagent.com"
             },
             headers={"Authorization": f"Bearer {token}"}
         )

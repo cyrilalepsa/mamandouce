@@ -95,7 +95,7 @@ async def send_welcome_notification(user_name: str, user_email: str):
                     </div>
                     
                     <div style="text-align: center; margin: 30px 0;">
-                        <a href="https://premium-ui-27.preview.emergentagent.com" 
+                        <a href="https://nacre-glossy-ui.preview.emergentagent.com" 
                            style="background: linear-gradient(135deg, #ec4899, #8b5cf6); 
                                   color: white; 
                                   text-decoration: none; 
@@ -496,7 +496,7 @@ async def forgot_password(request: ForgotPasswordRequest):
         try:
             # Get frontend URL from environment or use default
             import os
-            frontend_url = os.environ.get("FRONTEND_URL", "https://premium-ui-27.preview.emergentagent.com")
+            frontend_url = os.environ.get("FRONTEND_URL", "https://nacre-glossy-ui.preview.emergentagent.com")
             reset_link = f"{frontend_url}/reset-password?token={reset_token}"
             
             resend.Emails.send({

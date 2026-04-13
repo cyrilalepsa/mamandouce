@@ -1962,8 +1962,8 @@ async def send_business_kit_email(admin: User = Depends(get_admin_user)):
         
         <p>Ou accédez directement aux fichiers :</p>
         <ul>
-            <li><a href="https://premium-ui-27.preview.emergentagent.com/docs/BUSINESS_PLAN_MAMANDOUCE.md">Plan Business (Markdown)</a></li>
-            <li><a href="https://premium-ui-27.preview.emergentagent.com/docs/CARTE_VISITE_MAMANDOUCE.html">Carte de Visite (HTML)</a></li>
+            <li><a href="https://nacre-glossy-ui.preview.emergentagent.com/docs/BUSINESS_PLAN_MAMANDOUCE.md">Plan Business (Markdown)</a></li>
+            <li><a href="https://nacre-glossy-ui.preview.emergentagent.com/docs/CARTE_VISITE_MAMANDOUCE.html">Carte de Visite (HTML)</a></li>
         </ul>
         
         <hr style="margin: 30px 0; border: none; border-top: 2px solid #e2e8f0;">

@@ -96,7 +96,7 @@ async def send_due_reminders_job():
                                     N'oubliez pas de préparer vos documents et questions pour le médecin.
                                 </p>
                                 <div style="text-align: center; margin: 30px 0;">
-                                    <a href="https://premium-ui-27.preview.emergentagent.com/medical" 
+                                    <a href="https://nacre-glossy-ui.preview.emergentagent.com/medical" 
                                        style="background: linear-gradient(135deg, #ec4899, #8b5cf6); 
                                               color: white; 
                                               text-decoration: none; 
@@ -301,7 +301,7 @@ async def send_trial_expiry_reminders_job():
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                                 <tr>
                                     <td align="center" style="padding: 20px 0;">
-                                        <a href="https://premium-ui-27.preview.emergentagent.com/pricing" target="_blank" style="background-color: #8b5cf6; border-radius: 30px; color: #ffffff; display: inline-block; font-size: 16px; font-weight: bold; padding: 16px 40px; text-decoration: none;">Passer à Premium - 27€ pour 9 mois</a>
+                                        <a href="https://nacre-glossy-ui.preview.emergentagent.com/pricing" target="_blank" style="background-color: #8b5cf6; border-radius: 30px; color: #ffffff; display: inline-block; font-size: 16px; font-weight: bold; padding: 16px 40px; text-decoration: none;">Passer à Premium - 27€ pour 9 mois</a>
                                     </td>
                                 </tr>
                             </table>

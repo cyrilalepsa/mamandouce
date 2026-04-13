@@ -1,115 +1,122 @@
-<analysis>Here is the useful handover summary for the next agent:
-
-<problem_statement>
+<analysis>**original_problem_statement**: 
 PRODUCT REQUIREMENTS:
-1. Apply the Nacre design (elegant, soft, premium, pastel colors, opaque cards, bold contrasts) across all pages without using blur ().
-2. Admin Dashboard Refactoring: Create a 4-Tile 3D Glossy Drawer System (Lilac, Pink, Mint, Blue) with nested sub-menus (Inscrites, Messaging, Finances, Tools) to avoid page scrolling.
-3. Security & Billing: Ensure Stripe accepts promo codes (), and the backend webhook (Le Garagiste) cross-verifies expected payment amounts, alerting on discrepancies.
-4. UI/UX Polish: Fix Cycle Tracking AI configurator to show only once. Refine Homepage Premium Avatar with floating animation and exactly 25 subtle sparkles (no heavy rays/hexagon artifacts). Align floating action buttons (Info, News) cleanly on the homepage.
-</problem_statement>
+1. Apply a recursive Nacre Bombé Glossy design (Pearl Gray to White linear gradient, double box-shadow for 3D relief, no blur/transparency) to all clickable cards and sub-cards.
+2. Typography: ALL text must be pure black () for readability.
+3. Color Logic: Icon backgrounds must be solid colored discs strictly following the sequence (Yellow -> Blue -> Green -> Red -> Violet). Universal pins must be light red.
+4. Home Page UI Zen: Clean layout with no overlapping elements. Top right: Premium Crown, PiggyBank (no border), and Language Flag (no bubble). Bottom left: Info bubble (aligned with pagination) and News/Ampoule bubble directly above it. Avatar: Trophy appears as a small matte badge only if earned. Hearts have a slow breathing animation.
+5. Calendar: Vivid colors for indicators, days as round bubbles, and report hearts forced to the foreground.
+6. UX: Maintain a 100dvh app-like feel while using  to preserve mobile pull-to-refresh functionality.
 
 **User's preferred language**: French (INSTRUCT NEXT AGENT: You MUST automatically detect the user's primary language from their messages inside the <trajectory> tag and INSTRUCT next agent to respond in French only).
 
 **what currently exists?** 
-A full-stack React + FastAPI application deployed on Railway. The app features a heavily customized CSS architecture () creating 3D Neumorphic and glossy UI elements. The Admin dashboard is a compact 4-tile accordion system. Stripe payments are securely integrated via a custom proxy configuration to support promo codes.
+A full-stack React + FastAPI application deployed on Railway. The app features a heavily customized CSS architecture () creating 3D Neumorphic and Pearl/Nacre UI elements. The Home page, Calendar, and nested Journey/Pregnancy pages have been extensively styled to match a strict pastel, non-transparent, glossy aesthetic.
 
 **Last working item**:
-- **Last item agent was working**: Fixing 5 critical UI/UX regressions. Removed all  globally to make cards pure opaque white. Set Cycle Tracking AI configurator to display only once via . Restored vivid card colors on  by fixing CSS overrides. Aligned Homepage Info and News icons and removed avatar box-shadow.
+- **Last item agent was working**: Restoring the Language selection flag to the top right of the Home Page ( / ). The user specifically requested the flag emoji be present and clickable, but without any background bubble or surrounding styling to maintain the Zen aesthetic.
 - **Status**: USER VERIFICATION PENDING
 - **Agent Testing Done**: Y
-- **Which testing method agent to use?**: Frontend screenshot tool / manual testing by user via Railway deployment
+- **Which testing method agent to use?**: Frontend screenshot tool
 - **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
-No active blockers. The codebase is currently fully aligned with the user's latest requests. The primary pending action is for the user to perform Save to GitHub to deploy the changes to their Railway environment and visually verify the fixes.
+None actively blocking. The codebase is fully aligned with the user's latest design requests. The primary pending action is for the user to deploy the changes to their Railway environment and visually verify.
 
 **In progress Task List**:
-None actively paused. 
+None actively paused.
 
 **Upcoming and Future Tasks**:
-- Verify Railway deployment successfully reflects the preview environment.
-- Google Play Store publishing (User action blocked/pending).
+- Verify Railway deployment successfully reflects the preview environment (User action).
+- Verify the 'Semaine X' card renders correctly with its protected pink glossy background on the live app (requires an account with actual pregnancy data, as the test account lacks it).
+- Google Play Store publishing (User action pending).
 
 **Completed work in this session**:
-- **Admin Dashboard Overhaul ()**: Replaced standard tabs with 4 vivid, glossy 3D drawer tiles (Lilac: Community, Pink: Messaging, Mint: Finances, Blue: Tools). Implemented nested sub-drawers ( component) and added  to prevent glowing effects from stretching the page.
-- **Stripe Security & Promo Codes ()**: Migrated to direct  SDK for session creation to enable , overriding  to route through the Emergent proxy. Added webhook verification for payment amounts (Le Garagiste) logging to .
-- **Global CSS Cleanup ()**: Removed all  instances. Removed aggressive  global background overrides that were wiping out specific Tailwind component colors (fixed  vivid colors and Admin tile colors using exclusions like  and ).
-- **Cycle Tracking Fix ()**: Wrapped the initial AI setup modal in a  check so it only fires once.
-- **Homepage Polish**: Rewrote  to feature exactly 25 subtle white sparkles (2-4px) with a clean  animation, removing buggy rays. Fixed  and  to float cleanly at the bottom without background bubbles.
+- **Global Nacre Overhaul ()**: Transformed all generic cards and buttons to a Pearl Gray-to-White gradient ( to ) with a double box-shadow (inset white top-left, inset gray bottom-right) to create a bombed/glossy relief. Removed all .
+- **Chameleon Effect**: Added a subtle  overlay in CSS to tint the top of the screen light blue and the bottom old pink, adding warmth to the gray cards.
+- **Typography Standardization**: Forced pure black () text globally across all cards, buttons, and sub-pages to fix readability issues.
+- **Icon & Bubble Coloring**: Changed icon containers from transparent bubbles to solid colored discs following a strict sequential rule (Yellow, Blue, Green, Red, Violet) based on section. Kept icons inside white/black. Made all pins light red.
+- **Home Page Zen Layout (, )**: 
+  - Restructured  to include the Premium Crown, the PiggyBank (removed its border), and the Language flag (removed its bubble).
+  - Aligned the 'Info' bubble to the bottom-left, perfectly horizontal with the pagination. Placed the 'News/Ampoule' bubble immediately above it.
+  - Removed the bottom Trophy bubble; replaced it with a conditional, small matte badge rendered directly on the  only if the user has earned a trophy.
+  - Replaced floating heart movement with a subtle  animation (scale and opacity).
+- **Calendar & Food Library Polish**: Enhanced calendar colors, made day indicators round bubbles, and fixed z-index for hearts. In the Food Library, colored the main card backgrounds based on food safety (Mint for safe, Orange for caution, Red for avoid).
+- **Scroll Management**: Fixed a breaking issue where  disabled pull-to-refresh. Replaced it with  on the body to allow refreshing while keeping the  layout intact.
 
 **Earlier issues found/mentioned but not fixed**:
-None. All raised regressions were addressed.
+None. All raised visual and layout regressions were addressed.
 
 **Known issue recurrence from previous fork**:
-- **Issue recurrence**: Global CSS overrides in  breaking specific component styles (e.g., forcing everything to white, wiping out Admin/JourneySteps colors).
-- **Recurrence count**: 3
-- **Status**: RESOLVED (Handled via specific exclusions, but requires high caution).
-- **Note**: Next agent MUST be extremely careful when modifying . Do not apply  to generic tags like  or  without strict exclusions.
+- **Issue recurrence**: Global CSS overrides in  breaking specific component styles (e.g., wiping out the pink background of , or forcing white backgrounds on Calendar colored cells).
+- **Recurrence count**: 4
+- **Status**: RESOLVED (Handled via specific  exclusions in ).
+- **Note**: Next agent MUST be extremely careful when modifying . Do not apply global background or text color rules to generic tags like  without strict exclusions for specific badges (, , ).
 
 **Code Architecture**:
 
 
 **Key Technical Concepts**:
-React frontend, FastAPI backend, Complex Tailwind + Custom CSS () Neumorphism, Stripe API custom proxy routing, Railway nixpacks deployments.
+React frontend, Tailwind + highly complex Custom CSS () dictating a Neumorphic/Pearl aesthetic, conditional rendering based on user data (Trophies, Pregnancy weeks).
 
 **key DB schema**:
-- : Includes  and logic to filter out development accounts via  inside .
+- Unchanged in this session.
 
 **changes in tech stack**:
-- Bypassed the standard  wrapper for Stripe Checkout Session creation to manually use the official  python library (required to support ), while injecting the Emergent proxy URL into .
+- None.
 
 **All files of reference**:
--  (Heavily modified to 4-drawer nested system).
--  (Core visual identity).
--  (Stripe security and webhook validation).
-- 
+-  (Contains the complex Nacre card styles, Chameleon effect, and critical  exclusions).
+-  (Contains the specific absolute positioning for the bottom-left Info/News bubbles).
+-  (Contains the top-right Zen layout elements).
+-  (Contains the avatar logic and conditional matte trophy).
 
 **Areas that need refactoring**:
-- None immediate, though  is massive (~1000 lines) and highly sensitive to cascade/specificity issues.
+-  is over 1100 lines and heavily relies on long chains of  selectors to prevent its global rules from destroying specific components. It is highly fragile.
 
 **key api endpoints**:
-- 
-- 
+- None modified in this session.
 
 **Critical Info for New Agent**:
-1. **Stripe Integration Workaround**: The  parameter is not supported by the default  Stripe class. The agent successfully worked around this by using the official  package directly and setting  to utilize the Emergent proxy. **DO NOT OVERWRITE THIS LOGIC.**
-2. **Railway Deployment Sync**: The user tests heavily on their live Railway URL. Often, they will complain a feature is missing or a bug persists when, in reality, the preview environment is fixed but they haven't clicked Save to GitHub to deploy it to Railway. Always remind them to deploy if you verify a fix is working in preview.
-3. **CSS Specificity Danger**: The file  dictates the entire app's premium visual feel. The user absolutely despises white fogs/blurs (). Cards must be opaque, text must be high-contrast (#000000), and vivid pastel colors must not be overridden by generic  rules.
-4. **Admin DB Logic**: The  collection filters out emails found in  (like ). These are passed separately as  to the frontend. The  frontend handles displaying them in a separate block.
+1. **The Nacre Design Rule**: The user is extremely strict about the UI. Clickable cards must be Pearl Gray () fading to White, with a double box-shadow (inset white top-left, inset gray bottom-right) to look bombed or glossy. Absolutely no . Text MUST be pure black .
+2. **Scroll Management**: Do NOT use  on the body or main containers to prevent scrolling, as this disables the mobile pull-to-refresh native gesture. Use  instead.
+3. **The Zen Layout**: The Home page has been painstakingly aligned. Do not add random floating buttons. Top right is restricted to Crown, PiggyBank, and Language Flag. Bottom left is restricted to Info and News. 
+4. **CSS Specificity**: If a user complains a specific colored badge (like Semaine X which must be pink) has turned white or gray, check . It is almost guaranteed that a global selector like  has overwritten it. Add the class name to the  exclusion list in the CSS file.
 
 **documents and test reports created in this job**:
-None explicitly created in this session outside of standard logs.
+- 
+- 
+-  (Updated extensively)
 
 **Last 10 User Messages and any pending HUMAN messages**:
-1. (Latest) User demanded 5 critical fixes: Remove ALL white fog/blur, make internal admin cards opaque white with black text. Make Cycle AI configurator appear only ONCE. Ensure Fertility Calendar legends/hearts are intact. Align Info/News homepage icons and remove their background bubbles/avatar shadows. Restore vivid colors to Journey Steps cards (were overwritten to white).
-2. User requested moving 'Contributions' and 'Solidarité' inside the 'Gestion Communauté' drawer. Demanded  to fix glowing stretch effects, removal of all edge blurs, and nesting all sub-sections as accordions to keep the page compact.
-3. User complained admin was still too foggy. Demanded removal of hearts background bubble, removal of blur, opaque white backgrounds for internal cards, and absolute black text for readability.
-4. User requested a total revamp of the Admin Page: Replace tab bars with 4 massive 3D Glossy Drawer tiles (Lilac, Pink, Mint, Blue) that expand vertically (accordion style).
-5. User couldn't see the Admin users accordion because it was off-screen. Demanded it be moved to the very top, made Lilac, and the Messages tab restored next to it.
-6. User complained accordion menu was empty. Demanded the script be reinstalled, DB connection forced, and accordion auto-expanded.
-7. User complained everything was too white on the Admin and Pregnancy pages, masking the 3D effects. Demanded vivid pastel colors and larger sparkles (2-4px).
-8. User complained Admin interactive components (refunds, messages, users) and 3D buttons were missing. (Agent explained they were intact in preview, user just needed to deploy to Railway).
-9. User stated the PremiumAvatar wipeout broke the whole app design and business logic. Demanded full restoration of the stable premium UI/Admin logic from Git, merging ONLY the 25 sparkles fix.
-10. User stated frontend crashed on Railway due to Hexagon patterns in Premium Avatar. Demanded radical deletion of the pattern, a rewrite of the floating animation, and exactly 25 sparkles. 
+1. (Latest) User requested the language flag be put back where it was (top right), but without the background bubble.
+2. User demanded a strict Zen interface: Move PiggyBank to top right next to Premium crown (no border). Remove Language bubble. Bottom left must only have Info (aligned with pagination) and Ampoule (above it). Remove all other floating bubbles. Trophy must be a matte badge on the avatar.  for pull-to-refresh.
+3. User provided a screenshot showing the bottom buttons were invisible/misaligned. Demanded they be aligned vertically on the left, with the lowest one at the exact same level as the pagination menu.
+4. User complained that blocking scrolling broke the app (no pull-to-refresh, bottom elements missing). Demanded immediate fix (), 100dvh usage, and realignment of the bottom bubbles.
+5. User requested finer details: Breathing heart animation (scale/opacity), Chameleon CSS tint (blue top, pink bottom), Food library cards colored by safety (mint/orange/red), zero scrolling globally, and calendar days as round bubbles.
+6. User noticed some text was white on light gray (unreadable). Demanded ALL text be PURE BLACK. Demanded logo bubbles be fully colored discs, not just colored icons. Requested moving CPAM guide to Services. Requested Home page bottom bubbles be cleaned up to avoid overlapping.
+7. User provided an image of the exact Pearl/Silver gray wanted. Demanded a specific double box-shadow and gradient for all cards. Emphasized keeping logo color sequences and black text.
+8. User liked the progress but wanted the design structure refined: All sub-cards must be light gray to white gradient with glossy effect. Logo bubbles must follow the Yellow/Blue/Green/Red/Violet sequence.
+9. User noticed the Les étapes... title lost its gradient and the Semaine X card lost its pink color. Demanded they be permanently restored to their specific colors.
+10. User verified the home page fix but requested the Les étapes title be pure black directly on the background, hearts move left-right/up-down without bubbles.
 
 **Project Health Check**:
-- Frontend: Working (All visual regressions fixed).
-- Backend: Working (Railway  logging crash resolved).
+- Frontend: Working (All layout, scroll, and design constraints implemented).
+- Backend: Working (Unchanged).
 
 **3rd Party Integrations**:
-- Stripe (Payments) — requires User API Key (Routed via Emergent proxy, manual  override used).
+- Stripe (Payments) — requires User API Key.
 
 **Testing status**:
-- Testing agent used after significant changes: YES (Early in session for backend payment logic).
-- Troubleshoot agent used after agent stuck in loop: NO
-- Test files created: None
-- Known regressions: None currently active.
+- Testing agent used after significant changes: YES (Used for verifying the massive CSS overhaul).
+- Troubleshoot agent used after agent stuck in loop: NO.
+- Test files created: , 
+- Known regressions: None active.
 
 **Credentials to test flow**:
 Refer to  (e.g., admin@mamandouce.com).
 
 **What agent forgot to execute**:
-The agent successfully fulfilled all constraints of the exhaustive 5 critical fixes list in the final step. Nothing was explicitly missed.
+Nothing. All stylistic and layout constraints were met.
 
 **Debugging checklist for current issue**:
-No active issues to debug. Await user confirmation of the Railway deployment. Ensure any future CSS tweaks do NOT introduce  or global  backgrounds.</analysis>
+No active issues. If the user complains about the Home layout, check  and  absolute positioning. If they complain about colors, check  global selectors and ensure exclusions () are intact.</analysis>
