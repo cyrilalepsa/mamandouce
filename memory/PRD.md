@@ -1,17 +1,18 @@
-# MamanDouce v5.2.0 — Correctifs Urgents + Finitions
+# MamanDouce v5.3.0 — Interface Zen & Luxueuse
 
-## Correctifs appliqués
-- [x] **Scroll rétabli** : `overscroll-behavior-y: auto; overflow: auto` (plus de blocage)
-- [x] **Bulles alignées** : Info, Ampoule, Trophée, Tirelire en rangée horizontale à gauche, au-dessus de la pagination (bottom: 4rem)
-- [x] **Effet caméléon** : reflet bleu ciel (haut) + vieux rose (bas) sur cartes via `::after`
-- [x] **Cœurs respiration** : `heartBreath` 4s (scale 1→1.06, opacity 0.82→1)
-- [x] **Calendrier bulles rondes** + indicateurs vifs + cœurs z-index 30
-- [x] **Bibliothèque** : fond vert menthe (sûr), orange (précaution), rouge (éviter) + texte noir
+## Layout Accueil
+- **Haut gauche** : Couronne Premium + Tirelire (fond jaune, cochon rose, sans contour)
+- **Haut droite** : Menu ⋮ (discret)
+- **Centre** : Avatar avec trophée mat conditionnel (bas-droite)
+- **Bas gauche** : Info (vert menthe bombé, niveau pagination) + Ampoule (jaune bombé, au-dessus)
+- **Supprimé** : Bulle langues, bulle trophée flottante
 
 ## Règles immuables
 1. Cartes: gris nacre bombé avec double inset shadow
 2. Bulles logos: COLORÉES pleines + icône blanche
 3. Texte: NOIR PUR #000000
-4. Protégés: badge-semaine-x (rose), badge-fete-du-jour (jaune), admin-drawer, fertility-calendar
+4. Trophée avatar: petit badge MAT (bronze/argent/or), seulement si gagné
+5. overscroll-behavior-y: contain (pull-to-refresh)
+6. Protégés: badge-semaine-x, badge-fete-du-jour, admin-drawer, fertility-calendar
 
 *MàJ: 13 Avril 2026*

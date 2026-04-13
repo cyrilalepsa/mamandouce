@@ -74,7 +74,7 @@ export function NewsBubble({ hasNews, onClick }) {
       data-testid="news-bubble"
       style={{
         position: 'fixed',
-        bottom: '7.5rem',
+        bottom: '3.25rem',
         left: '0.75rem',
         zIndex: 9999,
         width: 38,

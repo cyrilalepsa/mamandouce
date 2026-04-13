@@ -717,7 +717,7 @@ export function InfoButton({ onClick }) {
       data-testid="tutorial-info-button"
       style={{
         position: 'fixed',
-        bottom: '4.5rem',
+        bottom: '0.5rem',
         left: '0.75rem',
         zIndex: 9999,
         width: 38,

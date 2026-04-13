@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
-import { Crown, User, Settings, LogOut, Shield, MoreVertical, Share2, Download, MessageSquare } from 'lucide-react';
+import { Crown, User, Settings, LogOut, Shield, MoreVertical, Share2, Download, MessageSquare, PiggyBank } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../../utils/api';
 import { AvatarPreview } from '../profile/AvatarBuilder';
@@ -203,9 +203,9 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
 
   return (
     <div className="flex justify-between items-start">
-      {/* À gauche : Couronne Premium */}
+      {/* À gauche : Couronne Premium + Tirelire */}
       <div className="flex items-center gap-2">
-        {/* Bouton Premium - COURONNE JAUNE GLOSSY 3D LUMINEUX */}
+        {/* Bouton Premium - COURONNE JAUNE GLOSSY 3D */}
         <Button
           onClick={() => navigate('/pricing')}
           data-testid="premium-button"
@@ -218,6 +218,28 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
         >
           <Crown className="w-5 h-5" style={{ color: '#92400e' }} />
         </Button>
+
+        {/* Tirelire — fond jaune, cochon rose, SANS contour */}
+        <button
+          onClick={() => navigate('/tirelire')}
+          data-testid="tirelire-button"
+          aria-label="Ma Tirelire"
+          style={{
+            width: 38,
+            height: 38,
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'linear-gradient(145deg, #fef3c7, #fde68a, #fbbf24)',
+            boxShadow: '3px 3px 8px rgba(209,180,100,0.3), -2px -2px 6px rgba(255,255,255,0.8), inset 0 1px 3px rgba(255,255,255,0.7)',
+            border: 'none',
+            cursor: 'pointer',
+          }}
+          title="Ma Tirelire"
+        >
+          <PiggyBank className="w-4 h-4" style={{ color: '#ec4899' }} />
+        </button>
       </div>
 
       {/* Menu déroulant discret à droite */}

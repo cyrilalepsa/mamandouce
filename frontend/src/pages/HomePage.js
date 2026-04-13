@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { PartyPopper, Trophy, PiggyBank } from 'lucide-react';
+import { PartyPopper } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
@@ -168,8 +168,6 @@ function HomePage() {
 
   return (
     <div className="min-h-screen gradient-bg relative overflow-hidden">
-      {/* Language Bubble - suit le scroll de la page */}
-      <LanguageBubble />
 
         <div className="relative z-10">
           <div 
@@ -283,31 +281,6 @@ function HomePage() {
         {tutorialDismissed && (
           <InfoButton onClick={openTutorial} />
         )}
-        
-        {/* Icône Tirelire — en HAUT à droite, zone argent, fond jaune + cochon rose + contour violet */}
-        <button
-          onClick={() => navigate('/tirelire')}
-          data-testid="tirelire-button"
-          aria-label="Ma Tirelire"
-          style={{
-            position: 'fixed',
-            top: '0.75rem',
-            right: '0.75rem',
-            zIndex: 9999,
-            width: 40,
-            height: 40,
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'linear-gradient(145deg, #fde68a, #fbbf24)',
-            boxShadow: '0 3px 8px rgba(245,158,11,0.35)',
-            border: '2px solid #8b5cf6',
-            overflow: 'visible',
-          }}
-        >
-          <PiggyBank className="w-5 h-5" style={{ color: '#ec4899' }} />
-        </button>
       </div>
   );
 }
