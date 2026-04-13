@@ -13,7 +13,8 @@ function PremiumSunAvatar({
   size = 64,
   onClick,
   title,
-  testId = "premium-sun-avatar"
+  testId = "premium-sun-avatar",
+  earnedTrophy = null
 }) {
   
   // Avatar de base (sans aura)
@@ -172,6 +173,37 @@ function PremiumSunAvatar({
       >
         {renderAvatar()}
       </div>
+      
+      {/* TROPHÉE MAT — petit, discret, bas-droit de l'avatar, seulement si gagné */}
+      {earnedTrophy && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: `${(auraSize - size) / 2 - 4}px`,
+            right: `${(auraSize - size) / 2 - 4}px`,
+            zIndex: 20,
+            width: 22,
+            height: 22,
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: earnedTrophy === 'gold' ? '#b8860b'
+              : earnedTrophy === 'silver' ? '#808080'
+              : '#8B4513',
+            border: '1.5px solid rgba(255,255,255,0.5)',
+            boxShadow: 'none',
+          }}
+          data-testid="avatar-trophy-medal"
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+            <path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+          </svg>
+        </div>
+      )}
       
       {/* 25 SPARKLES DISPERSÉS SUR LE HALO (2-4px) */}
       {[['-5%','50%',3],['-2%','82%',2],['8%','105%',4],['22%','-8%',3],['40%','115%',2],

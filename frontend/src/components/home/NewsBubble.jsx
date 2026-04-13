@@ -71,14 +71,28 @@ export function NewsBubble({ hasNews, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`
-        fixed bottom-4 z-[45]
-        w-9 h-9 flex items-center justify-center
-        transition-all duration-300 ease-out
-        ${hasNews ? 'hover:scale-110' : 'hover:scale-105'}
-      `}
-      style={{ left: '0.75rem', bottom: '7.5rem', zIndex: 9999 }}
       data-testid="news-bubble"
+      style={{
+        position: 'fixed',
+        bottom: '7.5rem',
+        left: '0.75rem',
+        zIndex: 9999,
+        width: 38,
+        height: 38,
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: hasNews
+          ? 'linear-gradient(160deg, #fef9c3 0%, #fde68a 40%, #fbbf24 80%, #f59e0b 100%)'
+          : 'linear-gradient(160deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%)',
+        boxShadow: hasNews
+          ? '0 4px 10px -2px rgba(245,158,11,0.35), inset -2px -2px 6px rgba(0,0,0,0.06), inset 2px 2px 6px rgba(255,255,255,0.7)'
+          : '0 3px 8px -2px rgba(0,0,0,0.1), inset -2px -2px 5px rgba(0,0,0,0.04), inset 2px 2px 5px rgba(255,255,255,0.7)',
+        border: '1px solid rgba(255,255,255,0.6)',
+        overflow: 'visible',
+        transition: 'all 0.3s ease',
+      }}
     >
       {/* Ampoule SVG - Sans fond, juste l'icône */}
       <svg 

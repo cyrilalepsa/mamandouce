@@ -34,6 +34,7 @@ function HomePage() {
   const [currentPageType, setCurrentPageType] = useState('default');
   const [hasRapportInFertileWindow, setHasRapportInFertileWindow] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [earnedTrophy, setEarnedTrophy] = useState(null); // 'bronze', 'silver', 'gold' ou null
   
   // Hook pour le tutoriel
   const { 
@@ -53,6 +54,7 @@ function HomePage() {
 
   useEffect(() => {
     loadUserData();
+    loadTrophyData();
   }, []);
 
   // Vérifie si un rapport a été enregistré dans une fenêtre de fertilité
@@ -140,6 +142,19 @@ function HomePage() {
     }
   };
 
+  const loadTrophyData = async () => {
+    try {
+      const res = await api.get('/api/trophies/progress');
+      const progress = res.data;
+      if (progress?.gold?.earned) setEarnedTrophy('gold');
+      else if (progress?.silver?.earned) setEarnedTrophy('silver');
+      else if (progress?.bronze?.earned) setEarnedTrophy('bronze');
+    } catch (e) {
+      // Pas de trophée ou API non disponible
+    }
+  };
+
+
   // Navigation vers la page de modification d'avatar
   const handleAvatarClick = () => {
     navigate('/profile?tab=avatar');
@@ -191,6 +206,7 @@ function HomePage() {
                   onClick={handleAvatarClick}
                   title={t('profile.editAvatar', 'Modifier mon avatar')}
                   testId="home-avatar"
+                  earnedTrophy={earnedTrophy}
                 />
                 <h2 className="text-2xl sm:text-3xl text-center" data-testid="user-welcome">
                   <span className="text-slate-500 font-medium" style={{ fontFamily: "'Quicksand', sans-serif" }}>{t('home.welcome')}, </span>
@@ -263,59 +279,34 @@ function HomePage() {
           onMarkAsSeen={markAsSeen}
         />
         
-        {/* Bouton info en bas à gauche (z-index élevé pour être au-dessus de la pagination) */}
+        {/* Bouton info en bas à gauche */}
         {tutorialDismissed && (
           <InfoButton onClick={openTutorial} />
         )}
         
-        {/* Icône Trophée — colonne gauche, position 3 */}
-        <button
-          onClick={() => navigate('/trophies')}
-          data-testid="trophy-button"
-          aria-label="Mes Trophées"
-          style={{
-            position: 'fixed',
-            bottom: '5rem',
-            left: '0.75rem',
-            zIndex: 9999,
-            width: 36,
-            height: 36,
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'linear-gradient(145deg, #fbbf24, #f59e0b)',
-            boxShadow: '0 3px 8px rgba(245,158,11,0.4)',
-            border: 'none',
-            overflow: 'visible',
-          }}
-        >
-          <Trophy className="w-4 h-4 text-white" />
-        </button>
-        
-        {/* Icône Tirelire — à DROITE de la couronne, fond jaune + cochon rose */}
+        {/* Icône Tirelire — en HAUT à droite, zone argent, fond jaune + cochon rose + contour violet */}
         <button
           onClick={() => navigate('/tirelire')}
           data-testid="tirelire-button"
           aria-label="Ma Tirelire"
           style={{
             position: 'fixed',
-            bottom: '5rem',
-            left: '3.25rem',
+            top: '0.75rem',
+            right: '0.75rem',
             zIndex: 9999,
-            width: 36,
-            height: 36,
+            width: 40,
+            height: 40,
             borderRadius: '50%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             background: 'linear-gradient(145deg, #fde68a, #fbbf24)',
-            boxShadow: '0 3px 8px rgba(245,158,11,0.4)',
-            border: 'none',
+            boxShadow: '0 3px 8px rgba(245,158,11,0.35)',
+            border: '2px solid #8b5cf6',
             overflow: 'visible',
           }}
         >
-          <PiggyBank className="w-4 h-4" style={{ color: '#ec4899' }} />
+          <PiggyBank className="w-5 h-5" style={{ color: '#ec4899' }} />
         </button>
       </div>
   );

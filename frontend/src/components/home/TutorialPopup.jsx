@@ -717,18 +717,18 @@ export function InfoButton({ onClick }) {
       data-testid="tutorial-info-button"
       style={{
         position: 'fixed',
-        bottom: '10rem',
+        bottom: '4.5rem',
         left: '0.75rem',
         zIndex: 9999,
-        width: 36,
-        height: 36,
+        width: 38,
+        height: 38,
         borderRadius: '50%',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#10B981',
-        boxShadow: '0 3px 8px rgba(16,185,129,0.4)',
-        border: 'none',
+        background: 'linear-gradient(160deg, #d1fae5 0%, #6ee7b7 40%, #34d399 80%, #10b981 100%)',
+        boxShadow: '0 4px 10px -2px rgba(16,185,129,0.35), inset -2px -2px 6px rgba(0,0,0,0.06), inset 2px 2px 6px rgba(255,255,255,0.7)',
+        border: '1px solid rgba(255,255,255,0.6)',
         overflow: 'visible',
       }}
     >

@@ -62,9 +62,9 @@ body,
   background-attachment: fixed !important;
 }
 
-/* Pull-to-refresh autorisé — pas de blocage du scroll */
+/* Pull-to-refresh autorisé — overscroll-behavior contain */
 body {
-  overscroll-behavior-y: auto !important;
+  overscroll-behavior-y: contain !important;
   overflow: auto !important;
 }
 
@@ -247,9 +247,9 @@ textarea::placeholder {
    BOUTONS CHAMALLOW 3D FLOTTANTS - CONTRASTE AMÉLIORÉ
    Exclut: drawer, bulles flottantes accueil, calendrier
    ============================================ */
-button:not([data-testid^="drawer-"]):not([data-testid="trophy-button"]):not([data-testid="tirelire-button"]):not([data-testid="tutorial-info-button"]):not([data-testid="news-bubble"]),
-button:not([data-testid^="drawer-"]):not([data-testid="trophy-button"]):not([data-testid="tirelire-button"]):not([data-testid="tutorial-info-button"]):not([data-testid="news-bubble"])[class*="bg-gradient"],
-button:not([data-testid^="drawer-"]):not([data-testid="trophy-button"]):not([data-testid="tirelire-button"]):not([data-testid="tutorial-info-button"]):not([data-testid="news-bubble"])[class*="rounded-full"],
+button:not([data-testid^="drawer-"]):not([data-testid="tirelire-button"]):not([data-testid="tutorial-info-button"]):not([data-testid="news-bubble"]),
+button:not([data-testid^="drawer-"]):not([data-testid="tirelire-button"]):not([data-testid="tutorial-info-button"]):not([data-testid="news-bubble"])[class*="bg-gradient"],
+button:not([data-testid^="drawer-"]):not([data-testid="tirelire-button"]):not([data-testid="tutorial-info-button"]):not([data-testid="news-bubble"])[class*="rounded-full"],
 .btn-glossy {
   position: relative;
   /* Boutons NACRE BOMBÉ ARGENTÉ */
