@@ -245,19 +245,11 @@ textarea::placeholder {
 
 /* ============================================
    BOUTONS CHAMALLOW 3D FLOTTANTS - CONTRASTE AMÉLIORÉ
+   Exclut: drawer, bulles flottantes accueil, calendrier
    ============================================ */
-button:not([data-testid^="drawer-"]),
-button:not([data-testid^="drawer-"])[class*="bg-gradient"],
-button:not([data-testid^="drawer-"])[class*="bg-pink"],
-button:not([data-testid^="drawer-"])[class*="bg-purple"],
-button:not([data-testid^="drawer-"])[class*="bg-emerald"],
-button:not([data-testid^="drawer-"])[class*="bg-teal"],
-button:not([data-testid^="drawer-"])[class*="bg-cyan"],
-button:not([data-testid^="drawer-"])[class*="bg-green"],
-button:not([data-testid^="drawer-"])[class*="bg-blue"],
-button:not([data-testid^="drawer-"])[class*="bg-amber"],
-button:not([data-testid^="drawer-"])[class*="bg-rose"],
-button:not([data-testid^="drawer-"])[class*="rounded-full"],
+button:not([data-testid^="drawer-"]):not([data-testid="trophy-button"]):not([data-testid="tirelire-button"]):not([data-testid="tutorial-info-button"]):not([data-testid="news-bubble"]),
+button:not([data-testid^="drawer-"]):not([data-testid="trophy-button"]):not([data-testid="tirelire-button"]):not([data-testid="tutorial-info-button"]):not([data-testid="news-bubble"])[class*="bg-gradient"],
+button:not([data-testid^="drawer-"]):not([data-testid="trophy-button"]):not([data-testid="tirelire-button"]):not([data-testid="tutorial-info-button"]):not([data-testid="news-bubble"])[class*="rounded-full"],
 .btn-glossy {
   position: relative;
   /* Boutons NACRE BOMBÉ ARGENTÉ */

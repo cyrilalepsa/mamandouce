@@ -77,7 +77,7 @@ export function NewsBubble({ hasNews, onClick }) {
         transition-all duration-300 ease-out
         ${hasNews ? 'hover:scale-110' : 'hover:scale-105'}
       `}
-      style={{ left: '2.75rem', bottom: '4rem' }}
+      style={{ left: '0.75rem', bottom: '7.5rem', zIndex: 9999 }}
       data-testid="news-bubble"
     >
       {/* Ampoule SVG - Sans fond, juste l'icône */}

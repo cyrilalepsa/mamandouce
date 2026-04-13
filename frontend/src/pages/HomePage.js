@@ -268,36 +268,54 @@ function HomePage() {
           <InfoButton onClick={openTutorial} />
         )}
         
-        {/* Icône Trophée — aligné à gauche de la pagination, position 3 */}
+        {/* Icône Trophée — colonne gauche, position 3 */}
         <button
           onClick={() => navigate('/trophies')}
-          className="fixed z-[45] w-9 h-9 rounded-full shadow-lg transition-all hover:scale-110 flex items-center justify-center"
-          style={{
-            bottom: '4rem',
-            left: '4.75rem',
-            background: 'linear-gradient(145deg, #fbbf24, #f59e0b)',
-            boxShadow: '0 3px 8px rgba(245,158,11,0.3)',
-          }}
           data-testid="trophy-button"
           aria-label="Mes Trophées"
+          style={{
+            position: 'fixed',
+            bottom: '5rem',
+            left: '0.75rem',
+            zIndex: 9999,
+            width: 36,
+            height: 36,
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'linear-gradient(145deg, #fbbf24, #f59e0b)',
+            boxShadow: '0 3px 8px rgba(245,158,11,0.4)',
+            border: 'none',
+            overflow: 'visible',
+          }}
         >
           <Trophy className="w-4 h-4 text-white" />
         </button>
         
-        {/* Icône Tirelire — aligné à gauche de la pagination, position 4 */}
+        {/* Icône Tirelire — à DROITE de la couronne, fond jaune + cochon rose */}
         <button
           onClick={() => navigate('/tirelire')}
-          className="fixed z-[45] w-9 h-9 rounded-full shadow-lg transition-all hover:scale-110 flex items-center justify-center"
-          style={{
-            bottom: '4rem',
-            left: '6.75rem',
-            background: 'linear-gradient(145deg, #f472b6, #ec4899)',
-            boxShadow: '0 3px 8px rgba(236,72,153,0.3)',
-          }}
           data-testid="tirelire-button"
           aria-label="Ma Tirelire"
+          style={{
+            position: 'fixed',
+            bottom: '5rem',
+            left: '3.25rem',
+            zIndex: 9999,
+            width: 36,
+            height: 36,
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'linear-gradient(145deg, #fde68a, #fbbf24)',
+            boxShadow: '0 3px 8px rgba(245,158,11,0.4)',
+            border: 'none',
+            overflow: 'visible',
+          }}
         >
-          <PiggyBank className="w-4 h-4 text-white" />
+          <PiggyBank className="w-4 h-4" style={{ color: '#ec4899' }} />
         </button>
       </div>
   );
