@@ -612,10 +612,9 @@ export default function FertilityCalendar({
                     onClick={() => handleDayClick(day.date)}
                     title={publicHoliday || holiday || ''}
                     className={`
-                      relative w-9 h-9 rounded-lg flex flex-col items-center justify-center text-sm transition-all
+                      relative w-9 h-9 rounded-full flex flex-col items-center justify-center text-sm transition-all
                       ${!day.isCurrentMonth ? 'text-slate-300' : ''}
                       ${today ? 'font-bold' : ''}
-                      ${rapport ? '' : ''}
                     `}
                     style={{
                       overflow: 'visible',
@@ -628,7 +627,7 @@ export default function FertilityCalendar({
                         : 'transparent',
                       outline: today ? '2.5px solid #a855f7' : rapport ? '2.5px solid #f43f5e' : 'none',
                       outlineOffset: '1px',
-                      borderRadius: '8px',
+                      borderRadius: '50%',
                     }}
                   >
                     <span style={{ position: 'relative', zIndex: 2 }}>{day.date.getDate()}</span>

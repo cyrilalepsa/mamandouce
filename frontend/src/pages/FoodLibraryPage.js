@@ -293,20 +293,20 @@ function FoodLibraryPage() {
                 // Couleurs pastel selon le statut
                 const pastelStyle = food.safe_for_pregnancy === 'yes' 
                   ? {
-                      bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(220,252,231,0.95) 30%, rgba(187,247,208,0.85) 70%, rgba(134,239,172,0.75) 100%)',
-                      shadow: '0 6px 16px -4px rgba(34,197,94,0.2), 0 3px 6px -2px rgba(34,197,94,0.1), inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(34,197,94,0.08)',
-                      iconBg: 'bg-green-100/60'
+                      bg: 'linear-gradient(160deg, #f0fdf4 0%, #bbf7d0 40%, #86efac 80%, #6ee7b7 100%)',
+                      shadow: '0 6px 16px -4px rgba(34,197,94,0.25), inset -3px -3px 8px rgba(0,0,0,0.05), inset 3px 3px 8px rgba(255,255,255,0.8)',
+                      iconBg: 'bg-green-200'
                     }
                   : food.safe_for_pregnancy === 'caution'
                     ? {
-                        bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,243,199,0.95) 30%, rgba(253,230,138,0.85) 70%, rgba(252,211,77,0.75) 100%)',
-                        shadow: '0 6px 16px -4px rgba(245,158,11,0.2), 0 3px 6px -2px rgba(245,158,11,0.1), inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(245,158,11,0.08)',
-                        iconBg: 'bg-amber-100/60'
+                        bg: 'linear-gradient(160deg, #fff7ed 0%, #fed7aa 40%, #fdba74 80%, #fb923c 100%)',
+                        shadow: '0 6px 16px -4px rgba(249,115,22,0.25), inset -3px -3px 8px rgba(0,0,0,0.05), inset 3px 3px 8px rgba(255,255,255,0.8)',
+                        iconBg: 'bg-orange-200'
                       }
                     : {
-                        bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,226,226,0.95) 30%, rgba(254,202,202,0.85) 70%, rgba(252,165,165,0.75) 100%)',
-                        shadow: '0 6px 16px -4px rgba(239,68,68,0.2), 0 3px 6px -2px rgba(239,68,68,0.1), inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(239,68,68,0.08)',
-                        iconBg: 'bg-red-100/60'
+                        bg: 'linear-gradient(160deg, #fef2f2 0%, #fecaca 40%, #fca5a5 80%, #f87171 100%)',
+                        shadow: '0 6px 16px -4px rgba(239,68,68,0.25), inset -3px -3px 8px rgba(0,0,0,0.05), inset 3px 3px 8px rgba(255,255,255,0.8)',
+                        iconBg: 'bg-red-200'
                       };
                 return (
                   <div
@@ -333,8 +333,8 @@ function FoodLibraryPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-bold text-slate-700 truncate">{food.name}</h4>
-                            <p className="text-xs text-slate-500">{food.category}</p>
+                            <h4 className="font-bold truncate" style={{ color: '#000000' }}>{food.name}</h4>
+                            <p className="text-xs" style={{ color: '#000000' }}>{food.category}</p>
                           </div>
                           <button
                             onClick={() => toggleFavorite(foods[index])}

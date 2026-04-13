@@ -153,8 +153,8 @@ export function JourneyStepsCard({ t, navigate }) {
           </div>
         </div>
 
-        {/* Cœurs droit */}
-        <div className="relative w-12 h-16 ml-2 flex-shrink-0" style={{ background: 'transparent', animation: 'heartFloat 3s ease-in-out infinite 1.5s' }}>
+        {/* Cœurs droit — animation respiration décalée */}
+        <div className="relative w-12 h-16 ml-2 flex-shrink-0" style={{ background: 'transparent', animation: 'heartBreath 4s ease-in-out infinite 2s' }}>
           <GlossyHeart size={14} color="#818cf8" rotation={25} top={4} left={16} />
           <GlossyHeart size={20} color="#38bdf8" rotation={10} top={20} left={20} />
           <GlossyHeart size={12} color="#2dd4bf" rotation={-20} top={40} left={8} />
