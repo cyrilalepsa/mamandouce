@@ -523,7 +523,7 @@ export default function FertilityCalendar({
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <Card className="bg-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <Card className="fertility-calendar bg-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
@@ -612,16 +612,23 @@ export default function FertilityCalendar({
                     onClick={() => handleDayClick(day.date)}
                     title={publicHoliday || holiday || ''}
                     className={`
-                      relative w-9 h-9 rounded-lg flex flex-col items-center justify-center text-sm transition-all overflow-visible
-                      ${!day.isCurrentMonth ? 'text-slate-300' : 'text-slate-700'}
-                      ${today ? 'ring-2 ring-purple-500 font-bold' : ''}
-                      ${fertile && day.isCurrentMonth && !ovulation ? 'bg-emerald-50' : ''}
-                      ${ovulation && day.isCurrentMonth ? 'bg-sky-400 text-white font-bold' : ''}
-                      ${period && day.isCurrentMonth ? 'bg-pink-100' : ''}
-                      ${implantation && day.isCurrentMonth && !ovulation && !period ? 'bg-amber-50' : ''}
-                      ${rapport ? 'ring-2 ring-rose-500' : ''}
-                      hover:bg-slate-100
+                      relative w-9 h-9 rounded-lg flex flex-col items-center justify-center text-sm transition-all
+                      ${!day.isCurrentMonth ? 'text-slate-300' : ''}
+                      ${today ? 'font-bold' : ''}
+                      ${rapport ? '' : ''}
                     `}
+                    style={{
+                      overflow: 'visible',
+                      color: !day.isCurrentMonth ? '#cbd5e1' : (ovulation && day.isCurrentMonth ? '#FFFFFF' : '#000000'),
+                      fontWeight: today || (ovulation && day.isCurrentMonth) ? 700 : 400,
+                      background: ovulation && day.isCurrentMonth ? '#38bdf8'
+                        : period && day.isCurrentMonth ? '#fce7f3'
+                        : fertile && day.isCurrentMonth ? '#ecfdf5'
+                        : implantation && day.isCurrentMonth && !period ? '#fffbeb'
+                        : 'transparent',
+                      outline: today ? '2px solid #a855f7' : rapport ? '2px solid #f43f5e' : 'none',
+                      outlineOffset: '1px',
+                    }}
                   >
                     <span>{day.date.getDate()}</span>
                     {/* Barres en bas */}
@@ -637,7 +644,7 @@ export default function FertilityCalendar({
                     </div>
                     {/* Coeur pour rapport */}
                     {rapport && (
-                      <Heart className="absolute -top-1 -right-1 w-3 h-3 text-rose-500 fill-rose-500" />
+                      <Heart className="absolute -top-1 -right-1 w-3 h-3 text-rose-500 fill-rose-500" style={{ zIndex: 20 }} />
                     )}
                   </button>
                 );
@@ -648,41 +655,41 @@ export default function FertilityCalendar({
 
         {/* Légende */}
         <div className="px-4 pb-4 border-t pt-4">
-          <p className="text-xs font-semibold text-slate-600 mb-2">Légende</p>
+          <p className="text-xs font-semibold mb-2" style={{ color: '#000000' }}>Légende</p>
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-sky-400"></div>
-              <span className="text-slate-600">Pic d'ovulation</span>
+              <div className="legend-dot" style={{ width: 16, height: 16, borderRadius: '50%', background: '#38bdf8', flexShrink: 0 }}></div>
+              <span style={{ color: '#000000' }}>Pic d'ovulation</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-emerald-50 border border-emerald-200"></div>
-              <span className="text-slate-600">Fenêtre fertile</span>
+              <div className="legend-dot" style={{ width: 16, height: 16, borderRadius: '50%', background: '#ecfdf5', border: '1px solid #a7f3d0', flexShrink: 0 }}></div>
+              <span style={{ color: '#000000' }}>Fenêtre fertile</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-pink-100 border border-pink-200"></div>
-              <span className="text-slate-600">Règles prévues</span>
+              <div className="legend-dot" style={{ width: 16, height: 16, borderRadius: '50%', background: '#fce7f3', border: '1px solid #fbcfe8', flexShrink: 0 }}></div>
+              <span style={{ color: '#000000' }}>Règles prévues</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-amber-50 border border-amber-200"></div>
-              <span className="text-slate-600">Nidation estimée</span>
+              <div className="legend-dot" style={{ width: 16, height: 16, borderRadius: '50%', background: '#fffbeb', border: '1px solid #fde68a', flexShrink: 0 }}></div>
+              <span style={{ color: '#000000' }}>Nidation estimée</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-6 h-4 rounded flex items-end justify-center pb-0.5">
-                <span className="w-4 h-0.5 bg-blue-400 rounded-full"></span>
+              <div style={{ width: 24, height: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 2 }}>
+                <span style={{ width: 16, height: 2, background: '#60a5fa', borderRadius: 9999 }}></span>
               </div>
-              <span className="text-slate-600">Vacances scolaires</span>
+              <span style={{ color: '#000000' }}>Vacances scolaires</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-6 h-4 rounded flex items-end justify-center pb-0.5">
-                <span className="w-4 h-0.5 bg-red-500 rounded-full"></span>
+              <div style={{ width: 24, height: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 2 }}>
+                <span style={{ width: 16, height: 2, background: '#ef4444', borderRadius: 9999 }}></span>
               </div>
-              <span className="text-slate-600">Jour férié</span>
+              <span style={{ color: '#000000' }}>Jour férié</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full border-2 border-rose-500 flex items-center justify-center">
+              <div className="legend-dot" style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid #f43f5e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Heart className="w-2 h-2 text-rose-500 fill-rose-500" />
               </div>
-              <span className="text-slate-600">Rapport</span>
+              <span style={{ color: '#000000' }}>Rapport</span>
             </div>
           </div>
         </div>

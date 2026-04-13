@@ -341,13 +341,13 @@ function AdminPage() {
           style={{ background:'transparent', transition:'transform 0.15s ease' }}
         >
           <div className="flex items-center gap-3">
-            <Icon className="w-7 h-7" style={{ color:'#FFFFFF' }} strokeWidth={2.5} />
-            <span style={{ color:'#FFFFFF', fontWeight:900, fontSize:'15px', letterSpacing:'0.5px' }}>{label}</span>
+            <Icon className="w-7 h-7" style={{ color:'#000000' }} strokeWidth={2.5} />
+            <span style={{ color:'#000000', fontWeight:900, fontSize:'15px', letterSpacing:'0.5px' }}>{label}</span>
             {count > 0 && (
-              <span className="rounded-full text-xs font-bold px-2.5 py-0.5" style={{ background:'rgba(255,255,255,0.3)', color:'#FFFFFF' }}>{count}</span>
+              <span className="rounded-full text-xs font-bold px-2.5 py-0.5" style={{ background:'rgba(0,0,0,0.12)', color:'#000000' }}>{count}</span>
             )}
           </div>
-          <ChevronDown className={`w-6 h-6 transition-transform duration-300 ${openDrawers[id] ? 'rotate-180' : ''}`} style={{ color:'#FFFFFF' }} />
+          <ChevronDown className={`w-6 h-6 transition-transform duration-300 ${openDrawers[id] ? 'rotate-180' : ''}`} style={{ color:'#000000' }} />
         </button>
         
         {openDrawers[id] && (

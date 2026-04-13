@@ -94,7 +94,8 @@ export function DashboardTab({ globalStats, codeStats, setActiveTab, messageStat
           onClick={handleExportCSV}
           disabled={exporting}
           data-testid="export-csv-button"
-          className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full px-4 py-2 text-sm font-medium hover:opacity-90 transition-opacity"
+          className="rounded-full px-4 py-2 text-sm font-medium hover:opacity-90 transition-opacity"
+          style={{ background: 'linear-gradient(145deg, #f1f5f9, #e2e8f0)', color: '#000000', boxShadow: '4px 4px 10px rgba(160,140,160,0.25), -4px -4px 10px rgba(255,255,255,0.9), inset 0 1px 2px rgba(255,255,255,0.8)' }}
         >
           {exporting ? (
             <>
