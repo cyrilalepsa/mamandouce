@@ -63,9 +63,9 @@ const SECTION_META = {
 // Contenu de chaque section (cartes individuelles) - Dégradés accentués vers le blanc + bonbon pastel
 const SECTION_ITEMS = {
   'preconception': [
-    { id: 'cycle-tracking', icon: CalendarHeart, iconColor: 'text-pink-600', bgColor: 'pink', title: 'Suivi de fertilité', titleKey: 'preconception.cycleTracking', desc: 'Règles, ovulation, nidation', descKey: 'preconception.cycleDesc', route: '/cycle-tracking' },
-    { id: 'fertility-calc', icon: LineChart, iconColor: 'text-violet-600', bgColor: 'violet', title: 'Calculateur fertilité', titleKey: 'preconception.fertilityCalc', desc: 'Prochaines règles & ovulation', descKey: 'preconception.fertilityDesc', route: '/fertility-calculator' },
-    { id: 'preparation-advice', icon: Lightbulb, iconColor: 'text-amber-600', bgColor: 'amber', title: 'Préparation et conseils', titleKey: 'preconception.preparationAdvice', desc: 'Acide folique, nutrition...', descKey: 'preconception.preparationDesc', route: '/preconception-tips' },
+    { id: 'cycle-tracking', icon: CalendarHeart, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'Suivi de fertilité', titleKey: 'preconception.cycleTracking', desc: 'Règles, ovulation, nidation', descKey: 'preconception.cycleDesc', route: '/cycle-tracking' },
+    { id: 'fertility-calc', icon: LineChart, iconColor: 'text-blue-600', bgColor: 'blue', title: 'Calculateur fertilité', titleKey: 'preconception.fertilityCalc', desc: 'Prochaines règles & ovulation', descKey: 'preconception.fertilityDesc', route: '/fertility-calculator' },
+    { id: 'preparation-advice', icon: Lightbulb, iconColor: 'text-green-600', bgColor: 'green', title: 'Préparation et conseils', titleKey: 'preconception.preparationAdvice', desc: 'Acide folique, nutrition...', descKey: 'preconception.preparationDesc', route: '/preconception-tips' },
   ],
   'pregnancy': [
     // Partie Alimentation (4 premières cartes) - ORANGE PÊCHE avec effet bombé
@@ -75,32 +75,32 @@ const SECTION_ITEMS = {
     { id: 'history', icon: History, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'Historique', titleKey: 'pregnancy.history', desc: 'Recherches', descKey: 'pregnancy.searches', route: '/history' },
     // Séparateur : Liste des Prénoms (carte large) - BLEU
     { id: 'baby-names', icon: Users, iconColor: 'text-blue-600', bgColor: 'blue', title: 'Liste des Prénoms', titleKey: 'pregnancy.babyNames', desc: 'Europe & Amérique - Signification et personnalité', descKey: 'pregnancy.namesDescFull', route: '/baby-names', premium: 'partial', wide: true },
-    // Partie Médicale et Suivi (4 cartes) - VERT (était rose)
-    { id: 'tips-evolution', icon: BookHeart, iconColor: 'text-green-600', bgColor: 'green', title: 'Évolution et conseils', titleKey: 'pregnancy.tipsAndEvolution', desc: 'Semaine par semaine', descKey: 'pregnancy.weekByWeek', route: '/tips' },
-    { id: 'medical-appointments', icon: Stethoscope, iconColor: 'text-green-600', bgColor: 'green', title: 'Rendez-vous', titleKey: 'pregnancy.appointments', desc: 'Suivi médical', descKey: 'pregnancy.medicalFollowUp', route: '/medical' },
-    { id: 'pregnancy-tracking', icon: LineChart, iconColor: 'text-green-600', bgColor: 'green', title: 'Suivi grossesse', titleKey: 'pregnancy.tracking', desc: 'Poids maman & bébé', descKey: 'pregnancy.stats', route: '/tracking' },
-    { id: 'reminders', icon: Bell, iconColor: 'text-green-600', bgColor: 'green', title: 'Rappels', titleKey: 'pregnancy.reminders', desc: 'Notifications', descKey: 'pregnancy.notifications', route: '/reminders' },
-    // Séparateur : Congés parentaux (carte large en bas) - ROUGE
-    { id: 'parental-leave', icon: Scale, iconColor: 'text-red-600', bgColor: 'red', title: 'Congés parentaux', titleKey: 'pregnancy.parentalLeave', desc: 'Nouvelle loi 2024 - Vos droits', descKey: 'pregnancy.parentalLeaveDesc', route: '/parental-leave', wide: true },
+    // Partie Médicale et Suivi (4 cartes) - ROUGE
+    { id: 'tips-evolution', icon: BookHeart, iconColor: 'text-red-600', bgColor: 'red', title: 'Évolution et conseils', titleKey: 'pregnancy.tipsAndEvolution', desc: 'Semaine par semaine', descKey: 'pregnancy.weekByWeek', route: '/tips' },
+    { id: 'medical-appointments', icon: Stethoscope, iconColor: 'text-red-600', bgColor: 'red', title: 'Rendez-vous', titleKey: 'pregnancy.appointments', desc: 'Suivi médical', descKey: 'pregnancy.medicalFollowUp', route: '/medical' },
+    { id: 'pregnancy-tracking', icon: LineChart, iconColor: 'text-red-600', bgColor: 'red', title: 'Suivi grossesse', titleKey: 'pregnancy.tracking', desc: 'Poids maman & bébé', descKey: 'pregnancy.stats', route: '/tracking' },
+    { id: 'reminders', icon: Bell, iconColor: 'text-red-600', bgColor: 'red', title: 'Rappels', titleKey: 'pregnancy.reminders', desc: 'Notifications', descKey: 'pregnancy.notifications', route: '/reminders' },
+    // Séparateur : Congés parentaux (carte large en bas) - VERT
+    { id: 'parental-leave', icon: Scale, iconColor: 'text-green-600', bgColor: 'green', title: 'Congés parentaux', titleKey: 'pregnancy.parentalLeave', desc: 'Nouvelle loi 2024 - Vos droits', descKey: 'pregnancy.parentalLeaveDesc', route: '/parental-leave', wide: true },
   ],
   'baby-preparation': [
-    { id: 'birth-list', icon: ClipboardList, iconColor: 'text-emerald-600', bgColor: 'emerald', title: 'Liste de naissance', titleKey: 'babyPrep.birthList', desc: 'Préparez tout', descKey: 'babyPrep.birthListDesc', route: '/birth-list' },
-    { id: 'maternity-bag', icon: Briefcase, iconColor: 'text-amber-600', bgColor: 'amber', title: 'Valise maternité', titleKey: 'babyPrep.maternityBag', desc: 'Checklist', descKey: 'babyPrep.checklistDesc', route: '/maternity-bag' },
-    { id: 'prep-tips', icon: BookHeart, iconColor: 'text-sky-600', bgColor: 'sky', title: 'Conseils & Préparation', titleKey: 'babyPrep.prepTips', desc: 'Guide complet', descKey: 'babyPrep.prepTipsDesc', route: '/baby-prep-tips' },
-    { id: 'videos-resources', icon: Video, iconColor: 'text-rose-600', bgColor: 'rose', title: 'Vidéos & Ressources', titleKey: 'babyPrep.videosResources', desc: 'Tutoriels & conseils', descKey: 'babyPrep.videosResourcesDesc', route: '/baby-videos' },
+    { id: 'birth-list', icon: ClipboardList, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'Liste de naissance', titleKey: 'babyPrep.birthList', desc: 'Préparez tout', descKey: 'babyPrep.birthListDesc', route: '/birth-list' },
+    { id: 'maternity-bag', icon: Briefcase, iconColor: 'text-blue-600', bgColor: 'blue', title: 'Valise maternité', titleKey: 'babyPrep.maternityBag', desc: 'Checklist', descKey: 'babyPrep.checklistDesc', route: '/maternity-bag' },
+    { id: 'prep-tips', icon: BookHeart, iconColor: 'text-green-600', bgColor: 'green', title: 'Conseils & Préparation', titleKey: 'babyPrep.prepTips', desc: 'Guide complet', descKey: 'babyPrep.prepTipsDesc', route: '/baby-prep-tips' },
+    { id: 'videos-resources', icon: Video, iconColor: 'text-red-600', bgColor: 'red', title: 'Vidéos & Ressources', titleKey: 'babyPrep.videosResources', desc: 'Tutoriels & conseils', descKey: 'babyPrep.videosResourcesDesc', route: '/baby-videos' },
   ],
   'postpartum': [
-    { id: 'postpartum-rdv', icon: Stethoscope, iconColor: 'text-rose-600', bgColor: 'rose', title: 'RDV médicaux', titleKey: 'postpartum.rdv', desc: 'Suivi post-accouchement', descKey: 'postpartum.rdvDesc', route: '/postpartum/rdv' },
-    { id: 'postpartum-alimentation', icon: Utensils, iconColor: 'text-amber-600', bgColor: 'amber', title: 'Alimentation', titleKey: 'postpartum.alimentation', desc: 'Allaitement, biberons, diversification', descKey: 'postpartum.alimentationDesc', route: '/postpartum/alimentation' },
-    { id: 'postpartum-soins', icon: Baby, iconColor: 'text-sky-600', bgColor: 'sky', title: 'Soins quotidiens', titleKey: 'postpartum.soins', desc: 'Coucher, change, portage', descKey: 'postpartum.soinsDesc', route: '/postpartum/soins' },
-    { id: 'postpartum-securite', icon: Shield, iconColor: 'text-violet-600', bgColor: 'violet', title: 'Sécurité', titleKey: 'postpartum.securite', desc: 'Difficultés, précautions', descKey: 'postpartum.securiteDesc', route: '/postpartum/securite' },
+    { id: 'postpartum-rdv', icon: Stethoscope, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'RDV médicaux', titleKey: 'postpartum.rdv', desc: 'Suivi post-accouchement', descKey: 'postpartum.rdvDesc', route: '/postpartum/rdv' },
+    { id: 'postpartum-alimentation', icon: Utensils, iconColor: 'text-blue-600', bgColor: 'blue', title: 'Alimentation', titleKey: 'postpartum.alimentation', desc: 'Allaitement, biberons, diversification', descKey: 'postpartum.alimentationDesc', route: '/postpartum/alimentation' },
+    { id: 'postpartum-soins', icon: Baby, iconColor: 'text-green-600', bgColor: 'green', title: 'Soins quotidiens', titleKey: 'postpartum.soins', desc: 'Coucher, change, portage', descKey: 'postpartum.soinsDesc', route: '/postpartum/soins' },
+    { id: 'postpartum-securite', icon: Shield, iconColor: 'text-red-600', bgColor: 'red', title: 'Sécurité', titleKey: 'postpartum.securite', desc: 'Difficultés, précautions', descKey: 'postpartum.securiteDesc', route: '/postpartum/securite' },
   ],
   'services': [
-    { id: 'chatbot', icon: Phone, iconColor: 'text-sky-600', bgColor: 'sky', title: 'Assistant IA', titleKey: 'services.chatbot', desc: 'Disponible 24/7', descKey: 'services.available247', route: '/chatbot' },
+    { id: 'chatbot', icon: Phone, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'Assistant IA', titleKey: 'services.chatbot', desc: 'Disponible 24/7', descKey: 'services.available247', route: '/chatbot' },
     { id: 'caf', icon: Building2, iconColor: 'text-blue-600', bgColor: 'blue', title: 'CAF', titleKey: 'services.caf', desc: 'Allocations familiales', descKey: 'services.cafDesc', route: 'https://www.caf.fr', external: true },
     { id: 'ameli', icon: Hospital, iconColor: 'text-green-600', bgColor: 'green', title: 'Ameli', titleKey: 'services.ameli', desc: 'Assurance maladie', descKey: 'services.ameliDesc', route: 'https://www.ameli.fr', external: true },
     { id: 'maps', icon: MapPin, iconColor: 'text-red-600', bgColor: 'red', title: 'Mairie proche', titleKey: 'services.maps', desc: 'Démarches administratives', descKey: 'services.mapsDesc', route: 'https://www.google.com/maps/search/mairie', external: true },
-    { id: 'videos', icon: Video, iconColor: 'text-rose-600', bgColor: 'rose', title: 'Vidéos', titleKey: 'services.videos', desc: 'Tutoriels YouTube', descKey: 'services.tutorials', route: 'https://www.youtube.com/results?search_query=grossesse+conseils', external: true },
+    { id: 'videos', icon: Video, iconColor: 'text-violet-600', bgColor: 'violet', title: 'Vidéos', titleKey: 'services.videos', desc: 'Tutoriels YouTube', descKey: 'services.tutorials', route: 'https://www.youtube.com/results?search_query=grossesse+conseils', external: true },
   ],
 };
 
@@ -266,76 +266,13 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
   
   const colorInfo = getColorFromBgColor();
   
-  // Générer les styles de fond avec couleurs vives et saturées (comme JourneyStepsPage)
+  // Générer les styles de fond — GRIS DÉGRADÉ BLANC GLOSSY NACRÉ (toutes les cartes)
   const getVibrantBackground = () => {
-    switch(item.bgColor) {
-      case 'yellow':
-        return {
-          bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,249,195,0.95) 30%, rgba(253,224,71,0.55) 70%, rgba(250,204,21,0.65) 100%)',
-          border: 'rgba(234,179,8,0.5)',
-          shadow: '234,179,8'
-        };
-      case 'blue':
-        return {
-          bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(224,242,254,0.95) 30%, rgba(147,197,253,0.55) 70%, rgba(96,165,250,0.65) 100%)',
-          border: 'rgba(59,130,246,0.5)',
-          shadow: '59,130,246'
-        };
-      case 'green':
-        return {
-          bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(220,252,231,0.95) 30%, rgba(134,239,172,0.55) 70%, rgba(74,222,128,0.65) 100%)',
-          border: 'rgba(34,197,94,0.5)',
-          shadow: '34,197,94'
-        };
-      case 'red':
-        return {
-          bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,226,226,0.95) 30%, rgba(252,165,165,0.55) 70%, rgba(248,113,113,0.65) 100%)',
-          border: 'rgba(239,68,68,0.5)',
-          shadow: '239,68,68'
-        };
-      case 'emerald':
-        return {
-          bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(209,250,229,0.95) 30%, rgba(110,231,183,0.55) 70%, rgba(52,211,153,0.65) 100%)',
-          border: 'rgba(16,185,129,0.5)',
-          shadow: '16,185,129'
-        };
-      case 'amber':
-        return {
-          bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,243,199,0.95) 30%, rgba(252,211,77,0.55) 70%, rgba(251,191,36,0.65) 100%)',
-          border: 'rgba(245,158,11,0.5)',
-          shadow: '245,158,11'
-        };
-      case 'sky':
-        return {
-          bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(224,242,254,0.95) 30%, rgba(125,211,252,0.55) 70%, rgba(56,189,248,0.65) 100%)',
-          border: 'rgba(14,165,233,0.5)',
-          shadow: '14,165,233'
-        };
-      case 'rose':
-        return {
-          bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(255,228,230,0.95) 30%, rgba(253,164,175,0.55) 70%, rgba(251,113,133,0.65) 100%)',
-          border: 'rgba(244,63,94,0.5)',
-          shadow: '244,63,94'
-        };
-      case 'pink':
-        return {
-          bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(252,231,243,0.95) 30%, rgba(251,207,232,0.65) 70%, rgba(249,168,212,0.75) 100%)',
-          border: 'rgba(236,72,153,0.5)',
-          shadow: '236,72,153'
-        };
-      case 'violet':
-        return {
-          bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(245,243,255,0.95) 30%, rgba(237,233,254,0.65) 70%, rgba(196,181,253,0.75) 100%)',
-          border: 'rgba(139,92,246,0.5)',
-          shadow: '139,92,246'
-        };
-      default:
-        return {
-          bg: `linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 30%, rgba(${colorInfo.rgb},0.35) 70%, rgba(${colorInfo.rgb},0.45) 100%)`,
-          border: `rgba(${colorInfo.rgb},0.5)`,
-          shadow: colorInfo.rgb
-        };
-    }
+    return {
+      bg: 'linear-gradient(145deg, #eaeaec 0%, #f0f0f2 25%, #f5f5f7 50%, #fafafa 75%, #ffffff 100%)',
+      border: 'rgba(200,200,210,0.3)',
+      shadow: '160,140,160'
+    };
   };
   
   const vibrantStyle = getVibrantBackground();
@@ -380,7 +317,7 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
         style={{ 
           background: vibrantStyle.bg,
           border: `2px solid ${vibrantStyle.border}`,
-          boxShadow: `0 6px 16px -4px rgba(${vibrantStyle.shadow},0.3), 0 3px 6px -2px rgba(${vibrantStyle.shadow},0.15), inset 0 2px 6px rgba(255,255,255,0.95), inset 0 -3px 6px rgba(${vibrantStyle.shadow},0.1)`,
+          boxShadow: `8px 8px 20px rgba(160,140,160,0.2), -6px -6px 16px rgba(255,255,255,0.9), inset 0 2px 4px rgba(255,255,255,0.95), inset 0 -2px 4px rgba(160,140,160,0.05)`,
           WebkitUserSelect: 'none', 
           WebkitTouchCallout: 'none' 
         }}
@@ -401,12 +338,12 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
         />
         
         <div className="relative flex items-center gap-2">
-          {/* Icône dans bulle colorée - réduite */}
+          {/* Icône dans bulle gris dégradé glossy */}
           <div 
             className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
             style={{
-              background: `linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(${colorInfo.rgb},0.2) 100%)`,
-              boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.05)'
+              background: 'linear-gradient(145deg, #eaeaec 0%, #f2f2f4 40%, #fafafa 70%, #ffffff 100%)',
+              boxShadow: '3px 3px 8px rgba(160,140,160,0.15), -2px -2px 6px rgba(255,255,255,0.9), inset 0 1px 2px rgba(255,255,255,0.8)'
             }}
           >
             <Icon className={`w-3.5 h-3.5 ${item.iconColor}`} />
@@ -451,8 +388,8 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
       `}
       style={{ 
         background: vibrantStyle.bg,
-        border: `2px solid ${vibrantStyle.border}`,
-        boxShadow: `0 5px 14px -4px rgba(${vibrantStyle.shadow},0.3), 0 3px 6px -2px rgba(${vibrantStyle.shadow},0.15), inset 0 2px 6px rgba(255,255,255,0.95), inset 0 -3px 6px rgba(${vibrantStyle.shadow},0.1)`,
+        border: `1px solid ${vibrantStyle.border}`,
+        boxShadow: `6px 6px 16px rgba(160,140,160,0.2), -4px -4px 12px rgba(255,255,255,0.9), inset 0 2px 4px rgba(255,255,255,0.95), inset 0 -2px 4px rgba(160,140,160,0.05)`,
         WebkitUserSelect: 'none', 
         WebkitTouchCallout: 'none' 
       }}
@@ -502,12 +439,12 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
         </div>
       )}
       
-      {/* Icône dans bulle colorée - réduite */}
+      {/* Icône dans bulle gris dégradé glossy */}
       <div 
         className="w-9 h-9 rounded-lg flex items-center justify-center mx-auto mb-1"
         style={{
-          background: `linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(${colorInfo.rgb},0.2) 100%)`,
-          boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.05)'
+          background: 'linear-gradient(145deg, #eaeaec 0%, #f2f2f4 40%, #fafafa 70%, #ffffff 100%)',
+          boxShadow: '3px 3px 8px rgba(160,140,160,0.15), -2px -2px 6px rgba(255,255,255,0.9), inset 0 1px 2px rgba(255,255,255,0.8)'
         }}
       >
         <Icon className={`w-4 h-4 ${item.iconColor}`} />

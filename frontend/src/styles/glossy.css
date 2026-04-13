@@ -993,10 +993,12 @@ span.user-name-display,
   to { transform: rotate(360deg); }
 }
 
-/* Animation flottante douce pour les cœurs de l'accueil */
+/* Animation flottante douce pour les cœurs de l'accueil — haut/bas + léger latéral */
 @keyframes heartFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(3px, -4px); }
+  50% { transform: translate(0, -6px); }
+  75% { transform: translate(-3px, -4px); }
 }
 
 /* ============================================

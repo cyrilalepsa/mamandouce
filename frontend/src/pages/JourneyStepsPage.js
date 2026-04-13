@@ -79,10 +79,10 @@ const SECTION_ITEMS = {
     { id: 'medical-appointments', icon: '🩺', name: 'Rendez-vous médicaux', nameKey: 'pregnancy.appointments', route: '/medical', color: 'yellow' },
     { id: 'pregnancy-tracking', icon: '📈', name: 'Suivi grossesse', nameKey: 'pregnancy.tracking', route: '/tracking', color: 'yellow' },
     { id: 'baby-names', icon: '👶', name: 'Liste des Prénoms', nameKey: 'pregnancy.babyNames', route: '/baby-names', color: 'blue' },
-    { id: 'reminders', icon: '🔔', name: 'Rappels', nameKey: 'pregnancy.reminders', route: '/reminders', color: 'pink' },
-    { id: 'recipes', icon: '🍽️', name: 'Recettes bébé', nameKey: 'pregnancy.recipes', route: '/recipes', color: 'pink' },
-    { id: 'baby-weight', icon: '⚖️', name: 'Poids de bébé', nameKey: 'pregnancy.babyWeight', route: '/baby-weight', color: 'pink' },
-    { id: 'kick-counter', icon: '👣', name: 'Compteur de coups', nameKey: 'pregnancy.kickCounter', route: '/kick-counter', color: 'pink' },
+    { id: 'reminders', icon: '🔔', name: 'Rappels', nameKey: 'pregnancy.reminders', route: '/reminders', color: 'red' },
+    { id: 'recipes', icon: '🍽️', name: 'Recettes bébé', nameKey: 'pregnancy.recipes', route: '/recipes', color: 'red' },
+    { id: 'baby-weight', icon: '⚖️', name: 'Poids de bébé', nameKey: 'pregnancy.babyWeight', route: '/baby-weight', color: 'red' },
+    { id: 'kick-counter', icon: '👣', name: 'Compteur de coups', nameKey: 'pregnancy.kickCounter', route: '/kick-counter', color: 'red' },
     { id: 'parental-leave', icon: '⚖️', name: 'Congés parentaux', nameKey: 'pregnancy.parentalLeave', route: '/parental-leave', color: 'green' },
   ],
   'baby-preparation': [
@@ -260,19 +260,8 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
     if (isDarkMode) {
       return 'linear-gradient(145deg, rgba(30,41,59,0.95) 0%, rgba(30,41,59,0.9) 50%, rgba(15,23,42,0.85) 100%)';
     }
-    // Mode clair : couleurs VIVES OPAQUES par catégorie
-    switch(id) {
-      case 'preconception':
-        return '#FEF3C7'; // Ambre vif opaque
-      case 'pregnancy':
-        return '#CFFAFE'; // Cyan vif opaque
-      case 'baby-preparation':
-        return '#D1FAE5'; // Vert menthe vif opaque
-      case 'postpartum':
-        return '#FFE4E6'; // Rose vif opaque
-      default:
-        return '#EDE9FE'; // Violet vif opaque
-    }
+    // Mode clair : Gris dégradé vers blanc glossy nacré
+    return 'linear-gradient(145deg, #f0f0f2 0%, #f5f5f7 30%, #fafafa 60%, #ffffff 100%)';
   };
   
   // Bordure des cartes
@@ -286,17 +275,15 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
         default: return '2px solid rgba(139,92,246,0.4)';
       }
     }
-    // Mode clair - Pas de bordure pour le style bonbon
-    return 'none';
+    return '1px solid rgba(200, 200, 210, 0.3)';
   };
   
-  // Box shadow des cartes - NEUMORPHISM "CHAMALLOW 3D" EXACT
+  // Box shadow des cartes - NEUMORPHISM GLOSSY NACRÉ
   const getCardShadow = (id) => {
     if (isDarkMode) {
       return '0 8px 20px -4px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.1)';
     }
-    // Mode clair : NEUMORPHISM CHAMALLOW 3D avec double ombre diagonale EXACTE
-    return '10px 10px 20px #D1D9E6, -10px -10px 20px #FFFFFF';
+    return '8px 8px 20px rgba(160,140,160,0.25), -6px -6px 16px rgba(255,255,255,1), inset 0 1px 0 rgba(255,255,255,1)';
   };
 
   const handleTouchStart = (e) => {
@@ -392,20 +379,13 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
         )}
         
         <div className="relative flex items-center gap-4 pr-4">
-          {/* Icône dans une bulle colorée */}
+          {/* Icône dans une bulle gris dégradé blanc glossy */}
           <div 
             className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
             style={{
-              background: sectionId === 'preconception' 
-                ? 'linear-gradient(135deg, rgba(255,251,235,1) 0%, rgba(254,243,199,1) 100%)'
-                : sectionId === 'pregnancy'
-                ? 'linear-gradient(135deg, rgba(240,249,255,1) 0%, rgba(224,242,254,1) 100%)'
-                : sectionId === 'baby-preparation'
-                ? 'linear-gradient(135deg, rgba(240,253,244,1) 0%, rgba(220,252,231,1) 100%)'
-                : sectionId === 'postpartum'
-                ? 'linear-gradient(135deg, rgba(255,241,242,1) 0%, rgba(254,226,226,1) 100%)'
-                : 'linear-gradient(135deg, rgba(245,243,255,1) 0%, rgba(237,233,254,1) 100%)',
-              boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.05)'
+              background: 'linear-gradient(145deg, #eaeaec 0%, #f2f2f4 40%, #fafafa 70%, #ffffff 100%)',
+              boxShadow: '4px 4px 10px rgba(160,140,160,0.2), -3px -3px 8px rgba(255,255,255,0.9), inset 0 1px 2px rgba(255,255,255,0.8)',
+              border: '1px solid rgba(200,200,210,0.25)',
             }}
           >
             <Icon className={`w-5 h-5 ${
@@ -427,19 +407,18 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
             </p>
           </div>
           
-          {/* Bouton épingle - bulle quasi transparente */}
+          {/* Bouton épingle - bulle gris dégradé blanc glossy */}
           <button
             onClick={handlePinClick}
             className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
             style={{
               background: isPinned 
-                ? 'rgba(244, 114, 182, 0.15)' 
-                : 'rgba(255, 255, 255, 0.25)',
-              backdropFilter: 'none',
+                ? 'linear-gradient(145deg, #fce7f3, #fbcfe8)' 
+                : 'linear-gradient(145deg, #eaeaec 0%, #f5f5f7 50%, #ffffff 100%)',
               border: isPinned 
                 ? '1px solid rgba(244, 114, 182, 0.3)' 
-                : '1px solid rgba(255, 255, 255, 0.5)',
-              boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.4)'
+                : '1px solid rgba(200,200,210,0.25)',
+              boxShadow: '3px 3px 8px rgba(160,140,160,0.15), -2px -2px 6px rgba(255,255,255,0.9), inset 0 1px 2px rgba(255,255,255,0.7)'
             }}
             data-testid={`pin-${sectionId}`}
           >
@@ -459,9 +438,9 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
                   onClick={() => handleItemClick(item.route, item.external)}
                   className="relative flex flex-col items-center gap-1 p-3 rounded-xl transition-all active:scale-95"
                   style={{ 
-                    background: isDarkMode ? 'rgba(30,41,59,0.9)' : 'rgba(255,255,255,0.9)',
-                    border: isDarkMode ? '1px solid rgba(71,85,105,0.5)' : '1px solid rgba(200,200,200,0.3)',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                    background: isDarkMode ? 'rgba(30,41,59,0.9)' : 'linear-gradient(145deg, #eaeaec 0%, #f2f2f4 30%, #fafafa 60%, #ffffff 100%)',
+                    border: isDarkMode ? '1px solid rgba(71,85,105,0.5)' : '1px solid rgba(200,200,210,0.25)',
+                    boxShadow: isDarkMode ? '0 2px 8px rgba(0,0,0,0.06)' : '4px 4px 10px rgba(160,140,160,0.15), -3px -3px 8px rgba(255,255,255,0.9), inset 0 1px 0 rgba(255,255,255,0.8)',
                     animationDelay: `${index * 30}ms` 
                   }}
                 >
