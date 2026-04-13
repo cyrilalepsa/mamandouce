@@ -1,0 +1,39 @@
+/* ============================================
+   CHAMPS DE SAISIE - NACRE & CONTRASTE AMÉLIORÉ
+   ============================================ */
+input,
+textarea,
+select,
+[type="text"],
+[type="email"],
+[type="password"],
+[type="date"],
+[type="number"] {
+  background: linear-gradient(135deg, rgba(255, 252, 253, 0.95) 0%, rgba(255, 248, 250, 0.9) 100%) !important;
+  border: 2px solid rgba(200, 180, 190, 0.4) !important;
+  box-shadow: 
+    inset 2px 2px 6px rgba(180, 160, 170, 0.15),
+    0 2px 8px rgba(180, 160, 170, 0.1) !important;
+  color: #2D2A32 !important;
+  border-radius: 12px !important;
+  transition: all 0.2s ease !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+[type="text"]:focus,
+[type="email"]:focus,
+[type="password"]:focus {
+  border-color: rgba(236, 72, 153, 0.5) !important;
+  box-shadow: 
+    inset 2px 2px 6px rgba(180, 160, 170, 0.15),
+    0 0 0 3px rgba(236, 72, 153, 0.15),
+    0 4px 12px rgba(236, 72, 153, 0.2) !important;
+  outline: none !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #8B7F96 !important;
+}

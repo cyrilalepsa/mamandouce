@@ -1,0 +1,70 @@
+/* ============================================
+   CARTES — NACRE BOMBÉ GLOSSY ARGENTÉ
+   Blanc brillant -> Gris argenté, effet perle
+   Zéro blur, zéro opacité
+   ============================================ */
+[class*="rounded-"][class*="bg-white"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar),
+[class*="rounded-"][class*="bg-slate-"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar),
+[class*="rounded-xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar),
+[class*="rounded-2xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar),
+[class*="rounded-3xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar),
+.glossy-card,
+[data-testid*="card"]:not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour),
+.Card:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar),
+[class*="Card"]:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar) {
+  background: linear-gradient(160deg, #ffffff 0%, #f2f2f3 15%, #e5e5e8 40%, #d0d0d5 65%, #b8b8bf 100%) !important;
+  box-shadow: 
+    0 8px 24px -4px rgba(0,0,0,0.15),
+    0 4px 10px -2px rgba(0,0,0,0.08),
+    inset -5px -5px 12px rgba(0,0,0,0.08),
+    inset 5px 5px 12px rgba(255,255,255,0.95) !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(255,255,255,0.8) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Reflet glossy bombé sur le haut des cartes */
+[class*="rounded-"][class*="bg-white"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::before,
+[class*="rounded-xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::before,
+[class*="rounded-2xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::before,
+[class*="rounded-3xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::before,
+.glossy-card::before,
+.Card:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::before,
+[class*="Card"]:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 35%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    transparent 100%
+  );
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Effet Caméléon — reflet Bleu Ciel (haut page) / Vieux Rose (bas page) */
+[class*="rounded-"][class*="bg-white"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::after,
+.glossy-card::after,
+.Card:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::after,
+[class*="Card"]:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(124, 214, 255, 0.06) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(255, 209, 220, 0.06) 100%
+  );
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+}

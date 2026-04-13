@@ -1,0 +1,53 @@
+/* ============================================
+   ICÔNES 3D BOMBÉES
+   ============================================ */
+.icon-3d,
+[class*="w-"][class*="h-"][class*="rounded-full"],
+[class*="w-"][class*="h-"][class*="rounded-xl"],
+[class*="w-"][class*="h-"][class*="rounded-2xl"] {
+  box-shadow: 
+    -3px -3px 8px rgba(255, 255, 255, 0.9),
+    3px 3px 10px rgba(209, 217, 230, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+/* ============================================
+   BOUTON PILL GLOSSY
+   ============================================ */
+.glossy-pill-btn,
+[class*="rounded-full"][class*="bg-gradient"],
+[class*="rounded-full"][class*="bg-pink"],
+[class*="rounded-full"][class*="bg-rose"] {
+  background: linear-gradient(145deg, 
+    rgba(255, 182, 193, 0.95) 0%, 
+    rgba(255, 192, 203, 0.9) 30%,
+    rgba(255, 174, 185, 0.85) 60%, 
+    rgba(252, 165, 175, 0.8) 100%) !important;
+  box-shadow: 
+    -5px -5px 15px rgba(255, 255, 255, 1),
+    5px 5px 18px rgba(209, 217, 230, 0.55),
+    0 8px 25px rgba(236, 72, 153, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.7),
+    inset 0 -2px 6px rgba(236, 72, 153, 0.15) !important;
+  border: 2px solid rgba(255, 200, 210, 0.6) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.glossy-pill-btn::before,
+[class*="rounded-full"][class*="bg-gradient"]::before,
+[class*="rounded-full"][class*="bg-pink"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 50%;
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.7) 0%, 
+    rgba(255, 255, 255, 0.35) 50%, 
+    transparent 100%);
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 1;
+}
