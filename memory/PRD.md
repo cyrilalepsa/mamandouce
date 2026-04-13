@@ -11,32 +11,35 @@ Application mobile PWA (encapsulée via Capacitor) de suivi de grossesse et mate
 
 ---
 
-## Version actuelle: v4.6.0 (Avril 2026)
+## Version actuelle: v4.7.0 (Avril 2026)
 
-### Nouveautés v4.6.0 - Sécurité Paiement & Premium Avatar Final
+### Nouveautés v4.7.0 - Calendrier & Admin Polish
 
-#### 1. PremiumSunAvatar - Effet Diamant Final
-- **30 sparkles** dispersés aléatoirement sur toute la surface du halo jaune (positions -12% à 115%)
-- **Animation floating-avatar** : mouvement vertical 5px, cycle 10s, pour un effet d'apesanteur
-- **Sparkles diamant** : triple box-shadow blanc, z-index 10000, animation sparkle-magic
-- **Refactorisé** : Les 30 sparkles sont maintenant générés via `.map()` au lieu de divs hardcodés
+#### 1. Calendrier Fertilité — Légendes et Cœurs restaurés
+- **Classe `.fertility-calendar`** ajoutée au wrapper pour isoler du CSS global
+- **Légendes** : Texte noir pur #000000, indicateurs colorés visibles (inline styles)
+- **Cœurs rapports** : z-index 20 pour passer devant les cercles de jours
+- **Cellules du calendrier** : backgrounds en inline styles (vert fertile, bleu ovulation, rose règles, jaune nidation)
+- **Aucun blur/transparence** sur le calendrier
 
-#### 2. Sécurité Paiement (Double Vérification Sous-Marin)
-- **Côté Client** : Le bouton "Acheter" envoie uniquement `price_id` et `promo_code` (optionnel). AUCUN montant n'est transmis par le client
-- **Côté Serveur** : Le serveur calcule le prix final depuis `SUBSCRIPTION_PACKAGES`, vérifie le coupon auprès de Stripe (`PromotionCode.list`), et crée la session avec ses propres valeurs
-- **Compatibilité Legacy** : Le champ `package_id` est toujours accepté en plus de `price_id`
-- **Metadata sécurisé** : Le montant attendu (`server_expected_amount`) est stocké dans les métadonnées de la session Stripe
+#### 2. Admin Dashboard — Texte Noir + Tuiles Pastel
+- **Texte NOIR #000000** sur toutes les tuiles (icônes, labels, badges, chevrons)
+- **Couleurs pastel plus claires** : Lilas #E9D5FF/#D8B4FE, Rose #FECDD3/#FDA4AF, Vert #A7F3D0/#6EE7B7, Bleu #BAE6FD/#7DD3FC
+- **Bouton Export CSV** : style gris dégradé avec texte noir (cohérent avec les autres)
 
-#### 3. Monitoring "Le Garagiste"
-- **Alerte ROUGE** : Si le webhook reçoit un paiement dont le montant ne correspond pas au calcul serveur, le voyant du dashboard admin passe au ROUGE immédiatement
-- **Voyant VERT** : "Tunnel d'achat OK — Aucun écart de facturation" quand tout est normal
-- **Logs** : Chaque écart est enregistré dans `billing_alerts.log` + collection MongoDB `billing_alerts`
-- **Résolution** : Bouton "Résoudre" pour marquer les alertes comme traitées
+#### 3. CSS Global (glossy.css)
+- **Exclusion calendrier** : Tous les boutons/éléments dans `.fertility-calendar` exemptés des règles neumorphiques
+- **Pas de backdrop-filter blur** sur aucun élément
 
-#### Nouveaux Endpoints API - Sécurité Paiement
-- `POST /api/payments/checkout/session` : Accepte `price_id` (ou `package_id` legacy) + `promo_code` optionnel. Prix calculé côté serveur
-- `GET /api/payments/billing-alerts` : Liste des alertes de facturation (admin only)
-- `POST /api/payments/billing-alerts/{index}/resolve` : Résoudre une alerte
+---
+
+## Règles de design strictes (session courante)
+1. Pas de transparence, pas de flou (backdrop-filter: blur)
+2. Cartes BLANC PUR OPAQUE sur fond dégradé pastel
+3. TOUS les textes en NOIR (#000000) — non-négociable
+4. Admin : 4 tuiles (Lilas, Rose, Vert, Bleu) avec effet bombé/glossy
+5. Chaque section admin = accordéon (pas de scroll)
+6. Calendrier : légendes visibles + petits cœurs pour rapports
 
 ---
 
@@ -50,22 +53,23 @@ Application mobile PWA (encapsulée via Capacitor) de suivi de grossesse et mate
 
 ## Backlog / Tâches futures
 
+### P0 - Terminé cette session
+- [x] Calendrier : légendes visibles, cœurs avec z-index, texte noir
+- [x] Admin : texte noir sur tuiles, couleurs pastel, Export CSV lisible
+- [x] Codes promo Stripe : déjà en place (backend + frontend)
+
 ### P1 - Prioritaire
-- [ ] Appliquer le design "Nacre" à toutes les pages restantes (couleurs pastel, bordures arrondies, ombres douces)
+- [ ] Boutons glossy gris dégradé sur TOUTE l'app (uniquement boutons cliquables)
 - [ ] Publication Google Play Store (APK via Android Studio) - BLOQUÉ (action utilisateur)
 
 ### P2 - Améliorations
-- [ ] Support complet des codes promo Stripe dans le tunnel d'achat (UI champ promo)
+- [ ] Design Nacre complet sur toutes les pages restantes
 
 ---
 
 ## Credentials de test
 Voir `/app/memory/test_credentials.md`
 
-## Documentation technique
-- `/app/backend/docs/RAILWAY_OPTIMIZATION.md`
-- `/app/backend/RAILWAY_DEPLOY.md`
-
 ---
 
-*Dernière mise à jour: Avril 2026 - v4.6.0 Sécurité Paiement & Premium Avatar*
+*Dernière mise à jour: 13 Avril 2026 - v4.7.0 Calendrier & Admin Polish*
