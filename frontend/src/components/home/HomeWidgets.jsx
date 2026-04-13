@@ -128,7 +128,7 @@ export function JourneyStepsCard({ t, navigate }) {
       <div className="relative flex items-center justify-center w-full max-w-sm" style={{ background: 'transparent' }}>
         
         {/* Cœurs gauche */}
-        <div className="relative w-12 h-16 mr-2 flex-shrink-0" style={{ background: 'transparent' }}>
+        <div className="relative w-12 h-16 mr-2 flex-shrink-0" style={{ background: 'transparent', animation: 'heartFloat 3s ease-in-out infinite' }}>
           <GlossyHeart size={12} color="#f472b6" rotation={-25} top={2} left={8} />
           <GlossyHeart size={20} color="#ec4899" rotation={-10} top={18} left={0} />
           <GlossyHeart size={14} color="#a855f7" rotation={15} top={38} left={14} />
@@ -142,10 +142,8 @@ export function JourneyStepsCard({ t, navigate }) {
               className="text-sm font-bold text-center"
               style={{ 
                 fontFamily: "'Quicksand', 'Nunito', sans-serif",
-                background: 'linear-gradient(90deg, #ec4899 0%, #a855f7 50%, #3b82f6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
+                color: '#000000',
+                WebkitTextFillColor: '#000000',
               }}
             >
               {t('home.journeySteps', 'Les étapes de votre plus beau voyage')}
@@ -154,7 +152,7 @@ export function JourneyStepsCard({ t, navigate }) {
         </div>
 
         {/* Cœurs droit */}
-        <div className="relative w-12 h-16 ml-2 flex-shrink-0" style={{ background: 'transparent' }}>
+        <div className="relative w-12 h-16 ml-2 flex-shrink-0" style={{ background: 'transparent', animation: 'heartFloat 3s ease-in-out infinite 1.5s' }}>
           <GlossyHeart size={14} color="#818cf8" rotation={25} top={4} left={16} />
           <GlossyHeart size={20} color="#38bdf8" rotation={10} top={20} left={20} />
           <GlossyHeart size={12} color="#2dd4bf" rotation={-20} top={40} left={8} />

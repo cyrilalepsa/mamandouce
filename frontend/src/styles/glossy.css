@@ -993,6 +993,12 @@ span.user-name-display,
   to { transform: rotate(360deg); }
 }
 
+/* Animation flottante douce pour les cœurs de l'accueil */
+@keyframes heartFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
 /* ============================================
    TUILES ADMIN DASHBOARD — OVERRIDE TOTAL
    Priorité maximale pour contrer les sélecteurs génériques
