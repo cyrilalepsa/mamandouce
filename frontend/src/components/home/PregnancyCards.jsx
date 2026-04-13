@@ -47,7 +47,12 @@ export function PregnancyStatusCard({ pregnancyProfile }) {
           </div>
           <div>
             <p className="text-sm text-slate-600 font-medium">Vous êtes à la</p>
-            <p className="text-2xl font-bold text-pink-600">Semaine {pregnancyProfile.current_week} SA</p>
+            <p className="text-2xl font-bold" style={{
+              background: 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #a855f7 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>Semaine {pregnancyProfile.current_week} SA</p>
             <p className="text-sm text-slate-500">Trimestre {pregnancyProfile.trimester || Math.ceil(pregnancyProfile.current_week / 13)}</p>
           </div>
         </div>

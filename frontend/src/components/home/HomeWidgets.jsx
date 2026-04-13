@@ -32,7 +32,7 @@ export function WeekDisplayWidget({ pregnancyProfile, t, compact = false, naviga
       >
         <p className="relative text-[10px] mb-0.5 font-semibold" style={{ color: '#9d174d' }}>✨ {t('pregnancy.youAreAt', 'Vous êtes à la')}</p>
         <p className="relative text-lg font-bold" style={{ 
-          background: 'linear-gradient(90deg, #ec4899 0%, #db2777 50%, #be185d 100%)',
+          background: 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #a855f7 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
@@ -53,7 +53,7 @@ export function WeekDisplayWidget({ pregnancyProfile, t, compact = false, naviga
         <div>
           <p className="text-[11px]" style={{ color: '#9d174d' }}>{t('pregnancy.youAreAt', 'Vous êtes à la')}</p>
           <p className="text-base font-bold" style={{ 
-            background: 'linear-gradient(90deg, #ec4899 0%, #db2777 100%)',
+            background: 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #a855f7 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -142,8 +142,10 @@ export function JourneyStepsCard({ t, navigate }) {
               className="text-sm font-bold text-center"
               style={{ 
                 fontFamily: "'Quicksand', 'Nunito', sans-serif",
-                color: '#000000',
-                WebkitTextFillColor: '#000000',
+                background: 'linear-gradient(90deg, #ec4899 0%, #a855f7 50%, #3b82f6 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
               }}
             >
               {t('home.journeySteps', 'Les étapes de votre plus beau voyage')}
