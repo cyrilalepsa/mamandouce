@@ -268,32 +268,36 @@ function HomePage() {
           <InfoButton onClick={openTutorial} />
         )}
         
-        {/* Icône Trophée 3D - Accès à la page Trophées */}
+        {/* Icône Trophée — aligné à gauche de la pagination, position 3 */}
         <button
           onClick={() => navigate('/trophies')}
-          className="fixed top-4 left-4 z-40 w-10 h-10 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 flex items-center justify-center"
+          className="fixed z-[45] w-9 h-9 rounded-full shadow-lg transition-all hover:scale-110 flex items-center justify-center"
           style={{
+            bottom: '4rem',
+            left: '4.75rem',
             background: 'linear-gradient(145deg, #fbbf24, #f59e0b)',
             boxShadow: '0 3px 8px rgba(245,158,11,0.3)',
           }}
           data-testid="trophy-button"
           aria-label="Mes Trophées"
         >
-          <Trophy className="w-5 h-5 text-white" />
+          <Trophy className="w-4 h-4 text-white" />
         </button>
         
-        {/* Icône Tirelire - Accès à la page Tirelire */}
+        {/* Icône Tirelire — aligné à gauche de la pagination, position 4 */}
         <button
           onClick={() => navigate('/tirelire')}
-          className="fixed top-4 right-14 z-40 w-10 h-10 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 flex items-center justify-center"
+          className="fixed z-[45] w-9 h-9 rounded-full shadow-lg transition-all hover:scale-110 flex items-center justify-center"
           style={{
+            bottom: '4rem',
+            left: '6.75rem',
             background: 'linear-gradient(145deg, #f472b6, #ec4899)',
             boxShadow: '0 3px 8px rgba(236,72,153,0.3)',
           }}
           data-testid="tirelire-button"
           aria-label="Ma Tirelire"
         >
-          <PiggyBank className="w-5 h-5 text-white" />
+          <PiggyBank className="w-4 h-4 text-white" />
         </button>
       </div>
   );

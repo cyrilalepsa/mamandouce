@@ -62,20 +62,10 @@ body,
   background-attachment: fixed !important;
 }
 
-/* Zéro scrolling — tout tient dans l'écran */
+/* Pull-to-refresh autorisé — pas de blocage du scroll */
 body {
-  overflow: hidden !important;
-  height: 100vh !important;
-  height: 100dvh !important;
-}
-.min-h-screen {
-  min-height: 100vh;
-  min-height: 100dvh;
-  max-height: 100vh;
-  max-height: 100dvh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: auto !important;
+  overflow: auto !important;
 }
 
 /* ============================================
@@ -128,6 +118,27 @@ body {
   pointer-events: none;
   z-index: 1;
 }
+
+/* Effet Caméléon — reflet Bleu Ciel (haut page) / Vieux Rose (bas page) */
+[class*="rounded-"][class*="bg-white"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::after,
+.glossy-card::after,
+.Card:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::after,
+[class*="Card"]:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(124, 214, 255, 0.06) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(255, 209, 220, 0.06) 100%
+  );
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+}
+
 
 /* ============================================
    TYPOGRAPHIE - NOIR PUR #000000

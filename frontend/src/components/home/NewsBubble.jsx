@@ -72,11 +72,12 @@ export function NewsBubble({ hasNews, onClick }) {
     <button
       onClick={onClick}
       className={`
-        fixed bottom-4 left-14 z-[45]
+        fixed bottom-4 z-[45]
         w-9 h-9 flex items-center justify-center
         transition-all duration-300 ease-out
         ${hasNews ? 'hover:scale-110' : 'hover:scale-105'}
       `}
+      style={{ left: '2.75rem', bottom: '4rem' }}
       data-testid="news-bubble"
     >
       {/* Ampoule SVG - Sans fond, juste l'icône */}
