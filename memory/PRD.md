@@ -1,29 +1,21 @@
-# MamanDouce v8.2.0 — Livraison 1 Design
+# MamanDouce v9.0.0 — Livraisons 1-3 Complètes
 
-## Livraison 1 terminée ✅
-### CycleTrackingPage
-- Logos J→B→R→V→Vi (Jour=Jaune, Ovulation=Bleu, Fertilité=Rouge, Règles=Vert, Test=Violet, Symptômes=Jaune, Nidation=Bleu, Rapports=Rouge, Historique=Vert)
-- Boutons Annuler/Enregistrer: rose bombé glossy 3D
-- Température basale: champ blanc, texte noir #000
-- Dates rapports: rouge #ef4444 sur fond blanc
+## Livraison 1 — Pages critiques ✅
+- CycleTracking: logos J→B→R→V→Vi, boutons rose bombé, temp blanc/noir, rapports rouge
+- FertilityCalculator: champs blanc nacré bombé, bouton Calculer rose
+- FoodLibrary: blanc nacré partout, couleurs aliments, pas de bouclier, coeurs blanc/rouge
+- Favorites: mention scanner supprimée
 
-### FertilityCalculatorPage
-- Champs date/sélecteur: blanc nacré bombé 3D (classe nacre-bombe)
-- Bouton Calculer: rose bombé glossy
+## Livraison 2 — Pages grossesse ✅
+- BabyPrepTips: 2 tiroirs Essentiel/Recommandé, cartes blanches, logos cycle couleurs
+- BabyNames: bulle premium couronne seule (jaune/gris), recherche blanc
+- MedicalAppointments: trimestres Jaune/Bleu/Rouge, cloche blanche/bleue
+- Congés parentaux: toutes sections blanc nacré
 
-### FoodLibraryPage
-- Recherche: champ blanc #fff
-- Dropdowns: blanc nacré
-- Bouton Proposer: blanc nacré (plus pink)
-- Cartes: glossy plat (pas bombé), pas de bouclier
-- Coeurs: blanc par défaut, rouge quand favori
+## Livraison 3 — Pages restantes ✅
+- RemindersPage: champs blancs, boutons rose bombé glossy
 
-### FavoritesPage
-- Mention scanner supprimée
-- Texte: "Appuyez sur le coeur" + bouton "Voir la bibliothèque"
-
-## Livraisons suivantes
-- Livraison 2: Préparation/conseil, Évolution, Prénoms, Rappels grossesse, Suivi grossesse
-- Livraison 3: Congés parentaux, Mes rappels
+## Cycle couleurs strict
+Jaune → Bleu → Rouge → Vert → Violet
 
 *MàJ: 13 Avril 2026*
