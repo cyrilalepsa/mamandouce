@@ -56,17 +56,46 @@ function PremiumSunAvatar({
     );
   }
 
-  // RENDU PREMIUM - Avatar doré simple, SANS aura fantôme
+  // RENDU PREMIUM - HALO JAUNE SCINTILLANT + BORDURE DORÉE
+  const haloSize = size + 50;
+  
   return (
     <div 
       className="relative flex items-center justify-center"
       style={{ 
-        width: `${size + 8}px`, 
-        height: `${size + 8}px`,
+        width: `${haloSize}px`, 
+        height: `${haloSize}px`,
         overflow: 'visible',
       }}
       data-testid={`${testId}-premium`}
     >
+      {/* HALO DORÉ — glow vaporeux autour de l'avatar */}
+      <div 
+        className="absolute rounded-full"
+        style={{
+          width: `${haloSize}px`,
+          height: `${haloSize}px`,
+          background: 'radial-gradient(circle, rgba(255, 250, 220, 0.7) 0%, rgba(254, 240, 138, 0.5) 25%, rgba(253, 224, 71, 0.3) 45%, rgba(250, 204, 21, 0.15) 65%, transparent 85%)',
+          filter: 'blur(8px)',
+          animation: 'haloBreath 4s ease-in-out infinite',
+        }}
+      />
+
+      {/* SCINTILLEMENTS (8 sparkles) */}
+      {[['-5%','50%',3],['10%','90%',2],['25%','-5%',3],['50%','105%',4],
+        ['75%','-5%',2],['90%','85%',3],['50%','-8%',2],['15%','15%',4]
+      ].map(([t,l,s], i) => (
+        <div key={`sp-${i}`} style={{
+          position: 'absolute', top: t, left: l,
+          width: `${s}px`, height: `${s}px`,
+          background: '#ffffff', borderRadius: '50%',
+          boxShadow: '0 0 4px #fff, 0 0 8px rgba(255,255,255,0.6)',
+          pointerEvents: 'none', zIndex: 15,
+          animation: `sparkleGlow ${2.2 + (i % 3) * 0.5}s ease-in-out infinite`,
+          animationDelay: `${(i * 0.4) % 2.5}s`,
+        }} />
+      ))}
+
       {/* AVATAR CENTRAL avec BORDURE DORÉE */}
       <div 
         className="relative rounded-full overflow-hidden border-4 flex-shrink-0 cursor-pointer hover:scale-110 active:scale-95 transition-all z-10"
@@ -74,7 +103,7 @@ function PremiumSunAvatar({
           width: `${size}px`, 
           height: `${size}px`,
           borderColor: '#f5c842',
-          boxShadow: '0 0 15px rgba(250, 204, 21, 0.4), 0 0 30px rgba(250, 204, 21, 0.15)'
+          boxShadow: '0 0 18px rgba(250, 204, 21, 0.5), 0 0 40px rgba(250, 204, 21, 0.2)'
         }}
         onClick={onClick}
         title={title}
@@ -87,8 +116,8 @@ function PremiumSunAvatar({
         <div
           style={{
             position: 'absolute',
-            bottom: 0,
-            right: 0,
+            bottom: `${(haloSize - size) / 2 - 4}px`,
+            right: `${(haloSize - size) / 2 - 4}px`,
             zIndex: 20,
             width: 22,
             height: 22,
@@ -112,6 +141,18 @@ function PremiumSunAvatar({
           </svg>
         </div>
       )}
+
+      <style>{`
+        @keyframes haloBreath {
+          0%, 100% { opacity: 0.7; transform: scale(0.97); }
+          50% { opacity: 1; transform: scale(1.03); }
+        }
+        @keyframes sparkleGlow {
+          0%, 100% { opacity: 0; transform: scale(0); }
+          40% { opacity: 1; transform: scale(1.2); }
+          60% { opacity: 0.8; transform: scale(1); }
+        }
+      `}</style>
     </div>
   );
 }

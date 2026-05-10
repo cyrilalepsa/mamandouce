@@ -128,7 +128,7 @@ export function JourneyStepsCard({ t, navigate }) {
       <div className="relative flex items-center justify-center w-full max-w-sm" style={{ background: 'transparent' }}>
         
         {/* Cœurs gauche */}
-        <div className="relative w-12 h-16 mr-2 flex-shrink-0" style={{ background: 'transparent', animation: 'heartFloat 3s ease-in-out infinite' }}>
+        <div className="relative w-12 h-16 mr-2 flex-shrink-0" style={{ background: 'transparent', animation: 'heartBreath 3s ease-in-out infinite' }}>
           <GlossyHeart size={12} color="#f472b6" rotation={-25} top={2} left={8} />
           <GlossyHeart size={20} color="#ec4899" rotation={-10} top={18} left={0} />
           <GlossyHeart size={14} color="#a855f7" rotation={15} top={38} left={14} />
@@ -154,7 +154,7 @@ export function JourneyStepsCard({ t, navigate }) {
         </div>
 
         {/* Cœurs droit — animation respiration décalée */}
-        <div className="relative w-12 h-16 ml-2 flex-shrink-0" style={{ background: 'transparent', animation: 'heartBreath 4s ease-in-out infinite 2s' }}>
+        <div className="relative w-12 h-16 ml-2 flex-shrink-0" style={{ background: 'transparent', animation: 'heartBreath 3s ease-in-out infinite' }}>
           <GlossyHeart size={14} color="#818cf8" rotation={25} top={4} left={16} />
           <GlossyHeart size={20} color="#38bdf8" rotation={10} top={20} left={20} />
           <GlossyHeart size={12} color="#2dd4bf" rotation={-20} top={40} left={8} />
@@ -207,7 +207,7 @@ export function UserWelcomeHeader({ userName, t }) {
         >
           {userName}
         </span>
-        <span style={{ color: '#f472b6', marginLeft: '4px' }}>❤️</span>
+        <span style={{ color: '#f472b6', marginLeft: '4px', display: 'inline-block', animation: 'heartBreath 3s ease-in-out infinite' }}>❤️</span>
       </p>
     </div>
   );

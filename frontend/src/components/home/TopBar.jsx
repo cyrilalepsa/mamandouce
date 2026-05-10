@@ -314,17 +314,17 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
         </button>
       </div>
 
-      {/* À droite : Drapeau + 3 points — glyphes nus sans bulle, alignés */}
-      <div className="flex items-center gap-1" ref={menuRef}>
-        {/* Drapeau langue inline (plus de LanguageBubble séparé) */}
+      {/* À droite : Drapeau + 3 points — glyphes nus transparents, ÉCARTÉS */}
+      <div className="relative flex items-center gap-3" ref={menuRef}>
+        {/* Drapeau langue inline */}
         <LanguageInlineFlag />
         
-        {/* 3 petits points — glyphe nu */}
+        {/* 3 petits points — glyphe nu, position fixe */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           data-testid="account-menu-btn"
-          className="relative p-1.5 hover:opacity-70 transition-all flex items-center justify-center"
-          style={{ background: 'none', border: 'none', boxShadow: 'none' }}
+          className="flex items-center justify-center w-8 h-8"
+          style={{ background: 'transparent', border: 'none', boxShadow: 'none', padding: 0 }}
         >
           <MoreVertical className="w-5 h-5 text-slate-500" />
           {hasNotifications && (
@@ -332,24 +332,32 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
           )}
         </button>
 
-        {/* Menu déroulant */}
+        {/* Menu déroulant — absolute dans le container, pas de débordement */}
         {menuOpen && (
-          <div className="absolute right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50 min-w-[180px] animate-fade-in">
+          <div 
+            className="absolute right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden animate-fade-in"
+            style={{ 
+              zIndex: 9999, 
+              minWidth: '200px',
+              maxHeight: 'calc(100dvh - 80px)',
+              overflowY: 'auto'
+            }}
+          >
             {menuItems.map((item, index) => {
               const Icon = item.icon;
               return (
                 <button
                   key={index}
                   onClick={item.onClick}
-                  className={`w-full px-4 py-3 flex items-center gap-3 transition-colors ${
+                  className={`w-full px-4 py-2.5 flex items-center gap-3 transition-colors ${
                     item.danger 
                       ? 'hover:bg-rose-50 text-rose-600' 
                       : 'hover:bg-slate-50 text-slate-700'
                   }`}
                 >
                   <div className="relative">
-                    <div className={`w-8 h-8 ${item.iconBg} rounded-lg flex items-center justify-center`}>
-                      <Icon className="w-4 h-4 text-white" />
+                    <div className={`w-7 h-7 ${item.iconBg} rounded-lg flex items-center justify-center`}>
+                      <Icon className="w-3.5 h-3.5 text-white" />
                     </div>
                     {/* Badge de notification */}
                     {item.badge && (
