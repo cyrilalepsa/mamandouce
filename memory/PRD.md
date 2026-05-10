@@ -1,19 +1,16 @@
-# MamanDouce v9.0.0 — Livraisons 1-3 Complètes
+# MamanDouce v9.1.0 — Livraison A Design
 
-## Livraison 1 — Pages critiques ✅
-- CycleTracking: logos J→B→R→V→Vi, boutons rose bombé, temp blanc/noir, rapports rouge
-- FertilityCalculator: champs blanc nacré bombé, bouton Calculer rose
-- FoodLibrary: blanc nacré partout, couleurs aliments, pas de bouclier, coeurs blanc/rouge
-- Favorites: mention scanner supprimée
+## Livraison A — Pages navigation post-partum ✅
+- BabyVideos: bulles blanc vif, logos J→B→R→V→Vi→J→B→R
+- PostpartumPage: 4 mosaïques blanc intense + logos J→B→R→V, note orange sans bombé
+- Alimentation: cartes blanc intense
+- Soins quotidiens: cartes blanc intense
+- Sécurité: cartes blanc intense
+- Services: Guide CPAM/CAF supprimé (reste CAF/Ameli/Mairie/Vidéos)
 
-## Livraison 2 — Pages grossesse ✅
-- BabyPrepTips: 2 tiroirs Essentiel/Recommandé, cartes blanches, logos cycle couleurs
-- BabyNames: bulle premium couronne seule (jaune/gris), recherche blanc
-- MedicalAppointments: trimestres Jaune/Bleu/Rouge, cloche blanche/bleue
-- Congés parentaux: toutes sections blanc nacré
-
-## Livraison 3 — Pages restantes ✅
-- RemindersPage: champs blancs, boutons rose bombé glossy
+## Livraisons suivantes
+- Livraison B: Allaitement, Biberons, Diversification, Recettes (refonte complète)
+- Livraison C: Coucher/Change, Portage, Difficultés, Précautions, RDV médicaux
 
 ## Cycle couleurs strict
 Jaune → Bleu → Rouge → Vert → Violet
