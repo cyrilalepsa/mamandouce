@@ -76,7 +76,10 @@ function FertilityCalculatorPage() {
         </div>
 
         {/* Formulaire direct */}
-        <Card className="p-5 mb-6 bg-white/90 backdrop-blur rounded-2xl shadow-sm border border-purple-100">
+        <Card className="p-5 mb-6 rounded-2xl shadow-sm border-0" style={{
+          background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 30%, #fafafa 100%)',
+          boxShadow: '0 4px 16px -4px rgba(0,0,0,0.08)',
+        }}>
           <div className="space-y-4">
             <div>
               <label className="text-sm font-semibold text-slate-600 mb-1 block">
@@ -86,7 +89,13 @@ function FertilityCalculatorPage() {
                 type="date"
                 value={lastPeriodDate}
                 onChange={(e) => setLastPeriodDate(e.target.value)}
-                className="rounded-xl border-slate-200"
+                className="rounded-xl nacre-bombe"
+                style={{
+                  background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 30%, #fafafa 100%)',
+                  boxShadow: 'inset -3px -3px 8px rgba(0,0,0,0.04), inset 3px 3px 8px rgba(255,255,255,0.9), 0 4px 12px -4px rgba(0,0,0,0.08)',
+                  border: '1px solid rgba(255,255,255,0.9)',
+                  color: '#000000',
+                }}
               />
             </div>
             
@@ -97,7 +106,13 @@ function FertilityCalculatorPage() {
               <select
                 value={cycleLength}
                 onChange={(e) => setCycleLength(parseInt(e.target.value))}
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-600"
+                className="w-full rounded-xl px-4 py-2.5 nacre-bombe"
+                style={{
+                  background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 30%, #fafafa 100%)',
+                  boxShadow: 'inset -3px -3px 8px rgba(0,0,0,0.04), inset 3px 3px 8px rgba(255,255,255,0.9), 0 4px 12px -4px rgba(0,0,0,0.08)',
+                  border: '1px solid rgba(255,255,255,0.9)',
+                  color: '#000000',
+                }}
               >
                 {[21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40].map(days => (
                   <option key={days} value={days}>
@@ -110,7 +125,12 @@ function FertilityCalculatorPage() {
             <Button
               onClick={calculate}
               disabled={!lastPeriodDate}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold shadow-lg shadow-purple-500/25 hover:shadow-xl disabled:opacity-50"
+              className="w-full py-3 rounded-xl text-white font-semibold disabled:opacity-50"
+              style={{
+                background: 'linear-gradient(145deg, #fda4af 0%, #fb7185 40%, #f43f5e 100%)',
+                boxShadow: '-4px -4px 12px rgba(255,255,255,0.9), 4px 4px 16px rgba(244,63,94,0.35), inset 0 2px 4px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(244,63,94,0.15)',
+                border: '1px solid rgba(254,205,211,0.6)',
+              }}
             >
               <CalendarDays className="w-4 h-4 mr-2" />
               {t('fertility.calculate', 'Calculer')}

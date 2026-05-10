@@ -648,7 +648,7 @@ function CycleTrackingPage() {
             <Card className={`rounded-xl p-3 border shadow-sm ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-r from-violet-50 via-purple-50 to-fuchsia-50 border-0'}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-11 h-11 bg-gradient-to-br from-violet-400 to-purple-500 rounded-xl flex items-center justify-center shadow-md">
+                  <div className="w-11 h-11 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl flex items-center justify-center shadow-md">
                     <span className="text-lg font-bold text-white" style={textShadow}>J{agendaData.dayOfCycle}</span>
                   </div>
                   <div>
@@ -739,7 +739,7 @@ function CycleTrackingPage() {
             {/* Fenêtre de fertilité */}
             <Card className={`rounded-xl p-3 border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-r from-emerald-50 to-teal-50 border-0'}`}>
               <div className="flex items-center gap-2">
-                <div className="w-9 h-9 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-lg flex items-center justify-center">
+                <div className="w-9 h-9 bg-gradient-to-br from-red-400 to-rose-500 rounded-lg flex items-center justify-center">
                   <Heart className="w-4 h-4 text-white" />
                 </div>
                 <div className="flex-1">
@@ -772,7 +772,7 @@ function CycleTrackingPage() {
             {/* Prochaines règles */}
             <Card className={`rounded-xl p-3 border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-r from-pink-50 to-rose-50 border-0'}`}>
               <div className="flex items-center gap-2">
-                <div className="w-9 h-9 bg-gradient-to-br from-pink-400 to-rose-400 rounded-lg flex items-center justify-center">
+                <div className="w-9 h-9 bg-gradient-to-br from-green-400 to-emerald-500 rounded-lg flex items-center justify-center">
                   <Droplets className="w-4 h-4 text-white" />
                 </div>
                 <div className="flex-1">
@@ -794,7 +794,7 @@ function CycleTrackingPage() {
             {/* NOUVEAU: Date de test de grossesse */}
             <Card className={`rounded-xl p-3 border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-r from-cyan-50 to-sky-50 border-0'}`}>
               <div className="flex items-center gap-2">
-                <div className="w-9 h-9 bg-gradient-to-br from-cyan-400 to-sky-500 rounded-lg flex items-center justify-center">
+                <div className="w-9 h-9 bg-gradient-to-br from-violet-400 to-purple-500 rounded-lg flex items-center justify-center">
                   <TestTube className="w-4 h-4 text-white" />
                 </div>
                 <div className="flex-1">
@@ -856,7 +856,7 @@ function CycleTrackingPage() {
               return (
                 <Card className={`rounded-xl p-3 border ${isDarkMode ? 'bg-slate-800 border-amber-700' : 'bg-gradient-to-r from-orange-50 to-amber-50 border-amber-200'}`}>
                   <div className="flex items-center gap-2">
-                    <div className="w-9 h-9 bg-gradient-to-br from-orange-400 to-amber-400 rounded-lg flex items-center justify-center">
+                    <div className="w-9 h-9 bg-gradient-to-br from-blue-400 to-sky-500 rounded-lg flex items-center justify-center">
                       <Baby className="w-4 h-4 text-white" />
                     </div>
                     <div className="flex-1">
@@ -879,7 +879,7 @@ function CycleTrackingPage() {
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {rapportDates.slice(-5).map((date, index) => (
-                    <span key={index} className={`text-xs px-2 py-1 rounded-full border ${isDarkMode ? 'bg-slate-700 text-rose-300 border-slate-600' : 'bg-white text-rose-600 border-rose-200'}`}>
+                    <span key={index} className="text-xs px-2 py-1 rounded-full border" style={{ background: '#ffffff', color: '#ef4444', borderColor: '#fecaca', fontWeight: 600 }}>
                       {formatDateShort(date)}
                     </span>
                   ))}
@@ -898,7 +898,7 @@ function CycleTrackingPage() {
                 data-testid="history-btn"
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-9 h-9 bg-gradient-to-br from-slate-400 to-gray-500 rounded-lg flex items-center justify-center">
+                  <div className="w-9 h-9 bg-gradient-to-br from-green-400 to-emerald-500 rounded-lg flex items-center justify-center">
                     <History className="w-4 h-4 text-white" />
                   </div>
                   <div className="flex-1">
@@ -1010,9 +1010,10 @@ function CycleTrackingPage() {
                     value={todayTemp}
                     onChange={(e) => setTodayTemp(e.target.value)}
                     placeholder="36.5"
-                    className={`w-24 rounded-xl text-center ${isDarkMode ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
+                    className="w-24 rounded-xl text-center"
+                    style={{ background: '#ffffff', color: '#000000', border: '1px solid #e2e8f0' }}
                   />
-                  <span className={isDarkMode ? 'text-slate-400' : 'text-slate-500'}>°C</span>
+                  <span className="text-slate-500" style={{ color: '#000000' }}>°C</span>
                 </div>
               </div>
             </div>
@@ -1021,14 +1022,23 @@ function CycleTrackingPage() {
             <div className={`p-4 border-t flex gap-2 ${isDarkMode ? 'border-slate-700' : 'border-slate-100'}`}>
               <Button
                 onClick={() => setShowSymptomModal(false)}
-                className={`flex-1 rounded-xl ${isDarkMode ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                className="flex-1 rounded-xl text-slate-600"
+                style={{
+                  background: 'linear-gradient(145deg, #fda4af 0%, #fb7185 40%, #f43f5e 100%)',
+                  color: 'white',
+                  boxShadow: '-3px -3px 8px rgba(255,255,255,0.9), 3px 3px 10px rgba(244,63,94,0.3), inset 0 1px 3px rgba(255,255,255,0.5)',
+                }}
               >
                 Annuler
               </Button>
               <Button
                 onClick={saveSymptoms}
-                className="flex-1 bg-gradient-to-r from-amber-400 to-yellow-500 text-white hover:opacity-90 rounded-xl"
-                style={textShadow}
+                className="flex-1 rounded-xl"
+                style={{
+                  background: 'linear-gradient(145deg, #fda4af 0%, #fb7185 40%, #f43f5e 100%)',
+                  color: 'white',
+                  boxShadow: '-3px -3px 8px rgba(255,255,255,0.9), 3px 3px 10px rgba(244,63,94,0.3), inset 0 2px 4px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(244,63,94,0.15)',
+                }}
               >
                 <Check className="w-4 h-4 mr-2" />
                 Enregistrer

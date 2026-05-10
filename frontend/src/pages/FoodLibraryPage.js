@@ -215,7 +215,8 @@ function FoodLibraryPage() {
                 placeholder={t('library.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 rounded-2xl border-slate-200 focus:ring-sky-500"
+                className="pl-12 rounded-2xl"
+                style={{ background: '#ffffff', color: '#000000', border: '1px solid #e2e8f0' }}
                 data-testid="food-search-input"
               />
             </div>
@@ -226,7 +227,8 @@ function FoodLibraryPage() {
                 <select
                   value={selectedCategory}
                   onChange={(e) => { setSelectedCategory(e.target.value); setPage(1); }}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-slate-600 appearance-none cursor-pointer focus:ring-2 focus:ring-sky-200"
+                  className="w-full rounded-xl px-4 py-2 appearance-none cursor-pointer"
+                  style={{ background: 'linear-gradient(160deg, #fff 0%, #fefefe 30%, #fafafa 100%)', color: '#000000', border: '1px solid rgba(255,255,255,0.9)' }}
                   data-testid="category-filter"
                 >
                   <option value="">Toutes catégories</option>
@@ -242,7 +244,8 @@ function FoodLibraryPage() {
                 <select
                   value={selectedStatus}
                   onChange={(e) => { setSelectedStatus(e.target.value); setPage(1); }}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-slate-600 appearance-none cursor-pointer focus:ring-2 focus:ring-sky-200"
+                  className="w-full rounded-xl px-4 py-2 appearance-none cursor-pointer"
+                  style={{ background: 'linear-gradient(160deg, #fff 0%, #fefefe 30%, #fafafa 100%)', color: '#000000', border: '1px solid rgba(255,255,255,0.9)' }}
                   data-testid="status-filter"
                 >
                   {statusOptions.map(opt => (
@@ -259,7 +262,13 @@ function FoodLibraryPage() {
         <Button
           onClick={() => navigate('/scanner', { state: { openAddModal: true } })}
           data-testid="add-food-button"
-          className="w-full bg-gradient-to-r from-pink-400 to-pink-300 text-white rounded-2xl py-4 font-semibold shadow-lg hover:shadow-pink-200/50 flex items-center justify-center gap-2"
+          className="w-full rounded-2xl py-4 font-semibold flex items-center justify-center gap-2"
+          style={{
+            background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 30%, #fafafa 100%)',
+            color: '#000000',
+            boxShadow: '0 4px 16px -4px rgba(0,0,0,0.08)',
+            border: '1px solid rgba(255,255,255,0.9)',
+          }}
         >
           <Plus className="w-5 h-5" />
           Proposer un aliment non répertorié
@@ -293,20 +302,17 @@ function FoodLibraryPage() {
                 // Couleurs pastel selon le statut
                 const pastelStyle = food.safe_for_pregnancy === 'yes' 
                   ? {
-                      bg: 'linear-gradient(160deg, #f0fdf4 0%, #bbf7d0 40%, #86efac 80%, #6ee7b7 100%)',
-                      shadow: '0 6px 16px -4px rgba(34,197,94,0.25), inset -3px -3px 8px rgba(0,0,0,0.05), inset 3px 3px 8px rgba(255,255,255,0.8)',
-                      iconBg: 'bg-green-200'
+                      bg: 'linear-gradient(160deg, #f0fdf4 0%, #d1fae5 40%, #a7f3d0 100%)',
+                      shadow: '0 4px 12px -4px rgba(34,197,94,0.15)',
                     }
                   : food.safe_for_pregnancy === 'caution'
                     ? {
-                        bg: 'linear-gradient(160deg, #fff7ed 0%, #fed7aa 40%, #fdba74 80%, #fb923c 100%)',
-                        shadow: '0 6px 16px -4px rgba(249,115,22,0.25), inset -3px -3px 8px rgba(0,0,0,0.05), inset 3px 3px 8px rgba(255,255,255,0.8)',
-                        iconBg: 'bg-orange-200'
+                        bg: 'linear-gradient(160deg, #fff7ed 0%, #fed7aa 40%, #fdba74 100%)',
+                        shadow: '0 4px 12px -4px rgba(249,115,22,0.15)',
                       }
                     : {
-                        bg: 'linear-gradient(160deg, #fef2f2 0%, #fecaca 40%, #fca5a5 80%, #f87171 100%)',
-                        shadow: '0 6px 16px -4px rgba(239,68,68,0.25), inset -3px -3px 8px rgba(0,0,0,0.05), inset 3px 3px 8px rgba(255,255,255,0.8)',
-                        iconBg: 'bg-red-200'
+                        bg: 'linear-gradient(160deg, #fef2f2 0%, #fecaca 40%, #fca5a5 100%)',
+                        shadow: '0 4px 12px -4px rgba(239,68,68,0.15)',
                       };
                 return (
                   <div
@@ -322,11 +328,6 @@ function FoodLibraryPage() {
                     {/* Voile blanc supprimé */}
                     
                     <div className="relative flex items-start gap-3">
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${pastelStyle.iconBg} backdrop-blur-sm flex-shrink-0`}
-                        style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-                      >
-                        {getSafetyIcon(food.safe_for_pregnancy)}
-                      </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
@@ -335,11 +336,13 @@ function FoodLibraryPage() {
                           </div>
                           <button
                             onClick={() => toggleFavorite(foods[index])}
-                            className="p-1.5 rounded-full hover:bg-pink-100/60 transition-colors flex-shrink-0 backdrop-blur-sm"
+                            className="p-1.5 rounded-full hover:bg-pink-100/60 transition-colors flex-shrink-0"
+                            style={{ background: 'rgba(255,255,255,0.8)' }}
                             data-testid={`favorite-${index}`}
                           >
                             <Heart
-                              className={`w-5 h-5 ${favorites.has(foods[index]?.name) ? 'fill-pink-500 text-pink-500' : 'text-slate-300'}`}
+                              className={`w-5 h-5 ${favorites.has(foods[index]?.name) ? 'fill-red-500 text-red-500' : 'text-white'}`}
+                              style={{ stroke: favorites.has(foods[index]?.name) ? '#ef4444' : '#cbd5e1' }}
                             />
                           </button>
                         </div>

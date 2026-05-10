@@ -135,13 +135,19 @@ function FavoritesPage() {
           <Card className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 text-center" data-testid="empty-favorites">
             <Heart className="w-16 h-16 text-pink-200 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-slate-600 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>Aucun favori</h3>
-            <p className="text-slate-500 mb-4">Ajoutez des aliments en favoris depuis le scanner</p>
+            <p className="text-slate-500 mb-4">Appuyez sur le coeur d'un aliment pour l'ajouter en favori</p>
             <Button
-              onClick={() => navigate('/scanner')}
-              data-testid="go-scanner-button"
-              className="bg-gradient-to-r from-pink-400 to-pink-300 text-white rounded-full px-6 py-2"
+              onClick={() => navigate('/food-library')}
+              data-testid="go-library-button"
+              className="rounded-full px-6 py-2"
+              style={{
+                background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 30%, #fafafa 100%)',
+                color: '#000000',
+                boxShadow: '0 4px 12px -4px rgba(0,0,0,0.08)',
+                border: '1px solid rgba(255,255,255,0.9)',
+              }}
             >
-              Scanner des aliments
+              Voir la bibliothèque
             </Button>
           </Card>
         ) : (
