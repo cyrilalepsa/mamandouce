@@ -4,7 +4,7 @@ import { PastelAccordion, PastelCard } from '../ui/PastelComponents';
 export function DifficultiesSection({ difficulties }) {
   if (!difficulties) return null;
 
-  const colors = ['amber', 'rose', 'purple', 'sky', 'orange'];
+  const colors = ['amber', 'sky', 'rose', 'green', 'purple'];
 
   return (
     <div className="space-y-4">

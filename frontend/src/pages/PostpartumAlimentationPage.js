@@ -16,10 +16,10 @@ const ALIMENTATION_ITEMS = [
     lucideIcon: Heart,
     title: 'Allaitement maternel', 
     desc: 'Positions, conseils, difficultés',
-    color: 'from-pink-400 to-rose-500',
-    vibrantBg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(252,231,243,0.95) 30%, rgba(251,207,232,0.85) 70%, rgba(249,168,212,0.75) 100%)',
-    vibrantBorder: 'rgba(236,72,153,0.4)',
-    vibrantShadow: '236,72,153',
+    color: 'from-yellow-400 to-amber-500',
+    vibrantBg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,249,195,0.95) 30%, rgba(253,230,138,0.85) 70%, rgba(251,191,36,0.75) 100%)',
+    vibrantBorder: 'rgba(234,179,8,0.4)',
+    vibrantShadow: '234,179,8',
     route: '/postpartum/alimentation/allaitement'
   },
   { 
@@ -28,7 +28,7 @@ const ALIMENTATION_ITEMS = [
     lucideIcon: Baby,
     title: 'Biberons', 
     desc: 'Préparation, quantités, stérilisation',
-    color: 'from-sky-400 to-blue-500',
+    color: 'from-blue-400 to-sky-500',
     vibrantBg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(224,242,254,0.95) 30%, rgba(186,230,253,0.85) 70%, rgba(125,211,252,0.75) 100%)',
     vibrantBorder: 'rgba(14,165,233,0.4)',
     vibrantShadow: '14,165,233',
@@ -40,10 +40,10 @@ const ALIMENTATION_ITEMS = [
     lucideIcon: Carrot,
     title: 'Diversification alimentaire', 
     desc: 'Introduction des aliments',
-    color: 'from-orange-400 to-amber-500',
-    vibrantBg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(255,237,213,0.95) 30%, rgba(254,215,170,0.85) 70%, rgba(253,186,116,0.75) 100%)',
-    vibrantBorder: 'rgba(249,115,22,0.4)',
-    vibrantShadow: '249,115,22',
+    color: 'from-red-400 to-rose-500',
+    vibrantBg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,226,226,0.95) 30%, rgba(254,202,202,0.85) 70%, rgba(252,165,165,0.75) 100%)',
+    vibrantBorder: 'rgba(239,68,68,0.4)',
+    vibrantShadow: '239,68,68',
     route: '/postpartum/alimentation/diversification'
   },
   { 
@@ -52,7 +52,7 @@ const ALIMENTATION_ITEMS = [
     lucideIcon: ChefHat,
     title: 'Recettes pour bébé', 
     desc: 'Purées, compotes, petits plats',
-    color: 'from-emerald-400 to-green-500',
+    color: 'from-green-400 to-emerald-500',
     vibrantBg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(220,252,231,0.95) 30%, rgba(187,247,208,0.85) 70%, rgba(134,239,172,0.75) 100%)',
     vibrantBorder: 'rgba(34,197,94,0.4)',
     vibrantShadow: '34,197,94',
@@ -126,7 +126,7 @@ export default function PostpartumAlimentationPage() {
     <div className="min-h-screen gradient-bg">
       <div className="max-w-2xl mx-auto p-4 sm:p-6">
         {/* Header */}
-        <CloudCard color="amber" className="p-4 mb-6">
+        <CloudCard color="blue" className="p-4 mb-6">
           <div className="flex items-center gap-4">
             <Button
               onClick={() => navigate(-1)}
@@ -139,7 +139,7 @@ export default function PostpartumAlimentationPage() {
               <h1 className="text-2xl font-bold text-slate-700">Alimentation</h1>
               <p className="text-sm text-slate-500">Allaitement, biberons, diversification</p>
             </div>
-            <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-sky-500 rounded-xl flex items-center justify-center shadow-lg">
               <Utensils className="w-5 h-5 text-white" />
             </div>
           </div>

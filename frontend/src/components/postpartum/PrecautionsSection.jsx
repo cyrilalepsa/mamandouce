@@ -97,7 +97,7 @@ export function PrecautionsSection({ precautions }) {
   if (!precautions) return null;
 
   // Couleurs pour chaque index
-  const colors = ['purple', 'sky', 'red', 'pink', 'amber', 'green'];
+  const colors = ['amber', 'sky', 'red', 'green', 'purple'];
 
   return (
     <div className="space-y-4">

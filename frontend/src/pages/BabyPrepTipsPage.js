@@ -11,48 +11,46 @@ import { Card } from '../components/ui/card';
 
 // Styles glossy 3D nuage par couleur
 const glossyStyles = {
-  pink: {
-    bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(252,231,243,0.9) 45%, rgba(251,207,232,0.75) 70%, rgba(249,168,212,0.55) 100%)',
-    shadow: '0 10px 28px -6px rgba(244,114,182,0.25), 0 6px 12px -4px rgba(244,114,182,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(244,114,182,0.1)',
-    border: '2px solid rgba(244,114,182,0.25)'
+  amber: {
+    bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(254,243,199,0.9) 45%, rgba(253,230,138,0.75) 70%, rgba(251,191,36,0.5) 100%)',
+    shadow: '0 10px 28px -6px rgba(245,158,11,0.25), 0 6px 12px -4px rgba(245,158,11,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(245,158,11,0.1)',
+    border: '2px solid rgba(251,191,36,0.3)'
   },
   blue: {
     bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(224,242,254,0.9) 45%, rgba(186,230,253,0.75) 70%, rgba(125,211,252,0.55) 100%)',
     shadow: '0 10px 28px -6px rgba(56,189,248,0.25), 0 6px 12px -4px rgba(56,189,248,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(56,189,248,0.1)',
     border: '2px solid rgba(125,211,252,0.3)'
   },
-  purple: {
-    bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(243,232,255,0.9) 45%, rgba(233,213,255,0.75) 70%, rgba(216,180,254,0.55) 100%)',
-    shadow: '0 10px 28px -6px rgba(168,85,247,0.25), 0 6px 12px -4px rgba(168,85,247,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(168,85,247,0.1)',
-    border: '2px solid rgba(216,180,254,0.3)'
+  pink: {
+    bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(254,226,226,0.9) 45%, rgba(254,202,202,0.75) 70%, rgba(252,165,165,0.55) 100%)',
+    shadow: '0 10px 28px -6px rgba(239,68,68,0.25), 0 6px 12px -4px rgba(239,68,68,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(239,68,68,0.1)',
+    border: '2px solid rgba(252,165,165,0.3)'
   },
-  amber: {
-    bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(254,243,199,0.9) 45%, rgba(253,230,138,0.75) 70%, rgba(251,191,36,0.5) 100%)',
-    shadow: '0 10px 28px -6px rgba(245,158,11,0.25), 0 6px 12px -4px rgba(245,158,11,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(245,158,11,0.1)',
-    border: '2px solid rgba(251,191,36,0.3)'
+  green: {
+    bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(220,252,231,0.9) 45%, rgba(187,247,208,0.75) 70%, rgba(134,239,172,0.55) 100%)',
+    shadow: '0 10px 28px -6px rgba(34,197,94,0.25), 0 6px 12px -4px rgba(34,197,94,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(34,197,94,0.1)',
+    border: '2px solid rgba(134,239,172,0.3)'
   }
 };
 
 // Map couleur catégorie -> style glossy
 const categoryGlossyMap = {
-  medical: 'pink',
+  medical: 'amber',
   admin: 'blue',
-  psychological: 'purple',
-  practical: 'amber'
+  psychological: 'pink',
+  practical: 'green'
 };
 
-// Reflet glossy
-const GlossyReflect = () => (
-  {/* Voile blanc supprimé */}
-);
+// Reflet glossy - supprimé
+const GlossyReflect = () => null;
 
 const PREP_CATEGORIES = [
   {
     id: 'medical',
     title: 'Préparation médicale',
     icon: Stethoscope,
-    color: 'from-rose-400 to-pink-500',
-    bgColor: 'bg-rose-50',
+    color: 'from-yellow-400 to-amber-500',
+    bgColor: 'bg-yellow-50',
     disclaimer: 'Ces informations ne remplacent pas l\'avis de votre médecin ou sage-femme.',
     items: [
       {
@@ -125,8 +123,8 @@ const PREP_CATEGORIES = [
     id: 'psychological',
     title: 'Préparation psychologique',
     icon: Brain,
-    color: 'from-purple-400 to-violet-500',
-    bgColor: 'bg-purple-50',
+    color: 'from-red-400 to-rose-500',
+    bgColor: 'bg-red-50',
     items: [
       {
         title: 'Accepter les changements',
@@ -164,8 +162,8 @@ const PREP_CATEGORIES = [
     id: 'practical',
     title: 'Préparation pratique',
     icon: Home,
-    color: 'from-amber-400 to-orange-500',
-    bgColor: 'bg-amber-50',
+    color: 'from-green-400 to-emerald-500',
+    bgColor: 'bg-green-50',
     items: [
       {
         title: 'Chambre de bébé',

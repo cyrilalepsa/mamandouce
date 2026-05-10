@@ -33,6 +33,11 @@ const glossyStyles = {
     shadow: '0 10px 28px -6px rgba(20,184,166,0.25), 0 6px 12px -4px rgba(20,184,166,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(20,184,166,0.1)',
     border: '2px solid rgba(94,234,212,0.3)'
   },
+  green: {
+    bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(220,252,231,0.9) 45%, rgba(187,247,208,0.75) 70%, rgba(134,239,172,0.55) 100%)',
+    shadow: '0 10px 28px -6px rgba(34,197,94,0.25), 0 6px 12px -4px rgba(34,197,94,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(34,197,94,0.1)',
+    border: '2px solid rgba(134,239,172,0.3)'
+  },
   red: {
     bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(254,226,226,0.9) 45%, rgba(254,202,202,0.75) 70%, rgba(252,165,165,0.55) 100%)',
     shadow: '0 10px 28px -6px rgba(239,68,68,0.25), 0 6px 12px -4px rgba(239,68,68,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(239,68,68,0.1)',
@@ -47,14 +52,14 @@ const glossyStyles = {
 
 // Map couleur vidéo -> style glossy
 const videoGlossyMap = {
-  'maternelles': 'red',
+  'maternelles': 'amber',
   'papa-positive': 'blue',
-  'anna-roy': 'pink',
-  'mpedia': 'teal',
+  'anna-roy': 'red',
+  'mpedia': 'green',
   'haptonomie': 'purple',
   'preparation-accouchement': 'amber',
-  'allaitement': 'sky',
-  'soins-bebe': 'teal'
+  'allaitement': 'blue',
+  'soins-bebe': 'red'
 };
 
 // Reflet glossy SUPPRIMÉ — Zéro voile blanc
@@ -66,8 +71,8 @@ const VIDEO_RESOURCES = [
     title: 'La Maison des Maternelles',
     desc: 'Émission France TV - Conseils grossesse & bébé',
     icon: '📺',
-    color: 'from-red-400 to-rose-500',
-    bgColor: 'bg-red-50',
+    color: 'from-yellow-400 to-amber-500',
+    bgColor: 'bg-yellow-50',
     url: 'https://www.youtube.com/@lamaisondesmaternelles'
   },
   {
@@ -75,7 +80,7 @@ const VIDEO_RESOURCES = [
     title: 'Papa Positive',
     desc: 'Parentalité bienveillante & éducation',
     icon: '👨‍👧',
-    color: 'from-blue-400 to-indigo-500',
+    color: 'from-blue-400 to-sky-500',
     bgColor: 'bg-blue-50',
     url: 'https://www.youtube.com/@papapositive'
   },
@@ -84,8 +89,8 @@ const VIDEO_RESOURCES = [
     title: 'Anna Roy - Sage-femme',
     desc: 'Conseils de sage-femme expérimentée',
     icon: '👩‍⚕️',
-    color: 'from-pink-400 to-rose-500',
-    bgColor: 'bg-pink-50',
+    color: 'from-red-400 to-rose-500',
+    bgColor: 'bg-red-50',
     url: 'https://www.youtube.com/@AnnaRoySageFemme'
   },
   {
@@ -93,8 +98,8 @@ const VIDEO_RESOURCES = [
     title: 'mpedia - Pédiatres',
     desc: 'Conseils pédiatriques officiels',
     icon: '👶',
-    color: 'from-teal-400 to-emerald-500',
-    bgColor: 'bg-teal-50',
+    color: 'from-green-400 to-emerald-500',
+    bgColor: 'bg-green-50',
     url: 'https://www.youtube.com/@mpediafr'
   },
   {
@@ -102,8 +107,8 @@ const VIDEO_RESOURCES = [
     title: 'Haptonomie & Bien-être',
     desc: 'Lien affectif prénatal',
     icon: '🤰',
-    color: 'from-purple-400 to-violet-500',
-    bgColor: 'bg-purple-50',
+    color: 'from-violet-400 to-purple-500',
+    bgColor: 'bg-violet-50',
     url: 'https://www.youtube.com/results?search_query=haptonomie+grossesse'
   },
   {
@@ -111,8 +116,8 @@ const VIDEO_RESOURCES = [
     title: 'Préparation à l\'accouchement',
     desc: 'Techniques de respiration & positions',
     icon: '🧘‍♀️',
-    color: 'from-amber-400 to-orange-500',
-    bgColor: 'bg-amber-50',
+    color: 'from-yellow-400 to-amber-500',
+    bgColor: 'bg-yellow-50',
     url: 'https://www.youtube.com/results?search_query=preparation+accouchement'
   },
   {
@@ -120,8 +125,8 @@ const VIDEO_RESOURCES = [
     title: 'Allaitement maternel',
     desc: 'Conseils et positions d\'allaitement',
     icon: '🍼',
-    color: 'from-sky-400 to-blue-500',
-    bgColor: 'bg-sky-50',
+    color: 'from-blue-400 to-sky-500',
+    bgColor: 'bg-blue-50',
     url: 'https://www.youtube.com/results?search_query=allaitement+maternel+conseils'
   },
   {
@@ -129,8 +134,8 @@ const VIDEO_RESOURCES = [
     title: 'Premiers soins bébé',
     desc: 'Bain, change, soins du cordon',
     icon: '🛁',
-    color: 'from-cyan-400 to-teal-500',
-    bgColor: 'bg-cyan-50',
+    color: 'from-red-400 to-rose-500',
+    bgColor: 'bg-red-50',
     url: 'https://www.youtube.com/results?search_query=soins+nouveau+né+tutoriel'
   }
 ];

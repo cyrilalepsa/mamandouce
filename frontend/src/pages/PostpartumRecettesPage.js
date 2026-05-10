@@ -45,7 +45,7 @@ export default function PostpartumRecettesPage() {
     <div className="min-h-screen gradient-bg">
       <div className="max-w-2xl mx-auto p-4 sm:p-6">
         {/* Header avec effet nuage */}
-        <CloudCard color="emerald" className="p-4 mb-6">
+        <CloudCard color="green" className="p-4 mb-6">
           <div className="flex items-center gap-4">
             <Button
               onClick={() => navigate(-1)}
@@ -58,7 +58,7 @@ export default function PostpartumRecettesPage() {
               <h1 className="text-2xl font-bold text-slate-700">Recettes pour bébé</h1>
               <p className="text-sm text-slate-500">Purées, compotes, petits plats</p>
             </div>
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-green-500 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
               <ChefHat className="w-5 h-5 text-white" />
             </div>
           </div>

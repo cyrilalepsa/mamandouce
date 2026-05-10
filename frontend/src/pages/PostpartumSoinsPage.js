@@ -15,10 +15,10 @@ const SOINS_ITEMS = [
     icon: '😴', 
     title: 'Coucher et change', 
     desc: 'Sommeil, couches, soins',
-    color: 'from-indigo-400 to-violet-500',
-    vibrantBg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(238,242,255,0.95) 30%, rgba(224,231,255,0.85) 70%, rgba(199,210,254,0.75) 100%)',
-    vibrantBorder: 'rgba(99,102,241,0.4)',
-    vibrantShadow: '99,102,241',
+    color: 'from-yellow-400 to-amber-500',
+    vibrantBg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,249,195,0.95) 30%, rgba(253,230,138,0.85) 70%, rgba(251,191,36,0.75) 100%)',
+    vibrantBorder: 'rgba(234,179,8,0.4)',
+    vibrantShadow: '234,179,8',
     route: '/postpartum/soins/coucher-change'
   },
   { 
@@ -26,10 +26,10 @@ const SOINS_ITEMS = [
     icon: '🤱', 
     title: 'Portage', 
     desc: 'Écharpes, porte-bébé, positions',
-    color: 'from-rose-400 to-pink-500',
-    vibrantBg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(255,228,230,0.95) 30%, rgba(254,205,211,0.85) 70%, rgba(253,164,175,0.75) 100%)',
-    vibrantBorder: 'rgba(244,63,94,0.4)',
-    vibrantShadow: '244,63,94',
+    color: 'from-blue-400 to-sky-500',
+    vibrantBg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(224,242,254,0.95) 30%, rgba(186,230,253,0.85) 70%, rgba(125,211,252,0.75) 100%)',
+    vibrantBorder: 'rgba(14,165,233,0.4)',
+    vibrantShadow: '14,165,233',
     route: '/postpartum/soins/portage'
   },
 ];
@@ -100,7 +100,7 @@ export default function PostpartumSoinsPage() {
     <div className="min-h-screen gradient-bg">
       <div className="max-w-2xl mx-auto p-4 sm:p-6">
         {/* Header */}
-        <CloudCard color="blue" className="p-4 mb-6">
+        <CloudCard color="red" className="p-4 mb-6">
           <div className="flex items-center gap-4">
             <Button
               onClick={() => navigate(-1)}
@@ -113,7 +113,7 @@ export default function PostpartumSoinsPage() {
               <h1 className="text-2xl font-bold text-slate-700">Soins quotidiens</h1>
               <p className="text-sm text-slate-500">Coucher, change, portage</p>
             </div>
-            <div className="w-10 h-10 bg-gradient-to-br from-sky-400 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 bg-gradient-to-br from-red-400 to-rose-500 rounded-xl flex items-center justify-center shadow-lg">
               <Baby className="w-5 h-5 text-white" />
             </div>
           </div>

@@ -14,7 +14,7 @@ export function DiapersSection({ diapers }) {
       <PastelAccordion title="Tailles par âge et poids" icon="👶" color="sky" defaultOpen={true}>
         <div className="grid grid-cols-2 gap-3">
           {diapers.sizes?.map((size, index) => {
-            const colors = ['pink', 'sky', 'amber', 'green', 'purple', 'rose'];
+            const colors = ['amber', 'sky', 'rose', 'green', 'purple'];
             const color = colors[index % colors.length];
             return (
               <PastelCard key={index} color={color} className="p-3 text-center">

@@ -31,7 +31,7 @@ export default function PostpartumAllaitementPage() {
   return (
     <div className="min-h-screen gradient-bg">
       <div className="max-w-2xl mx-auto p-4 sm:p-6">
-        <CloudCard color="pink" className="p-4 mb-6">
+        <CloudCard color="yellow" className="p-4 mb-6">
           <div className="flex items-center gap-4">
             <Button
               onClick={() => navigate(-1)}
@@ -44,7 +44,7 @@ export default function PostpartumAllaitementPage() {
               <h1 className="text-2xl font-bold text-slate-700">Allaitement maternel</h1>
               <p className="text-sm text-slate-500">Positions, conseils, difficultés</p>
             </div>
-            <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-500 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl flex items-center justify-center shadow-lg">
               <Heart className="w-5 h-5 text-white" />
             </div>
           </div>

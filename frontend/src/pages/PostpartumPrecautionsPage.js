@@ -31,7 +31,7 @@ export default function PostpartumPrecautionsPage() {
   return (
     <div className="min-h-screen gradient-bg">
       <div className="max-w-2xl mx-auto p-4 sm:p-6">
-        <CloudCard color="purple" className="p-4 mb-6">
+        <CloudCard color="blue" className="p-4 mb-6">
           <div className="flex items-center gap-4">
             <Button
               onClick={() => navigate(-1)}
@@ -44,7 +44,7 @@ export default function PostpartumPrecautionsPage() {
               <h1 className="text-2xl font-bold text-slate-700">Précautions et sécurité</h1>
               <p className="text-sm text-slate-500">Gestes à éviter, vigilance</p>
             </div>
-            <div className="w-10 h-10 bg-gradient-to-br from-violet-400 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-sky-500 rounded-xl flex items-center justify-center shadow-lg">
               <Shield className="w-5 h-5 text-white" />
             </div>
           </div>
