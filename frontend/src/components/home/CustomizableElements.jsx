@@ -13,6 +13,7 @@ import {
   BabyPreparationSection,
   PostpartumSection,
   ServicesSection,
+  FaqBabySection,
   SolidaritySection
 } from './NavigationSections';
 
@@ -193,6 +194,7 @@ export function UserSectionCard({ item, onRemove, pregnancyProfile, hasPregnancy
     'baby-preparation': BabyPreparationSection,
     'postpartum': PostpartumSection,
     'services': ServicesSection,
+    'faq-baby': FaqBabySection,
     'solidarity': SolidaritySection,
   };
   
@@ -202,6 +204,7 @@ export function UserSectionCard({ item, onRemove, pregnancyProfile, hasPregnancy
     'baby-preparation': { bgGradient: 'from-purple-50/80 to-violet-50/80', borderColor: 'border-purple-200/50' },
     'postpartum': { bgGradient: 'from-rose-50/80 to-pink-50/80', borderColor: 'border-rose-200/50' },
     'services': { bgGradient: 'from-slate-50/80 to-gray-50/80', borderColor: 'border-slate-200/50' },
+    'faq-baby': { bgGradient: 'from-amber-50/80 to-yellow-50/80', borderColor: 'border-amber-200/50' },
     'solidarity': { bgGradient: 'from-purple-50/80 to-pink-50/80', borderColor: 'border-purple-200/50' },
   };
   

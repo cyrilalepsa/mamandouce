@@ -19,9 +19,7 @@ const glossyStyle = {
 };
 
 // Reflet glossy
-const GlossyReflect = () => (
-  {/* Voile blanc supprimé */}
-);
+const GlossyReflect = () => null;
 
 // Les magasins seront chargés dynamiquement selon la langue
 const getStores = (langCode) => {
@@ -320,6 +318,19 @@ function BirthListPage() {
                           >
                             <ExternalLink className="w-3 h-3" />
                             Voir
+                          </a>
+                        )}
+                        {/* Bouton vers le site de l'enseigne */}
+                        {store.url && (
+                          <a
+                            href={store.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors"
+                            data-testid={`store-link-${index}`}
+                          >
+                            <Globe className="w-3 h-3" />
+                            {store.name}
                           </a>
                         )}
                       </div>

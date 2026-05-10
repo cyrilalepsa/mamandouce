@@ -67,6 +67,7 @@ import TrophiesPage from './pages/TrophiesPage';
 import TireliirePage from './pages/TireliirePage';
 import ModerationPage from './pages/ModerationPage';
 import BabyEvolutionPage from './pages/BabyEvolutionPage';
+import FaqBabyPage from './pages/FaqBabyPage';
 import ChatBubble from './components/ChatBubble';
 import { EmotionalIntelligenceProvider } from './components/EmotionalIntelligence';
 // WhatsNewModal remplacé par NewsBubble dans HomePage
@@ -208,6 +209,7 @@ function App() {
                 <Route path="/tirelire" element={<ProtectedRoute><TireliirePage /></ProtectedRoute>} />
                 <Route path="/moderation" element={<ProtectedRoute><ModerationPage /></ProtectedRoute>} />
                 <Route path="/baby-evolution" element={<ProtectedRoute><BabyEvolutionPage /></ProtectedRoute>} />
+                <Route path="/faq-baby" element={<ProtectedRoute><FaqBabyPage /></ProtectedRoute>} />
               </Routes>
             </BrowserRouter>
             <Toaster />

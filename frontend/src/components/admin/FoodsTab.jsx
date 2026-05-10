@@ -60,7 +60,11 @@ export function FoodsTab({ pendingFoods, foodStats, loadPendingFoods }) {
                 <div className="flex gap-2">
                   <Button
                     onClick={() => handleFoodAction(food.id, 'approved')}
-                    className="bg-green-500 text-white rounded-lg px-3 py-2 hover:bg-green-600"
+                    className="text-white rounded-lg px-3 py-2"
+                    style={{
+                      background: 'linear-gradient(145deg, #fda4af 0%, #fb7185 40%, #f43f5e 100%)',
+                      boxShadow: '-3px -3px 8px rgba(255,255,255,0.9), 3px 3px 10px rgba(244,63,94,0.3), inset 0 1px 3px rgba(255,255,255,0.5)',
+                    }}
                   >
                     <CheckCircle className="w-4 h-4" />
                   </Button>

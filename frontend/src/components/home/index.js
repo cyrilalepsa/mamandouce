@@ -6,6 +6,7 @@ export {
   BabyPreparationSection, 
   PostpartumSection, 
   ServicesSection,
+  FaqBabySection,
   PinnedSectionsProvider,
   CollapsibleSection,
   usePinnedSections

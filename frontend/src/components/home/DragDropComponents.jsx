@@ -13,6 +13,7 @@ const ITEM_ICONS = {
   'baby-preparation': '🎁',
   'postpartum': '💕',
   'services': '⚙️',
+  'faq-baby': '❓',
   'cycle-tracking': '📅',
   'fertility-calc': '📊',
   'preparation-advice': '💡',
@@ -74,6 +75,7 @@ const ITEM_NAMES = {
   'baby-preparation': 'Préparation bébé',
   'postpartum': 'Post-partum',
   'services': 'Services',
+  'faq-baby': 'FAQ Bébé',
   'cycle-tracking': 'Cycles',
   'fertility-calc': 'Fertilité',
   'preparation-advice': 'Conseils',
@@ -137,6 +139,7 @@ const ITEM_TRANSLATION_KEYS = {
   'baby-preparation': 'journey.sections.babyPreparation',
   'postpartum': 'journey.sections.postpartum',
   'services': 'journey.sections.services',
+  'faq-baby': 'sections.faq',
   
   // === PRÉCONCEPTION ===
   'cycle-tracking': 'preconception.cycleTracking',
@@ -226,6 +229,11 @@ const ITEM_STYLES = {
     gradient: 'linear-gradient(145deg, #e0e7ff 0%, #c7d2fe 50%, #a5b4fc 100%)',
     shadow: '0 8px 25px rgba(165, 180, 252, 0.35), inset 0 -4px 12px rgba(0,0,0,0.08)',
     border: 'rgba(129, 140, 248, 0.3)'
+  },
+  'faq-baby': {
+    gradient: 'linear-gradient(145deg, #fef3c7 0%, #fde68a 50%, #fbbf24 100%)',
+    shadow: '0 8px 25px rgba(251, 191, 36, 0.35), inset 0 -4px 12px rgba(0,0,0,0.08)',
+    border: 'rgba(245, 158, 11, 0.3)'
   },
   
   // === ITEMS PRÉCONCEPTION ===
@@ -502,6 +510,7 @@ const ITEM_ROUTES = {
   'baby-preparation': '/section/baby-preparation',
   'postpartum': '/postpartum',
   'services': '/section/services',
+  'faq-baby': '/faq-baby',
   'cycle-tracking': '/cycle-tracking',
   'fertility-calc': '/fertility-calculator',
   'preparation-advice': '/preconception-tips',

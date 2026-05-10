@@ -236,7 +236,12 @@ function ContributionsManager() {
                     <Button
                       onClick={() => handleValidate(contrib.id, true)}
                       disabled={processing}
-                      className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-2 rounded-xl flex items-center justify-center gap-2"
+                      className="flex-1 btn-cloud-3d-blue text-white py-2 rounded-xl flex items-center justify-center gap-2"
+                      style={{
+                        background: 'linear-gradient(145deg, #fda4af 0%, #fb7185 40%, #f43f5e 100%)',
+                        boxShadow: '-4px -4px 12px rgba(255,255,255,0.9), 4px 4px 16px rgba(244,63,94,0.35), inset 0 2px 4px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(244,63,94,0.15)',
+                        border: '1px solid rgba(254,205,211,0.6)',
+                      }}
                       data-testid="approve-btn"
                     >
                       <CheckCircle className="w-5 h-5" />
