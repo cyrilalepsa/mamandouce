@@ -39,7 +39,7 @@ export function BabywearingSection({ babywearing }) {
                 href={type.video_url} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-red-100/60 text-red-700 px-3 py-2 rounded-full text-sm font-semibold hover:bg-red-200/60 transition-colors backdrop-blur-sm"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-semibold text-white transition-all hover:scale-105" style={{background:'linear-gradient(145deg, #fda4af 0%, #fb7185 40%, #f43f5e 100%)', boxShadow:'-3px -3px 8px rgba(255,255,255,0.9), 3px 3px 10px rgba(244,63,94,0.3), inset 0 1px 3px rgba(255,255,255,0.5)'}}
               >
                 <Play className="w-4 h-4" />
                 Voir le tutoriel vidéo

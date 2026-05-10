@@ -97,8 +97,8 @@ export function DifficultiesSection({ difficulties }) {
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 rounded-full py-2.5 px-4 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
                   style={{
-                    background: 'linear-gradient(145deg, rgba(239,68,68,0.9) 0%, rgba(236,72,153,0.9) 100%)',
-                    boxShadow: '0 4px 12px rgba(239,68,68,0.3)'
+                    background: 'linear-gradient(145deg, #fda4af 0%, #fb7185 40%, #f43f5e 100%)',
+                    boxShadow: '-3px -3px 8px rgba(255,255,255,0.9), 3px 3px 10px rgba(244,63,94,0.3), inset 0 1px 3px rgba(255,255,255,0.5)'
                   }}
                 >
                   <Play className="w-4 h-4" />
