@@ -1,16 +1,19 @@
-# MamanDouce v9.1.0 — Livraison A Design
+# MamanDouce v10.0.0 — Livraisons B+C Complètes
 
-## Livraison A — Pages navigation post-partum ✅
-- BabyVideos: bulles blanc vif, logos J→B→R→V→Vi→J→B→R
-- PostpartumPage: 4 mosaïques blanc intense + logos J→B→R→V, note orange sans bombé
-- Alimentation: cartes blanc intense
-- Soins quotidiens: cartes blanc intense
-- Sécurité: cartes blanc intense
-- Services: Guide CPAM/CAF supprimé (reste CAF/Ameli/Mairie/Vidéos)
+## Système de design unifié (PastelComponents)
+- **PastelAccordion (tiroir)**: Blanc intense bombé 3D glossy + logo coloré vif
+- **PastelCard (contenu)**: Teinte du logo infusée, SANS bombé (glossy plat)
+- **PastelPillCard**: Blanc intense bombé
+- **AccordionCard (PrecautionsSection)**: Converti au même style blanc bombé
 
-## Livraisons suivantes
-- Livraison B: Allaitement, Biberons, Diversification, Recettes (refonte complète)
-- Livraison C: Coucher/Change, Portage, Difficultés, Précautions, RDV médicaux
+## Toutes les sous-pages post-partum unifiées ✅
+- Allaitement, Biberons, Diversification, Recettes
+- Coucher/Change, Portage
+- Difficultés, Précautions
+- RDV médicaux
+
+## Boutons vidéo
+- Tous les "Voir en vidéo" / "Vidéo explicative" = Rose bombé glossy 3D
 
 ## Cycle couleurs strict
 Jaune → Bleu → Rouge → Vert → Violet

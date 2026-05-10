@@ -2,90 +2,49 @@ import { useState } from 'react';
 import { Card } from '../ui/card';
 import { Check, Play, ExternalLink, Shield, Info, ChevronDown, ChevronUp } from 'lucide-react';
 
-// Composant Accordéon avec style bombé pastel
+// Composant Accordéon — BLANC INTENSE BOMBÉ 3D + logo coloré vif
 function AccordionCard({ title, icon, color, children, defaultOpen = false }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   
-  // Couleurs pastel pour l'effet bombé
-  const colorStyles = {
-    purple: {
-      bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(243,232,255,0.95) 30%, rgba(233,213,255,0.85) 70%, rgba(216,180,254,0.75) 100%)',
-      border: 'rgba(139,92,246,0.3)',
-      iconBg: 'bg-purple-100',
-      iconText: 'text-purple-600',
-      shadow: 'rgba(139,92,246,0.2)'
-    },
-    sky: {
-      bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(224,242,254,0.95) 30%, rgba(186,230,253,0.85) 70%, rgba(125,211,252,0.75) 100%)',
-      border: 'rgba(14,165,233,0.3)',
-      iconBg: 'bg-sky-100',
-      iconText: 'text-sky-600',
-      shadow: 'rgba(14,165,233,0.2)'
-    },
-    red: {
-      bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,226,226,0.95) 30%, rgba(254,202,202,0.85) 70%, rgba(252,165,165,0.75) 100%)',
-      border: 'rgba(239,68,68,0.3)',
-      iconBg: 'bg-red-100',
-      iconText: 'text-red-600',
-      shadow: 'rgba(239,68,68,0.2)'
-    },
-    pink: {
-      bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(252,231,243,0.95) 30%, rgba(251,207,232,0.85) 70%, rgba(249,168,212,0.75) 100%)',
-      border: 'rgba(236,72,153,0.3)',
-      iconBg: 'bg-pink-100',
-      iconText: 'text-pink-600',
-      shadow: 'rgba(236,72,153,0.2)'
-    },
-    amber: {
-      bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,243,199,0.95) 30%, rgba(253,230,138,0.85) 70%, rgba(252,211,77,0.75) 100%)',
-      border: 'rgba(245,158,11,0.3)',
-      iconBg: 'bg-amber-100',
-      iconText: 'text-amber-600',
-      shadow: 'rgba(245,158,11,0.2)'
-    },
-    green: {
-      bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(220,252,231,0.95) 30%, rgba(187,247,208,0.85) 70%, rgba(134,239,172,0.75) 100%)',
-      border: 'rgba(34,197,94,0.3)',
-      iconBg: 'bg-green-100',
-      iconText: 'text-green-600',
-      shadow: 'rgba(34,197,94,0.2)'
-    }
+  // Couleurs logo vives par cycle
+  const logoColorMap = {
+    amber: 'from-yellow-400 to-amber-500',
+    sky: 'from-blue-400 to-sky-500',
+    red: 'from-red-400 to-rose-500',
+    green: 'from-green-400 to-emerald-500',
+    purple: 'from-violet-400 to-purple-500',
+    pink: 'from-red-400 to-rose-500',
+    violet: 'from-violet-400 to-purple-500',
   };
   
-  const style = colorStyles[color] || colorStyles.purple;
+  const logoGradient = logoColorMap[color] || logoColorMap.amber;
   
   return (
-    <div 
-      className="rounded-3xl overflow-hidden transition-all duration-300 relative"
-      style={{
-        background: style.bg,
-        boxShadow: `0 8px 20px -4px ${style.shadow}, 0 4px 8px -2px ${style.shadow}, inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px ${style.shadow}`,
-      }}
-    >
-      {/* Voile blanc supprimé */}
-{/* Header cliquable */}
+    <div className="mb-3">
+      {/* Tiroir — Blanc intense bombé 3D */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-4 flex items-center gap-3 relative"
+        className="w-full rounded-2xl transition-all hover:scale-[1.01] active:scale-[0.99] nacre-bombe"
+        style={{
+          background: 'linear-gradient(160deg, #ffffff 0%, #ffffff 20%, #fefefe 45%, #fafafa 70%, #f5f5f7 100%)',
+          boxShadow: '0 8px 20px -4px rgba(0,0,0,0.1), 0 4px 8px -2px rgba(0,0,0,0.05), inset -4px -4px 10px rgba(0,0,0,0.04), inset 4px 4px 10px rgba(255,255,255,0.95)',
+          border: '1px solid rgba(255,255,255,0.95)',
+        }}
       >
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${style.iconBg} flex-shrink-0`}
-          style={{
-            boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.05)'
-          }}
-        >
-          {icon || <Shield className={`w-5 h-5 ${style.iconText}`} />}
+        <div className="px-4 py-3.5 flex items-center gap-3">
+          <div className={`w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br ${logoGradient} flex-shrink-0`}
+            style={{ boxShadow: '0 3px 8px -1px rgba(0,0,0,0.2), inset 0 1px 3px rgba(255,255,255,0.3)' }}
+          >
+            {icon || <Shield className="w-5 h-5 text-white" />}
+          </div>
+          <h3 className="flex-1 text-left font-bold text-black">{title}</h3>
+          {isOpen ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
         </div>
-        <h3 className="flex-1 text-left font-bold text-slate-700">{title}</h3>
-        {isOpen ? (
-          <ChevronUp className="w-5 h-5 text-slate-400 flex-shrink-0" />
-        ) : (
-          <ChevronDown className="w-5 h-5 text-slate-400 flex-shrink-0" />
-        )}
       </button>
       
-      {/* Contenu déroulant */}
+      {/* Contenu — couleur du logo infusée, SANS bombé */}
       {isOpen && (
-        <div className="px-4 pb-4 animate-in slide-in-from-top-2 duration-200">
+        <div className="mt-2 px-2 pb-2 animate-in slide-in-from-top-2 duration-200">
           {children}
         </div>
       )}
