@@ -811,13 +811,7 @@ export default function PostpartumPage() {
                 }}
                 data-testid={`category-${category.id}`}
               >
-                {/* Effet de reflet bombé */}
-                <div 
-                  className="absolute top-0 left-4 right-4 h-2/5 rounded-t-full pointer-events-none"
-                  style={{ 
-                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
-                  }}
-                />
+                {/* Voile blanc supprimé */}
                 
                 {/* Icône avec bulle quasi-transparente */}
                 <div 

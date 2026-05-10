@@ -38,10 +38,7 @@ const glossyStyle = (color) => {
 
 // Composant reflet glossy
 const GlossyReflect = () => (
-  <div 
-    className="absolute top-0 left-3 right-3 h-2/5 rounded-t-3xl pointer-events-none"
-    style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-  />
+  {/* Voile blanc supprimé */}
 );
 
 export default function MaternityBagPage() {

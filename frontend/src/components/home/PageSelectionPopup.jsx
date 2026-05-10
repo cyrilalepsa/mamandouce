@@ -71,10 +71,7 @@ export function PageSelectionPopup({ isVisible, onClose, onSelectPage, itemName 
             >
               <Copy className="w-5 h-5 text-white relative z-10" />
               {/* Reflet glossy */}
-              <div 
-                className="absolute top-0.5 left-1 right-1 h-[45%] rounded-full pointer-events-none"
-                style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.1) 100%)' }}
-              />
+              {/* Voile blanc supprimé */}
             </div>
             <h3 className="text-lg font-bold text-slate-700">
               {t('duplicate.title', 'Dupliquer vers...')}
@@ -109,10 +106,7 @@ export function PageSelectionPopup({ isVisible, onClose, onSelectPage, itemName 
                   Page {index + 1}
                 </span>
                 {/* Reflet */}
-                <div 
-                  className="absolute top-0 left-2 right-2 h-[40%] rounded-full pointer-events-none"
-                  style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.1) 100%)' }}
-                />
+                {/* Voile blanc supprimé */}
               </button>
             ))}
             
@@ -138,10 +132,7 @@ export function PageSelectionPopup({ isVisible, onClose, onSelectPage, itemName 
               {t('duplicate.createNew', 'Créer une nouvelle page')}
             </span>
             {/* Reflet glossy */}
-            <div 
-              className="absolute top-0 left-2 right-2 h-[45%] rounded-full pointer-events-none"
-              style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.1) 100%)' }}
-            />
+            {/* Voile blanc supprimé */}
           </button>
           
           {/* Bouton Annuler - Effet bombé 3D glossy gris */}
@@ -158,10 +149,7 @@ export function PageSelectionPopup({ isVisible, onClose, onSelectPage, itemName 
               {t('common.cancel', 'Annuler')}
             </span>
             {/* Reflet glossy */}
-            <div 
-              className="absolute top-0 left-2 right-2 h-[45%] rounded-full pointer-events-none"
-              style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.15) 100%)' }}
-            />
+            {/* Voile blanc supprimé */}
           </button>
         </div>
       </div>

@@ -65,11 +65,7 @@ function PastelMosaicCard({ color = 'pink', onClick, children, className = '', t
         color: '#4A4A4A',
       }}
     >
-      {/* Effet de reflet bombé */}
-      <div 
-        className="absolute top-0 left-2 right-2 h-2/5 rounded-t-2xl pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 50%, transparent 100%)' }}
-      />
+      {/* Voile blanc supprimé */}
       <div className="relative" style={{ color: '#4A4A4A' }}>
         {children}
       </div>
@@ -93,11 +89,7 @@ function PastelPillCard({ color = 'purple', onClick, children, className = '', t
         color: '#4A4A4A',
       }}
     >
-      {/* Effet de reflet bombé */}
-      <div 
-        className="absolute top-0 left-4 right-4 h-2/5 rounded-t-full pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 50%, transparent 100%)' }}
-      />
+      {/* Voile blanc supprimé */}
       <div className="relative" style={{ color: '#4A4A4A' }}>
         {children}
       </div>
@@ -839,10 +831,7 @@ export function ServicesSection() {
                   boxShadow: style.boxShadow,
                 }}
               >
-                <div 
-                  className="absolute top-0 left-4 right-4 h-2/5 rounded-t-full pointer-events-none"
-                  style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-                />
+                {/* Voile blanc supprimé */}
                 <div className="relative flex items-center gap-3">
                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center bg-${pastelColor}-100/60 backdrop-blur-sm flex-shrink-0`}
                     style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
@@ -961,11 +950,7 @@ export function SolidaritySection() {
         onClick={() => navigate('/referral')}
         data-testid="tirelire-section-card"
       >
-        {/* Reflet bombé */}
-        <div 
-          className="absolute top-0 left-3 right-3 h-2/5 rounded-t-full pointer-events-none"
-          style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-        />
+        {/* Voile blanc supprimé */}
         
         <div className="relative">
           <div className="flex items-center justify-between mb-3">

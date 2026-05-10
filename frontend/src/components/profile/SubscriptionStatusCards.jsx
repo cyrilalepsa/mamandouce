@@ -37,10 +37,7 @@ export function SubscriptionStatusCards({ subscriptionStatus, fullStatus }) {
         }}
         data-testid="premium-status-card"
       >
-        <div 
-          className="absolute top-0 left-2 right-2 h-2/5 rounded-t-2xl pointer-events-none"
-          style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-        />
+        {/* Voile blanc supprimé */}
         <div className="relative flex items-center gap-3">
           <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${premiumStyle.iconBg}`}
             style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
@@ -65,10 +62,7 @@ export function SubscriptionStatusCards({ subscriptionStatus, fullStatus }) {
         }}
         data-testid="postpartum-status-card"
       >
-        <div 
-          className="absolute top-0 left-2 right-2 h-2/5 rounded-t-2xl pointer-events-none"
-          style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-        />
+        {/* Voile blanc supprimé */}
         <div className="relative flex items-center gap-3">
           <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${postpartumStyle.iconBg}`}
             style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}

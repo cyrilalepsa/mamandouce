@@ -319,10 +319,7 @@ function FoodLibraryPage() {
                     data-testid={`food-item-${index}`}
                   >
                     {/* Effet de reflet bombé glossy */}
-                    <div 
-                      className="absolute top-0 left-2 right-2 h-2/5 rounded-t-2xl pointer-events-none"
-                      style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-                    />
+                    {/* Voile blanc supprimé */}
                     
                     <div className="relative flex items-start gap-3">
                       <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${pastelStyle.iconBg} backdrop-blur-sm flex-shrink-0`}

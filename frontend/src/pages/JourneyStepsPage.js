@@ -150,10 +150,7 @@ function DuplicatePopup({ sectionId, sectionName, pages, onDuplicate, onCancel, 
             }}
           >
             <span className="text-white text-lg relative z-10">📋</span>
-            <div 
-              className="absolute top-0.5 left-1 right-1 h-[45%] rounded-full pointer-events-none"
-              style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.1) 100%)' }}
-            />
+            {/* Voile blanc supprimé */}
           </div>
           <h3 className="text-base font-bold text-white">
             {t('journey.duplicateTo', 'Dupliquer vers...')}
@@ -210,10 +207,7 @@ function DuplicatePopup({ sectionId, sectionName, pages, onDuplicate, onCancel, 
             <span className="font-semibold text-pink-700 text-sm relative z-10">
               {t('journey.createNewPage', 'Créer une nouvelle page')}
             </span>
-            <div 
-              className="absolute top-0 left-2 right-2 h-[45%] rounded-full pointer-events-none"
-              style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.1) 100%)' }}
-            />
+            {/* Voile blanc supprimé */}
           </button>
         </div>
             
@@ -260,8 +254,8 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
     if (isDarkMode) {
       return 'linear-gradient(145deg, rgba(30,41,59,0.95) 0%, rgba(30,41,59,0.9) 50%, rgba(15,23,42,0.85) 100%)';
     }
-    // Mode clair : Nacre Bombé — blanc brillant en haut → gris argenté en bas
-    return 'linear-gradient(160deg, #ffffff 0%, #f5f5f5 20%, #e8e8ea 50%, #d5d5d8 80%, #c0c0c5 100%)';
+    // Mode clair : Blanc Intense Nacré Bombé — blanc brillant avec subtile nacre
+    return 'linear-gradient(160deg, #ffffff 0%, #fefefe 20%, #fafafa 50%, #f5f5f7 80%, #f0f0f2 100%)';
   };
   
   // Bordure des cartes
@@ -270,8 +264,8 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
       switch(id) {
         case 'preconception': return '2px solid rgba(234,179,8,0.4)';
         case 'pregnancy': return '2px solid rgba(14,165,233,0.4)';
-        case 'baby-preparation': return '2px solid rgba(34,197,94,0.4)';
-        case 'postpartum': return '2px solid rgba(239,68,68,0.4)';
+        case 'baby-preparation': return '2px solid rgba(239,68,68,0.4)';
+        case 'postpartum': return '2px solid rgba(34,197,94,0.4)';
         default: return '2px solid rgba(139,92,246,0.4)';
       }
     }
@@ -364,14 +358,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
         onContextMenu={(e) => e.preventDefault()}
         data-testid={`section-card-${sectionId}`}
       >
-        {/* Effet de reflet bombé glossy en haut - atténué en mode sombre */}
-        <div 
-          className="absolute top-0 left-4 right-4 h-2/5 rounded-t-full pointer-events-none"
-          style={{
-            background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)',
-            opacity: isDarkMode ? 0.15 : 1
-          }}
-        />
+        {/* Voile blanc supprimé — Zéro voile sur les cartes */}
         
         {/* Badge sélection */}
         {isSelected && (
@@ -387,8 +374,8 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
             style={{
               background: sectionId === 'preconception' ? 'linear-gradient(145deg, #fbbf24, #f59e0b)'
                 : sectionId === 'pregnancy' ? 'linear-gradient(145deg, #60a5fa, #3b82f6)'
-                : sectionId === 'baby-preparation' ? 'linear-gradient(145deg, #4ade80, #22c55e)'
-                : sectionId === 'postpartum' ? 'linear-gradient(145deg, #f87171, #ef4444)'
+                : sectionId === 'baby-preparation' ? 'linear-gradient(145deg, #f87171, #ef4444)'
+                : sectionId === 'postpartum' ? 'linear-gradient(145deg, #4ade80, #22c55e)'
                 : 'linear-gradient(145deg, #a78bfa, #8b5cf6)',
               boxShadow: '0 4px 10px -2px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.3)',
               border: 'none',
@@ -414,7 +401,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
             style={{
               background: isPinned 
                 ? 'linear-gradient(145deg, #fce7f3, #fbcfe8)' 
-                : 'linear-gradient(160deg, #ffffff 0%, #ededef 40%, #d5d5d8 100%)',
+                : 'linear-gradient(160deg, #ffffff 0%, #fafafa 40%, #f0f0f2 100%)',
               border: isPinned 
                 ? '1px solid rgba(244, 114, 182, 0.3)' 
                 : '1px solid rgba(255,255,255,0.7)',
@@ -438,9 +425,9 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
                   onClick={() => handleItemClick(item.route, item.external)}
                   className="relative flex flex-col items-center gap-1 p-3 rounded-xl transition-all active:scale-95"
                   style={{ 
-                    background: isDarkMode ? 'rgba(30,41,59,0.9)' : 'linear-gradient(160deg, #ffffff 0%, #f0f0f2 25%, #e0e0e3 55%, #c8c8cd 100%)',
-                    border: isDarkMode ? '1px solid rgba(71,85,105,0.5)' : '1px solid rgba(255,255,255,0.7)',
-                    boxShadow: isDarkMode ? '0 2px 8px rgba(0,0,0,0.06)' : '0 4px 12px -2px rgba(0,0,0,0.1), inset -2px -2px 6px rgba(0,0,0,0.05), inset 2px 2px 6px rgba(255,255,255,0.85)',
+                    background: isDarkMode ? 'rgba(30,41,59,0.9)' : 'linear-gradient(160deg, #ffffff 0%, #fefefe 25%, #fafafa 55%, #f5f5f7 100%)',
+                    border: isDarkMode ? '1px solid rgba(71,85,105,0.5)' : '1px solid rgba(255,255,255,0.9)',
+                    boxShadow: isDarkMode ? '0 2px 8px rgba(0,0,0,0.06)' : '0 4px 12px -2px rgba(0,0,0,0.08), inset -2px -2px 6px rgba(0,0,0,0.04), inset 2px 2px 6px rgba(255,255,255,0.9)',
                     animationDelay: `${index * 30}ms` 
                   }}
                 >

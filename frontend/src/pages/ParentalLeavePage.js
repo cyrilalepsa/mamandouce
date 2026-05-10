@@ -80,10 +80,7 @@ function ParentalLeavePage() {
           }}
         >
           {/* Effet de reflet bombé */}
-          <div 
-            className="absolute top-0 left-8 right-8 h-1/2 rounded-t-full pointer-events-none"
-            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-          />
+          {/* Voile blanc supprimé */}
           
           <button 
             onClick={() => toggleSection('supplementary')}
@@ -189,10 +186,7 @@ function ParentalLeavePage() {
           }}
         >
           {/* Effet de reflet bombé */}
-          <div 
-            className="absolute top-0 left-8 right-8 h-1/2 rounded-t-full pointer-events-none"
-            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-          />
+          {/* Voile blanc supprimé */}
           
           <button 
             onClick={() => toggleSection('birth')}
@@ -283,10 +277,7 @@ function ParentalLeavePage() {
           }}
         >
           {/* Effet de reflet bombé */}
-          <div 
-            className="absolute top-0 left-8 right-8 h-1/2 rounded-t-full pointer-events-none"
-            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-          />
+          {/* Voile blanc supprimé */}
           
           <button 
             onClick={() => toggleSection('family')}
@@ -375,10 +366,7 @@ function ParentalLeavePage() {
           }}
         >
           {/* Effet de reflet bombé */}
-          <div 
-            className="absolute top-0 left-8 right-8 h-1/2 rounded-t-full pointer-events-none"
-            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-          />
+          {/* Voile blanc supprimé */}
           
           <button 
             onClick={() => toggleSection('maternity')}
@@ -455,10 +443,7 @@ function ParentalLeavePage() {
           }}
         >
           {/* Effet de reflet bombé */}
-          <div 
-            className="absolute top-0 left-8 right-8 h-1/2 rounded-t-full pointer-events-none"
-            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-          />
+          {/* Voile blanc supprimé */}
           
           <button 
             onClick={() => toggleSection('paternity')}
@@ -535,10 +520,7 @@ function ParentalLeavePage() {
           }}
         >
           {/* Effet de reflet bombé */}
-          <div 
-            className="absolute top-0 left-8 right-8 h-1/2 rounded-t-full pointer-events-none"
-            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-          />
+          {/* Voile blanc supprimé */}
           
           <button 
             onClick={() => toggleSection('parental')}
@@ -616,10 +598,7 @@ function ParentalLeavePage() {
             border: '2px solid rgba(245,158,11,0.25)'
           }}
         >
-          <div 
-            className="absolute top-0 left-4 right-4 h-2/5 rounded-t-full pointer-events-none"
-            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-          />
+          {/* Voile blanc supprimé */}
           
           <h3 className="relative font-bold text-amber-700 mb-2 flex items-center gap-2">
             <Info className="w-4 h-4" />

@@ -417,12 +417,7 @@ function MedicalAppointmentsPage() {
                     data-testid={`toggle-trimestre-${trimester}`}
                   >
                     {/* Effet de reflet bombé */}
-                    <div 
-                      className="absolute top-0 left-4 right-4 h-1/2 rounded-t-full pointer-events-none"
-                      style={{ 
-                        background: 'linear-gradient(to bottom, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.2) 50%, transparent 100%)',
-                      }}
-                    />
+                    {/* Voile blanc supprimé */}
                     
                     {/* Icône avec bulle quasi-transparente */}
                     <div 

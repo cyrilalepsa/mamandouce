@@ -154,10 +154,7 @@ function ReferralPage() {
         >
           {/* Reflet */}
           {!isDarkMode && (
-            <div 
-              className="absolute top-0 left-4 right-4 h-1/3 rounded-t-full pointer-events-none"
-              style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-            />
+            {/* Voile blanc supprimé */}
           )}
           
           <div className="relative">
@@ -221,10 +218,7 @@ function ReferralPage() {
           }}
         >
           {!isDarkMode && (
-            <div 
-              className="absolute top-0 left-4 right-4 h-1/3 rounded-t-full pointer-events-none"
-              style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-            />
+            {/* Voile blanc supprimé */}
           )}
           
           <div className="relative">

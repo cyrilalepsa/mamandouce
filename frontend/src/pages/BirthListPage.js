@@ -20,10 +20,7 @@ const glossyStyle = {
 
 // Reflet glossy
 const GlossyReflect = () => (
-  <div 
-    className="absolute top-0 left-3 right-3 h-2/5 rounded-t-2xl pointer-events-none"
-    style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-  />
+  {/* Voile blanc supprimé */}
 );
 
 // Les magasins seront chargés dynamiquement selon la langue
@@ -206,10 +203,7 @@ function BirthListPage() {
                   }}
                 >
                   {/* Reflet glossy */}
-                  <div 
-                    className="absolute top-0 left-2 right-2 h-1/2 rounded-t-full pointer-events-none"
-                    style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 50%, transparent 100%)' }}
-                  />
+                  {/* Voile blanc supprimé */}
                   <span className="relative">{store.name}</span>
                 </div>
               ))}

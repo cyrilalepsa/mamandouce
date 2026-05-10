@@ -771,13 +771,7 @@ export function DraggableItem({
       }}
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* Effet reflet glossy en haut - STYLE "BOMBÉ" */}
-      <div 
-        className="absolute top-1 left-2 right-2 h-[40%] rounded-full pointer-events-none"
-        style={{
-          background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.2) 50%, transparent 100%)'
-        }}
-      />
+      {/* Voile blanc supprimé */}
       
       {/* Bouton supprimer - visible seulement après appui long */}
       {onRemove && showDelete && (
@@ -922,13 +916,7 @@ export function ItemGroup({
       }}
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* Effet reflet glossy en haut - STYLE "BOMBÉ" */}
-      <div 
-        className="absolute top-1 left-2 right-2 h-[40%] rounded-full pointer-events-none"
-        style={{
-          background: 'linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 50%, transparent 100%)'
-        }}
-      />
+      {/* Voile blanc supprimé */}
       
       {/* Bouton supprimer groupe - visible uniquement après appui long */}
       {showDelete && (
@@ -1176,13 +1164,7 @@ export function GroupContentPopup({ group, onClose, onRemoveItem, onChangeColor,
                     border: `1px solid ${itemStyle?.border || 'rgba(251, 191, 36, 0.3)'}`
                   }}
                 >
-                  {/* Effet reflet glossy */}
-                  <div 
-                    className="absolute top-1 left-1.5 right-1.5 h-[35%] rounded-full pointer-events-none"
-                    style={{
-                      background: 'linear-gradient(to bottom, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.1) 100%)'
-                    }}
-                  />
+                  {/* Voile blanc supprimé */}
                   <span className="text-[22px] relative z-10">{ITEM_ICONS[item.id] || '📌'}</span>
                   
                   {/* Bouton supprimer */}

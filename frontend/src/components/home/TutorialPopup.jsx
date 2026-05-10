@@ -367,10 +367,7 @@ export function InteractiveTutorial({ isVisible, onComplete, isFirstTime = true 
                 {isLastStep ? 'C\'est parti ! 🎉' : 'Suivant'}
                 {!isLastStep && <ChevronRight className="w-4 h-4 inline ml-1" />}
               </span>
-              <div 
-                className="absolute top-0 left-1 right-1 h-[45%] rounded-full pointer-events-none"
-                style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%)' }}
-              />
+              {/* Voile blanc supprimé */}
             </button>
           </div>
         </div>

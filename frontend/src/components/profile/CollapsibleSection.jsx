@@ -65,13 +65,8 @@ export function CollapsibleSection({
         }}
         data-testid={dataTestId ? `${dataTestId}-header` : undefined}
       >
-        {/* Effet de reflet bombé */}
-        <div 
-          className="absolute top-0 left-4 right-4 h-2/5 rounded-t-3xl pointer-events-none"
-          style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-        />
-        
-        <div className="flex items-center gap-3 relative">
+        {/* Voile blanc supprimé */}
+<div className="flex items-center gap-3 relative">
           <div className={`w-10 h-10 ${style.iconBg} backdrop-blur-sm rounded-xl flex items-center justify-center`}
             style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
           >

@@ -58,10 +58,7 @@ export default function ExpandableNameCard({
       >
         {/* Effet de reflet bombé glossy */}
         {!isDarkMode && (
-          <div 
-            className="absolute top-0 left-2 right-2 h-2/5 rounded-t-2xl pointer-events-none"
-            style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-          />
+          {/* Voile blanc supprimé */}
         )}
         
         <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${style.iconBg} backdrop-blur-sm relative`}

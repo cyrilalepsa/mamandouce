@@ -23,15 +23,8 @@ export function PregnancyStatusCard({ pregnancyProfile }) {
       onClick={() => navigate('/cycle-tracking')}
       data-testid="pregnancy-status-card"
     >
-      {/* Effet de reflet bombé nuage */}
-      <div 
-        className="absolute top-0 left-4 right-4 h-2/5 rounded-t-full pointer-events-none"
-        style={{ 
-          background: 'linear-gradient(to bottom, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.4) 40%, transparent 100%)',
-        }}
-      />
-      
-      <div className="relative flex items-center justify-between">
+      {/* Voile blanc supprimé */}
+<div className="relative flex items-center justify-between">
         <div className="flex items-center gap-4">
           {/* Icône avec bulle quasi-transparente */}
           <div 

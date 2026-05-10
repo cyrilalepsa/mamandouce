@@ -2,13 +2,8 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-// Reflet glossy
-const GlossyReflect = ({ rounded = "2xl" }) => (
-  <div 
-    className={`absolute top-0 left-3 right-3 h-2/5 rounded-t-${rounded} pointer-events-none`}
-    style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-  />
-);
+// Reflet glossy SUPPRIMÉ — Zéro voile blanc sur les cartes (cf. design spec v3)
+const GlossyReflect = () => null;
 
 // Détecte si le className contient un gradient de couleur
 const hasGradientBackground = (className) => {

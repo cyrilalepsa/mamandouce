@@ -184,10 +184,7 @@ export function GroupNameModal({
               }}
             >
               <span className="relative z-10">{t('common.cancel', 'Annuler')}</span>
-              <div 
-                className="absolute top-0 left-1 right-1 h-[45%] rounded-full pointer-events-none"
-                style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.2) 100%)' }}
-              />
+              {/* Voile blanc supprimé */}
             </button>
             {/* Bouton OK */}
             <button
@@ -200,10 +197,7 @@ export function GroupNameModal({
               }}
             >
               <span className="relative z-10">OK</span>
-              <div 
-                className="absolute top-0 left-1 right-1 h-[45%] rounded-full pointer-events-none"
-                style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.1) 100%)' }}
-              />
+              {/* Voile blanc supprimé */}
             </button>
           </div>
         </div>

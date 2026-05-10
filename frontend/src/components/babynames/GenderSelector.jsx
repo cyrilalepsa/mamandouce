@@ -76,15 +76,8 @@ export default function GenderSelector({
               }}
               data-testid="favorites-button"
             >
-              {/* Effet de reflet bombé */}
-              <div 
-                className="absolute top-0 left-4 right-4 h-1/2 rounded-t-full pointer-events-none"
-                style={{ 
-                  background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)',
-                }}
-              />
-              
-              <div className="relative flex items-center gap-3">
+              {/* Voile blanc supprimé */}
+<div className="relative flex items-center gap-3">
                 <div 
                   className="w-10 h-10 rounded-xl flex items-center justify-center"
                   style={{
@@ -121,15 +114,8 @@ export default function GenderSelector({
             }}
             data-testid="girls-button"
           >
-            {/* Effet de reflet bombé */}
-            <div 
-              className="absolute top-0 left-4 right-4 h-1/2 rounded-t-full pointer-events-none"
-              style={{ 
-                background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)',
-              }}
-            />
-            
-            <div className="relative flex items-center gap-3">
+              {/* Voile blanc supprimé */}
+<div className="relative flex items-center gap-3">
               <div 
                 className="w-12 h-12 rounded-xl flex items-center justify-center"
                 style={{
@@ -164,15 +150,8 @@ export default function GenderSelector({
             }}
             data-testid="boys-button"
           >
-            {/* Effet de reflet bombé */}
-            <div 
-              className="absolute top-0 left-4 right-4 h-1/2 rounded-t-full pointer-events-none"
-              style={{ 
-                background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)',
-              }}
-            />
-            
-            <div className="relative flex items-center gap-3">
+              {/* Voile blanc supprimé */}
+<div className="relative flex items-center gap-3">
               <div 
                 className="w-12 h-12 rounded-xl flex items-center justify-center"
                 style={{

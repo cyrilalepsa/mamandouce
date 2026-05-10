@@ -18,13 +18,8 @@ export function PregnancyCard({
       }}
       data-testid="pregnancy-info-card"
     >
-      {/* Effet de reflet bombé */}
-      <div 
-        className="absolute top-0 left-2 right-2 h-2/5 rounded-t-2xl pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-      />
-      
-      <div className="relative">
+      {/* Voile blanc supprimé */}
+<div className="relative">
         <h3 className="text-lg font-bold text-slate-700 mb-4">Informations de grossesse</h3>
         
         <div className="space-y-2">

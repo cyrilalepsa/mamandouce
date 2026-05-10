@@ -143,10 +143,7 @@ export default function PostpartumSoinsPage() {
               }}
             >
               {/* Effet de reflet bombé glossy */}
-              <div 
-                className="absolute top-0 left-2 right-2 h-2/5 rounded-t-xl pointer-events-none"
-                style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-              />
+              {/* Voile blanc supprimé */}
               
               <div className="relative text-center">
                 <div className={`w-12 h-12 mx-auto mb-2 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center shadow-lg`}>

@@ -65,7 +65,7 @@ const SECTION_ITEMS = {
   'preconception': [
     { id: 'cycle-tracking', icon: CalendarHeart, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'Suivi de fertilité', titleKey: 'preconception.cycleTracking', desc: 'Règles, ovulation, nidation', descKey: 'preconception.cycleDesc', route: '/cycle-tracking' },
     { id: 'fertility-calc', icon: LineChart, iconColor: 'text-blue-600', bgColor: 'blue', title: 'Calculateur fertilité', titleKey: 'preconception.fertilityCalc', desc: 'Prochaines règles & ovulation', descKey: 'preconception.fertilityDesc', route: '/fertility-calculator' },
-    { id: 'preparation-advice', icon: Lightbulb, iconColor: 'text-green-600', bgColor: 'green', title: 'Préparation et conseils', titleKey: 'preconception.preparationAdvice', desc: 'Acide folique, nutrition...', descKey: 'preconception.preparationDesc', route: '/preconception-tips' },
+    { id: 'preparation-advice', icon: Lightbulb, iconColor: 'text-red-600', bgColor: 'red', title: 'Préparation et conseils', titleKey: 'preconception.preparationAdvice', desc: 'Acide folique, nutrition...', descKey: 'preconception.preparationDesc', route: '/preconception-tips' },
   ],
   'pregnancy': [
     // Partie Alimentation (4 premières cartes) - ORANGE PÊCHE avec effet bombé
@@ -86,20 +86,20 @@ const SECTION_ITEMS = {
   'baby-preparation': [
     { id: 'birth-list', icon: ClipboardList, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'Liste de naissance', titleKey: 'babyPrep.birthList', desc: 'Préparez tout', descKey: 'babyPrep.birthListDesc', route: '/birth-list' },
     { id: 'maternity-bag', icon: Briefcase, iconColor: 'text-blue-600', bgColor: 'blue', title: 'Valise maternité', titleKey: 'babyPrep.maternityBag', desc: 'Checklist', descKey: 'babyPrep.checklistDesc', route: '/maternity-bag' },
-    { id: 'prep-tips', icon: BookHeart, iconColor: 'text-green-600', bgColor: 'green', title: 'Conseils & Préparation', titleKey: 'babyPrep.prepTips', desc: 'Guide complet', descKey: 'babyPrep.prepTipsDesc', route: '/baby-prep-tips' },
-    { id: 'videos-resources', icon: Video, iconColor: 'text-red-600', bgColor: 'red', title: 'Vidéos & Ressources', titleKey: 'babyPrep.videosResources', desc: 'Tutoriels & conseils', descKey: 'babyPrep.videosResourcesDesc', route: '/baby-videos' },
+    { id: 'prep-tips', icon: BookHeart, iconColor: 'text-red-600', bgColor: 'red', title: 'Conseils & Préparation', titleKey: 'babyPrep.prepTips', desc: 'Guide complet', descKey: 'babyPrep.prepTipsDesc', route: '/baby-prep-tips' },
+    { id: 'videos-resources', icon: Video, iconColor: 'text-green-600', bgColor: 'green', title: 'Vidéos & Ressources', titleKey: 'babyPrep.videosResources', desc: 'Tutoriels & conseils', descKey: 'babyPrep.videosResourcesDesc', route: '/baby-videos' },
   ],
   'postpartum': [
     { id: 'postpartum-rdv', icon: Stethoscope, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'RDV médicaux', titleKey: 'postpartum.rdv', desc: 'Suivi post-accouchement', descKey: 'postpartum.rdvDesc', route: '/postpartum/rdv' },
     { id: 'postpartum-alimentation', icon: Utensils, iconColor: 'text-blue-600', bgColor: 'blue', title: 'Alimentation', titleKey: 'postpartum.alimentation', desc: 'Allaitement, biberons, diversification', descKey: 'postpartum.alimentationDesc', route: '/postpartum/alimentation' },
-    { id: 'postpartum-soins', icon: Baby, iconColor: 'text-green-600', bgColor: 'green', title: 'Soins quotidiens', titleKey: 'postpartum.soins', desc: 'Coucher, change, portage', descKey: 'postpartum.soinsDesc', route: '/postpartum/soins' },
-    { id: 'postpartum-securite', icon: Shield, iconColor: 'text-red-600', bgColor: 'red', title: 'Sécurité', titleKey: 'postpartum.securite', desc: 'Difficultés, précautions', descKey: 'postpartum.securiteDesc', route: '/postpartum/securite' },
+    { id: 'postpartum-soins', icon: Baby, iconColor: 'text-red-600', bgColor: 'red', title: 'Soins quotidiens', titleKey: 'postpartum.soins', desc: 'Coucher, change, portage', descKey: 'postpartum.soinsDesc', route: '/postpartum/soins' },
+    { id: 'postpartum-securite', icon: Shield, iconColor: 'text-green-600', bgColor: 'green', title: 'Sécurité', titleKey: 'postpartum.securite', desc: 'Difficultés, précautions', descKey: 'postpartum.securiteDesc', route: '/postpartum/securite' },
   ],
   'services': [
     { id: 'chatbot', icon: Phone, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'Assistant IA', titleKey: 'services.chatbot', desc: 'Disponible 24/7', descKey: 'services.available247', route: '/chatbot' },
     { id: 'caf', icon: Building2, iconColor: 'text-blue-600', bgColor: 'blue', title: 'CAF', titleKey: 'services.caf', desc: 'Allocations familiales', descKey: 'services.cafDesc', route: 'https://www.caf.fr', external: true },
-    { id: 'ameli', icon: Hospital, iconColor: 'text-green-600', bgColor: 'green', title: 'Ameli', titleKey: 'services.ameli', desc: 'Assurance maladie', descKey: 'services.ameliDesc', route: 'https://www.ameli.fr', external: true },
-    { id: 'maps', icon: MapPin, iconColor: 'text-red-600', bgColor: 'red', title: 'Mairie proche', titleKey: 'services.maps', desc: 'Démarches administratives', descKey: 'services.mapsDesc', route: 'https://www.google.com/maps/search/mairie', external: true },
+    { id: 'ameli', icon: Hospital, iconColor: 'text-red-600', bgColor: 'red', title: 'Ameli', titleKey: 'services.ameli', desc: 'Assurance maladie', descKey: 'services.ameliDesc', route: 'https://www.ameli.fr', external: true },
+    { id: 'maps', icon: MapPin, iconColor: 'text-green-600', bgColor: 'green', title: 'Mairie proche', titleKey: 'services.maps', desc: 'Démarches administratives', descKey: 'services.mapsDesc', route: 'https://www.google.com/maps/search/mairie', external: true },
     { id: 'videos', icon: Video, iconColor: 'text-violet-600', bgColor: 'violet', title: 'Vidéos', titleKey: 'services.videos', desc: 'Tutoriels YouTube', descKey: 'services.tutorials', route: 'https://www.youtube.com/results?search_query=grossesse+conseils', external: true },
     { id: 'guide-cpam', icon: FileText, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'Guide CPAM/CAF', titleKey: 'services.guideCpam', desc: 'Déclaration de grossesse', descKey: 'services.guideCpamDesc', route: '/guide' },
   ],
@@ -139,10 +139,7 @@ function DuplicatePopup({ itemName, pages, onDuplicate, onCancel, onCreatePage, 
             }}
           >
             <span className="text-white text-lg relative z-10">📋</span>
-            <div 
-              className="absolute top-0.5 left-1 right-1 h-[45%] rounded-full pointer-events-none"
-              style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.1) 100%)' }}
-            />
+            {/* Voile blanc supprimé */}
           </div>
           <h3 className="text-base font-bold text-white">
             {t('journey.duplicateTo', 'Dupliquer vers...')}
@@ -199,10 +196,7 @@ function DuplicatePopup({ itemName, pages, onDuplicate, onCancel, onCreatePage, 
             <span className="font-semibold text-pink-700 text-sm relative z-10">
               {t('journey.createNewPage', 'Créer une nouvelle page')}
             </span>
-            <div 
-              className="absolute top-0 left-2 right-2 h-[45%] rounded-full pointer-events-none"
-              style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.1) 100%)' }}
-            />
+            {/* Voile blanc supprimé */}
           </button>
         </div>
             
@@ -279,11 +273,11 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
     }
   };
   
-  // Générer les styles de fond — NACRE BOMBÉ GLOSSY ARGENTÉ
+  // Générer les styles de fond — BLANC INTENSE NACRÉ 3D BOMBÉ
   const getVibrantBackground = () => {
     return {
-      bg: 'linear-gradient(160deg, #ffffff 0%, #f5f5f5 20%, #e8e8ea 50%, #d5d5d8 80%, #c0c0c5 100%)',
-      border: 'rgba(255,255,255,0.7)',
+      bg: 'linear-gradient(160deg, #ffffff 0%, #fefefe 20%, #fafafa 50%, #f5f5f7 80%, #f0f0f2 100%)',
+      border: 'rgba(255,255,255,0.9)',
       shadow: '0,0,0'
     };
   };
@@ -344,11 +338,7 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
         onContextMenu={(e) => e.preventDefault()}
         data-testid={`item-card-${item.id}`}
       >
-        {/* Effet de reflet bombé - glossy */}
-        <div 
-          className="absolute top-0 left-4 right-4 h-2/5 rounded-t-full pointer-events-none"
-          style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-        />
+        {/* Voile blanc supprimé */}
         
         <div className="relative flex items-center gap-2">
           {/* Icône dans bulle COLORÉE pleine + icône blanche */}
@@ -417,11 +407,7 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
       onContextMenu={(e) => e.preventDefault()}
       data-testid={`item-card-${item.id}`}
     >
-      {/* Effet de reflet bombé - glossy */}
-      <div 
-        className="absolute top-0 left-2 right-2 h-2/5 rounded-t-xl pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-      />
+      {/* Voile blanc supprimé */}
       
       {/* Badge premium */}
       {isPartialPremium && (

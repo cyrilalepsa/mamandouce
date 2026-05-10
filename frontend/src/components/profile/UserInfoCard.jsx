@@ -10,13 +10,8 @@ export function UserInfoCard({ user, formatDate }) {
       }}
       data-testid="user-info-card"
     >
-      {/* Effet de reflet bombé */}
-      <div 
-        className="absolute top-0 left-2 right-2 h-2/5 rounded-t-2xl pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-      />
-      
-      <div className="relative">
+      {/* Voile blanc supprimé */}
+<div className="relative">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-sky-100/60 backdrop-blur-sm"
             style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.05)' }}

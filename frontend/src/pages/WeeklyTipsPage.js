@@ -271,12 +271,7 @@ function WeeklyTipsPage() {
                 >
                   {/* Effet de reflet bombé */}
                   {!isLocked && (
-                    <div 
-                      className="absolute top-0 left-1 right-1 h-1/2 rounded-t-xl pointer-events-none"
-                      style={{ 
-                        background: 'linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
-                      }}
-                    />
+                    {/* Voile blanc supprimé */}
                   )}
                   <span className="relative z-10">{week}</span>
                   {isLocked && (
@@ -370,12 +365,7 @@ function WeeklyTipsPage() {
             >
               {/* Effet de reflet bombé */}
               {!isDarkMode && (
-                <div 
-                  className="absolute top-0 left-4 right-4 h-1/3 rounded-t-full pointer-events-none z-10"
-                  style={{ 
-                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.5) 50%, transparent 100%)',
-                  }}
-                />
+                {/* Voile blanc supprimé */}
               )}
               
               {/* Zone 3D - Model Viewer (Google) */}
@@ -468,10 +458,7 @@ function WeeklyTipsPage() {
               }}
             >
               {!isDarkMode && (
-                <div 
-                  className="absolute top-0 left-3 right-3 h-1/4 rounded-t-full pointer-events-none"
-                  style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, transparent 100%)' }}
-                />
+                {/* Voile blanc supprimé */}
               )}
               <p className={`relative ${isDarkMode ? 'text-slate-300' : 'text-slate-600'} leading-relaxed`} style={textShadow}>
                 {displayTip.description}
@@ -491,10 +478,7 @@ function WeeklyTipsPage() {
                 }}
               >
                 {!isDarkMode && (
-                  <div 
-                    className="absolute top-0 left-3 right-3 h-1/4 rounded-t-full pointer-events-none"
-                    style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.7) 0%, transparent 100%)' }}
-                  />
+                  {/* Voile blanc supprimé */}
                 )}
                 <h4 className={`relative font-bold ${isDarkMode ? 'text-pink-300' : 'text-pink-600'} mb-2 flex items-center gap-2`} style={textShadow}>
                   <Sparkles className="w-5 h-5" />
@@ -517,10 +501,7 @@ function WeeklyTipsPage() {
                 }}
               >
                 {!isDarkMode && (
-                  <div 
-                    className="absolute top-0 left-3 right-3 h-1/4 rounded-t-full pointer-events-none"
-                    style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, transparent 100%)' }}
-                  />
+                  {/* Voile blanc supprimé */}
                 )}
                 <div className="relative flex items-start gap-4">
                   <div 
@@ -559,10 +540,7 @@ function WeeklyTipsPage() {
               }}
             >
               {!isDarkMode && (
-                <div 
-                  className="absolute top-0 left-3 right-3 h-1/4 rounded-t-full pointer-events-none"
-                  style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, transparent 100%)' }}
-                />
+                {/* Voile blanc supprimé */}
               )}
               <div className="relative flex items-start gap-4">
                 <div 
@@ -603,10 +581,7 @@ function WeeklyTipsPage() {
               }}
             >
               {!isDarkMode && (
-                <div 
-                  className="absolute top-0 left-3 right-3 h-1/4 rounded-t-full pointer-events-none"
-                  style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, transparent 100%)' }}
-                />
+                {/* Voile blanc supprimé */}
               )}
               <div className="relative flex items-start gap-3">
                 <AlertTriangle className={`w-6 h-6 ${isDarkMode ? 'text-red-400' : 'text-rose-500'} flex-shrink-0`} />

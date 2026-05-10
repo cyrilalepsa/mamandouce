@@ -62,13 +62,8 @@ function AccordionCard({ title, icon, color, children, defaultOpen = false }) {
         boxShadow: `0 8px 20px -4px ${style.shadow}, 0 4px 8px -2px ${style.shadow}, inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px ${style.shadow}`,
       }}
     >
-      {/* Effet de reflet bombé glossy */}
-      <div 
-        className="absolute top-0 left-4 right-4 h-2/5 rounded-t-3xl pointer-events-none z-10"
-        style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%)' }}
-      />
-      
-      {/* Header cliquable */}
+      {/* Voile blanc supprimé */}
+{/* Header cliquable */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full px-4 py-4 flex items-center gap-3 relative"
