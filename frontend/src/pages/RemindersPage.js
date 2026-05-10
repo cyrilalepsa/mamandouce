@@ -114,7 +114,10 @@ function RemindersPage() {
 
         {/* Formulaire d'ajout */}
         {showAddForm && (
-          <Card className="p-4 mb-6 bg-white/90 rounded-2xl shadow-sm border border-amber-100 animate-in slide-in-from-top-2">
+          <Card className="p-4 mb-6 rounded-2xl shadow-sm animate-in slide-in-from-top-2" style={{
+            background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 30%, #fafafa 100%)',
+            border: '1px solid rgba(255,255,255,0.9)',
+          }}>
             <h3 className="font-semibold text-slate-700 mb-3">Nouveau rappel</h3>
             <div className="space-y-3">
               <Input
@@ -122,6 +125,7 @@ function RemindersPage() {
                 value={newReminder.title}
                 onChange={(e) => setNewReminder({...newReminder, title: e.target.value})}
                 className="rounded-xl"
+                style={{ background: '#ffffff', color: '#000000', border: '1px solid #e2e8f0' }}
               />
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -131,6 +135,7 @@ function RemindersPage() {
                     value={newReminder.date}
                     onChange={(e) => setNewReminder({...newReminder, date: e.target.value})}
                     className="rounded-xl"
+                    style={{ background: '#ffffff', color: '#000000', border: '1px solid #e2e8f0' }}
                   />
                 </div>
                 <div>
@@ -140,20 +145,28 @@ function RemindersPage() {
                     value={newReminder.time}
                     onChange={(e) => setNewReminder({...newReminder, time: e.target.value})}
                     className="rounded-xl"
+                    style={{ background: '#ffffff', color: '#000000', border: '1px solid #e2e8f0' }}
                   />
                 </div>
               </div>
               <div className="flex gap-2">
                 <Button
                   onClick={() => setShowAddForm(false)}
-                  variant="outline"
-                  className="flex-1 rounded-xl"
+                  className="flex-1 rounded-xl text-white font-semibold"
+                  style={{
+                    background: 'linear-gradient(145deg, #fda4af 0%, #fb7185 40%, #f43f5e 100%)',
+                    boxShadow: '-3px -3px 8px rgba(255,255,255,0.9), 3px 3px 10px rgba(244,63,94,0.3), inset 0 1px 3px rgba(255,255,255,0.5)',
+                  }}
                 >
                   Annuler
                 </Button>
                 <Button
                   onClick={handleAddReminder}
-                  className="flex-1 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500"
+                  className="flex-1 rounded-xl text-white font-semibold"
+                  style={{
+                    background: 'linear-gradient(145deg, #fda4af 0%, #fb7185 40%, #f43f5e 100%)',
+                    boxShadow: '-3px -3px 8px rgba(255,255,255,0.9), 3px 3px 10px rgba(244,63,94,0.3), inset 0 2px 4px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(244,63,94,0.15)',
+                  }}
                 >
                   Ajouter
                 </Button>

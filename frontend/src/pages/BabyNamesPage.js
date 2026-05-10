@@ -434,11 +434,22 @@ export default function BabyNamesPage() {
               {isSyncing ? <RefreshCw className="w-4 h-4 animate-spin" /> : cloudSyncEnabled ? <Cloud className="w-4 h-4" /> : <CloudOff className="w-4 h-4" />}
             </button>
             
-            {isPremium && (
-              <div className="flex items-center gap-1 bg-gradient-to-r from-amber-400 to-orange-400 text-white px-2 py-1 rounded-full">
-                <Crown className="w-3 h-3" /><span className="text-xs font-bold">Premium</span>
-              </div>
-            )}
+            {/* Bulle Premium — couronne seule, jaune si premium, gris sinon */}
+            <div 
+              onClick={() => !isPremium && navigate('/pricing')}
+              className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer"
+              style={{
+                background: isPremium 
+                  ? 'linear-gradient(145deg, #fef08a, #fbbf24)' 
+                  : 'linear-gradient(145deg, #e2e8f0, #cbd5e1)',
+                boxShadow: isPremium 
+                  ? '0 0 12px rgba(250,204,21,0.4)' 
+                  : '0 2px 6px rgba(0,0,0,0.1)',
+              }}
+              data-testid="premium-crown-badge"
+            >
+              <Crown className="w-4 h-4" style={{ color: isPremium ? '#78350f' : '#94a3b8' }} />
+            </div>
           </div>
         </div>
       </div>

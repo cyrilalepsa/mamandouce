@@ -198,9 +198,14 @@ function BabyPrepTipsPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [expandedCategory, setExpandedCategory] = useState('medical');
+  const [openGroups, setOpenGroups] = useState({ essential: true, recommended: false });
 
   const toggleCategory = (categoryId) => {
     setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
+  };
+
+  const toggleGroup = (group) => {
+    setOpenGroups(prev => ({ ...prev, [group]: !prev[group] }));
   };
 
   return (
@@ -237,76 +242,92 @@ function BabyPrepTipsPage() {
           </div>
         </Card>
 
-        {/* Catégories accordéon avec effet glossy */}
-        <div className="space-y-3">
-          {PREP_CATEGORIES.map((category) => {
-            const Icon = category.icon;
-            const isExpanded = expandedCategory === category.id;
-            const glossyColor = categoryGlossyMap[category.id] || 'pink';
-            const style = glossyStyles[glossyColor];
+        {/* Deux tiroirs : Essentiel & Recommandé */}
+        <div className="space-y-4">
+          {/* TIROIR ESSENTIEL */}
+          {['essential', 'recommended'].map((group) => {
+            const isEssential = group === 'essential';
+            const groupCategories = isEssential 
+              ? PREP_CATEGORIES.filter(c => c.id === 'medical' || c.id === 'admin')
+              : PREP_CATEGORIES.filter(c => c.id === 'psychological' || c.id === 'practical');
+            const groupTitle = isEssential ? 'Essentiel' : 'Recommandé';
+            const groupIcon = isEssential ? '🔴' : '🟡';
+            const groupOpen = openGroups[group];
             
             return (
-              <div 
-                key={category.id} 
-                className="relative overflow-hidden rounded-2xl"
-                style={{
-                  background: style.bg,
-                  boxShadow: style.shadow,
-                  border: style.border
-                }}
-              >
-                <GlossyReflect />
-                {/* Header de catégorie */}
+              <div key={group} className="rounded-2xl overflow-hidden" style={{
+                background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 30%, #fafafa 100%)',
+                boxShadow: '0 4px 16px -4px rgba(0,0,0,0.08)',
+                border: '1px solid rgba(255,255,255,0.9)',
+              }}>
                 <button
-                  onClick={() => toggleCategory(category.id)}
-                  className="relative w-full p-4 flex items-center gap-3 text-left"
+                  onClick={() => toggleGroup(group)}
+                  className="w-full p-4 flex items-center gap-3 text-left"
                 >
-                  <div className={`w-10 h-10 bg-gradient-to-br ${category.color} rounded-xl flex items-center justify-center shadow-lg`}>
-                    <Icon className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h2 className="font-bold text-slate-700">{category.title}</h2>
-                    <p className="text-xs text-slate-500">{category.items.length} conseils</p>
-                  </div>
-                  {isExpanded ? (
-                    <ChevronUp className="w-5 h-5 text-slate-400" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-slate-400" />
-                  )}
+                  <span className="text-lg">{groupIcon}</span>
+                  <span className="font-bold text-black flex-1">{groupTitle}</span>
+                  <span className="text-xs text-slate-400">{groupCategories.reduce((acc, c) => acc + c.items.length, 0)} conseils</span>
+                  {groupOpen ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
                 </button>
-
-                {/* Contenu de catégorie */}
-                {isExpanded && (
+                
+                {groupOpen && (
                   <div className="px-4 pb-4 space-y-3">
-                    {category.disclaimer && (
-                      <p className="text-xs text-slate-500 italic bg-white/50 rounded-xl p-2">
-                        {category.disclaimer}
-                      </p>
-                    )}
-                    
-                    {category.items.map((item, index) => (
-                      <div 
-                        key={index}
-                        className="bg-white/70 backdrop-blur rounded-xl p-3"
-                      >
-                        <div className="flex items-start gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0 mt-1" />
-                          <div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <h3 className="font-semibold text-slate-700 text-sm">{item.title}</h3>
-                              {item.timeline && (
-                                <span className="text-[10px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">
-                                  {item.timeline}
-                                </span>
-                              )}
+                    {groupCategories.map((category) => {
+                      const Icon = category.icon;
+                      const isExpanded = expandedCategory === category.id;
+                      
+                      return (
+                        <div key={category.id}>
+                          <button
+                            onClick={() => toggleCategory(category.id)}
+                            className="w-full p-3 flex items-center gap-3 text-left rounded-xl transition-all hover:bg-slate-50"
+                          >
+                            <div className={`w-10 h-10 bg-gradient-to-br ${category.color} rounded-xl flex items-center justify-center`}
+                              style={{ boxShadow: '0 3px 8px -1px rgba(0,0,0,0.15)' }}
+                            >
+                              <Icon className="w-5 h-5 text-white" />
                             </div>
-                            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                              {item.desc}
-                            </p>
-                          </div>
+                            <div className="flex-1">
+                              <h2 className="font-bold text-black text-sm">{category.title}</h2>
+                              <p className="text-xs text-slate-500">{category.items.length} conseils</p>
+                            </div>
+                            {isExpanded ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                          </button>
+                          
+                          {isExpanded && (
+                            <div className="ml-2 mt-2 space-y-2">
+                              {category.items.map((item, index) => {
+                                const cycleColors = ['from-yellow-400 to-amber-500','from-blue-400 to-sky-500','from-red-400 to-rose-500','from-green-400 to-emerald-500','from-violet-400 to-purple-500'];
+                                const logoColor = cycleColors[index % cycleColors.length];
+                                
+                                return (
+                                  <div key={index} className="rounded-xl p-3" style={{
+                                    background: 'linear-gradient(160deg, #fff 0%, #fefefe 30%, #fafafa 100%)',
+                                    boxShadow: '0 2px 8px -2px rgba(0,0,0,0.04)',
+                                    border: '1px solid rgba(240,240,242,0.8)',
+                                  }}>
+                                    <div className="flex items-start gap-2">
+                                      <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${logoColor} flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                                        <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                                      </div>
+                                      <div>
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                          <h3 className="font-semibold text-black text-sm">{item.title}</h3>
+                                          {item.timeline && (
+                                            <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{item.timeline}</span>
+                                          )}
+                                        </div>
+                                        <p className="text-xs text-slate-600 mt-1 leading-relaxed">{item.desc}</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>

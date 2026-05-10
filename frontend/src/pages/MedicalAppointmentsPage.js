@@ -369,28 +369,28 @@ function MedicalAppointmentsPage() {
               const trimesterColor = trimester === 1 ? 'sky' : trimester === 2 ? 'purple' : 'pink';
               const isLocked = !isPremium && trimester > 1;
               
-              // Couleurs pastels par trimestre
+              // Couleurs pastels par trimestre — Jaune / Bleu / Rouge
               const colorStyles = {
                 1: {
+                  bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,249,195,0.95) 30%, rgba(253,230,138,0.85) 60%, rgba(251,191,36,0.7) 100%)',
+                  shadow: 'rgba(245,158,11,0.25)',
+                  border: 'rgba(245,158,11,0.35)',
+                  iconBg: 'bg-amber-400',
+                  text: 'text-amber-600'
+                },
+                2: {
                   bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(224,242,254,0.95) 30%, rgba(186,230,253,0.85) 60%, rgba(125,211,252,0.7) 100%)',
                   shadow: 'rgba(56,189,248,0.25)',
                   border: 'rgba(56,189,248,0.35)',
                   iconBg: 'bg-sky-400',
                   text: 'text-sky-600'
                 },
-                2: {
-                  bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(243,232,255,0.95) 30%, rgba(233,213,255,0.85) 60%, rgba(216,180,254,0.7) 100%)',
-                  shadow: 'rgba(168,85,247,0.25)',
-                  border: 'rgba(168,85,247,0.35)',
-                  iconBg: 'bg-purple-400',
-                  text: 'text-purple-600'
-                },
                 3: {
-                  bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(252,231,243,0.95) 30%, rgba(251,207,232,0.85) 60%, rgba(249,168,212,0.7) 100%)',
-                  shadow: 'rgba(236,72,153,0.25)',
-                  border: 'rgba(236,72,153,0.35)',
-                  iconBg: 'bg-pink-400',
-                  text: 'text-pink-600'
+                  bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,226,226,0.95) 30%, rgba(254,202,202,0.85) 60%, rgba(252,165,165,0.7) 100%)',
+                  shadow: 'rgba(239,68,68,0.25)',
+                  border: 'rgba(239,68,68,0.35)',
+                  iconBg: 'bg-red-400',
+                  text: 'text-red-600'
                 }
               };
               
@@ -532,11 +532,17 @@ function MedicalAppointmentsPage() {
                                     }
                                   }}
                                   data-testid={`reminder-${apt.id}`}
-                                  className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                                    scheduledReminders[apt.id]
-                                      ? 'bg-amber-500 text-white'
-                                      : 'bg-amber-50 text-amber-500 hover:bg-amber-100'
-                                  }`}
+                                  className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
+                                  style={{
+                                    background: scheduledReminders[apt.id]
+                                      ? 'linear-gradient(145deg, #7dd3fc, #38bdf8)'
+                                      : '#ffffff',
+                                    color: scheduledReminders[apt.id] ? '#ffffff' : '#94a3b8',
+                                    boxShadow: scheduledReminders[apt.id]
+                                      ? '0 2px 8px rgba(56,189,248,0.3)'
+                                      : '0 1px 3px rgba(0,0,0,0.06)',
+                                    border: scheduledReminders[apt.id] ? 'none' : '1px solid #e2e8f0',
+                                  }}
                                   title={scheduledReminders[apt.id] ? 'Supprimer le rappel' : 'Programmer un rappel'}
                                 >
                                   {scheduledReminders[apt.id] ? <BellOff className="w-4 h-4" /> : <Bell className="w-4 h-4" />}

@@ -74,9 +74,9 @@ function ParentalLeavePage() {
         <div 
           className="relative overflow-hidden rounded-full mb-4"
           style={{
-            background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(245,243,255,0.95) 30%, rgba(237,233,254,0.85) 60%, rgba(221,214,254,0.7) 100%)',
-            boxShadow: '0 8px 24px -4px rgba(139,92,246,0.2), 0 4px 8px -2px rgba(139,92,246,0.1), inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(139,92,246,0.08)',
-            border: '2px solid rgba(139,92,246,0.3)'
+            background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%)',
+            boxShadow: '0 6px 18px -4px rgba(0,0,0,0.08), 0 3px 8px -2px rgba(0,0,0,0.04), inset -4px -4px 10px rgba(0,0,0,0.04), inset 4px 4px 10px rgba(255,255,255,0.9)',
+            border: '1px solid rgba(255,255,255,0.9)'
           }}
         >
           {/* Effet de reflet bombé */}
@@ -180,9 +180,9 @@ function ParentalLeavePage() {
         <div 
           className="relative overflow-hidden rounded-full mb-4"
           style={{
-            background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(236,253,245,0.95) 30%, rgba(209,250,229,0.85) 60%, rgba(167,243,208,0.7) 100%)',
-            boxShadow: '0 8px 24px -4px rgba(16,185,129,0.2), 0 4px 8px -2px rgba(16,185,129,0.1), inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(16,185,129,0.08)',
-            border: '2px solid rgba(16,185,129,0.3)'
+            background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%)',
+            boxShadow: '0 6px 18px -4px rgba(0,0,0,0.08), 0 3px 8px -2px rgba(0,0,0,0.04), inset -4px -4px 10px rgba(0,0,0,0.04), inset 4px 4px 10px rgba(255,255,255,0.9)',
+            border: '1px solid rgba(255,255,255,0.9)'
           }}
         >
           {/* Effet de reflet bombé */}
@@ -271,9 +271,9 @@ function ParentalLeavePage() {
         <div 
           className="relative overflow-hidden rounded-full mb-4"
           style={{
-            background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,249,195,0.95) 30%, rgba(254,240,138,0.85) 60%, rgba(253,224,71,0.7) 100%)',
-            boxShadow: '0 8px 24px -4px rgba(245,158,11,0.2), 0 4px 8px -2px rgba(245,158,11,0.1), inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(245,158,11,0.08)',
-            border: '2px solid rgba(245,158,11,0.3)'
+            background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%)',
+            boxShadow: '0 6px 18px -4px rgba(0,0,0,0.08), 0 3px 8px -2px rgba(0,0,0,0.04), inset -4px -4px 10px rgba(0,0,0,0.04), inset 4px 4px 10px rgba(255,255,255,0.9)',
+            border: '1px solid rgba(255,255,255,0.9)'
           }}
         >
           {/* Effet de reflet bombé */}
@@ -360,9 +360,9 @@ function ParentalLeavePage() {
         <div 
           className="relative overflow-hidden rounded-full mb-4"
           style={{
-            background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(252,231,243,0.95) 30%, rgba(251,207,232,0.85) 60%, rgba(249,168,212,0.7) 100%)',
-            boxShadow: '0 8px 24px -4px rgba(236,72,153,0.2), 0 4px 8px -2px rgba(236,72,153,0.1), inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(236,72,153,0.08)',
-            border: '2px solid rgba(236,72,153,0.3)'
+            background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%)',
+            boxShadow: '0 6px 18px -4px rgba(0,0,0,0.08), 0 3px 8px -2px rgba(0,0,0,0.04), inset -4px -4px 10px rgba(0,0,0,0.04), inset 4px 4px 10px rgba(255,255,255,0.9)',
+            border: '1px solid rgba(255,255,255,0.9)'
           }}
         >
           {/* Effet de reflet bombé */}
@@ -437,9 +437,9 @@ function ParentalLeavePage() {
         <div 
           className="relative overflow-hidden rounded-full mb-4"
           style={{
-            background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(224,242,254,0.95) 30%, rgba(186,230,253,0.85) 60%, rgba(125,211,252,0.7) 100%)',
-            boxShadow: '0 8px 24px -4px rgba(56,189,248,0.2), 0 4px 8px -2px rgba(56,189,248,0.1), inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(56,189,248,0.08)',
-            border: '2px solid rgba(56,189,248,0.3)'
+            background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%)',
+            boxShadow: '0 6px 18px -4px rgba(0,0,0,0.08), 0 3px 8px -2px rgba(0,0,0,0.04), inset -4px -4px 10px rgba(0,0,0,0.04), inset 4px 4px 10px rgba(255,255,255,0.9)',
+            border: '1px solid rgba(255,255,255,0.9)'
           }}
         >
           {/* Effet de reflet bombé */}
@@ -514,9 +514,9 @@ function ParentalLeavePage() {
         <div 
           className="relative overflow-hidden rounded-full mb-4"
           style={{
-            background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(243,232,255,0.95) 30%, rgba(233,213,255,0.85) 60%, rgba(216,180,254,0.7) 100%)',
-            boxShadow: '0 8px 24px -4px rgba(168,85,247,0.2), 0 4px 8px -2px rgba(168,85,247,0.1), inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(168,85,247,0.08)',
-            border: '2px solid rgba(168,85,247,0.3)'
+            background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%)',
+            boxShadow: '0 6px 18px -4px rgba(0,0,0,0.08), 0 3px 8px -2px rgba(0,0,0,0.04), inset -4px -4px 10px rgba(0,0,0,0.04), inset 4px 4px 10px rgba(255,255,255,0.9)',
+            border: '1px solid rgba(255,255,255,0.9)'
           }}
         >
           {/* Effet de reflet bombé */}

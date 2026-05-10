@@ -22,7 +22,8 @@ export default function GenderSelector({
           placeholder="Rechercher un prénom..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className={`w-full pl-12 pr-10 py-3 ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-white border-slate-200'} border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent`}
+          className={`w-full pl-12 pr-10 py-3 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent`}
+          style={{ background: '#ffffff', color: '#000000', borderColor: '#e2e8f0' }}
           data-testid="search-input"
         />
         {searchQuery && (
