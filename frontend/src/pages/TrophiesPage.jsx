@@ -147,20 +147,23 @@ function TrophiesPage() {
   const [progress, setProgress] = useState(null);
   const [giftEligibility, setGiftEligibility] = useState(null);
   const [myContributions, setMyContributions] = useState([]);
+  const [communityStats, setCommunityStats] = useState(null);
   const [showGoldAnimation, setShowGoldAnimation] = useState(false);
   const [newBadge, setNewBadge] = useState(null);
 
   const fetchData = useCallback(async () => {
     try {
-      const [progressRes, giftRes, contribRes] = await Promise.all([
-        api.get('/contributions/badge-progress'),
-        api.get('/contributions/gift-eligibility'),
-        api.get('/contributions/my')
+      const [progressRes, giftRes, contribRes, statsRes] = await Promise.all([
+        api.contributions.getBadgeProgress(),
+        api.contributions.getGiftEligibility(),
+        api.contributions.getMy(),
+        api.contributions.getCommunityStats().catch(() => ({ data: null }))
       ]);
       
       setProgress(progressRes.data);
       setGiftEligibility(giftRes.data);
       setMyContributions(contribRes.data.contributions || []);
+      if (statsRes.data) setCommunityStats(statsRes.data);
       
       // Check for new badge
       if (progressRes.data.new_badge_unlocked) {
@@ -183,7 +186,7 @@ function TrophiesPage() {
 
   const handleClaimFreePostpartum = async () => {
     try {
-      await api.post('/contributions/claim-free-postpartum');
+      await api.contributions.claimFreePostpartum();
       toast.success('🎁 Post-partum gratuit débloqué !');
       fetchData();
     } catch (error) {
@@ -345,6 +348,79 @@ function TrophiesPage() {
             })}
           </div>
         </Card>
+
+        {/* Classement Communautaire Anonyme */}
+        {communityStats && (
+          <Card className="bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 rounded-2xl p-5 shadow-lg" data-testid="community-leaderboard">
+            <h2 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              <Star className="w-5 h-5 text-amber-500" />
+              Classement Communautaire
+            </h2>
+
+            {/* Stats globales */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="p-3 rounded-xl text-center" style={{
+                background: 'linear-gradient(160deg, #fff 0%, #fefefe 30%, #f5f5f7 100%)',
+                boxShadow: '0 4px 12px -4px rgba(0,0,0,0.06), inset -2px -2px 6px rgba(0,0,0,0.03), inset 2px 2px 6px rgba(255,255,255,0.9)',
+              }}>
+                <div className="text-2xl font-bold text-pink-600">{communityStats.total_contributors}</div>
+                <div className="text-xs text-slate-500">Contributrices</div>
+              </div>
+              <div className="p-3 rounded-xl text-center" style={{
+                background: 'linear-gradient(160deg, #fff 0%, #fefefe 30%, #f5f5f7 100%)',
+                boxShadow: '0 4px 12px -4px rgba(0,0,0,0.06), inset -2px -2px 6px rgba(0,0,0,0.03), inset 2px 2px 6px rgba(255,255,255,0.9)',
+              }}>
+                <div className="text-2xl font-bold text-sky-600">{communityStats.total_contributions}</div>
+                <div className="text-xs text-slate-500">Contributions</div>
+              </div>
+            </div>
+
+            {/* Badges distribués */}
+            <div className="space-y-2">
+              {[
+                { badge: 'gold', name: communityStats.badge_names?.gold || 'Marraine Or', count: communityStats.badges?.gold || 0, icon: Crown, gradient: 'from-yellow-500 to-amber-600', bg: 'bg-yellow-100' },
+                { badge: 'silver', name: communityStats.badge_names?.silver || 'Argent', count: communityStats.badges?.silver || 0, icon: Award, gradient: 'from-slate-400 to-slate-500', bg: 'bg-slate-100' },
+                { badge: 'bronze', name: communityStats.badge_names?.bronze || 'Bronze', count: communityStats.badges?.bronze || 0, icon: Medal, gradient: 'from-amber-600 to-amber-700', bg: 'bg-amber-100' },
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div key={item.badge} className="flex items-center gap-3 p-3 rounded-xl" style={{
+                    background: 'linear-gradient(160deg, #fff 0%, #fefefe 30%, #fafafa 100%)',
+                    boxShadow: '0 2px 8px -2px rgba(0,0,0,0.04)',
+                    border: '1px solid rgba(240,240,242,0.8)',
+                  }}>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${item.gradient}`}>
+                      <Icon className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <span className="font-semibold text-sm text-slate-700">{item.name}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-lg font-bold text-slate-700">{item.count}</span>
+                      <span className="text-xs text-slate-400 ml-1">membres</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Motivation */}
+            {communityStats.badges?.gold === 0 && (
+              <div className="mt-4 p-3 bg-gradient-to-r from-yellow-100/50 to-amber-100/50 rounded-xl text-center">
+                <p className="text-sm text-amber-700 font-medium">
+                  Soyez la première Marraine Or de la communauté !
+                </p>
+              </div>
+            )}
+            {communityStats.badges?.gold > 0 && !progress?.gold?.earned && (
+              <div className="mt-4 p-3 bg-gradient-to-r from-yellow-100/50 to-amber-100/50 rounded-xl text-center">
+                <p className="text-sm text-amber-700 font-medium">
+                  {communityStats.badges.gold} Marraine{communityStats.badges.gold > 1 ? 's' : ''} Or dans la communauté — rejoignez-les !
+                </p>
+              </div>
+            )}
+          </Card>
+        )}
 
         {/* Gift Eligibility */}
         <Card className="bg-gradient-to-br from-purple-100 via-pink-50 to-white rounded-2xl p-5 shadow-lg">

@@ -213,6 +213,46 @@ async def get_badge_progress(current_user: User = Depends(get_current_user)):
     return progress
 
 
+# ==================== CLASSEMENT COMMUNAUTAIRE ANONYME ====================
+
+@router.get("/contributions/community-stats")
+async def get_community_stats(current_user: User = Depends(get_current_user)):
+    """Get anonymous community statistics for gamification leaderboard"""
+    
+    # Count total contributors
+    total_contributors = await db.contributions.distinct("user_id", {"status": "approved"})
+    
+    # Count badges per level
+    bronze_count = await db.user_badges.count_documents({"badge_type": "bronze"})
+    silver_count = await db.user_badges.count_documents({"badge_type": "silver"})
+    gold_count = await db.user_badges.count_documents({"badge_type": "gold"})
+    
+    # Total approved contributions
+    total_contributions = await db.contributions.count_documents({"status": "approved"})
+    
+    # Total recipes shared
+    total_recipes = await db.contributions.count_documents({
+        "status": "approved", 
+        "contribution_type": "recipe"
+    })
+    
+    # Total referrals completed
+    total_referrals = await db.referrals.count_documents({"status": "completed"})
+    
+    return {
+        "total_contributors": len(total_contributors),
+        "total_contributions": total_contributions,
+        "total_recipes": total_recipes,
+        "total_referrals": total_referrals,
+        "badges": {
+            "bronze": bronze_count,
+            "silver": silver_count,
+            "gold": gold_count
+        },
+        "badge_names": BADGE_NAMES
+    }
+
+
 # ==================== GIFT SYSTEM (PARRAINAGE) ====================
 
 @router.get("/contributions/gift-eligibility")

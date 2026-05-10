@@ -279,6 +279,17 @@ export const api = {
     addChangelogFeature: (data) => axios.post(`${API}/admin/changelog/add`, data, getAuthHeaders()),
   },
   
+  contributions: {
+    getBadgeProgress: () => axios.get(`${API}/contributions/badge-progress`, getAuthHeaders()),
+    getGiftEligibility: () => axios.get(`${API}/contributions/gift-eligibility`, getAuthHeaders()),
+    getMy: () => axios.get(`${API}/contributions/my`, getAuthHeaders()),
+    getCommunityStats: () => axios.get(`${API}/contributions/community-stats`, getAuthHeaders()),
+    getGamificationStatus: () => axios.get(`${API}/contributions/gamification-status`, getAuthHeaders()),
+    toggleGamificationOptin: () => axios.post(`${API}/contributions/gamification-optin`, {}, getAuthHeaders()),
+    submit: (data) => axios.post(`${API}/contributions/submit`, data, getAuthHeaders()),
+    claimFreePostpartum: () => axios.post(`${API}/contributions/claim-free-postpartum`, {}, getAuthHeaders()),
+  },
+  
   chatbot: {
     sendMessage: (message, sessionId = null) => axios.post(`${API}/chatbot/message`, { message, session_id: sessionId }, getAuthHeaders()),
     getHistory: (sessionId = null) => axios.get(`${API}/chatbot/history${sessionId ? `?session_id=${sessionId}` : ''}`, getAuthHeaders()),
