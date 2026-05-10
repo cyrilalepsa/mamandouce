@@ -168,8 +168,6 @@ function HomePage() {
 
   return (
     <div className="min-h-screen gradient-bg relative overflow-hidden">
-      {/* Drapeau Langue — sans bulle */}
-      <LanguageBubble />
 
         <div className="relative z-10">
           <div 

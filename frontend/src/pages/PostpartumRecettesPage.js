@@ -45,7 +45,7 @@ export default function PostpartumRecettesPage() {
     <div className="min-h-screen gradient-bg">
       <div className="max-w-2xl mx-auto p-4 sm:p-6">
         {/* Header avec effet nuage */}
-        <CloudCard color="green" className="p-4 mb-6">
+        <div className="flex items-center gap-4 mb-6">
           <div className="flex items-center gap-4">
             <Button
               onClick={() => navigate(-1)}
@@ -62,7 +62,7 @@ export default function PostpartumRecettesPage() {
               <ChefHat className="w-5 h-5 text-white" />
             </div>
           </div>
-        </CloudCard>
+        </div>
 
         {loading ? (
           <div className="flex justify-center py-12">

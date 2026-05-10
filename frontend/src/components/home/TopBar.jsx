@@ -5,6 +5,78 @@ import { Crown, User, Settings, LogOut, Shield, MoreVertical, Share2, Download, 
 import { toast } from 'sonner';
 import api from '../../utils/api';
 import { AvatarPreview } from '../profile/AvatarBuilder';
+import { languages, changeLanguage, getCurrentLanguage } from '../../i18n';
+import { Check, X } from 'lucide-react';
+
+// Drapeau langue inline (glyphe nu, pas de bulle)
+function LanguageInlineFlag() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentLang, setCurrentLang] = useState(getCurrentLanguage());
+  const dropdownRef = useRef(null);
+  const currentLanguage = languages.find(l => l.code === currentLang) || languages[0];
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  useEffect(() => {
+    const checkLang = () => setCurrentLang(getCurrentLanguage());
+    window.addEventListener('languageChanged', checkLang);
+    return () => window.removeEventListener('languageChanged', checkLang);
+  }, []);
+
+  const handleChange = (langCode) => {
+    changeLanguage(langCode);
+    setCurrentLang(langCode);
+    setIsOpen(false);
+    const lang = languages.find(l => l.code === langCode);
+    toast.success(`${lang.flag} ${lang.name}`);
+    window.dispatchEvent(new Event('languageChanged'));
+  };
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        onClick={(e) => { e.stopPropagation(); setIsOpen(prev => !prev); }}
+        className="p-1 flex items-center justify-center transition-all duration-200 hover:scale-110"
+        style={{ background: 'none', border: 'none', boxShadow: 'none' }}
+        data-testid="language-bubble-btn"
+      >
+        <span className="text-xl">{currentLanguage.flag}</span>
+      </button>
+      {isOpen && (
+        <div className="absolute top-10 right-0 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden" style={{ minWidth: '200px', zIndex: 9999 }}>
+          <div className="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-pink-50 to-purple-50 border-b border-slate-100">
+            <span className="text-sm font-semibold text-slate-600">Langue</span>
+            <button onClick={(e) => { e.stopPropagation(); setIsOpen(false); }} className="p-1 hover:bg-slate-200 rounded-full">
+              <X className="w-4 h-4 text-slate-400" />
+            </button>
+          </div>
+          <div className="max-h-[300px] overflow-y-auto py-1">
+            {languages.map((lang) => (
+              <button key={lang.code} onClick={(e) => { e.stopPropagation(); handleChange(lang.code); }}
+                className={`w-full flex items-center justify-between px-4 py-3 hover:bg-slate-50 ${lang.code === currentLang ? 'bg-pink-50' : ''}`}
+                data-testid={`lang-inline-${lang.code}`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{lang.flag}</span>
+                  <span className={`font-medium ${lang.code === currentLang ? 'text-pink-600' : 'text-slate-700'}`}>{lang.name}</span>
+                </div>
+                {lang.code === currentLang && <Check className="w-5 h-5 text-pink-500" />}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) {
   const navigate = useNavigate();
@@ -202,7 +274,7 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
   ];
 
   return (
-    <div className="flex justify-between items-start">
+    <div className="flex justify-between items-center">
       {/* À gauche : Couronne Premium + Tirelire */}
       <div className="flex items-center gap-2">
         {/* Bouton Premium - COURONNE OR GLOSSY 3D INTENSE */}
@@ -242,15 +314,19 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
         </button>
       </div>
 
-      {/* Menu déroulant discret à droite */}
-      <div className="relative" ref={menuRef}>
+      {/* À droite : Drapeau + 3 points — glyphes nus sans bulle, alignés */}
+      <div className="flex items-center gap-1" ref={menuRef}>
+        {/* Drapeau langue inline (plus de LanguageBubble séparé) */}
+        <LanguageInlineFlag />
+        
+        {/* 3 petits points — glyphe nu */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           data-testid="account-menu-btn"
-          className="relative p-2 hover:opacity-70 transition-all flex items-center justify-center"
+          className="relative p-1.5 hover:opacity-70 transition-all flex items-center justify-center"
+          style={{ background: 'none', border: 'none', boxShadow: 'none' }}
         >
           <MoreVertical className="w-5 h-5 text-slate-500" />
-          {/* Point rouge de notification */}
           {hasNotifications && (
             <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
           )}
