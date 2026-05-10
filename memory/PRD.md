@@ -1,39 +1,31 @@
-# MamanDouce v5.6.0 — Cycle Couleurs Complet
+# MamanDouce v5.7.0 — UI Zen + Vidéos Liste
 
-## Règles immuables (33 Prompts)
-1. **Cartes: BLANC INTENSE nacré** (gradient #fff → #f0f0f2)
-2. **ZÉRO VOILE BLANC** sur les cartes
-3. **Cycle couleurs: Jaune → Bleu → Rouge → Vert → Violet**
-4. **Titres en texte pur** (pas de bulles)
-5. **Texte: NOIR PUR #000000**
-6. **Boutons action: Rose glossy 3D bombé**
-7. **overscroll-behavior-y: contain** (pull-to-refresh)
+## Règles immuables
+1. Cartes: BLANC INTENSE nacré (gradient #fff → #f0f0f2)
+2. ZÉRO VOILE BLANC sur les cartes
+3. Cycle couleurs: Jaune → Bleu → Rouge → Vert → Violet
+4. Titres en texte pur (pas de bulles)
+5. Texte: NOIR PUR #000000
+6. Boutons action: Rose glossy 3D bombé
+7. overscroll-behavior-y: contain (pull-to-refresh)
 
-## Cycle couleurs appliqué à TOUS les niveaux
+## Page d'accueil
+- Crown: or glossy intense avec double glow
+- Tirelire: jaune clair, sans contour
+- Drapeau langue: même niveau que les 3 points (right-14)
+- Logo MamanDouce: sans halo blanc (textShadow: none)
+- Avatar: bordure dorée simple, SANS aura fantôme
+- Coeurs: animation battement visible (scale 0.85→1.15)
+- Chatbot: SUPPRIMÉ des services
 
-### Niveau 1 — Sections principales (JourneyStepsPage)
-Préconception=Jaune, Grossesse=Bleu, Bébé=Rouge, Post-partum=Vert, Services=Violet
-
-### Niveau 2 — Sous-sections (SectionDetailPage)
-Chaque section suit: Jaune → Bleu → Rouge → Vert → Violet
-
-### Niveau 3 — Sous-pages (pages individuelles)
-- **PostpartumAlimentationPage** (header Bleu): Allaitement=J, Biberons=B, Diversification=R, Recettes=V
-- **PostpartumSoinsPage** (header Rouge): Coucher=J, Portage=B
-- **PostpartumSecuritePage** (header Vert): Difficultés=J, Précautions=B
-- **PostpartumRdvPage** (header Jaune)
-- **BabyPrepTipsPage**: Médical=J, Admin=B, Psycho=R, Pratique=V
-- **BabyVideosPage**: 8 items suivant J→B→R→V→Vi→J→B→R
-
-### Niveau 4 — Sous-sous-pages (feuilles)
-Allaitement=J, Biberons=B, Diversification=R, Recettes=V
-CoucherChange=J, Portage=B, Difficultés=J, Précautions=B
-
-## Architecture CSS (v3.0 Modulaire)
-`styles/glossy/` — 12 modules importés par `glossy.css`
+## Page Vidéos & Ressources
+- Titre: texte pur, sans bulle CloudCard
+- Cartes: mode LISTE (pas grille), fond blanc glossy 3D
+- Bulles logos: cycle J→B→R→V→Vi
+- Icône external link à droite
 
 ## Changelog
-- **13 Avr 2026**: CSS modulaire + 33 prompts (blanc intense, zéro voile, cycle global)
-- **13 Avr 2026**: Cycle couleurs étendu à toutes les sous-sections et sous-sous-sections
+- 13 Avr 2026: CSS modulaire, 33 prompts, cycle couleurs complet
+- 13 Avr 2026: Homepage Zen (aura supprimée, halo enlevé, crown glossy, tirelire claire, drapeau aligné, coeurs battement, chatbot supprimé) + Vidéos en mode liste
 
 *MàJ: 13 Avril 2026*
