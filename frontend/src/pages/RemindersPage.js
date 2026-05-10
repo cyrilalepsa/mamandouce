@@ -162,6 +162,46 @@ function RemindersPage() {
           </Card>
         )}
 
+        {/* Rappels post-partum pré-définis */}
+        {reminders.length === 0 && !showAddForm && (
+          <div className="mb-6 p-4 rounded-2xl" style={{
+            background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 30%, #fafafa 100%)',
+            boxShadow: '0 4px 16px -4px rgba(0,0,0,0.08)',
+            border: '1px solid rgba(255,255,255,0.9)',
+          }}>
+            <h3 className="font-semibold text-slate-700 mb-3 text-sm">RDV post-partum recommandés</h3>
+            <div className="space-y-2">
+              {[
+                { title: 'Visite post-natale (6-8 semaines)', weeks: 7, icon: '🩺' },
+                { title: 'Rééducation périnéale', weeks: 8, icon: '🏥' },
+                { title: 'Visite pédiatrique 1er mois', weeks: 4, icon: '👶' },
+                { title: 'Vaccin bébé - 2 mois', weeks: 8, icon: '💉' },
+                { title: 'Visite pédiatrique 4 mois', weeks: 16, icon: '👶' },
+              ].map((rdv, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    const date = new Date();
+                    date.setDate(date.getDate() + rdv.weeks * 7);
+                    const dateStr = date.toISOString().split('T')[0];
+                    setNewReminder({ title: rdv.title, date: dateStr, time: '09:00', type: 'rdv' });
+                    setShowAddForm(true);
+                  }}
+                  className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-amber-50 transition-colors text-left"
+                  data-testid={`preset-rdv-${i}`}
+                >
+                  <span className="text-lg">{rdv.icon}</span>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-slate-700">{rdv.title}</p>
+                    <p className="text-xs text-slate-400">Dans ~{rdv.weeks} semaines</p>
+                  </div>
+                  <Plus className="w-4 h-4 text-amber-400" />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Liste des rappels */}
         {loading ? (
           <div className="text-center py-10">

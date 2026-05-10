@@ -657,6 +657,11 @@ export function RecipesSection({ babyRecipes, favorites = [], onFavoritesChange 
                 {selectedRecipe.age}
               </span>
               {selectedRecipe.is_custom && (
+                <span className="text-xs text-slate-400 italic">
+                  By {selectedRecipe.author_name || 'Utilisateur'}
+                </span>
+              )}
+              {selectedRecipe.is_custom && (
                 <button
                   onClick={(e) => handleDeleteRecipe(selectedRecipe.id, e)}
                   className="p-2 rounded-full hover:bg-red-50 transition-colors"

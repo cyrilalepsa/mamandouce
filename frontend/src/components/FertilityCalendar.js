@@ -562,6 +562,34 @@ export default function FertilityCalendar({
           </p>
         </div>
 
+        {/* Bouton "Début de règles" — manuel */}
+        <div className="px-4 py-3 border-b">
+          <button
+            onClick={() => {
+              const today = new Date();
+              const y = today.getFullYear();
+              const m = String(today.getMonth() + 1).padStart(2, '0');
+              const d = String(today.getDate()).padStart(2, '0');
+              if (onAddRapport) {
+                // Signal to parent that period started today (stored differently)
+                localStorage.setItem('mamandouce_last_period_start', `${y}-${m}-${d}`);
+                toast && typeof toast === 'function' && toast('Début de règles enregistré !');
+              }
+              setSelectedDate(today);
+            }}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-white font-semibold transition-all"
+            style={{
+              background: 'linear-gradient(145deg, #fda4af 0%, #fb7185 40%, #f43f5e 100%)',
+              boxShadow: '-3px -3px 8px rgba(255,255,255,0.9), 3px 3px 10px rgba(244,63,94,0.3), inset 0 1px 3px rgba(255,255,255,0.5)',
+              border: '1px solid rgba(254,205,211,0.6)',
+            }}
+            data-testid="period-start-btn"
+          >
+            <Droplets className="w-5 h-5" />
+            Début de règles aujourd'hui
+          </button>
+        </div>
+
         {/* Navigation mois */}
         <div className="flex items-center justify-between p-4">
           <Button onClick={prevMonth} className="bg-slate-100 rounded-full p-2 hover:bg-slate-200">
@@ -736,7 +764,7 @@ export default function FertilityCalendar({
           </div>
         )}
 
-        {/* Modal ajout rapport */}
+        {/* Modal ajout rapport — Données écrites sur le jour sélectionné */}
         {showAddRapport && selectedDate && (
           <div className="fixed inset-0 bg-black/30 z-60 flex items-center justify-center p-4">
             <Card className="bg-white rounded-2xl p-5 w-full max-w-xs">
@@ -744,6 +772,49 @@ export default function FertilityCalendar({
                 {formatDateWithWeekday(selectedDate)}
               </h4>
               
+              {/* Données du jour */}
+              <div className="space-y-1.5 mb-4 text-xs">
+                {isPeriodDay(selectedDate) && (
+                  <div className="flex items-center gap-2 px-2 py-1 bg-pink-50 rounded-lg">
+                    <Droplets className="w-3.5 h-3.5 text-pink-500" />
+                    <span className="text-pink-700 font-medium">Jour de règles</span>
+                  </div>
+                )}
+                {isOvulationDay(selectedDate) && (
+                  <div className="flex items-center gap-2 px-2 py-1 bg-sky-50 rounded-lg">
+                    <Egg className="w-3.5 h-3.5 text-sky-500" />
+                    <span className="text-sky-700 font-medium">Pic d'ovulation</span>
+                  </div>
+                )}
+                {isFertileDay(selectedDate) && !isOvulationDay(selectedDate) && (
+                  <div className="flex items-center gap-2 px-2 py-1 bg-green-50 rounded-lg">
+                    <Heart className="w-3.5 h-3.5 text-green-500" />
+                    <span className="text-green-700 font-medium">Fenêtre fertile</span>
+                  </div>
+                )}
+                {isImplantationDay(selectedDate) && (
+                  <div className="flex items-center gap-2 px-2 py-1 bg-amber-50 rounded-lg">
+                    <Baby className="w-3.5 h-3.5 text-amber-500" />
+                    <span className="text-amber-700 font-medium">Nidation possible</span>
+                  </div>
+                )}
+                {isSchoolHoliday(selectedDate, selectedZone) && (
+                  <div className="flex items-center gap-2 px-2 py-1 bg-blue-50 rounded-lg">
+                    <CalendarIcon className="w-3.5 h-3.5 text-blue-500" />
+                    <span className="text-blue-700 font-medium">Vacances : {isSchoolHoliday(selectedDate, selectedZone)}</span>
+                  </div>
+                )}
+                {isPublicHoliday(selectedDate) && (
+                  <div className="flex items-center gap-2 px-2 py-1 bg-red-50 rounded-lg">
+                    <CalendarIcon className="w-3.5 h-3.5 text-red-500" />
+                    <span className="text-red-700 font-medium">{isPublicHoliday(selectedDate)}</span>
+                  </div>
+                )}
+                {!isPeriodDay(selectedDate) && !isFertileDay(selectedDate) && !isImplantationDay(selectedDate) && !isSchoolHoliday(selectedDate, selectedZone) && !isPublicHoliday(selectedDate) && (
+                  <div className="px-2 py-1 text-slate-400">Aucun événement ce jour</div>
+                )}
+              </div>
+
               {isRapportDay(selectedDate) ? (
                 <>
                   <p className="text-sm text-slate-500 mb-4">Un rapport est déjà enregistré ce jour.</p>
@@ -758,26 +829,25 @@ export default function FertilityCalendar({
                       onClick={() => { setShowAddRapport(false); setSelectedDate(null); }}
                       className="flex-1 bg-slate-200 text-slate-700 rounded-full py-2"
                     >
-                      Annuler
+                      Fermer
                     </Button>
                   </div>
                 </>
               ) : (
                 <>
-                  <p className="text-sm text-slate-500 mb-4">Enregistrer un rapport à cette date ?</p>
                   <div className="flex gap-2">
                     <Button
                       onClick={handleAddRapport}
                       className="flex-1 bg-gradient-to-r from-rose-400 to-pink-400 text-white rounded-full py-2"
                     >
                       <Heart className="w-4 h-4 mr-1" />
-                      Ajouter
+                      Rapport
                     </Button>
                     <Button
                       onClick={() => { setShowAddRapport(false); setSelectedDate(null); }}
                       className="flex-1 bg-slate-200 text-slate-700 rounded-full py-2"
                     >
-                      Annuler
+                      Fermer
                     </Button>
                   </div>
                 </>

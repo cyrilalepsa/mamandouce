@@ -20,8 +20,44 @@ router = APIRouter(tags=["contributions"])
 BADGE_THRESHOLDS = {
     "bronze": {"contributions": 3, "referrals": 0},
     "silver": {"contributions": 2, "referrals": 1},  # 1 parrainage + 2 contributions
-    "gold": {"contributions": 5, "referrals": 3}    # 3 parrainages + 5 contributions
+    "gold": {"contributions": 5, "referrals": 3}    # 3 parrainages + 5 contributions = Marraine Or
 }
+
+BADGE_NAMES = {
+    "bronze": "Contributrice Bronze",
+    "silver": "Contributrice Argent", 
+    "gold": "Marraine Or"
+}
+
+
+# ==================== GAMIFICATION OPT-IN ====================
+
+@router.post("/contributions/gamification-optin")
+async def toggle_gamification_optin(
+    current_user: User = Depends(get_current_user)
+):
+    """Toggle gamification opt-in (contribuer ou pas)"""
+    user = await db.users.find_one({"id": current_user.id}, {"_id": 0, "gamification_optin": 1})
+    current_status = user.get("gamification_optin", False) if user else False
+    new_status = not current_status
+    
+    await db.users.update_one(
+        {"id": current_user.id},
+        {"$set": {"gamification_optin": new_status}}
+    )
+    
+    return {
+        "gamification_optin": new_status,
+        "message": "Gamification activée ! Contribuez pour gagner des badges." if new_status else "Gamification désactivée."
+    }
+
+@router.get("/contributions/gamification-status")
+async def get_gamification_status(
+    current_user: User = Depends(get_current_user)
+):
+    """Get gamification opt-in status"""
+    user = await db.users.find_one({"id": current_user.id}, {"_id": 0, "gamification_optin": 1})
+    return {"gamification_optin": user.get("gamification_optin", False) if user else False}
 
 
 # ==================== USER CONTRIBUTION SUBMISSION ====================
@@ -172,6 +208,7 @@ async def get_badge_progress(current_user: User = Depends(get_current_user)):
         )
     
     progress["new_badge_unlocked"] = new_badge
+    progress["badge_names"] = BADGE_NAMES
     
     return progress
 
