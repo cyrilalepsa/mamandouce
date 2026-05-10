@@ -338,7 +338,8 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
             className="absolute right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden animate-fade-in"
             style={{ 
               zIndex: 9999, 
-              minWidth: '200px',
+              minWidth: '180px',
+              maxWidth: 'calc(100vw - 24px)',
               maxHeight: 'calc(100dvh - 80px)',
               overflowY: 'auto'
             }}
