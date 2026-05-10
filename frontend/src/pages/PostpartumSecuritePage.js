@@ -128,10 +128,15 @@ export default function PostpartumSecuritePage() {
               onMouseDown={() => handleLongPressStart(item.id)}
               onMouseUp={handleLongPressEnd}
               onMouseLeave={handleLongPressEnd}
-              className={`bg-gradient-to-br ${item.bgGradient} rounded-2xl p-4 border border-white/50 cursor-pointer hover:shadow-lg transition-all active:scale-95 select-none ${
+              className={`rounded-2xl p-4 cursor-pointer hover:shadow-lg transition-all active:scale-95 select-none nacre-bombe ${
                 selectedForDuplicate === item.id ? 'ring-2 ring-pink-400' : ''
               }`}
-              style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+              style={{ 
+                background: 'linear-gradient(160deg, #ffffff 0%, #ffffff 25%, #fefefe 50%, #fafafa 80%, #f5f5f7 100%)',
+                border: '1px solid rgba(255,255,255,0.95)',
+                boxShadow: '0 8px 20px -4px rgba(0,0,0,0.08), 0 4px 8px -2px rgba(0,0,0,0.04), inset -4px -4px 10px rgba(0,0,0,0.03), inset 4px 4px 10px rgba(255,255,255,0.95)',
+                WebkitUserSelect: 'none', WebkitTouchCallout: 'none' 
+              }}
             >
               <div className="text-center">
                 <div className={`w-12 h-12 mx-auto mb-2 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center shadow-lg`}>

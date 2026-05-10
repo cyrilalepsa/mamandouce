@@ -739,50 +739,33 @@ export default function PostpartumPage() {
           </Card>
         )}
 
-        {/* Disclaimer - quasi transparent */}
-        <Card className="bg-amber-50/30 border border-amber-200/40 rounded-2xl p-4 backdrop-blur-sm">
+        {/* Disclaimer - Note orange sans effet bombé */}
+        <Card className="rounded-2xl p-4" style={{
+          background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(255,237,213,0.7) 50%, rgba(254,215,170,0.5) 100%)',
+          boxShadow: '0 2px 8px -2px rgba(0,0,0,0.06)',
+          border: '1px solid rgba(253,186,116,0.3)',
+        }}>
           <div className="flex items-start gap-3">
-            <Info className="w-5 h-5 text-amber-500/70 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-amber-700/80">
+            <Info className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-orange-700">
               {t('postpartumPage.disclaimer')}
             </p>
           </div>
         </Card>
 
-        {/* 4 Catégories principales en Mosaïque - Style bombé nuage pastel */}
+        {/* 4 Catégories principales en Mosaïque — Blanc intense, logos J→B→R→V */}
         <div className="grid grid-cols-2 gap-4">
-          {mainCategories.map((category) => {
+          {mainCategories.map((category, index) => {
             const Icon = category.icon;
             
-            // Couleurs pastels par catégorie
-            const colorStyles = {
-              orange: {
-                bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(255,237,213,0.95) 30%, rgba(254,215,170,0.85) 60%, rgba(253,186,116,0.7) 100%)',
-                shadow: 'rgba(251,146,60,0.25)',
-                border: 'rgba(251,146,60,0.35)',
-                iconBg: 'from-orange-400 to-amber-500'
-              },
-              sky: {
-                bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(224,242,254,0.95) 30%, rgba(186,230,253,0.85) 60%, rgba(125,211,252,0.7) 100%)',
-                shadow: 'rgba(56,189,248,0.25)',
-                border: 'rgba(56,189,248,0.35)',
-                iconBg: 'from-sky-400 to-blue-500'
-              },
-              violet: {
-                bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(237,233,254,0.95) 30%, rgba(221,214,254,0.85) 60%, rgba(196,181,253,0.7) 100%)',
-                shadow: 'rgba(139,92,246,0.25)',
-                border: 'rgba(139,92,246,0.35)',
-                iconBg: 'from-violet-400 to-purple-500'
-              },
-              pink: {
-                bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(252,231,243,0.95) 30%, rgba(251,207,232,0.85) 60%, rgba(249,168,212,0.7) 100%)',
-                shadow: 'rgba(236,72,153,0.25)',
-                border: 'rgba(236,72,153,0.35)',
-                iconBg: 'from-pink-400 to-rose-500'
-              }
-            };
-            
-            const style = colorStyles[category.color] || colorStyles.pink;
+            // Cycle couleurs logos : Jaune → Bleu → Rouge → Vert
+            const logoCycleColors = [
+              'from-yellow-400 to-amber-500',
+              'from-blue-400 to-sky-500',
+              'from-red-400 to-rose-500',
+              'from-green-400 to-emerald-500',
+            ];
+            const logoColor = logoCycleColors[index % logoCycleColors.length];
             
             return (
               <Card 
@@ -794,46 +777,31 @@ export default function PostpartumPage() {
                 onMouseDown={() => handleLongPressStart(category.id)}
                 onMouseUp={handleLongPressEnd}
                 onMouseLeave={handleLongPressEnd}
-                className={`relative overflow-hidden rounded-3xl p-5 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] border-0 select-none ${
+                className={`relative overflow-hidden rounded-3xl p-5 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] border-0 select-none nacre-bombe ${
                   selectedForDuplicate === category.id ? 'ring-2 ring-pink-400' : ''
                 }`}
                 style={{ 
-                  background: style.bg,
-                  boxShadow: `
-                    0 8px 24px -4px ${style.shadow},
-                    0 4px 8px -2px ${style.shadow},
-                    inset 0 2px 4px rgba(255,255,255,0.9),
-                    inset 0 -2px 4px ${style.shadow}
-                  `,
-                  border: `2px solid ${style.border}`,
+                  background: 'linear-gradient(160deg, #ffffff 0%, #ffffff 25%, #fefefe 50%, #fafafa 80%, #f5f5f7 100%)',
+                  boxShadow: '0 8px 24px -4px rgba(0,0,0,0.1), 0 4px 10px -2px rgba(0,0,0,0.05), inset -5px -5px 12px rgba(0,0,0,0.04), inset 5px 5px 12px rgba(255,255,255,0.95)',
+                  border: '1px solid rgba(255,255,255,0.95)',
                   WebkitUserSelect: 'none', 
                   WebkitTouchCallout: 'none' 
                 }}
                 data-testid={`category-${category.id}`}
               >
-                {/* Voile blanc supprimé */}
-                
-                {/* Icône avec bulle quasi-transparente */}
+                {/* Bulle logo colorée vive */}
                 <div 
-                  className={`relative w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3`}
+                  className={`relative w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 bg-gradient-to-br ${logoColor}`}
                   style={{
-                    background: `linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)`,
-                    backdropFilter: 'none',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.5)'
+                    boxShadow: '0 4px 10px -2px rgba(0,0,0,0.2), inset 0 1px 3px rgba(255,255,255,0.3)',
                   }}
                 >
-                  <Icon className={`w-7 h-7 ${
-                    category.color === 'orange' ? 'text-orange-500' :
-                    category.color === 'sky' ? 'text-sky-500' :
-                    category.color === 'violet' ? 'text-violet-500' :
-                    'text-pink-500'
-                  }`} />
+                  <Icon className="w-7 h-7 text-white" />
                 </div>
                 
                 <div className="relative text-center">
-                  <h3 className="font-bold text-slate-700 dark:text-black text-base mb-1">{category.label}</h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-700">{category.desc}</p>
+                  <h3 className="font-bold text-black text-base mb-1">{category.label}</h3>
+                  <p className="text-xs text-slate-500">{category.desc}</p>
                 </div>
               </Card>
             );

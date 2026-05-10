@@ -188,9 +188,9 @@ function BabyVideosPage() {
                 onClick={() => openVideo(resource.url)}
                 className="relative overflow-hidden rounded-2xl p-4 cursor-pointer hover:scale-[0.99] transition-all active:scale-[0.97]"
                 style={{
-                  background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%)',
-                  boxShadow: '0 6px 18px -4px rgba(0,0,0,0.1), 0 3px 8px -2px rgba(0,0,0,0.05), inset -4px -4px 10px rgba(0,0,0,0.04), inset 4px 4px 10px rgba(255,255,255,0.9)',
-                  border: '1px solid rgba(255,255,255,0.9)',
+                  background: 'linear-gradient(160deg, #ffffff 0%, #ffffff 30%, #fefefe 60%, #fafafa 100%)',
+                  boxShadow: '0 4px 14px -4px rgba(0,0,0,0.08), 0 2px 6px -2px rgba(0,0,0,0.04), inset -3px -3px 8px rgba(0,0,0,0.03), inset 3px 3px 8px rgba(255,255,255,0.95)',
+                  border: '1px solid rgba(255,255,255,0.95)',
                 }}
                 data-testid={`video-${resource.id}`}
               >

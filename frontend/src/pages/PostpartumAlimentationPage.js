@@ -161,9 +161,9 @@ export default function PostpartumAlimentationPage() {
                 selectedForDuplicate === item.id ? 'ring-2 ring-pink-400' : ''
               }`}
               style={{ 
-                background: item.vibrantBg,
-                border: `2px solid ${item.vibrantBorder}`,
-                boxShadow: `0 8px 20px -4px rgba(${item.vibrantShadow},0.3), 0 4px 8px -2px rgba(${item.vibrantShadow},0.15), inset 0 2px 4px rgba(255,255,255,0.95), inset 0 -3px 6px rgba(${item.vibrantShadow},0.1)`,
+                background: 'linear-gradient(160deg, #ffffff 0%, #ffffff 25%, #fefefe 50%, #fafafa 80%, #f5f5f7 100%)',
+                border: '1px solid rgba(255,255,255,0.95)',
+                boxShadow: '0 8px 20px -4px rgba(0,0,0,0.08), 0 4px 8px -2px rgba(0,0,0,0.04), inset -4px -4px 10px rgba(0,0,0,0.03), inset 4px 4px 10px rgba(255,255,255,0.95)',
                 WebkitUserSelect: 'none', 
                 WebkitTouchCallout: 'none' 
               }}
