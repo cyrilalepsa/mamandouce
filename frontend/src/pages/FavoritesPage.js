@@ -8,10 +8,8 @@ import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
 
-// Reflet glossy
-const GlossyReflect = () => (
-  {/* Voile blanc supprimé */}
-);
+// Reflet glossy SUPPRIMÉ — Zéro voile blanc
+const GlossyReflect = () => null;
 
 // Style glossy par couleur
 const glossyStyle = (color) => {

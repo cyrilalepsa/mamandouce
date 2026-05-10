@@ -86,6 +86,7 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [adminUnreadMessages, setAdminUnreadMessages] = useState(0);
   const menuRef = useRef(null);
+  const menuDropdownRef = useRef(null);
 
   // URL et message de partage
   const appUrl = "https://mamandouce.cycafamily.com";
@@ -274,7 +275,7 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
   ];
 
   return (
-    <div className="flex justify-between items-center">
+    <div className="flex justify-between items-center relative" style={{ zIndex: 50 }}>
       {/* À gauche : Couronne Premium + Tirelire */}
       <div className="flex items-center gap-2">
         {/* Bouton Premium - COURONNE OR GLOSSY 3D INTENSE */}
@@ -314,36 +315,33 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
         </button>
       </div>
 
-      {/* À droite : Drapeau + 3 points — glyphes nus transparents, ÉCARTÉS */}
-      <div className="relative flex items-center gap-3" ref={menuRef}>
-        {/* Drapeau langue inline */}
+      {/* À droite : Drapeau + 3 points — glyphes nus, FIXES */}
+      <div className="flex items-center gap-3" ref={menuRef}>
         <LanguageInlineFlag />
-        
-        {/* 3 petits points — glyphe nu, position fixe */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           data-testid="account-menu-btn"
-          className="flex items-center justify-center w-8 h-8"
-          style={{ background: 'transparent', border: 'none', boxShadow: 'none', padding: 0 }}
+          className="flex items-center justify-center"
+          style={{ background: 'transparent', border: 'none', boxShadow: 'none', padding: '4px', width: '32px', height: '32px' }}
         >
           <MoreVertical className="w-5 h-5 text-slate-500" />
-          {hasNotifications && (
-            <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
-          )}
         </button>
+      </div>
 
-        {/* Menu déroulant — absolute dans le container, pas de débordement */}
-        {menuOpen && (
-          <div 
-            className="absolute right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden animate-fade-in"
-            style={{ 
-              zIndex: 9999, 
-              minWidth: '180px',
-              maxWidth: 'calc(100vw - 24px)',
-              maxHeight: 'calc(100dvh - 80px)',
-              overflowY: 'auto'
-            }}
-          >
+      {/* Menu déroulant — positionné FIXE dans le viewport, ne déplace rien */}
+      {menuOpen && (
+        <div 
+          className="fixed right-3 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden animate-fade-in"
+          ref={menuDropdownRef}
+          style={{ 
+            top: '52px',
+            zIndex: 9999, 
+            minWidth: '180px',
+            maxWidth: 'calc(100vw - 24px)',
+            maxHeight: 'calc(100dvh - 70px)',
+            overflowY: 'auto'
+          }}
+        >
             {menuItems.map((item, index) => {
               const Icon = item.icon;
               return (
@@ -373,7 +371,6 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
             })}
           </div>
         )}
-      </div>
     </div>
   );
 }

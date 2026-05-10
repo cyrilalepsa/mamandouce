@@ -5,15 +5,16 @@
    ============================================ */
 
 /* === MODE PAR DÉFAUT : GLOSSY PLAT (info, détails, menus ouverts) === */
-[class*="rounded-"][class*="bg-white"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe),
-[class*="rounded-"][class*="bg-slate-"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe),
-[class*="rounded-xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe),
-[class*="rounded-2xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe),
-[class*="rounded-3xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe),
-.glossy-card,
-[data-testid*="card"]:not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.nacre-bombe),
-.Card:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe),
-[class*="Card"]:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe) {
+/* IMPORTANT: Exclure les éléments avec .fixed pour ne pas casser le positionnement des menus dropdown */
+[class*="rounded-"][class*="bg-white"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe):not(.fixed),
+[class*="rounded-"][class*="bg-slate-"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe):not(.fixed),
+[class*="rounded-xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe):not(.fixed),
+[class*="rounded-2xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe):not(.fixed),
+[class*="rounded-3xl"][class*="shadow"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe):not(.fixed),
+.glossy-card:not(.fixed),
+[data-testid*="card"]:not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.nacre-bombe):not(.fixed),
+.Card:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe):not(.fixed),
+[class*="Card"]:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe):not(.fixed) {
   background: linear-gradient(160deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%) !important;
   box-shadow: 
     0 4px 16px -4px rgba(0,0,0,0.08),
@@ -25,12 +26,12 @@
 }
 
 /* === MODE BOMBÉ 3D : éléments cliquables (boutons, tiroirs, mosaïques) === */
-.nacre-bombe,
-[data-testid*="section-card"],
-[data-testid*="item-card"],
-[data-testid*="category-"],
-[data-testid*="video-"],
-[class*="cursor-pointer"][class*="rounded-"][class*="shadow"]:not(.admin-drawer):not(.fertility-calendar) {
+.nacre-bombe:not(.fixed),
+[data-testid*="section-card"]:not(.fixed),
+[data-testid*="item-card"]:not(.fixed),
+[data-testid*="category-"]:not(.fixed),
+[data-testid*="video-"]:not(.fixed),
+[class*="cursor-pointer"][class*="rounded-"][class*="shadow"]:not(.admin-drawer):not(.fertility-calendar):not(.fixed) {
   background: linear-gradient(160deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%) !important;
   box-shadow: 
     0 8px 24px -4px rgba(0,0,0,0.12),

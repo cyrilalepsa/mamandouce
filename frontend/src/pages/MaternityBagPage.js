@@ -36,10 +36,8 @@ const glossyStyle = (color) => {
   return colors[color] || colors.pink;
 };
 
-// Composant reflet glossy
-const GlossyReflect = () => (
-  {/* Voile blanc supprimé */}
-);
+// Composant reflet glossy SUPPRIMÉ — Zéro voile blanc
+const GlossyReflect = () => null;
 
 export default function MaternityBagPage() {
   const navigate = useNavigate();

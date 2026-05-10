@@ -167,7 +167,7 @@ function HomePage() {
   const hasPregnancyProfile = pregnancyProfile && pregnancyProfile.current_week && hasRapportInFertileWindow;
 
   return (
-    <div className="min-h-screen gradient-bg relative overflow-hidden">
+    <div className="gradient-bg relative" style={{ height: '100dvh', overflow: 'hidden', overscrollBehaviorY: 'contain' }}>
 
         <div className="relative z-10">
           <div 

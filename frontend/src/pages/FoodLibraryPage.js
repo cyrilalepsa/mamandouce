@@ -172,34 +172,9 @@ function FoodLibraryPage() {
           </div>
         </Card>
 
-        {/* Scanner IA Button */}
-        <Card className={`${isDarkMode ? 'bg-slate-800' : 'bg-gradient-to-r from-emerald-50 to-teal-50'} rounded-3xl p-5 border ${isDarkMode ? 'border-slate-700' : 'border-emerald-200'}`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg">
-                <Camera className="w-7 h-7 text-white" />
-              </div>
-              <div>
-                <h3 className={`font-bold ${isDarkMode ? 'text-white' : 'text-slate-700'}`} style={isDarkMode ? { textShadow: '1px 1px 3px rgba(0,0,0,1)' } : {}}>
-                  Scanner Alimentaire IA
-                </h3>
-                <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-500'}`} style={isDarkMode ? { textShadow: '1px 1px 3px rgba(0,0,0,1)' } : {}}>
-                  Photographiez pour connaître le verdict
-                </p>
-              </div>
-            </div>
-            <Button
-              onClick={() => setShowScanner(true)}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full px-6 py-5 font-semibold shadow-lg hover:shadow-xl transition-all"
-              data-testid="open-ai-scanner-btn"
-            >
-              <Sparkles className="w-4 h-4 mr-2" />
-              Scanner
-            </Button>
-          </div>
-        </Card>
+        {/* Scanner IA supprimé — déplacé vers la catégorie Scanner en grossesse */}
 
-        {/* Scanner AI Modal */}
+        {/* Scanner AI Modal - gardé pour accès via route /scanner */}
         <FoodScannerAI 
           isOpen={showScanner} 
           onClose={() => setShowScanner(false)} 
