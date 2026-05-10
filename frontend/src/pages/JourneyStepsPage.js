@@ -98,7 +98,6 @@ const SECTION_ITEMS = {
     { id: 'postpartum-securite', icon: '🛡️', name: 'Sécurité', nameKey: 'postpartum.securite', route: '/postpartum/securite' },
   ],
   'services': [
-    { id: 'chatbot', icon: '🤖', name: 'Assistant IA', nameKey: 'services.chatbot', route: '/chatbot' },
     { id: 'caf', icon: '🏛️', name: 'CAF', nameKey: 'services.caf', route: 'https://www.caf.fr', external: true },
     { id: 'ameli', icon: '🏥', name: 'Ameli', nameKey: 'services.ameli', route: 'https://www.ameli.fr', external: true },
     { id: 'maps', icon: '📍', name: 'Mairie proche', nameKey: 'services.maps', route: 'https://www.google.com/maps/search/mairie', external: true },

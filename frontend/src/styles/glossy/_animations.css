@@ -22,13 +22,13 @@
   to { transform: rotate(360deg); }
 }
 
-/* Animation respiration douce pour les coeurs de l'accueil — effet de profondeur */
+/* Animation respiration douce pour les coeurs de l'accueil — battement avant-arrière VISIBLE */
 @keyframes heartBreath {
-  0%, 100% { transform: scale(1); opacity: 0.82; }
-  50% { transform: scale(1.06); opacity: 1; }
+  0%, 100% { transform: scale(0.85); opacity: 0.65; }
+  50% { transform: scale(1.15); opacity: 1; }
 }
 /* Ancien nom conservé pour compatibilité */
 @keyframes heartFloat {
-  0%, 100% { transform: scale(1); opacity: 0.82; }
-  50% { transform: scale(1.06); opacity: 1; }
+  0%, 100% { transform: scale(0.85); opacity: 0.65; }
+  50% { transform: scale(1.15); opacity: 1; }
 }

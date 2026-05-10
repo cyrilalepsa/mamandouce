@@ -205,21 +205,21 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
     <div className="flex justify-between items-start">
       {/* À gauche : Couronne Premium + Tirelire */}
       <div className="flex items-center gap-2">
-        {/* Bouton Premium - COURONNE JAUNE GLOSSY 3D */}
+        {/* Bouton Premium - COURONNE OR GLOSSY 3D INTENSE */}
         <Button
           onClick={() => navigate('/pricing')}
           data-testid="premium-button"
           className="premium-crown text-white rounded-full p-2.5 hover:shadow-lg hover:-translate-y-0.5 transition-all"
           style={{
-            background: 'linear-gradient(145deg, rgba(254, 240, 138, 1) 0%, rgba(253, 224, 71, 1) 40%, rgba(250, 204, 21, 1) 100%)',
-            boxShadow: '4px 4px 10px rgba(209, 180, 100, 0.5), -4px -4px 10px rgba(255, 255, 255, 0.9), 0 0 20px rgba(250, 204, 21, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.9), inset 0 -2px 6px rgba(202, 138, 4, 0.2)',
+            background: 'linear-gradient(145deg, rgba(255, 248, 160, 1) 0%, rgba(253, 230, 80, 1) 30%, rgba(250, 204, 21, 1) 60%, rgba(234, 179, 8, 1) 100%)',
+            boxShadow: '4px 4px 10px rgba(180, 150, 60, 0.5), -4px -4px 10px rgba(255, 255, 255, 0.9), 0 0 25px rgba(250, 204, 21, 0.5), 0 0 50px rgba(250, 204, 21, 0.2), inset 0 2px 4px rgba(255, 255, 255, 0.95), inset 0 -2px 6px rgba(202, 138, 4, 0.3)',
           }}
           title="Premium"
         >
-          <Crown className="w-5 h-5" style={{ color: '#92400e' }} />
+          <Crown className="w-5 h-5" style={{ color: '#78350f' }} />
         </Button>
 
-        {/* Tirelire — fond jaune, cochon rose, SANS contour */}
+        {/* Tirelire — fond jaune CLAIR, cochon rose, SANS contour */}
         <button
           onClick={() => navigate('/tirelire')}
           data-testid="tirelire-button"
@@ -231,8 +231,8 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'linear-gradient(145deg, #fef3c7, #fde68a, #fbbf24)',
-            boxShadow: '3px 3px 8px rgba(209,180,100,0.3), -2px -2px 6px rgba(255,255,255,0.8), inset 0 1px 3px rgba(255,255,255,0.7)',
+            background: 'linear-gradient(145deg, #fffde7, #fef9c3, #fef08a)',
+            boxShadow: '3px 3px 8px rgba(209,180,100,0.2), -2px -2px 6px rgba(255,255,255,0.9), inset 0 1px 3px rgba(255,255,255,0.8)',
             border: 'none',
             cursor: 'pointer',
           }}

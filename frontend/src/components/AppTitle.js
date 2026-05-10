@@ -22,7 +22,7 @@ function AppTitle({ size = 'md', showSubtitle = false, className = '' }) {
           fontFamily: "'Dancing Script', cursive",
           color: '#FFB7C5',
           WebkitTextFillColor: '#FFB7C5',
-          textShadow: '0 2px 12px rgba(255, 183, 197, 0.4)'
+          textShadow: 'none'
         }}
         data-testid="mamandouce-logo"
       >

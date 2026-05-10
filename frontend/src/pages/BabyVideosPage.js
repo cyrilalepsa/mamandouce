@@ -151,74 +151,66 @@ function BabyVideosPage() {
   return (
     <div className="min-h-screen gradient-bg">
       <div className="max-w-2xl mx-auto p-4 sm:p-6">
-        {/* Header - Effet glossy */}
-        <CloudCard color="pink" className="p-4 mb-6">
-          <div className="flex items-center gap-4">
-            <Button
-              onClick={() => navigate(-1)}
-              variant="ghost"
-              className="p-2 rounded-full hover:bg-white/50"
-              data-testid="back-button"
-            >
-              <ArrowLeft className="w-6 h-6 text-slate-600" />
-            </Button>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                Vidéos & Ressources
-              </h1>
-              <p className="text-sm text-slate-500">Tutoriels et conseils vidéo</p>
-            </div>
-            <div className="w-10 h-10 bg-gradient-to-br from-rose-400 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-              <Video className="w-5 h-5 text-white" />
-            </div>
+        {/* Header — texte pur, sans bulle */}
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            onClick={() => navigate(-1)}
+            variant="ghost"
+            className="p-2 rounded-full hover:bg-white/50"
+            data-testid="back-button"
+          >
+            <ArrowLeft className="w-6 h-6 text-slate-600" />
+          </Button>
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold text-black" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              Vidéos & Ressources
+            </h1>
+            <p className="text-sm text-slate-500">Chaînes recommandées pour vous accompagner</p>
           </div>
-        </CloudCard>
+        </div>
 
-        {/* Introduction - Effet glossy */}
-        <CloudCard color="pink" className="p-4 mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-rose-400 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-              <Play className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <p className="font-semibold text-slate-700">Chaînes recommandées</p>
-              <p className="text-sm text-slate-500">Sélection de vidéos pour vous accompagner</p>
-            </div>
-          </div>
-        </CloudCard>
-
-        {/* Grille de vidéos - Effet glossy */}
-        <div className="grid grid-cols-2 gap-3">
-          {VIDEO_RESOURCES.map((resource) => {
-            const glossyColor = videoGlossyMap[resource.id] || 'pink';
-            const style = glossyStyles[glossyColor];
+        {/* Liste de vidéos — mode liste, cartes blanches glossy 3D */}
+        <div className="space-y-3">
+          {VIDEO_RESOURCES.map((resource, index) => {
+            // Cycle couleurs pour les bulles logos : J→B→R→V→Vi
+            const cycleColors = [
+              'from-yellow-400 to-amber-500',
+              'from-blue-400 to-sky-500',
+              'from-red-400 to-rose-500',
+              'from-green-400 to-emerald-500',
+              'from-violet-400 to-purple-500',
+            ];
+            const logoColor = cycleColors[index % cycleColors.length];
             
             return (
               <div
                 key={resource.id}
                 onClick={() => openVideo(resource.url)}
-                className="relative overflow-hidden rounded-2xl p-4 cursor-pointer hover:scale-[0.98] transition-all active:scale-95"
+                className="relative overflow-hidden rounded-2xl p-4 cursor-pointer hover:scale-[0.99] transition-all active:scale-[0.97]"
                 style={{
-                  background: style.bg,
-                  boxShadow: style.shadow,
-                  border: style.border
+                  background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%)',
+                  boxShadow: '0 6px 18px -4px rgba(0,0,0,0.1), 0 3px 8px -2px rgba(0,0,0,0.05), inset -4px -4px 10px rgba(0,0,0,0.04), inset 4px 4px 10px rgba(255,255,255,0.9)',
+                  border: '1px solid rgba(255,255,255,0.9)',
                 }}
+                data-testid={`video-${resource.id}`}
               >
-                <GlossyReflect />
-                <div className="relative text-center">
-                  <div className={`w-12 h-12 mx-auto mb-2 bg-gradient-to-br ${resource.color} rounded-xl flex items-center justify-center shadow-lg`}>
+                <div className="relative flex items-center gap-4">
+                  {/* Bulle logo colorée */}
+                  <div className={`w-12 h-12 flex-shrink-0 bg-gradient-to-br ${logoColor} rounded-xl flex items-center justify-center`}
+                    style={{ boxShadow: '0 3px 8px -1px rgba(0,0,0,0.15), inset 0 1px 3px rgba(255,255,255,0.3)' }}
+                  >
                     <span className="text-2xl">{resource.icon}</span>
                   </div>
-                  <h3 className="font-semibold text-slate-700 text-sm mb-1 line-clamp-2">
-                    {resource.title}
-                  </h3>
-                  <p className="text-xs text-slate-500 line-clamp-2">
-                    {resource.desc}
-                  </p>
-                  <div className="flex items-center justify-center gap-1 mt-2 text-xs text-slate-400">
-                    <ExternalLink className="w-3 h-3" />
-                    <span>YouTube</span>
+                  {/* Texte */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-black text-sm mb-0.5">
+                      {resource.title}
+                    </h3>
+                    <p className="text-xs text-slate-500 line-clamp-1">
+                      {resource.desc}
+                    </p>
                   </div>
+                  <ExternalLink className="w-4 h-4 text-slate-400 flex-shrink-0" />
                 </div>
               </div>
             );

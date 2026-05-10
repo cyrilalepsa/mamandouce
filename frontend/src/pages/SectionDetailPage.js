@@ -96,12 +96,11 @@ const SECTION_ITEMS = {
     { id: 'postpartum-securite', icon: Shield, iconColor: 'text-green-600', bgColor: 'green', title: 'Sécurité', titleKey: 'postpartum.securite', desc: 'Difficultés, précautions', descKey: 'postpartum.securiteDesc', route: '/postpartum/securite' },
   ],
   'services': [
-    { id: 'chatbot', icon: Phone, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'Assistant IA', titleKey: 'services.chatbot', desc: 'Disponible 24/7', descKey: 'services.available247', route: '/chatbot' },
-    { id: 'caf', icon: Building2, iconColor: 'text-blue-600', bgColor: 'blue', title: 'CAF', titleKey: 'services.caf', desc: 'Allocations familiales', descKey: 'services.cafDesc', route: 'https://www.caf.fr', external: true },
-    { id: 'ameli', icon: Hospital, iconColor: 'text-red-600', bgColor: 'red', title: 'Ameli', titleKey: 'services.ameli', desc: 'Assurance maladie', descKey: 'services.ameliDesc', route: 'https://www.ameli.fr', external: true },
-    { id: 'maps', icon: MapPin, iconColor: 'text-green-600', bgColor: 'green', title: 'Mairie proche', titleKey: 'services.maps', desc: 'Démarches administratives', descKey: 'services.mapsDesc', route: 'https://www.google.com/maps/search/mairie', external: true },
-    { id: 'videos', icon: Video, iconColor: 'text-violet-600', bgColor: 'violet', title: 'Vidéos', titleKey: 'services.videos', desc: 'Tutoriels YouTube', descKey: 'services.tutorials', route: 'https://www.youtube.com/results?search_query=grossesse+conseils', external: true },
-    { id: 'guide-cpam', icon: FileText, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'Guide CPAM/CAF', titleKey: 'services.guideCpam', desc: 'Déclaration de grossesse', descKey: 'services.guideCpamDesc', route: '/guide' },
+    { id: 'caf', icon: Building2, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'CAF', titleKey: 'services.caf', desc: 'Allocations familiales', descKey: 'services.cafDesc', route: 'https://www.caf.fr', external: true },
+    { id: 'ameli', icon: Hospital, iconColor: 'text-blue-600', bgColor: 'blue', title: 'Ameli', titleKey: 'services.ameli', desc: 'Assurance maladie', descKey: 'services.ameliDesc', route: 'https://www.ameli.fr', external: true },
+    { id: 'maps', icon: MapPin, iconColor: 'text-red-600', bgColor: 'red', title: 'Mairie proche', titleKey: 'services.maps', desc: 'Démarches administratives', descKey: 'services.mapsDesc', route: 'https://www.google.com/maps/search/mairie', external: true },
+    { id: 'videos', icon: Video, iconColor: 'text-green-600', bgColor: 'green', title: 'Vidéos', titleKey: 'services.videos', desc: 'Tutoriels YouTube', descKey: 'services.tutorials', route: 'https://www.youtube.com/results?search_query=grossesse+conseils', external: true },
+    { id: 'guide-cpam', icon: FileText, iconColor: 'text-violet-600', bgColor: 'violet', title: 'Guide CPAM/CAF', titleKey: 'services.guideCpam', desc: 'Déclaration de grossesse', descKey: 'services.guideCpamDesc', route: '/guide' },
   ],
 };
 
