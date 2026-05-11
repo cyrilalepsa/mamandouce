@@ -303,6 +303,12 @@ export const api = {
     merge: (favorites) => axios.post(`${API}/babynames-favorites/merge`, { favorites }, getAuthHeaders()),
     clear: () => axios.delete(`${API}/babynames-favorites`, getAuthHeaders()),
   },
+
+  scanner: {
+    listCategories: () => axios.get(`${API}/scanner/categories`, getAuthHeaders()),
+    analyzeDocument: (data) => axios.post(`${API}/scanner/analyze-document`, data, { ...getAuthHeaders(), timeout: 90000 }),
+    getHistory: (limit = 20) => axios.get(`${API}/scanner/history?limit=${limit}`, getAuthHeaders()),
+  },
   
   nameStats: {
     trackView: (name, country, gender) => axios.post(`${API}/babynames-stats/view`, { name, country, gender }),

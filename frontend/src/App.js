@@ -15,6 +15,7 @@ import FoodScanner from './pages/FoodScanner';
 import FoodLibraryPage from './pages/FoodLibraryPage';
 import BirthListPage from './pages/BirthListPage';
 import SharedBirthListPage from './pages/SharedBirthListPage';
+import ScannerAIPage from './pages/ScannerAIPage';
 import HistoryPage from './pages/HistoryPage';
 import FavoritesPage from './pages/FavoritesPage';
 import MedicalAppointmentsPage from './pages/MedicalAppointmentsPage';
@@ -157,6 +158,7 @@ function App() {
                 <Route path="/library" element={<ProtectedRoute><FoodLibraryPage /></ProtectedRoute>} />
                 <Route path="/birth-list" element={<ProtectedRoute><BirthListPage /></ProtectedRoute>} />
                 <Route path="/birth-list/shared/:shareId" element={<SharedBirthListPage />} />
+                <Route path="/scanner-ai" element={<ProtectedRoute><ScannerAIPage /></ProtectedRoute>} />
                 <Route path="/baby-videos" element={<ProtectedRoute><BabyVideosPage /></ProtectedRoute>} />
                 <Route path="/baby-prep-tips" element={<ProtectedRoute><BabyPrepTipsPage /></ProtectedRoute>} />
                 <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />

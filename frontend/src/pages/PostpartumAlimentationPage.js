@@ -172,7 +172,7 @@ export default function PostpartumAlimentationPage() {
               {/* Voile blanc supprimé */}
               
               <div className="relative text-center">
-                <div className={`w-12 h-12 mx-auto mb-2 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center shadow-lg`}>
+                <div className={`w-12 h-12 mx-auto mb-2 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center shadow-lg ${['logo-bubble-yellow','logo-bubble-blue','logo-bubble-red','logo-bubble-green','logo-bubble-violet'][ALIMENTATION_ITEMS.indexOf(item) % 5]}`}>
                   <span className="text-2xl">{item.icon}</span>
                 </div>
                 <h3 className="font-semibold text-slate-700 dark:text-black text-sm mb-1">

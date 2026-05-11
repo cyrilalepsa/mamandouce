@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import NameOfTheDay from '../NameOfTheDay';
+import { SAPregnancyBadge } from './SAPregnancyBadge';
 import { DraggableItem, ItemGroup } from './DragDropComponents';
 import { WeekDisplayWidget, JourneyStepsCard } from './HomeWidgets';
 import PageSelectionPopup from './PageSelectionPopup';
@@ -117,7 +118,12 @@ export function HomePageSlider({
             </div>
           ) : (
             <div className="w-full px-2 card-stable card-fade-in" style={{ minHeight: '60px' }}>
-              <NameOfTheDay isDarkMode={isDarkMode} compact={false} fullWidth={true} />
+              <div className="flex items-center gap-2 w-full">
+                <div className="flex-1">
+                  <NameOfTheDay isDarkMode={isDarkMode} compact={false} fullWidth={true} />
+                </div>
+                <SAPregnancyBadge compact={false} />
+              </div>
             </div>
           )}
           

@@ -206,11 +206,12 @@ function TrackingPage() {
             Maman
           </h2>
 
-          {/* Stats Maman */}
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <Card className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-pink-100 to-rose-100 rounded-xl flex items-center justify-center">
+          {/* Container unique Maman : Stats + Graphique + bouton + intégré */}
+          <Card className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100" data-testid="weight-chart">
+            {/* Stats Poids actuel + Prise de poids (intégrées) */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="bg-gradient-to-br from-pink-50/50 to-rose-50/30 rounded-2xl p-3 flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-pink-100 to-rose-100 rounded-xl flex items-center justify-center logo-bubble-red flex-shrink-0">
                   <Scale className="w-5 h-5 text-pink-500" />
                 </div>
                 <div>
@@ -220,11 +221,8 @@ function TrackingPage() {
                   </p>
                 </div>
               </div>
-            </Card>
-
-            <Card className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center">
+              <div className="bg-gradient-to-br from-green-50/50 to-emerald-50/30 rounded-2xl p-3 flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center logo-bubble-green flex-shrink-0">
                   <TrendingUp className="w-5 h-5 text-green-500" />
                 </div>
                 <div>
@@ -234,32 +232,30 @@ function TrackingPage() {
                   </p>
                 </div>
               </div>
-            </Card>
-          </div>
-
-          {/* Graphique Poids Maman */}
-          <Card className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100" data-testid="weight-chart">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-400 rounded-xl flex items-center justify-center">
-                <Weight className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h2 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                  Courbe de poids
-                </h2>
-                <p className="text-xs text-slate-500">{stats.totalEntries} mesure(s) enregistrée(s)</p>
-              </div>
             </div>
-            <Button
-              onClick={() => setShowAddWeight(!showAddWeight)}
-              className="bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-full px-4 py-2"
-              data-testid="add-weight-btn"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Ajouter
-            </Button>
-          </div>
+
+            {/* Header Courbe de poids + bouton + intégré */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-400 rounded-xl flex items-center justify-center">
+                  <Weight className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                    Courbe de poids
+                  </h2>
+                  <p className="text-xs text-slate-500">{stats.totalEntries} mesure(s) enregistrée(s)</p>
+                </div>
+              </div>
+              <Button
+                onClick={() => setShowAddWeight(!showAddWeight)}
+                className="btn-rose-bonbon rounded-full px-4 py-2"
+                data-testid="add-weight-btn"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Ajouter
+              </Button>
+            </div>
 
           {/* Formulaire ajout poids */}
           {showAddWeight && (
@@ -279,13 +275,13 @@ function TrackingPage() {
               <div className="flex gap-2">
                 <Button
                   onClick={handleAddWeight}
-                  className="flex-1 bg-pink-500 text-white rounded-xl"
+                  className="flex-1 btn-rose-bonbon rounded-xl"
                 >
                   Enregistrer
                 </Button>
                 <Button
                   onClick={() => setShowAddWeight(false)}
-                  className="bg-slate-100 text-slate-600 rounded-xl"
+                  className="btn-rose-bonbon-outline rounded-xl"
                 >
                   Annuler
                 </Button>
@@ -348,11 +344,12 @@ function TrackingPage() {
             Bébé
           </h2>
 
-          {/* Stats Bébé */}
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <Card className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-sky-100 to-indigo-100 rounded-xl flex items-center justify-center">
+          {/* Container unique Bébé : Stats + Graphique + bouton + intégré */}
+          <Card className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100" data-testid="baby-chart">
+            {/* Stats Poids estimé + Taille (intégrées) */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="bg-gradient-to-br from-sky-50/50 to-indigo-50/30 rounded-2xl p-3 flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-sky-100 to-indigo-100 rounded-xl flex items-center justify-center logo-bubble-blue flex-shrink-0">
                   <Scale className="w-5 h-5 text-sky-500" />
                 </div>
                 <div>
@@ -362,11 +359,8 @@ function TrackingPage() {
                   </p>
                 </div>
               </div>
-            </Card>
-
-            <Card className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-violet-100 rounded-xl flex items-center justify-center">
+              <div className="bg-gradient-to-br from-purple-50/50 to-violet-50/30 rounded-2xl p-3 flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-violet-100 rounded-xl flex items-center justify-center logo-bubble-violet flex-shrink-0">
                   <Ruler className="w-5 h-5 text-purple-500" />
                 </div>
                 <div>
@@ -376,32 +370,30 @@ function TrackingPage() {
                   </p>
                 </div>
               </div>
-            </Card>
-          </div>
-
-          {/* Graphique Croissance Bébé */}
-          <Card className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100" data-testid="baby-chart">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-sky-400 to-indigo-400 rounded-xl flex items-center justify-center">
-                <Baby className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h2 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                  Croissance du bébé
-                </h2>
-                <p className="text-xs text-slate-500">{stats.babyEntries} mesure(s) enregistrée(s)</p>
-              </div>
             </div>
-            <Button
-              onClick={() => setShowAddBaby(!showAddBaby)}
-              className="bg-gradient-to-r from-sky-400 to-indigo-400 text-white rounded-full px-4 py-2"
-              data-testid="add-baby-btn"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Ajouter
-            </Button>
-          </div>
+
+            {/* Header Croissance + bouton + intégré */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-sky-400 to-indigo-400 rounded-xl flex items-center justify-center">
+                  <Baby className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                    Croissance du bébé
+                  </h2>
+                  <p className="text-xs text-slate-500">{stats.babyEntries} mesure(s) enregistrée(s)</p>
+                </div>
+              </div>
+              <Button
+                onClick={() => setShowAddBaby(!showAddBaby)}
+                className="btn-rose-bonbon rounded-full px-4 py-2"
+                data-testid="add-baby-btn"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Ajouter
+              </Button>
+            </div>
 
           {/* Formulaire ajout mesures bébé */}
           {showAddBaby && (
@@ -434,13 +426,13 @@ function TrackingPage() {
               <div className="flex gap-2">
                 <Button
                   onClick={handleAddBabyMeasures}
-                  className="flex-1 bg-sky-500 text-white rounded-xl"
+                  className="flex-1 btn-rose-bonbon rounded-xl"
                 >
                   Enregistrer
                 </Button>
                 <Button
                   onClick={() => setShowAddBaby(false)}
-                  className="bg-slate-100 text-slate-600 rounded-xl"
+                  className="btn-rose-bonbon-outline rounded-xl"
                 >
                   Annuler
                 </Button>
