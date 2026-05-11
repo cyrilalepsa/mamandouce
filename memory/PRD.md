@@ -1,28 +1,56 @@
-# MamanDouce v10.1.0 — Bugfixes & validation Birth List + DPA
+# MamanDouce v10.2.0 — Refactor modulaire (Cycle + DragDrop)
 
 ## ✅ Sessions récentes
-1. Menu 3-points: position fixed, plus de décalage (CSS :not(.fixed))
+
+### v10.2.0 — Refactor scalabilité (11 Fév 2026)
+- **CycleTrackingPage.js** : 1343 → 1005 lignes (-25%) avec extraction de 5 composants modulaires
+  - `components/cycle/SymptomsModal.jsx` (137 l.)
+  - `components/cycle/CycleHistoryModal.jsx` (87 l.)
+  - `components/cycle/InitialSetupModal.jsx` (84 l.)
+  - `components/cycle/CycleReportModal.jsx` (106 l.)
+  - `components/cycle/PregnancyToggle.jsx` (58 l.)
+  - `components/cycle/constants.js` (SYMPTOM_OPTIONS + MOOD_OPTIONS)
+- **DragDropComponents.jsx** : 1261 → 727 lignes (-42%) en extrayant tous les dictionnaires
+  - `components/home/dragdrop/constants.js` (538 l.) : ITEM_ICONS, ITEM_NAMES, ITEM_TRANSLATION_KEYS, ITEM_STYLES, ITEM_ROUTES, GROUP_COLORS
+- **Tests** : iteration_56.json → no regressions, self-test PASS (Symptoms modal save flow + Je suis enceinte button)
+
+### v10.1.0 — Bugfixes Birth List + DPA
+- Backend `birth_list_item` ajouté aux types valides de `/api/contributions/submit`
+- Frontend BirthListPage envoie `title` requis (mappé depuis `newItem.name`)
+- Cycle Tracking : bouton "Je suis enceinte !" + DPA (last_period + 280 j) validés
+- Iteration 55 : 11/11 tests PASS
+
+### Sessions antérieures
+1. Menu 3-points: position fixed, plus de décalage
 2. HomePage: height 100dvh + overflow hidden (page fixe)
-3. Scanner IA: déplacé de la bibliothèque vers catégorie scanner (grossesse)
-4. Sac de maternité: GlossyReflect crash corrigé
-5. Favoris: même fix GlossyReflect
-6. **BirthListPage v2** (refonte 2 onglets : Référence + Ma Liste, soumission gamifiée, magasins externes) — TESTÉ ✅
-7. **Backend `birth_list_item`** ajouté aux types valides de `/api/contributions/submit` — TESTÉ ✅
-8. **Frontend** envoie maintenant `title` requis lors d'une proposition d'article — TESTÉ ✅
-9. **Cycle Tracking** — bouton "Je suis enceinte !" + DPA (last_period + 280 j) validé end-to-end ✅
+3. Scanner IA: déplacé vers catégorie scanner
+4. Cycle couleurs strict : Jaune → Bleu → Rouge → Vert → Violet
 
-## Architecture CSS
-- `_cards-nacre.css`: exclusions :not(.fixed) pour préserver position fixed
-- Cycle couleurs strict : Jaune → Bleu → Rouge → Vert → Violet
-
-## API contributions (P0 fixé)
-- POST /api/contributions/submit accepte désormais `food_scan`, `maternity_bag`, `recipe`, `birth_list_item`
-- Le frontend BirthListPage envoie : `{ contribution_type, title, description, data: { name, category } }`
+## Architecture refactorisée
+```
+/app/frontend/src/
+├── pages/
+│   ├── CycleTrackingPage.js     (1005 l. - logique data + cards principales)
+│   └── BirthListPage.js
+├── components/
+│   ├── cycle/                   (NOUVEAU)
+│   │   ├── constants.js
+│   │   ├── SymptomsModal.jsx
+│   │   ├── CycleHistoryModal.jsx
+│   │   ├── InitialSetupModal.jsx
+│   │   ├── CycleReportModal.jsx
+│   │   └── PregnancyToggle.jsx
+│   └── home/
+│       ├── DragDropComponents.jsx   (727 l.)
+│       └── dragdrop/
+│           └── constants.js          (NOUVEAU 538 l.)
+└── backend/routes/contributions.py   (birth_list_item accepté)
+```
 
 ## Roadmap restante
-- 🟡 P2 : Refactor `CycleTrackingPage.js` (1343 lignes) en plusieurs composants
-- 🟡 P2 : Refactor `DragDropComponents.jsx` (1000+ lignes)
+- 🟡 P2 : Refactor `NavigationSections.jsx` (1109 lignes)
+- 🟡 P2 : Split DraggableItem/ItemGroup/GroupContentPopup/DropZone en fichiers séparés (DragDropComponents.jsx encore 727 l.)
+- 🟡 P3 : 401 'Erreur chargement layout' fire avant auth ready → cleanup `loadUserLayout`
 - ⚪ Action utilisateur : déploiement Railway / Google Play Store
-- ⚪ Suivi visuel utilisateur sur mobile (validation finale)
 
 *MàJ : 11 Fév 2026*
