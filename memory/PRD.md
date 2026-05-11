@@ -1,19 +1,14 @@
-# MamanDouce v10.0.0 — Livraisons B+C Complètes
+# MamanDouce v10.1.0 — Bugfixes vidéo
 
-## Système de design unifié (PastelComponents)
-- **PastelAccordion (tiroir)**: Blanc intense bombé 3D glossy + logo coloré vif
-- **PastelCard (contenu)**: Teinte du logo infusée, SANS bombé (glossy plat)
-- **PastelPillCard**: Blanc intense bombé
-- **AccordionCard (PrecautionsSection)**: Converti au même style blanc bombé
+## Bugs corrigés (vidéo utilisateur)
+1. Menu 3-points: position fixed, plus de décalage (CSS :not(.fixed) ajouté)
+2. HomePage: height 100dvh + overflow hidden (page fixe)
+3. Scanner IA: déplacé de la bibliothèque vers catégorie scanner (grossesse)
+4. Sac de maternité: GlossyReflect crash corrigé (retournait JSX invalide)
+5. Favoris: même fix GlossyReflect
 
-## Toutes les sous-pages post-partum unifiées ✅
-- Allaitement, Biberons, Diversification, Recettes
-- Coucher/Change, Portage
-- Difficultés, Précautions
-- RDV médicaux
-
-## Boutons vidéo
-- Tous les "Voir en vidéo" / "Vidéo explicative" = Rose bombé glossy 3D
+## Architecture CSS
+- `_cards-nacre.css`: exclusions :not(.fixed) pour préserver position fixed
 
 ## Cycle couleurs strict
 Jaune → Bleu → Rouge → Vert → Violet
