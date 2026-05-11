@@ -162,6 +162,8 @@ function BirthListPage() {
     try {
       await api.contributions.submit({
         contribution_type: 'birth_list_item',
+        title: newItem.name,
+        description: `Catégorie : ${newItem.category}`,
         data: { name: newItem.name, category: newItem.category }
       });
       toast.success('Article soumis ! Il sera visible après validation.');

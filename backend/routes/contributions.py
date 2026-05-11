@@ -70,7 +70,7 @@ async def submit_contribution(
     """Submit a new contribution (food scan, maternity bag item, recipe)"""
     
     # Validate contribution type
-    valid_types = ["food_scan", "maternity_bag", "recipe"]
+    valid_types = ["food_scan", "maternity_bag", "recipe", "birth_list_item"]
     if contribution.contribution_type not in valid_types:
         raise HTTPException(status_code=400, detail=f"Type invalide. Types valides: {valid_types}")
     
