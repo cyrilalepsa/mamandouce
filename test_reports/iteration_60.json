@@ -1,0 +1,46 @@
+{
+  "summary": "v10.8 plug-and-play NeriaCorp publish API tested end-to-end. New test_neriacorp_publish.py (8 tests) covers: configured flag in /apps, unconfigured mock fallback, invalid app 400, non-admin 403, LIVE publish via in-process mock HTTP server on 127.0.0.1:7890 with header verification (Bearer + X-NeriaCorp-Publication-Id + X-NeriaCorp-Admin), unreachable URL → 2-retry backoff fallback, and publications list new fields. All 8 NEW + 14 regression NeriaCorp scanner tests pass (22/22). Frontend admin → NeriaCorp drawer loads cleanly with all 3 source testids (take-photo/upload/upload-video); publish banner CSS (bg-emerald-500/30 live vs bg-white/15 mock) verified by code review.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_neriacorp_publish.py",
+    "/app/backend/tests/test_neriacorp_scanner.py",
+    "/app/test_reports/pytest/pytest_neriacorp_publish.xml",
+    "/app/test_reports/pytest/pytest_neriacorp_scanner.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "adapters.py _real_http_call: retry loop performs initial + MAX_RETRIES = 3 attempts total with backoff 0.5s then 1.0s — code matches doc comment. Confirmed end-to-end via the unreachable-URL test (elapsed ≥ 1.5s).",
+    "adapters.py publish_to_app returns dict for unknown target_app but routes/scanner_ai.py guards earlier via get_app_meta → 400. Defensive double-check is fine, no dead code concern.",
+    "scanner_ai.py publish_to_target_app correctly orders gates: get_admin_user (FastAPI Depends → 403) BEFORE the target_app validity check (400). Verified.",
+    "scanner_ai.py /scanner/apps uses APP_DEFAULTS for ref + get_app_meta('configured') from adapters.py — single source of truth for env state. ✓",
+    "Frontend NeriaCorpScannerTab handlePublish handles 3 cases (live success / partial mock warning / mock success) — matches API contract exactly. Banner bg-emerald-500/30 (live) vs bg-white/15 (mock) — verified."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_neriacorp_publish.py (NEW — 8 tests with in-process mock HTTP server + .env restore teardown)"
+  ],
+  "success_rate": {"backend": "100% (22/22: 8 new publish + 14 scanner regression)", "frontend": "100% (UI structure + testids verified, live publish e2e not run because it requires real-time LLM scan flow)"},
+  "test_credentials": "admin@mamandouce.com / AdminPremium2024!  +  testnonadmin58@test.com / test123",
+  "seed_data_creation": "Test scoped: temporarily writes AEVIS_BASE_URL=http://127.0.0.1:7890 + AEVIS_API_KEY=test-secret-key-123 into /app/backend/.env, restarts backend, runs live publish test, then unreachable test with HERITIA_BASE_URL=http://127.0.0.1:1. Session-scoped env_backup fixture restores original .env and restarts backend on teardown — verified clean (grep returned CLEAN).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Two pytest files now cover NeriaCorp: (1) test_neriacorp_scanner.py = 14 tests for /scanner/apps, /analyze, /analyze-video, /audit. (2) test_neriacorp_publish.py = 8 tests for /scanner/publish (mock/live/retry-fallback/invalid/non-admin), /scanner/apps configured flag, /scanner/publications new fields. The publish live test spins an http.server thread inside the pytest process on 127.0.0.1:7890 and writes/restores /app/backend/.env via supervisor restart. Run with: pytest backend/tests/test_neriacorp_publish.py -v. Total runtime ~19s. Frontend NeriaCorp drawer at /admin → 'NeriaCorp Intelligence' → 'Scanner IA Admin-Only' renders correctly with all 3 source buttons. The neriacorp-main-action testid only appears AFTER a successful scan; the publish banner appears only after a publish action. For full e2e of live banner, a real LLM scan + click + mock server combo is needed (~30-60s flow).",
+  "verified_flows": [
+    "GET /api/scanner/apps → configured boolean flag on all 5 apps (False at baseline)",
+    "POST /api/scanner/publish (Aevis, unconfigured) → status=published_mock, partial=true, configured=false, warning='AEVIS_BASE_URL / AEVIS_API_KEY non configurés'",
+    "POST /api/scanner/publish (target_app='NotARealApp') → 400 'App inconnue'",
+    "POST /api/scanner/publish non-admin → 403",
+    "POST /api/scanner/publish (Aevis, env=mock server) → status=published_live, partial=false, configured=true, remote_id='AEV-REMOTE-12345'. Mock received Authorization: Bearer test-secret-key-123 + X-NeriaCorp-Publication-Id + X-NeriaCorp-Admin: admin@mamandouce.com + body{publication_id, scan_id, payload}",
+    "POST /api/scanner/publish (Heritia, env=127.0.0.1:1) → after retries (>=1s elapsed) status=published_mock, partial=true, configured=true, warning contains network/attempts",
+    "GET /api/scanner/publications → includes status, partial, remote_id, configured fields",
+    "Regression: /api/scanner/analyze (text + image) 200, /api/scanner/analyze-video (200/400/413/422/403) all correct, /api/scanner/audit 200 with aggregates",
+    "Frontend /admin → NeriaCorp Intelligence drawer opens → Scanner IA Admin-Only visible → 3 source testids (neriacorp-take-photo, neriacorp-upload, neriacorp-upload-video) all present"
+  ]
+}

@@ -266,11 +266,18 @@ async def get_scanner_audit(
 # ============================================================
 @router.get("/scanner/apps")
 async def list_apps(admin: User = Depends(get_admin_user)):
-    """Liste des 5 apps NeriaCorp avec leurs couleurs et prix de référence."""
+    """Liste des 5 apps NeriaCorp avec leurs couleurs, prix de référence, et statut de configuration."""
+    from integrations.neriacorp.adapters import get_app_meta
+    apps_list = []
+    for name, cfg in APP_DEFAULTS.items():
+        meta = get_app_meta(name) or {}
+        apps_list.append({
+            "name": name,
+            **cfg,
+            "configured": meta.get("configured", False),
+        })
     return {
-        "apps": [
-            {"name": name, **cfg} for name, cfg in APP_DEFAULTS.items()
-        ],
+        "apps": apps_list,
         "operation_mode": "Admin_Only",
     }
 
@@ -453,22 +460,30 @@ async def publish_to_target_app(
     admin: User = Depends(get_admin_user),
 ):
     """Orchestration NeriaCorp : envoie le résultat d'un scan vers l'app métier cible.
-    Mock pour le moment (les API métier des 5 apps ne sont pas branchées).
-    Retourne une référence de publication + persiste un log d'orchestration."""
-    if payload.target_app not in APP_DEFAULTS:
+    Stratégie :
+      - Si les env vars `{APP}_BASE_URL` + `{APP}_API_KEY` sont configurées → appel HTTP réel
+        (POST {base_url}/api/neriacorp/inject avec Bearer auth) avec retry 2x backoff.
+      - Sinon (ou si réseau KO après retries) → fallback `published_mock` avec `partial=true`.
+    """
+    from integrations.neriacorp.adapters import publish_to_app, get_app_meta
+
+    app_meta = get_app_meta(payload.target_app)
+    if not app_meta:
         raise HTTPException(
             status_code=400,
             detail=f"App inconnue. Valides : {list(APP_DEFAULTS.keys())}"
         )
 
-    app_cfg = APP_DEFAULTS[payload.target_app]
     publication_id = f"NC-{payload.target_app[:3].upper()}-{uuid.uuid4().hex[:8].upper()}"
 
-    # === MOCK : simulation de l'appel à l'API métier ===
-    # En prod, remplacer par les appels réels :
-    #   if payload.target_app == "Vellumia": await vellumia_client.publish(...)
-    #   elif payload.target_app == "Aevis":  await aevis_client.inject_pos(...)
-    #   etc.
+    # === Dispatch via adapter ===
+    adapter_result = await publish_to_app(
+        target_app=payload.target_app,
+        payload=payload.payload,
+        scan_id=payload.scan_id,
+        publication_id=publication_id,
+        admin_email=admin.email,
+    )
 
     log_entry = {
         "id": str(uuid.uuid4()),
@@ -477,26 +492,38 @@ async def publish_to_target_app(
         "scan_id": payload.scan_id,
         "admin_id": admin.id,
         "admin_email": admin.email,
-        "revenue_estimated": app_cfg["estimated_revenue"],
+        "revenue_estimated": app_meta["default_revenue"],
         "currency": "EUR",
-        "status": "published_mock",
+        "status": adapter_result["status"],
+        "partial": adapter_result.get("partial", False),
+        "remote_id": adapter_result.get("remote_id"),
+        "error": adapter_result.get("error"),
+        "configured": app_meta["configured"],
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
     await db.scanner_publications.insert_one(log_entry)
 
     logger.info(
         f"NeriaCorp publish : admin={admin.email} → {payload.target_app} "
-        f"id={publication_id} revenue={app_cfg['estimated_revenue']}€"
+        f"id={publication_id} status={adapter_result['status']} configured={app_meta['configured']}"
     )
 
     return {
         "publication_id": publication_id,
         "target_app": payload.target_app,
-        "theme_color": app_cfg["theme_color"],
-        "revenue_billed": app_cfg["estimated_revenue"],
+        "theme_color": app_meta["theme_color"],
+        "revenue_billed": app_meta["default_revenue"],
         "currency": "EUR",
-        "status": "published_mock",
-        "message": f"Données injectées dans {payload.target_app} (mode mock).",
+        "status": adapter_result["status"],          # published_live | published_mock
+        "partial": adapter_result.get("partial", False),
+        "remote_id": adapter_result.get("remote_id"),
+        "configured": app_meta["configured"],
+        "warning": adapter_result.get("error"),
+        "message": (
+            f"✅ Données injectées dans {payload.target_app} (live)."
+            if adapter_result["status"] == "published_live"
+            else f"⚠️ {payload.target_app} non branchée — mode mock."
+        ),
         "created_at": log_entry["created_at"],
     }
 

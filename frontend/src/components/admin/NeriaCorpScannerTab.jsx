@@ -180,7 +180,13 @@ export default function NeriaCorpScannerTab() {
         payload: { business: result.business, display_card: result.display_card },
       });
       setPublishResult(data);
-      toast.success(`✓ Injecté dans ${target} — ${data.publication_id}`);
+      if (data.status === 'published_live') {
+        toast.success(`✓ Live ${target} — ${data.publication_id}`);
+      } else if (data.partial) {
+        toast.warning(`⚠️ ${target} non branchée — mock ${data.publication_id}`);
+      } else {
+        toast.success(`✓ Injecté dans ${target} — ${data.publication_id}`);
+      }
       await loadAudit();
     } catch (e) {
       toast.error(e?.response?.data?.detail || 'Erreur publication');
@@ -460,9 +466,14 @@ export default function NeriaCorpScannerTab() {
               )}
             </Button>
             {publishResult && (
-              <div className="mt-2 text-[11px] bg-white/15 rounded-lg px-2 py-1.5">
-                ✓ <span className="font-mono font-bold">{publishResult.publication_id}</span> ·
-                <span className="ml-1">+{publishResult.revenue_billed} {publishResult.currency}</span>
+              <div className={`mt-2 text-[11px] rounded-lg px-2 py-1.5 ${publishResult.status === 'published_live' ? 'bg-emerald-500/30' : 'bg-white/15'}`}>
+                <span className="font-bold">
+                  {publishResult.status === 'published_live' ? '✓ LIVE' : '⚠ MOCK'}
+                </span>
+                {' · '}
+                <span className="font-mono font-bold">{publishResult.publication_id}</span>
+                {' · '}
+                <span>+{publishResult.revenue_billed} {publishResult.currency}</span>
               </div>
             )}
           </Card>
