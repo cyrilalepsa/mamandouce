@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, CalendarDays, Settings, Save, CalendarRange, Egg, Heart, Droplets, Baby, Info, TestTube, Clock, Moon, Sun, Sparkles, Plus, X, Check, History, Thermometer, Frown, Smile, Meh, CloudRain, Zap, Brain, AlertTriangle, TrendingUp, ChevronRight } from 'lucide-react';
+import { ArrowLeft, CalendarDays, Settings, Save, CalendarRange, Egg, Heart, Droplets, Baby, Info, TestTube, Moon, Sun, Sparkles, Plus, X, History, Brain, AlertTriangle, TrendingUp } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -10,31 +10,12 @@ import api from '../utils/api';
 import FertilityCalendar from '../components/FertilityCalendar';
 import { getCurrentLanguage } from '../i18n';
 import { useTheme } from '../contexts/ThemeContext';
-
-// Symptômes prédéfinis avec emojis
-const SYMPTOM_OPTIONS = [
-  { id: 'cramps', emoji: '🤕', label: 'Crampes' },
-  { id: 'bloating', emoji: '🎈', label: 'Ballonnements' },
-  { id: 'headache', emoji: '🤯', label: 'Maux de tête' },
-  { id: 'fatigue', emoji: '😴', label: 'Fatigue' },
-  { id: 'breast_tender', emoji: '💗', label: 'Seins sensibles' },
-  { id: 'backache', emoji: '🔙', label: 'Mal de dos' },
-  { id: 'nausea', emoji: '🤢', label: 'Nausées' },
-  { id: 'acne', emoji: '😣', label: 'Acné' },
-  { id: 'cravings', emoji: '🍫', label: 'Envies' },
-  { id: 'insomnia', emoji: '🌙', label: 'Insomnie' },
-  { id: 'mood_swings', emoji: '🎭', label: 'Humeur changeante' },
-  { id: 'spotting', emoji: '🩸', label: 'Spotting' },
-];
-
-const MOOD_OPTIONS = [
-  { id: 'happy', emoji: '😊', label: 'Heureuse', color: 'from-yellow-300 to-amber-400' },
-  { id: 'calm', emoji: '😌', label: 'Calme', color: 'from-green-300 to-emerald-400' },
-  { id: 'neutral', emoji: '😐', label: 'Neutre', color: 'from-slate-300 to-gray-400' },
-  { id: 'anxious', emoji: '😰', label: 'Anxieuse', color: 'from-purple-300 to-violet-400' },
-  { id: 'sad', emoji: '😢', label: 'Triste', color: 'from-blue-300 to-indigo-400' },
-  { id: 'irritable', emoji: '😤', label: 'Irritable', color: 'from-red-300 to-rose-400' },
-];
+import { SYMPTOM_OPTIONS, MOOD_OPTIONS } from '../components/cycle/constants';
+import { SymptomsModal } from '../components/cycle/SymptomsModal';
+import { CycleHistoryModal } from '../components/cycle/CycleHistoryModal';
+import { InitialSetupModal } from '../components/cycle/InitialSetupModal';
+import { CycleReportModal } from '../components/cycle/CycleReportModal';
+import { PregnancyToggle } from '../components/cycle/PregnancyToggle';
 
 function CycleTrackingPage() {
   const navigate = useNavigate();
@@ -921,48 +902,16 @@ function CycleTrackingPage() {
                 Cycle: {agendaData.cycleLength}j • Dernières règles: {formatDateShort(lastPeriodDate)}
               </p>
 
-            {/* Bouton "Je suis enceinte !" avec effet Waouh */}
-            {!isPregnant && (
-              <button
-                onClick={() => {
-                  setIsPregnant(true);
-                  // Calculer DPA (Date Prévue d'Accouchement) = dernières règles + 280 jours
-                  const dpa = new Date(lastPeriodDate);
-                  dpa.setDate(dpa.getDate() + 280);
-                  setDueDate(dpa.toISOString().split('T')[0]);
-                  localStorage.setItem('mamandouce_pregnant', 'true');
-                  localStorage.setItem('mamandouce_due_date', dpa.toISOString().split('T')[0]);
-                }}
-                className="w-full mt-4 py-4 rounded-2xl text-white font-bold text-lg relative overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]"
-                style={{
-                  background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 25%, #db2777 50%, #be185d 75%, #9d174d 100%)',
-                  boxShadow: '0 8px 30px -6px rgba(219,39,119,0.5), 0 0 40px rgba(236,72,153,0.2), inset 0 2px 6px rgba(255,255,255,0.3)',
-                  border: '2px solid rgba(255,200,220,0.5)',
-                  letterSpacing: '0.05em',
-                }}
-                data-testid="pregnant-button"
-              >
-                <span style={{ textShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>Je suis enceinte !</span>
-              </button>
-            )}
-
-            {/* Affichage DPA quand enceinte */}
-            {isPregnant && dueDate && (
-              <div className="mt-4 p-4 rounded-2xl text-center animate-fade-in" style={{
-                background: 'linear-gradient(145deg, rgba(252,231,243,0.9) 0%, rgba(251,207,232,0.7) 50%, rgba(249,168,212,0.5) 100%)',
-                boxShadow: '0 8px 25px -4px rgba(236,72,153,0.3), inset 0 2px 6px rgba(255,255,255,0.8)',
-                border: '2px solid rgba(251,207,232,0.5)',
-              }}>
-                <p className="text-pink-600 font-bold text-lg" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.1)' }}>
-                  Félicitations !
-                </p>
-                <p className="text-pink-700 text-sm mt-1">Date prévue d'accouchement</p>
-                <p className="text-pink-800 font-bold text-2xl mt-2">{new Date(dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-                <p className="text-pink-500 text-xs mt-2">
-                  {Math.max(0, Math.ceil((new Date(dueDate) - new Date()) / (1000 * 60 * 60 * 24)))} jours restants
-                </p>
-              </div>
-            )}
+            {/* Bouton "Je suis enceinte !" + Affichage DPA — composant extrait */}
+            <PregnancyToggle
+              isPregnant={isPregnant}
+              dueDate={dueDate}
+              lastPeriodDate={lastPeriodDate}
+              onPregnant={(dpaStr) => {
+                setIsPregnant(true);
+                setDueDate(dpaStr);
+              }}
+            />
             </div>
           </div>
         ) : (
@@ -979,190 +928,33 @@ function CycleTrackingPage() {
         )}
       </div>
 
-      {/* Modal Symptômes */}
-      {showSymptomModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-4">
-          <div className={`rounded-t-3xl sm:rounded-3xl w-full max-w-lg max-h-[85vh] overflow-hidden shadow-2xl ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
-            {/* Header */}
-            <div className={`p-4 flex items-center justify-between ${isDarkMode ? 'bg-gradient-to-r from-amber-900/50 to-yellow-900/50' : 'bg-gradient-to-r from-amber-100 to-yellow-100'}`}>
-              <h3 className={`font-bold flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-slate-700'}`} style={textShadow}>
-                <Sparkles className={`w-5 h-5 ${isDarkMode ? 'text-amber-400' : 'text-amber-500'}`} />
-                Comment vous sentez-vous ?
-              </h3>
-              <button 
-                onClick={() => setShowSymptomModal(false)}
-                className={`w-8 h-8 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-white/80 hover:bg-white'}`}
-              >
-                <X className={`w-4 h-4 ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`} />
-              </button>
-            </div>
-            
-            <div className="p-4 overflow-y-auto max-h-[60vh] space-y-5">
-              {/* Humeur */}
-              <div>
-                <p className={`text-sm font-semibold mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`} style={textShadow}>Votre humeur</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {MOOD_OPTIONS.map(mood => (
-                    <button
-                      key={mood.id}
-                      onClick={() => setTodayMood(todayMood === mood.id ? null : mood.id)}
-                      className={`p-3 rounded-xl border-2 transition-all ${
-                        todayMood === mood.id 
-                          ? `bg-gradient-to-br ${mood.color} border-transparent text-white shadow-lg scale-105` 
-                          : isDarkMode ? 'bg-slate-700 border-slate-600 hover:border-slate-500 text-slate-200' : 'bg-white border-slate-200 hover:border-slate-300'
-                      }`}
-                    >
-                      <span className="text-2xl block mb-1">{mood.emoji}</span>
-                      <span className="text-xs font-medium">{mood.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Symptômes */}
-              <div>
-                <p className={`text-sm font-semibold mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`} style={textShadow}>Symptômes ressentis</p>
-                <div className="grid grid-cols-4 gap-2">
-                  {SYMPTOM_OPTIONS.map(symptom => (
-                    <button
-                      key={symptom.id}
-                      onClick={() => toggleSymptom(symptom.id)}
-                      className={`p-2 rounded-xl border-2 transition-all ${
-                        todaySymptoms.includes(symptom.id) 
-                          ? isDarkMode ? 'bg-amber-900/50 border-amber-500 shadow-sm' : 'bg-amber-100 border-amber-400 shadow-sm'
-                          : isDarkMode ? 'bg-slate-700 border-slate-600 hover:border-slate-500' : 'bg-white border-slate-200 hover:border-slate-300'
-                      }`}
-                    >
-                      <span className="text-xl block">{symptom.emoji}</span>
-                      <span className={`text-[10px] leading-tight block mt-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>{symptom.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Température */}
-              <div>
-                <p className={`text-sm font-semibold mb-2 flex items-center gap-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`} style={textShadow}>
-                  <Thermometer className="w-4 h-4 text-rose-500" />
-                  Température basale (optionnel)
-                </p>
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    step="0.1"
-                    min="35"
-                    max="40"
-                    value={todayTemp}
-                    onChange={(e) => setTodayTemp(e.target.value)}
-                    placeholder="36.5"
-                    className="w-24 rounded-xl text-center"
-                    style={{ background: '#ffffff', color: '#000000', border: '1px solid #e2e8f0' }}
-                  />
-                  <span className="text-slate-500" style={{ color: '#000000' }}>°C</span>
-                </div>
-              </div>
-            </div>
-            
-            {/* Actions */}
-            <div className={`p-4 border-t flex gap-2 ${isDarkMode ? 'border-slate-700' : 'border-slate-100'}`}>
-              <Button
-                onClick={() => setShowSymptomModal(false)}
-                className="flex-1 rounded-xl text-slate-600"
-                style={{
-                  background: 'linear-gradient(145deg, #fda4af 0%, #fb7185 40%, #f43f5e 100%)',
-                  color: 'white',
-                  boxShadow: '-3px -3px 8px rgba(255,255,255,0.9), 3px 3px 10px rgba(244,63,94,0.3), inset 0 1px 3px rgba(255,255,255,0.5)',
-                }}
-              >
-                Annuler
-              </Button>
-              <Button
-                onClick={saveSymptoms}
-                className="flex-1 rounded-xl"
-                style={{
-                  background: 'linear-gradient(145deg, #fda4af 0%, #fb7185 40%, #f43f5e 100%)',
-                  color: 'white',
-                  boxShadow: '-3px -3px 8px rgba(255,255,255,0.9), 3px 3px 10px rgba(244,63,94,0.3), inset 0 2px 4px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(244,63,94,0.15)',
-                }}
-              >
-                <Check className="w-4 h-4 mr-2" />
-                Enregistrer
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Modal Historique */}
-      {showHistoryModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-4">
-          <div className={`rounded-t-3xl sm:rounded-3xl w-full max-w-lg max-h-[85vh] overflow-hidden shadow-2xl ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
-            {/* Header */}
-            <div className={`p-4 flex items-center justify-between ${isDarkMode ? 'bg-gradient-to-r from-slate-700 to-gray-700' : 'bg-gradient-to-r from-slate-100 to-gray-100'}`}>
-              <h3 className={`font-bold flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-slate-700'}`} style={textShadow}>
-                <History className={`w-5 h-5 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`} />
-                Historique des cycles
-              </h3>
-              <button 
-                onClick={() => setShowHistoryModal(false)}
-                className={`w-8 h-8 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-slate-600 hover:bg-slate-500' : 'bg-white/80 hover:bg-white'}`}
-              >
-                <X className={`w-4 h-4 ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`} />
-              </button>
-            </div>
-            
-            <div className="p-4 overflow-y-auto max-h-[60vh]">
-              {getAverageCycleLength() && (
-                <div className={`rounded-xl p-3 mb-4 ${isDarkMode ? 'bg-purple-900/30 border border-purple-800' : 'bg-gradient-to-r from-purple-50 to-pink-50'}`}>
-                  <p className={`text-sm ${isDarkMode ? 'text-purple-200' : 'text-slate-600'}`} style={textShadow}>
-                    <span className="font-semibold">Durée moyenne :</span> {getAverageCycleLength()} jours
-                  </p>
-                </div>
-              )}
-              
-              <div className="space-y-2">
-                {cycleHistory.map((cycle, index) => (
-                  <div 
-                    key={cycle.id}
-                    className={`flex items-center justify-between p-3 rounded-xl ${isDarkMode ? 'bg-slate-700' : 'bg-slate-50'}`}
-                  >
-                    <div>
-                      <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-slate-700'}`} style={textShadow}>
-                        {new Date(cycle.startDate).toLocaleDateString(getLocale(), { 
-                          day: 'numeric', 
-                          month: 'long',
-                          year: 'numeric'
-                        })}
-                      </p>
-                      <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>{cycle.cycleLength} jours</p>
-                    </div>
-                    <button
-                      onClick={() => deleteCycleFromHistory(cycle.id)}
-                      className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'text-slate-400 hover:text-red-400 hover:bg-red-900/30' : 'text-slate-400 hover:text-red-500 hover:bg-red-50'}`}
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              
-              {cycleHistory.length === 0 && (
-                <p className={`text-center py-8 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Aucun cycle enregistré</p>
-              )}
-            </div>
-            
-            <div className={`p-4 border-t ${isDarkMode ? 'border-slate-700' : 'border-slate-100'}`}>
-              <Button
-                onClick={() => setShowHistoryModal(false)}
-                className={`w-full rounded-xl ${isDarkMode ? 'bg-slate-700 text-white hover:bg-slate-600' : 'bg-gradient-to-r from-slate-500 to-gray-500 text-white'}`}
-                style={textShadow}
-              >
-                Fermer
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Modal Symptômes (composant extrait) */}
+      <SymptomsModal
+        isOpen={showSymptomModal}
+        onClose={() => setShowSymptomModal(false)}
+        isDarkMode={isDarkMode}
+        textShadow={textShadow}
+        todayMood={todayMood}
+        setTodayMood={setTodayMood}
+        todaySymptoms={todaySymptoms}
+        toggleSymptom={toggleSymptom}
+        todayTemp={todayTemp}
+        setTodayTemp={setTodayTemp}
+        onSave={saveSymptoms}
+      />
+
+      {/* Modal Historique des cycles (composant extrait) */}
+      <CycleHistoryModal
+        isOpen={showHistoryModal}
+        onClose={() => setShowHistoryModal(false)}
+        isDarkMode={isDarkMode}
+        textShadow={textShadow}
+        cycleHistory={cycleHistory}
+        averageCycleLength={getAverageCycleLength()}
+        onDelete={deleteCycleFromHistory}
+        getLocale={getLocale}
+      />
 
       {/* Calendrier Modal */}
       <FertilityCalendar
@@ -1180,161 +972,32 @@ function CycleTrackingPage() {
         onRemoveRapport={handleRemoveRapport}
       />
       
-      {/* Modal Configuration Initiale pour nouveaux utilisateurs */}
-      {showInitialSetup && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`w-full max-w-md rounded-3xl overflow-hidden ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
-            <div className={`p-6 ${isDarkMode ? 'bg-gradient-to-r from-purple-900/50 to-pink-900/50' : 'bg-gradient-to-r from-purple-100 to-pink-100'}`}>
-              <div className="flex items-center gap-3">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-purple-800/50' : 'bg-white'}`}>
-                  <Brain className={`w-6 h-6 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`} />
-                </div>
-                <div>
-                  <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-800'}`} style={textShadow}>
-                    Configurez l'IA
-                  </h3>
-                  <p className={`text-sm ${isDarkMode ? 'text-purple-200' : 'text-purple-600'}`} style={textShadow}>
-                    Pour des prédictions personnalisées
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="p-6 space-y-4">
-              <p className={`text-sm ${textSecondary}`} style={textShadow}>
-                Entrez vos <strong>3 dernières dates de règles</strong> pour que l'IA analyse votre cycle :
-              </p>
-              
-              {initialDates.map((date, index) => (
-                <div key={index}>
-                  <label className={`text-sm font-medium ${textMuted} mb-1 block`} style={textShadow}>
-                    {index === 0 ? 'Dernières règles' : index === 1 ? 'Règles précédentes' : 'Règles d\'avant'}
-                  </label>
-                  <Input
-                    type="date"
-                    value={date}
-                    onChange={(e) => {
-                      const newDates = [...initialDates];
-                      newDates[index] = e.target.value;
-                      setInitialDates(newDates);
-                    }}
-                    className={`rounded-xl ${inputBg}`}
-                  />
-                </div>
-              ))}
-              
-              <div className="flex gap-3 pt-4">
-                <Button
-                  onClick={() => { setShowInitialSetup(false); localStorage.setItem('cycle_initial_setup_done', 'true'); }}
-                  variant="outline"
-                  className={`flex-1 rounded-xl ${isDarkMode ? 'border-slate-600 text-slate-300' : ''}`}
-                >
-                  Plus tard
-                </Button>
-                <Button
-                  onClick={saveInitialDates}
-                  disabled={loading || initialDates.filter(d => d).length < 2}
-                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl"
-                >
-                  {loading ? 'Analyse...' : 'Analyser'}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Modal Rapport de Cycle */}
-      {showCycleReport && cycleReport && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`w-full max-w-md rounded-3xl overflow-hidden ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
-            <div className={`p-6 ${isDarkMode ? 'bg-gradient-to-r from-emerald-900/50 to-green-900/50' : 'bg-gradient-to-r from-emerald-100 to-green-100'}`}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-emerald-800/50' : 'bg-white'}`}>
-                    <span className="text-2xl">{cycleReport.status_emoji}</span>
-                  </div>
-                  <div>
-                    <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-800'}`} style={textShadow}>
-                      Bilan de votre cycle
-                    </h3>
-                    <p className={`text-sm ${isDarkMode ? 'text-emerald-200' : 'text-emerald-600'}`} style={textShadow}>
-                      {cycleReport.status_message}
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  onClick={() => setShowCycleReport(false)}
-                  variant="ghost"
-                  className={`p-1 rounded-full ${isDarkMode ? 'hover:bg-emerald-800/50 text-emerald-300' : 'hover:bg-emerald-200'}`}
-                >
-                  <X className="w-5 h-5" />
-                </Button>
-              </div>
-            </div>
-            
-            <div className="p-6 space-y-4">
-              {/* Statistiques principales */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className={`p-4 rounded-xl text-center ${isDarkMode ? 'bg-slate-700' : 'bg-slate-50'}`}>
-                  <p className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-800'}`} style={textShadow}>
-                    {cycleReport.average_length}
-                  </p>
-                  <p className={`text-xs ${textMuted}`} style={textShadow}>jours en moyenne</p>
-                </div>
-                <div className={`p-4 rounded-xl text-center ${isDarkMode ? 'bg-slate-700' : 'bg-slate-50'}`}>
-                  <p className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-800'}`} style={textShadow}>
-                    ±{cycleReport.variation_days}
-                  </p>
-                  <p className={`text-xs ${textMuted}`} style={textShadow}>jours de variation</p>
-                </div>
-              </div>
-              
-              {/* Score de régularité */}
-              <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-slate-700' : 'bg-gradient-to-r from-emerald-50 to-green-50'}`}>
-                <div className="flex items-center justify-between mb-2">
-                  <span className={`text-sm font-medium ${textSecondary}`} style={textShadow}>Score de régularité</span>
-                  <span className={`font-bold ${cycleReport.regularity_score >= 75 ? (isDarkMode ? 'text-emerald-400' : 'text-emerald-600') : (isDarkMode ? 'text-amber-400' : 'text-amber-600')}`} style={textShadow}>
-                    {cycleReport.regularity_score}%
-                  </span>
-                </div>
-                <div className={`h-2 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-600' : 'bg-slate-200'}`}>
-                  <div 
-                    className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-green-500 transition-all duration-500"
-                    style={{ width: `${cycleReport.regularity_score}%` }}
-                  />
-                </div>
-              </div>
-              
-              {/* Message d'amélioration */}
-              {cycleReport.improvement_percentage !== 0 && (
-                <div className={`flex items-center gap-2 p-3 rounded-xl ${
-                  cycleReport.improvement_percentage > 0 
-                    ? (isDarkMode ? 'bg-green-900/30 text-green-300' : 'bg-green-50 text-green-700')
-                    : (isDarkMode ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-700')
-                }`}>
-                  <TrendingUp className={`w-5 h-5 ${cycleReport.improvement_percentage < 0 ? 'rotate-180' : ''}`} />
-                  <span className="text-sm font-medium" style={textShadow}>{cycleReport.improvement_message}</span>
-                </div>
-              )}
-              
-              {/* Recommandation */}
-              <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-purple-900/30 border border-purple-800' : 'bg-purple-50 border border-purple-100'}`}>
-                <p className={`text-sm ${isDarkMode ? 'text-purple-200' : 'text-purple-700'}`} style={textShadow}>
-                  💡 {cycleReport.recommendation}
-                </p>
-              </div>
-              
-              <Button
-                onClick={() => setShowCycleReport(false)}
-                className="w-full bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-xl"
-              >
-                C'est compris !
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+
+      {/* Modal Configuration Initiale IA (composant extrait) */}
+      <InitialSetupModal
+        isOpen={showInitialSetup}
+        onSkip={() => { setShowInitialSetup(false); localStorage.setItem('cycle_initial_setup_done', 'true'); }}
+        onSave={saveInitialDates}
+        isDarkMode={isDarkMode}
+        textShadow={textShadow}
+        textSecondary={textSecondary}
+        textMuted={textMuted}
+        inputBg={inputBg}
+        initialDates={initialDates}
+        setInitialDates={setInitialDates}
+        loading={loading}
+      />
+
+      {/* Modal Rapport de Cycle (composant extrait) */}
+      <CycleReportModal
+        isOpen={showCycleReport}
+        onClose={() => setShowCycleReport(false)}
+        isDarkMode={isDarkMode}
+        textShadow={textShadow}
+        textSecondary={textSecondary}
+        textMuted={textMuted}
+        cycleReport={cycleReport}
+      />
     </div>
   );
 }
