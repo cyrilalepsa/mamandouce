@@ -24,6 +24,12 @@
 - **Statut**: Free
 - **Accès**: Fonctionnalités limitées
 
+## 🧪 Compte non-admin (créé pour tests v10.5)
+- **Email**: testnonadmin58@test.com
+- **Password**: test123
+- **Statut**: Free
+- **Utilisé pour**: tester les 403 sur les routes /api/scanner/* (admin-only)
+
 ---
 
 ## Notes pour les agents

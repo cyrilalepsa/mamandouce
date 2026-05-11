@@ -1,83 +1,74 @@
-# MamanDouce v10.4.0 — Scanner IA + UI Refonte Validation
+# MamanDouce v10.5.0 — NeriaCorp Intelligence (Admin-Only)
 
 ## ✅ Sessions récentes
 
-### v10.4.0 — Scanner IA Documents + Refonte UI (11 Fév 2026)
-**🤖 Scanner IA Documents** (nouveau)
-- Backend `/api/scanner/analyze-document` via **GPT-4o Vision** (Emergent LLM Key)
-- 8 catégories : alimentation, textile, auto, documents, menu, facture, admin, product
-- Sortie JSON STRICT (null pour illisible, jamais d'invention), confiance + raw_text
-- Route `/api/scanner/categories` (liste) + `/api/scanner/history` (historique)
-- Frontend `/scanner-ai` : compression image **800×600 JPEG q=0.85** côté client → max 200 KB
-- Édition manuelle ligne par ligne + "+ Ajouter un critère" (avec photo jointe) + bouton "Partager" (Web Share API + fallback presse-papiers)
-- Tile violette dans la section Services (déjà accessible direct via `/scanner-ai`)
+### v10.5.0 — Isolation Scanner IA Admin + PDF Liste de Naissance (11 Fév 2026)
+**🧠 NeriaCorp Intelligence (refonte complète du Scanner IA)**
+- Backend `/api/scanner/analyze` — **GATÉ admin-only** via `Depends(get_admin_user)`
+- Nouveau prompt strict **"NeriaCorp Intelligence"** : détecte 5 apps (VisaTrace #1A5CAD, Heritia #8B4513, VeoVision #000000, Vellumia #D4AF37, Aevis #2E8B57)
+- 4 sections JSON : metadata (source_app, confidence_score, operation_mode='Admin_Only'), business (modules métier dynamiques), display_card (title/summary/main_action/theme_color/visual_type LIST|GRID|REPORT), financial (estimated_revenue/currency)
+- **No-Log policy** : audit ne persiste QUE admin_id, source_app, confidence, revenu — pas le contenu métier ni les images
+- Routes : `/api/scanner/analyze`, `/api/scanner/apps`, `/api/scanner/audit`
+- Frontend : nouveau composant `NeriaCorpScannerTab.jsx` dans `/admin` (5e tiroir doré "🧠 NeriaCorp Intelligence")
+- Rendu dynamique selon `visual_type` (LIST | GRID | REPORT) avec `theme_color` du frontend
+- **Public `/scanner-ai` SUPPRIMÉ** (route + tile Services + dragdrop entries)
 
-**🎨 Boutons rose bonbon uniformes**
-- Nouveau module `styles/glossy/_rose-bonbon.css`
-- `.btn-rose-bonbon` (rempli) + `.btn-rose-bonbon-outline` (secondaire)
-- Appliqué : Ajouter/Enregistrer/Annuler sur TrackingPage + Analyser/Partager/Nouveau scan sur ScannerAIPage
+**📄 Export PDF Liste de Naissance**
+- `pages/birthlist/birthListPdf.js` — catalogue jsPDF
+- Bouton "Télécharger en PDF (catalogue)" rose bonbon dans onglet Ma Liste (data-testid='export-pdf-birthlist-btn')
+- Format : en-tête rose MamanDouce, catégories couleur cyclées (Jaune→Bleu→Rouge→Vert→Violet), articles avec ♥ et étoile "Essentiel", footer "Partagez votre liste avec votre famille"
+- Validé : PDF 13.6 KB, 3 catégories, 4 articles, footer correct (Gemini analysis 95% confidence)
 
-**📊 TrackingPage refactor**
-- Maman : un seul container blanc avec Poids actuel + Prise de poids stats + Courbe de poids + bouton "+ Ajouter" intégré
-- Bébé : un seul container blanc avec Poids estimé + Taille stats + Croissance du bébé + bouton "+ Ajouter" intégré
+**🐛 Fix 401 'Erreur chargement layout'**
+- `HomeLayoutContext.js` : vérifie présence du token avant `loadLayout()` + silence 401 silencieux dans le catch
 
-**🌈 Contours colorés sur bulles de logos (cycle Jaune→Bleu→Rouge→Vert→Violet)**
-- PostpartumSecuritePage, PostpartumSoinsPage, PostpartumAlimentationPage
-- Classes CSS `.logo-bubble-{yellow|blue|red|green|violet}`
+**🧪 Tests : iteration_58.json — Backend 8/8 + Frontend 100%, 0 régression**
+- `/app/backend/tests/test_neriacorp_scanner.py` (nouveau)
 
-**🏠 HomePage**
-- `.badge-fete-du-jour` : dark shadow discret ajouté
-- Nouveau composant `SAPregnancyBadge` : pill rose pâle "SA X" cliquable, navigue vers /cycle-tracking
-- Conditionnel sur `localStorage.mamandouce_pregnant === 'true'` (déclenché par le bouton "Je suis enceinte")
+### v10.4.0 — Scanner IA + UI fixes (11 Fév 2026)
+- Refonte rose bonbon, TrackingPage containers unifiés, contours postpartum, Fête du jour + SA badge
+- Scanner IA public (remplacé en v10.5 par NeriaCorp admin-only)
 
-**🧪 Tests : iteration_57.json — Backend 7/7 + Frontend 100%, 0 régression**
-- `/app/backend/tests/test_scanner_ai.py` (pytest, images PIL générées)
-
-### v10.3.0 — Export PDF Bilan cycle (11 Fév 2026)
-- `jspdf@4.2.1` + `cycleReportPdf.js` (PDF A4 rose, 8 KB, validé end-to-end)
-
-### v10.2.0 — Refactor scalabilité (11 Fév 2026)
-- CycleTrackingPage 1343→1005 l. (5 sous-composants `components/cycle/`)
-- DragDropComponents 1261→727 l. (`dragdrop/constants.js`)
-
-### v10.1.0 — Birth List + DPA (11 Fév 2026)
-- Backend `birth_list_item` accepté, frontend envoie `title`
-- Bouton "Je suis enceinte !" + DPA = règles + 280 j
+### v10.3.0 — Export PDF Bilan cycle
+### v10.2.0 — Refactor scalabilité (CycleTrackingPage, DragDropComponents)
+### v10.1.0 — Birth List + DPA
 
 ## Architecture actuelle
 ```
 /app/backend/routes/
-├── scanner_ai.py             (NEW — GPT-4o Vision, 8 catégories, JSON strict)
-├── contributions.py          (birth_list_item OK)
-└── ...
+└── scanner_ai.py             (NeriaCorp Intelligence, admin-only)
 
 /app/backend/tests/
-└── test_scanner_ai.py        (pytest, 7/7 PASS)
+├── test_neriacorp_scanner.py (NEW v10.5 — 8/8 PASS)
+└── test_scanner_ai.py        (legacy — backup)
 
 /app/frontend/src/
 ├── pages/
-│   ├── ScannerAIPage.js      (NEW — flow complet)
-│   ├── CycleTrackingPage.js  (1005 l.)
-│   ├── TrackingPage.js       (containers unifiés)
-│   └── BirthListPage.js
+│   ├── AdminPage.js          (5e drawer "neriacorp" doré)
+│   ├── BirthListPage.js      (bouton PDF dans Ma Liste)
+│   └── birthlist/
+│       └── birthListPdf.js   (NEW)
 ├── components/
-│   ├── cycle/                (5 modules)
-│   ├── home/
-│   │   ├── SAPregnancyBadge.jsx (NEW)
-│   │   ├── HomePageSlider.jsx
-│   │   └── dragdrop/constants.js
-│   └── ui/
-└── styles/glossy/
-    ├── _rose-bonbon.css     (NEW)
-    └── ...
+│   ├── admin/
+│   │   └── NeriaCorpScannerTab.jsx (NEW — dynamic UI selon visual_type)
+│   └── cycle/                (depuis v10.2)
+└── contexts/
+    └── HomeLayoutContext.js  (401 silencieux + check token avant fetch)
 ```
 
+## Apps NeriaCorp détectables
+| App        | Theme color | Pack price | Modules métier                                                |
+|------------|-------------|------------|----------------------------------------------------------------|
+| VisaTrace  | #1A5CAD     | 29.99 €    | profile_detected, social_inventory, risk_assessment, billing |
+| Heritia    | #8B4513     | 60.00 €    | inventory_update, recipe_hook, club_status                    |
+| VeoVision  | #000000     | 40.00 €    | authenticity_report, multi_diffusion_ads, ad_status           |
+| Vellumia   | #D4AF37     | 60.00 €    | artistic_analysis, scene_breakdown, premium_options           |
+| Aevis      | #2E8B57     | 40.00 €    | pos_items, pos_layout                                          |
+
 ## Roadmap restante
-- 🟡 P1 : **Scanner IA Vidéo → Annonce de vente** (Gemini 3 Pro multimodal, chunked upload) — demandé en session
-- 🟡 P2 : Refactor `NavigationSections.jsx` (1110 lignes)
-- 🟡 P2 : Split `DragDropComponents.jsx` (727 l.) en composants séparés
-- 🟢 P3 : Export PDF "Liste de Naissance" (favoris + catégories) — suggestion utilisateur
-- 🟢 P3 : 401 'Erreur chargement layout' avant auth ready
+- 🟡 P2 : Refactor `NavigationSections.jsx` (1109 lignes — déferé v10.6)
+- 🟡 P2 : Split `DragDropComponents.jsx` (727 lignes)
+- 🟡 P1 : **Scanner IA Vidéo → Annonce de vente 30s** (Gemini 3 Pro multimodal) — promis
 - ⚪ Action utilisateur : déploiement Railway + Play Store
 
 *MàJ : 11 Fév 2026*
