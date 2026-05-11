@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, HandCoins, Eye, Crown, Baby, ChevronDown, Bell, Smartphone, Shield, HandHeart, Calculator, CheckCircle } from 'lucide-react';
+import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, HandCoins, Eye, Crown, Baby, ChevronDown, Bell, Smartphone, Shield, HandHeart, Calculator, CheckCircle, Brain } from 'lucide-react';
 import api from '../utils/api';
 import PageHeader from '../components/PageHeader';
 import { toast } from 'sonner';
@@ -22,6 +22,7 @@ import {
 } from '../components/admin';
 import AccountingDashboard from '../components/admin/AccountingDashboard';
 import ContributionsManager from '../components/admin/ContributionsManager';
+import NeriaCorpScannerTab from '../components/admin/NeriaCorpScannerTab';
 
 function AdminPage() {
   const navigate = useNavigate();
@@ -289,6 +290,7 @@ function AdminPage() {
     messaging: '#FECDD3, #FDA4AF',   // rose
     finances:  '#A7F3D0, #6EE7B7',   // menthe
     tools:     '#BAE6FD, #7DD3FC',   // bleu
+    neriacorp: '#FEF3C7, #FCD34D',   // or (Section Spéciale)
   };
 
   const toggleSub = (id) => setOpenSubs(prev => ({ ...prev, [id]: !prev[id] }));
@@ -416,6 +418,13 @@ function AdminPage() {
           </SubDrawer>
           <SubDrawer id="foods" label="Aliments à valider" icon={Apple}>
             <FoodsTab pendingFoods={pendingFoods} foodStats={foodStats} loadPendingFoods={loadPendingFoods} />
+          </SubDrawer>
+        </DrawerTile>
+
+        {/* 5. OR — SECTION SPÉCIALE NeriaCorp Intelligence (Admin-Only, isolée) */}
+        <DrawerTile id="neriacorp" icon={Brain} label="🧠 NeriaCorp Intelligence">
+          <SubDrawer id="neriacorp-scanner" label="Scanner IA Admin-Only" icon={Brain} defaultOpen={true}>
+            <NeriaCorpScannerTab />
           </SubDrawer>
         </DrawerTile>
 

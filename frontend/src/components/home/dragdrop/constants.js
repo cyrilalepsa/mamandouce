@@ -61,8 +61,6 @@ export const ITEM_ICONS = {
   'car-safety': '🚗',
   'sleep-safety': '🛏️',
   'first-aid': '🩹',
-  // Scanner IA Documents
-  'scanner-ai': '🤖',
 };
 
 export const ITEM_NAMES = {
@@ -125,8 +123,6 @@ export const ITEM_NAMES = {
   'car-safety': 'Voiture',
   'sleep-safety': 'Sommeil sûr',
   'first-aid': 'Premiers secours',
-  // Scanner IA
-  'scanner-ai': 'Scanner IA',
 };
 
 // Clés de traduction pour chaque item
@@ -198,8 +194,6 @@ export const ITEM_TRANSLATION_KEYS = {
   'ameli': 'services.ameli',
   'maps': 'services.maps',
   'videos': 'services.videos',
-  // Scanner IA
-  'scanner-ai': 'services.scannerAi',
 };
 
 // Styles bombés et colorés pour chaque item
@@ -495,13 +489,6 @@ export const ITEM_STYLES = {
     border: 'rgba(244, 114, 182, 0.3)'
   },
   
-  // === SCANNER IA (VIOLET) ===
-  'scanner-ai': {
-    gradient: 'linear-gradient(145deg, #ede9fe 0%, #ddd6fe 50%, #c4b5fd 100%)',
-    shadow: '0 8px 25px rgba(196, 181, 253, 0.4), inset 0 -4px 12px rgba(0,0,0,0.08)',
-    border: 'rgba(167, 139, 250, 0.35)'
-  },
-
   // === STYLE PAR DÉFAUT ===
   'default': { 
     gradient: 'linear-gradient(145deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%)',
@@ -534,7 +521,6 @@ export const ITEM_ROUTES = {
   'birth-list': '/birth-list',
   'maternity-bag': '/maternity-bag',
   'chatbot': '/chatbot',
-  'scanner-ai': '/scanner-ai',
 };
 
 

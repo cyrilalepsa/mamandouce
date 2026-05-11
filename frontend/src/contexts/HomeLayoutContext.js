@@ -102,9 +102,16 @@ export function HomeLayoutProvider({ children }) {
   const [hasCustomLayout, setHasCustomLayout] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
 
-  // Charger le layout depuis la BDD
+  // Charger le layout depuis la BDD (uniquement si un token est présent)
   useEffect(() => {
-    loadLayout();
+    const token = typeof window !== 'undefined' && localStorage.getItem('token');
+    if (token) {
+      loadLayout();
+    } else {
+      // Pas connecté : utiliser le layout par défaut sans tenter le fetch
+      setLayout(DEFAULT_LAYOUT);
+      setIsLoading(false);
+    }
   }, []);
 
   const loadLayout = async () => {
@@ -122,7 +129,10 @@ export function HomeLayoutProvider({ children }) {
         }
       }
     } catch (error) {
-      console.error('Erreur chargement layout:', error);
+      // 401 silencieux : auth pas encore prête, le layout reviendra après login
+      if (error?.response?.status !== 401) {
+        console.error('Erreur chargement layout:', error);
+      }
       setLayout(DEFAULT_LAYOUT);
     } finally {
       setIsLoading(false);

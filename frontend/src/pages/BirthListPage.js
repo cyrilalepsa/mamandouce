@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { Heart, ChevronDown, ChevronUp, ExternalLink, Plus, Share2, ArrowLeft, Send } from 'lucide-react';
+import { Heart, ChevronDown, ChevronUp, ExternalLink, Plus, Share2, ArrowLeft, Send, Download } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getStoresForLanguage } from '../data/storesByCountry';
 import api from '../utils/api';
 import { toast } from 'sonner';
+import { exportBirthListToPDF } from './birthlist/birthListPdf';
 
 // Couleurs cycle J→B→R→V→Vi
 const CYCLE_COLORS = [
@@ -312,7 +313,24 @@ function BirthListPage() {
         {activeTab === 'mylist' && (
           <div>
             {myListItems.length > 0 ? (
-              renderItemList(myListItems)
+              <>
+                {/* Bouton Export PDF — catalogue partageable */}
+                <button
+                  onClick={() => {
+                    try {
+                      exportBirthListToPDF(myListItems);
+                      toast.success('PDF généré !');
+                    } catch {
+                      toast.error('Erreur génération PDF');
+                    }
+                  }}
+                  className="w-full mb-3 btn-rose-bonbon rounded-2xl py-2.5 flex items-center justify-center gap-2 text-sm font-semibold"
+                  data-testid="export-pdf-birthlist-btn"
+                >
+                  <Download className="w-4 h-4" /> Télécharger en PDF (catalogue)
+                </button>
+                {renderItemList(myListItems)}
+              </>
             ) : (
               <div className="text-center py-12" style={{
                 background: 'linear-gradient(160deg, #fff 0%, #fefefe 30%, #fafafa 100%)',

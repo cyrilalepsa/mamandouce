@@ -922,34 +922,6 @@ export function ServicesSection() {
           );
         })}
       </div>
-
-      {/* === Scanner IA Documents (Universel, indépendant de la langue) === */}
-      <div className="mt-4">
-        <a
-          href="/scanner-ai"
-          onClick={(e) => { e.preventDefault(); window.location.href = '/scanner-ai'; }}
-          data-testid="service-scanner-ai"
-          className="block no-underline"
-        >
-          <div
-            className="relative overflow-hidden rounded-full px-4 py-2.5 transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] logo-bubble-violet"
-            style={{
-              background: 'linear-gradient(145deg, #ede9fe 0%, #ddd6fe 50%, #c4b5fd 100%)',
-              boxShadow: '0 6px 18px -4px rgba(167, 139, 250, 0.35), inset 0 2px 4px rgba(255,255,255,0.7)',
-            }}
-          >
-            <div className="relative flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-white/70 backdrop-blur-sm flex-shrink-0">
-                <span className="text-xl">🤖</span>
-              </div>
-              <div className="text-left">
-                <span className="font-semibold text-violet-800 block text-sm">Scanner IA</span>
-                <span className="text-xs text-violet-600">Photo → fiche structurée automatique</span>
-              </div>
-            </div>
-          </div>
-        </a>
-      </div>
     </CollapsibleSection>
   );
 }
