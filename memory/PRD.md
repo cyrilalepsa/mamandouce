@@ -1,6 +1,13 @@
-# MamanDouce v10.2.0 — Refactor modulaire (Cycle + DragDrop)
+# MamanDouce v10.3.0 — Export PDF Bilan de cycle
 
 ## ✅ Sessions récentes
+
+### v10.3.0 — PDF Export bilan de cycle (11 Fév 2026)
+- Nouvelle dépendance : `jspdf@4.2.1` (client-side, ~120KB)
+- Nouveau module : `components/cycle/cycleReportPdf.js`
+  - Génère un PDF A4 portrait avec : en-tête rose MamanDouce, statut + emoji + score régularité, 2 boîtes stats (moyenne / variation), section évolution colorée, recommandation personnalisée (encadré violet), pied de page avec disclaimer médical
+- Intégration dans `CycleReportModal.jsx` : bouton **"Exporter en PDF"** (outline vert) à côté de "C'est compris"
+- Validation end-to-end : PDF téléchargé (8357 bytes) + analyse contenu OK
 
 ### v10.2.0 — Refactor scalabilité (11 Fév 2026)
 - **CycleTrackingPage.js** : 1343 → 1005 lignes (-25%) avec extraction de 5 composants modulaires

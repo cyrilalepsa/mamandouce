@@ -1,5 +1,6 @@
-import { X, TrendingUp } from 'lucide-react';
+import { X, TrendingUp, Download } from 'lucide-react';
 import { Button } from '../ui/button';
+import { exportCycleReportToPDF } from './cycleReportPdf';
 
 export function CycleReportModal({
   isOpen,
@@ -93,12 +94,23 @@ export function CycleReportModal({
             </p>
           </div>
 
-          <Button
-            onClick={onClose}
-            className="w-full bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-xl"
-          >
-            C'est compris !
-          </Button>
+          <div className="flex gap-2 pt-1">
+            <Button
+              onClick={() => exportCycleReportToPDF(cycleReport)}
+              variant="outline"
+              className={`flex-1 rounded-xl ${isDarkMode ? 'border-emerald-700 text-emerald-300 hover:bg-emerald-900/30' : 'border-emerald-300 text-emerald-700 hover:bg-emerald-50'}`}
+              data-testid="export-pdf-btn"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Exporter en PDF
+            </Button>
+            <Button
+              onClick={onClose}
+              className="flex-1 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-xl"
+            >
+              C'est compris !
+            </Button>
+          </div>
         </div>
       </div>
     </div>
