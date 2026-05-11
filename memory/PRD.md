@@ -1,4 +1,70 @@
-# MamanDouce v10.7.0 — Orchestration NeriaCorp + Early-Reject 413
+# MamanDouce v10.8.0 — Branchement APIs métier NeriaCorp (plug-and-play)
+
+## ✅ Sessions récentes
+
+### v10.8.0 — APIs métier plug-and-play (11 Fév 2026)
+**🔌 Architecture env-driven (1b+2a+3a+4a)**
+- Nouveau module `backend/integrations/neriacorp/adapters.py`
+- 5 adaptateurs configurables par env vars : `{APP}_BASE_URL` + `{APP}_API_KEY`
+- Bascule auto **mock ↔ live** sans toucher au code :
+  - Env configurée + appel OK → `published_live`, `partial=false`, `remote_id`
+  - Env configurée + erreur réseau → 2 retries backoff exponentiel (0.5s, 1s) puis `published_mock` + `partial=true`
+  - Env non configurée → `published_mock` direct + warning
+- Contrat API standard : `POST {base_url}/api/neriacorp/inject` avec Bearer auth + headers `X-NeriaCorp-Publication-Id` + `X-NeriaCorp-Admin`
+- Timeouts httpx : connect 8s / read 15s
+- Documentation : `/app/backend/integrations/neriacorp/README.md`
+
+**🆕 Endpoints/champs**
+- `GET /api/scanner/apps` ajoute flag `configured` (boolean) par app
+- `POST /api/scanner/publish` enrichi : `status` (live|mock), `partial`, `remote_id`, `configured`, `warning`, `message` localisé
+- `GET /api/scanner/publications` inclut désormais `partial`, `remote_id`, `configured`, `error`
+
+**🎨 Frontend**
+- `handlePublish` gère 3 toasts distincts (live succès / mock partiel / mock simple)
+- Bannière `publishResult` : `bg-emerald-500/30` (LIVE) vs `bg-white/15` (MOCK) avec libellé clair
+
+**🧪 Tests : iteration_60.json — 22/22 PASS**
+- `test_neriacorp_publish.py` (NEW — 8 tests) :
+  - configured flag baseline, mock fallback, invalid app 400, non-admin 403
+  - **LIVE via mock HTTP server in-process** sur 127.0.0.1:7890 (vérification Bearer + headers + body)
+  - Retry fallback sur URL injoignable (≥1.5s elapsed avant fallback)
+  - Nouveaux champs publications
+- `test_neriacorp_scanner.py` (14 tests régression — toujours PASS)
+
+### v10.7.0 — Orchestration 1-clic + Early-Reject 413
+### v10.6.0 — Scanner Vidéo + Refactor barrels
+### v10.5.0 — NeriaCorp Intelligence Admin-Only
+### v10.1-10.4 — Voir CHANGELOG
+
+## Architecture actuelle
+```
+/app/backend/
+├── routes/scanner_ai.py        (image+vidéo+publish+publications+apps+audit)
+└── integrations/
+    └── neriacorp/
+        ├── __init__.py
+        ├── adapters.py         (publish_to_app, get_app_meta, _real_http_call)
+        └── README.md           (contrat API + env vars)
+
+/app/backend/tests/
+├── test_neriacorp_scanner.py   (14 tests)
+└── test_neriacorp_publish.py   (8 tests — NEW)
+```
+
+## Pour activer une app en LIVE
+Ajouter dans `/app/backend/.env` :
+```
+{APP}_BASE_URL=https://api.app.com
+{APP}_API_KEY=bearer-token
+```
+Restart backend → publish bascule auto en `published_live`. Aucune config code requise.
+
+## Roadmap restante
+- 🟢 P3 : QR code partageable depuis publication_id (suggestion v10.7)
+- 🟢 P3 : Export CSV/Excel des audits + publications NeriaCorp
+- ⚪ Action utilisateur : déploiement Railway + Play Store
+
+*MàJ : 11 Fév 2026*
 
 ## ✅ Sessions récentes
 
