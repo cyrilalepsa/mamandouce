@@ -312,6 +312,8 @@ export const api = {
       timeout: 180000,
       onUploadProgress: onProgress,
     }),
+    publish: (data) => axios.post(`${API}/scanner/publish`, data, getAuthHeaders()),
+    listPublications: (limit = 50) => axios.get(`${API}/scanner/publications?limit=${limit}`, getAuthHeaders()),
     getAudit: (limit = 50) => axios.get(`${API}/scanner/audit?limit=${limit}`, getAuthHeaders()),
     listApps: () => axios.get(`${API}/scanner/apps`, getAuthHeaders()),
   },

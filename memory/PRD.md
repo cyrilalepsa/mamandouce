@@ -1,4 +1,48 @@
-# MamanDouce v10.6.0 — Scanner Vidéo + Refactor barrels
+# MamanDouce v10.7.0 — Orchestration NeriaCorp + Early-Reject 413
+
+## ✅ Sessions récentes
+
+### v10.7.0 — Orchestration 1-clic + Early-Reject (11 Fév 2026)
+**🎯 Publication 1-clic vers app cible**
+- Nouveau endpoint `POST /api/scanner/publish` (admin-only)
+- 5 apps cibles : VisaTrace, Heritia, VeoVision, Vellumia, Aevis (mock pour l'instant)
+- Retourne `publication_id` formaté `NC-{app3}-{uuid8}` (ex: `NC-VEL-A82CA01B`)
+- Persiste l'audit dans `scanner_publications` avec revenu facturé + statut
+- Endpoint `GET /api/scanner/publications` pour le dashboard cumulatif
+- Frontend : bouton `main_action` du display_card branche directement vers `handlePublish` → toast succès + référence affichée
+
+**⚡ Optimisation early-reject 413**
+- `analyze-video` lit maintenant le header `Content-Length` AVANT toute lecture du flux
+- Rejet immédiat si > 50 MB (+1KB tolérance multipart) → 413 en 1.7s sur 53 MB (vs traitement complet avant)
+- Fallback in-loop conservé pour les clients qui ne déclarent pas Content-Length
+
+**🧪 Tests**
+- `/api/scanner/publish` : 200 (admin Aevis), 400 (app inconnue), 403 (non-admin) ✅
+- `/api/scanner/publications` : count + total_revenue + by_target ✅
+- `/api/scanner/analyze-video` 53 MB → 413 en 1.7s ✅
+- Frontend : E2E click "Valider & Ajouter" → NC-VEL-A82CA01B affiché ✅
+
+### v10.6.0 — Scanner Vidéo + Refactor barrels
+### v10.5.0 — NeriaCorp Intelligence Admin-Only
+### v10.1-10.4 — Voir historique
+
+## Architecture actuelle
+```
+/app/backend/routes/scanner_ai.py
+├── POST /api/scanner/analyze          (image admin)
+├── POST /api/scanner/analyze-video    (Gemini 3.1 Pro, early-reject 413)
+├── POST /api/scanner/publish          (orchestration 1-clic mock)
+├── GET  /api/scanner/audit            (No-Log, par app)
+├── GET  /api/scanner/publications     (par target_app, revenu cumulé)
+└── GET  /api/scanner/apps             (5 apps avec theme_color)
+```
+
+## Roadmap restante
+- 🟢 P3 : Export CSV/Excel des audits NeriaCorp (suggestion v10.5)
+- 🟢 P3 : Branchement réel des APIs métier (VisaTrace, Heritia, VeoVision, Vellumia, Aevis) — mock actuel
+- ⚪ Action utilisateur : déploiement Railway + Play Store
+
+*MàJ : 11 Fév 2026*
 
 ## ✅ Sessions récentes
 

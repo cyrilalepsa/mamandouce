@@ -20,7 +20,7 @@ import logging
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Request
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
@@ -304,6 +304,7 @@ Produis une **annonce de vente** prête à publier dans le champ `display_card.s
 
 @router.post("/scanner/analyze-video", response_model=ScanResult)
 async def analyze_video(
+    request: Request,
     file: UploadFile = File(...),
     text_input: Optional[str] = Form(None),
     admin: User = Depends(get_admin_user),
@@ -320,6 +321,12 @@ async def analyze_video(
     mime = file.content_type or "video/mp4"
     if mime.lower() not in ACCEPTED_VIDEO_MIMES:
         raise HTTPException(status_code=400, detail=f"Format vidéo non supporté : {mime}")
+
+    # Early-reject via Content-Length (évite d'écrire 50 MB+ inutilement)
+    content_length = request.headers.get("content-length")
+    if content_length and content_length.isdigit():
+        if int(content_length) > MAX_VIDEO_BYTES + 1024:  # +1KB tolérance pour multipart overhead
+            raise HTTPException(status_code=413, detail="Vidéo trop volumineuse (max 50 MB)")
 
     # Sauvegarder vers fichier temporaire (chunked)
     tmp_dir = tempfile.mkdtemp(prefix="neriacorp_video_")
@@ -428,3 +435,93 @@ async def analyze_video(
             shutil.rmtree(tmp_dir, ignore_errors=True)
         except Exception:
             pass
+
+
+
+# ============================================================
+# Publication 1-clic vers l'app cible (orchestration NeriaCorp)
+# ============================================================
+class PublishRequest(BaseModel):
+    target_app: str          # VisaTrace | Heritia | VeoVision | Vellumia | Aevis
+    scan_id: Optional[str] = None
+    payload: Dict[str, Any]  # business + display_card du scan
+
+
+@router.post("/scanner/publish")
+async def publish_to_target_app(
+    payload: PublishRequest,
+    admin: User = Depends(get_admin_user),
+):
+    """Orchestration NeriaCorp : envoie le résultat d'un scan vers l'app métier cible.
+    Mock pour le moment (les API métier des 5 apps ne sont pas branchées).
+    Retourne une référence de publication + persiste un log d'orchestration."""
+    if payload.target_app not in APP_DEFAULTS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"App inconnue. Valides : {list(APP_DEFAULTS.keys())}"
+        )
+
+    app_cfg = APP_DEFAULTS[payload.target_app]
+    publication_id = f"NC-{payload.target_app[:3].upper()}-{uuid.uuid4().hex[:8].upper()}"
+
+    # === MOCK : simulation de l'appel à l'API métier ===
+    # En prod, remplacer par les appels réels :
+    #   if payload.target_app == "Vellumia": await vellumia_client.publish(...)
+    #   elif payload.target_app == "Aevis":  await aevis_client.inject_pos(...)
+    #   etc.
+
+    log_entry = {
+        "id": str(uuid.uuid4()),
+        "publication_id": publication_id,
+        "target_app": payload.target_app,
+        "scan_id": payload.scan_id,
+        "admin_id": admin.id,
+        "admin_email": admin.email,
+        "revenue_estimated": app_cfg["estimated_revenue"],
+        "currency": "EUR",
+        "status": "published_mock",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.scanner_publications.insert_one(log_entry)
+
+    logger.info(
+        f"NeriaCorp publish : admin={admin.email} → {payload.target_app} "
+        f"id={publication_id} revenue={app_cfg['estimated_revenue']}€"
+    )
+
+    return {
+        "publication_id": publication_id,
+        "target_app": payload.target_app,
+        "theme_color": app_cfg["theme_color"],
+        "revenue_billed": app_cfg["estimated_revenue"],
+        "currency": "EUR",
+        "status": "published_mock",
+        "message": f"Données injectées dans {payload.target_app} (mode mock).",
+        "created_at": log_entry["created_at"],
+    }
+
+
+@router.get("/scanner/publications")
+async def list_publications(
+    limit: int = 50,
+    admin: User = Depends(get_admin_user),
+):
+    """Historique des publications NeriaCorp (orchestration mock)."""
+    items = await db.scanner_publications.find(
+        {},
+        {"_id": 0},
+    ).sort("created_at", -1).to_list(limit)
+
+    total_revenue = sum(float(it.get("revenue_estimated") or 0) for it in items)
+    by_target: Dict[str, int] = {}
+    for it in items:
+        app = it.get("target_app") or "Unknown"
+        by_target[app] = by_target.get(app, 0) + 1
+
+    return {
+        "publications": items,
+        "total_count": len(items),
+        "total_revenue": round(total_revenue, 2),
+        "currency": "EUR",
+        "by_target": by_target,
+    }

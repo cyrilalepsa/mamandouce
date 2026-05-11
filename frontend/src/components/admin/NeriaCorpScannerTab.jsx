@@ -149,6 +149,8 @@ export default function NeriaCorpScannerTab() {
   const [result, setResult] = useState(null);
   const [audit, setAudit] = useState(null);
   const [showJson, setShowJson] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [publishResult, setPublishResult] = useState(null);
 
   const loadAudit = async () => {
     try {
@@ -162,6 +164,30 @@ export default function NeriaCorpScannerTab() {
   useEffect(() => {
     loadAudit();
   }, []);
+
+  const handlePublish = async () => {
+    if (!result) return;
+    const target = result.metadata?.source_app;
+    if (!target) {
+      toast.error('App cible non détectée');
+      return;
+    }
+    setPublishing(true);
+    try {
+      const { data } = await api.scanner.publish({
+        target_app: target,
+        scan_id: result.id,
+        payload: { business: result.business, display_card: result.display_card },
+      });
+      setPublishResult(data);
+      toast.success(`✓ Injecté dans ${target} — ${data.publication_id}`);
+      await loadAudit();
+    } catch (e) {
+      toast.error(e?.response?.data?.detail || 'Erreur publication');
+    } finally {
+      setPublishing(false);
+    }
+  };
 
   const handleFile = async (file) => {
     if (!file) return;
@@ -270,6 +296,7 @@ export default function NeriaCorpScannerTab() {
     setTextInput('');
     setMetadataInput('');
     setResult(null);
+    setPublishResult(null);
     setVideoFile(null);
     if (videoPreview) {
       URL.revokeObjectURL(videoPreview);
@@ -420,13 +447,24 @@ export default function NeriaCorpScannerTab() {
             <h3 className="text-lg font-bold mb-1">{result.display_card?.title || '—'}</h3>
             <p className="text-sm opacity-90 mb-3">{result.display_card?.summary || '—'}</p>
             <Button
-              onClick={() => toast.info('Action métier en attente d\'implémentation côté app cible')}
+              onClick={handlePublish}
+              disabled={publishing}
               className="bg-white hover:bg-white/90 font-semibold"
               style={{ color: themeColor }}
               data-testid="neriacorp-main-action"
             >
-              {result.display_card?.main_action || 'Valider'}
+              {publishing ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Publication…</>
+              ) : (
+                result.display_card?.main_action || 'Valider'
+              )}
             </Button>
+            {publishResult && (
+              <div className="mt-2 text-[11px] bg-white/15 rounded-lg px-2 py-1.5">
+                ✓ <span className="font-mono font-bold">{publishResult.publication_id}</span> ·
+                <span className="ml-1">+{publishResult.revenue_billed} {publishResult.currency}</span>
+              </div>
+            )}
           </Card>
 
           {/* Section financière */}
