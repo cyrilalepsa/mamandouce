@@ -169,3 +169,88 @@ class TestScannerAudit:
     def test_audit_non_admin_403(self, non_admin_headers):
         r = requests.get(f"{BASE_URL}/api/scanner/audit", headers=non_admin_headers, timeout=15)
         assert r.status_code == 403
+
+
+# ---------- POST /api/scanner/analyze-video ----------
+SAMPLE_VIDEO_PATH = "/tmp/test_sample.mp4"
+
+
+def _ensure_sample_video():
+    import os
+    if not os.path.exists(SAMPLE_VIDEO_PATH) or os.path.getsize(SAMPLE_VIDEO_PATH) < 500:
+        import subprocess
+        import imageio_ffmpeg
+        ff = imageio_ffmpeg.get_ffmpeg_exe()
+        subprocess.run(
+            [ff, "-y", "-f", "lavfi", "-i", "color=c=blue:s=320x240:d=2",
+             "-c:v", "libx264", "-t", "2", SAMPLE_VIDEO_PATH],
+            check=True, capture_output=True,
+        )
+    return SAMPLE_VIDEO_PATH
+
+
+class TestScannerAnalyzeVideo:
+    def test_analyze_video_no_file_422(self, admin_token):
+        """No file → FastAPI 422 validation error"""
+        h = {"Authorization": f"Bearer {admin_token}"}
+        r = requests.post(f"{BASE_URL}/api/scanner/analyze-video", headers=h, timeout=15)
+        assert r.status_code == 422, f"expected 422 got {r.status_code} {r.text}"
+
+    def test_analyze_video_non_admin_403(self, non_admin_token):
+        """Non-admin token → 403"""
+        _ensure_sample_video()
+        h = {"Authorization": f"Bearer {non_admin_token}"}
+        with open(SAMPLE_VIDEO_PATH, "rb") as f:
+            files = {"file": ("test.mp4", f, "video/mp4")}
+            r = requests.post(f"{BASE_URL}/api/scanner/analyze-video",
+                              headers=h, files=files, timeout=30)
+        assert r.status_code == 403, f"expected 403 got {r.status_code} {r.text}"
+
+    def test_analyze_video_invalid_mime_400(self, admin_token):
+        """Invalid MIME (image/png) → 400"""
+        h = {"Authorization": f"Bearer {admin_token}"}
+        fake = io.BytesIO(b"\x89PNG\r\n\x1a\n" + b"0" * 100)
+        files = {"file": ("fake.png", fake, "image/png")}
+        r = requests.post(f"{BASE_URL}/api/scanner/analyze-video",
+                          headers=h, files=files, timeout=30)
+        assert r.status_code == 400, f"expected 400 got {r.status_code} {r.text}"
+        assert "Format" in r.text or "non support" in r.text.lower()
+
+    def test_analyze_video_too_large_413(self, admin_token):
+        """File > 50MB → 413"""
+        h = {"Authorization": f"Bearer {admin_token}"}
+        # Build ~51MB payload of zeros in a BytesIO
+        big = io.BytesIO(b"\x00" * (51 * 1024 * 1024))
+        files = {"file": ("big.mp4", big, "video/mp4")}
+        r = requests.post(f"{BASE_URL}/api/scanner/analyze-video",
+                          headers=h, files=files, timeout=120)
+        assert r.status_code == 413, f"expected 413 got {r.status_code} {r.text}"
+
+    def test_analyze_video_admin_success(self, admin_token):
+        """Admin + valid MP4 → 200 ScanResult with REPORT visual + video_analysis"""
+        _ensure_sample_video()
+        h = {"Authorization": f"Bearer {admin_token}"}
+        with open(SAMPLE_VIDEO_PATH, "rb") as f:
+            files = {"file": ("test.mp4", f, "video/mp4")}
+            r = requests.post(f"{BASE_URL}/api/scanner/analyze-video",
+                              headers=h, files=files, timeout=180)
+        assert r.status_code == 200, f"expected 200 got {r.status_code} {r.text[:500]}"
+        body = r.json()
+        for key in ("id", "metadata", "business", "display_card", "financial", "created_at"):
+            assert key in body, f"missing {key}"
+        dc = body["display_card"]
+        assert dc.get("visual_type") == "REPORT", dc
+        assert dc.get("main_action") == "Publier l'annonce", dc
+        assert body["metadata"].get("operation_mode") == "Admin_Only"
+        assert body["financial"].get("currency") == "EUR"
+
+    def test_audit_contains_video_entry(self, admin_headers):
+        """After video scan, audit must include source_type='video' + video_size_kb"""
+        r = requests.get(f"{BASE_URL}/api/scanner/audit", headers=admin_headers, timeout=15)
+        assert r.status_code == 200
+        scans = r.json().get("scans", [])
+        video_scans = [s for s in scans if s.get("source_type") == "video"]
+        assert len(video_scans) >= 1, "no video entry found in audit"
+        v = video_scans[0]
+        assert "video_size_kb" in v
+        assert isinstance(v["video_size_kb"], int) and v["video_size_kb"] > 0

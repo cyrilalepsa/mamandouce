@@ -306,6 +306,12 @@ export const api = {
 
   scanner: {
     analyze: (data) => axios.post(`${API}/scanner/analyze`, data, { ...getAuthHeaders(), timeout: 90000 }),
+    analyzeVideo: (formData, onProgress) => axios.post(`${API}/scanner/analyze-video`, formData, {
+      ...getAuthHeaders(),
+      headers: { ...getAuthHeaders().headers, 'Content-Type': 'multipart/form-data' },
+      timeout: 180000,
+      onUploadProgress: onProgress,
+    }),
     getAudit: (limit = 50) => axios.get(`${API}/scanner/audit?limit=${limit}`, getAuthHeaders()),
     listApps: () => axios.get(`${API}/scanner/apps`, getAuthHeaders()),
   },

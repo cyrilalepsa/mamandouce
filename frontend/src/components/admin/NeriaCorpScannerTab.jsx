@@ -12,7 +12,7 @@
  * Audit : dashboard cumulatif en bas avec total_revenue + by_app.
  */
 import { useEffect, useRef, useState } from 'react';
-import { Camera, Upload, Loader2, Sparkles, Type, RefreshCw, AlertCircle, TrendingUp, ShieldCheck, FileJson } from 'lucide-react';
+import { Camera, Upload, Loader2, Sparkles, Type, RefreshCw, AlertCircle, TrendingUp, ShieldCheck, FileJson, Video } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
@@ -137,11 +137,15 @@ function BusinessRenderer({ business, visualType, themeColor }) {
 export default function NeriaCorpScannerTab() {
   const fileRef = useRef(null);
   const cameraRef = useRef(null);
+  const videoRef = useRef(null);
   const [preview, setPreview] = useState(null);
   const [imageBase64, setImageBase64] = useState(null);
   const [textInput, setTextInput] = useState('');
   const [metadataInput, setMetadataInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [videoFile, setVideoFile] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(null);
   const [result, setResult] = useState(null);
   const [audit, setAudit] = useState(null);
   const [showJson, setShowJson] = useState(false);
@@ -176,8 +180,37 @@ export default function NeriaCorpScannerTab() {
   };
 
   const handleAnalyze = async () => {
+    // === VIDÉO : upload multipart prioritaire ===
+    if (videoFile) {
+      setLoading(true);
+      setUploadProgress(0);
+      try {
+        const fd = new FormData();
+        fd.append('file', videoFile);
+        if (textInput) fd.append('text_input', textInput);
+        const { data } = await api.scanner.analyzeVideo(fd, (e) => {
+          if (e.total) setUploadProgress(Math.round((e.loaded * 100) / e.total));
+        });
+        setResult(data);
+        await loadAudit();
+        toast.success(
+          `${data.metadata.source_app || 'Vidéo'} — annonce générée (${Math.round(
+            (data.metadata.confidence_score || 0) * 100
+          )}%)`
+        );
+      } catch (e) {
+        const msg = e?.response?.data?.detail || e.message || 'Erreur IA Vidéo';
+        toast.error(msg);
+      } finally {
+        setLoading(false);
+        setUploadProgress(0);
+      }
+      return;
+    }
+
+    // === IMAGE / TEXTE / MÉTADONNÉES ===
     if (!imageBase64 && !textInput && !metadataInput) {
-      toast.error('Fournis au moins une image, du texte ou des métadonnées');
+      toast.error('Fournis au moins une image, une vidéo, du texte ou des métadonnées');
       return;
     }
 
@@ -213,12 +246,35 @@ export default function NeriaCorpScannerTab() {
     }
   };
 
+  const handleVideoFile = (file) => {
+    if (!file) return;
+    if (!/^video\/(mp4|quicktime|webm|x-matroska|mpeg)/i.test(file.type)) {
+      toast.error('Format vidéo non supporté (MP4, MOV, WebM)');
+      return;
+    }
+    const sizeMB = file.size / (1024 * 1024);
+    if (sizeMB > 50) {
+      toast.error('Vidéo trop volumineuse (max 50 MB)');
+      return;
+    }
+    setVideoFile(file);
+    setVideoPreview(URL.createObjectURL(file));
+    setImageBase64(null);
+    setPreview(null);
+    toast.success(`Vidéo prête (${sizeMB.toFixed(1)} MB)`);
+  };
+
   const resetAll = () => {
     setPreview(null);
     setImageBase64(null);
     setTextInput('');
     setMetadataInput('');
     setResult(null);
+    setVideoFile(null);
+    if (videoPreview) {
+      URL.revokeObjectURL(videoPreview);
+      setVideoPreview(null);
+    }
   };
 
   const themeColor = result?.display_card?.theme_color || '#7c3aed';
@@ -254,15 +310,29 @@ export default function NeriaCorpScannerTab() {
                 Retirer
               </button>
             </div>
+          ) : videoPreview ? (
+            <div className="relative mb-3">
+              <video src={videoPreview} controls className="w-full rounded-xl border border-slate-200 max-h-64" />
+              <div className="text-xs text-slate-500 mt-1">
+                📹 {videoFile?.name} — {(videoFile?.size / (1024 * 1024)).toFixed(1)} MB
+              </div>
+              <button
+                onClick={() => { setVideoFile(null); URL.revokeObjectURL(videoPreview); setVideoPreview(null); }}
+                className="absolute top-2 right-2 px-2 py-1 bg-white/90 rounded-lg text-xs shadow"
+                data-testid="neriacorp-remove-video"
+              >
+                Retirer
+              </button>
+            </div>
           ) : (
-            <div className="grid grid-cols-2 gap-2 mb-3">
+            <div className="grid grid-cols-3 gap-2 mb-3">
               <button
                 onClick={() => cameraRef.current?.click()}
                 className="rounded-xl py-3 px-2 bg-violet-50 hover:bg-violet-100 flex flex-col items-center gap-1 transition-all"
                 data-testid="neriacorp-take-photo"
               >
                 <Camera className="w-5 h-5 text-violet-600" />
-                <span className="text-xs font-semibold text-slate-700">Photo</span>
+                <span className="text-[11px] font-semibold text-slate-700">Photo</span>
               </button>
               <button
                 onClick={() => fileRef.current?.click()}
@@ -270,10 +340,19 @@ export default function NeriaCorpScannerTab() {
                 data-testid="neriacorp-upload"
               >
                 <Upload className="w-5 h-5 text-sky-600" />
-                <span className="text-xs font-semibold text-slate-700">Importer</span>
+                <span className="text-[11px] font-semibold text-slate-700">Importer</span>
+              </button>
+              <button
+                onClick={() => videoRef.current?.click()}
+                className="rounded-xl py-3 px-2 bg-amber-50 hover:bg-amber-100 flex flex-col items-center gap-1 transition-all"
+                data-testid="neriacorp-upload-video"
+              >
+                <Video className="w-5 h-5 text-amber-600" />
+                <span className="text-[11px] font-semibold text-slate-700">Vidéo 30s</span>
               </button>
               <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => handleFile(e.target.files?.[0])} />
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFile(e.target.files?.[0])} />
+              <input ref={videoRef} type="file" accept="video/mp4,video/quicktime,video/webm,video/mpeg" className="hidden" onChange={(e) => handleVideoFile(e.target.files?.[0])} />
             </div>
           )}
 
@@ -306,9 +385,13 @@ export default function NeriaCorpScannerTab() {
             data-testid="neriacorp-analyze-btn"
           >
             {loading ? (
-              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Analyse NeriaCorp…</>
+              uploadProgress > 0 && uploadProgress < 100 ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Upload vidéo {uploadProgress}%…</>
+              ) : (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {videoFile ? 'Gemini analyse la vidéo…' : 'Analyse NeriaCorp…'}</>
+              )
             ) : (
-              <><Sparkles className="w-4 h-4 mr-2" /> Analyser via NeriaCorp Intelligence</>
+              <><Sparkles className="w-4 h-4 mr-2" /> {videoFile ? 'Générer l\'annonce de vente' : 'Analyser via NeriaCorp Intelligence'}</>
             )}
           </Button>
         </Card>
