@@ -1,74 +1,70 @@
-# MamanDouce v10.5.0 — NeriaCorp Intelligence (Admin-Only)
+# MamanDouce v10.6.0 — Scanner Vidéo + Refactor barrels
 
 ## ✅ Sessions récentes
 
-### v10.5.0 — Isolation Scanner IA Admin + PDF Liste de Naissance (11 Fév 2026)
-**🧠 NeriaCorp Intelligence (refonte complète du Scanner IA)**
-- Backend `/api/scanner/analyze` — **GATÉ admin-only** via `Depends(get_admin_user)`
-- Nouveau prompt strict **"NeriaCorp Intelligence"** : détecte 5 apps (VisaTrace #1A5CAD, Heritia #8B4513, VeoVision #000000, Vellumia #D4AF37, Aevis #2E8B57)
-- 4 sections JSON : metadata (source_app, confidence_score, operation_mode='Admin_Only'), business (modules métier dynamiques), display_card (title/summary/main_action/theme_color/visual_type LIST|GRID|REPORT), financial (estimated_revenue/currency)
-- **No-Log policy** : audit ne persiste QUE admin_id, source_app, confidence, revenu — pas le contenu métier ni les images
-- Routes : `/api/scanner/analyze`, `/api/scanner/apps`, `/api/scanner/audit`
-- Frontend : nouveau composant `NeriaCorpScannerTab.jsx` dans `/admin` (5e tiroir doré "🧠 NeriaCorp Intelligence")
-- Rendu dynamique selon `visual_type` (LIST | GRID | REPORT) avec `theme_color` du frontend
-- **Public `/scanner-ai` SUPPRIMÉ** (route + tile Services + dragdrop entries)
+### v10.6.0 — Scanner IA Vidéo + Refactor scalabilité (11 Fév 2026)
+**🎥 Scanner IA Vidéo → Annonce de vente 30s**
+- Backend `POST /api/scanner/analyze-video` — multipart upload chunked (1 MB), cap 50 MB
+- Modèle **Gemini 3.1 Pro Preview** via `FileContentWithMimeType` (Emergent LLM Key)
+- Prompt **NeriaCorp + suffix vidéo** : `display_card.visual_type='REPORT'`, `main_action='Publier l'annonce'`, `business.video_analysis = {duration_seconds, key_moments, detected_objects, suggested_keywords}`
+- **No-Log** : fichier temporaire dans `/tmp/neriacorp_video_*` supprimé en `finally`
+- Audit garde uniquement source_type='video' + video_size_kb (pas de contenu)
+- Frontend : 3e bouton 'Vidéo 30s' dans NeriaCorpScannerTab + barre de progression upload
+- Format acceptés : MP4, MOV, WebM, MPEG
 
-**📄 Export PDF Liste de Naissance**
-- `pages/birthlist/birthListPdf.js` — catalogue jsPDF
-- Bouton "Télécharger en PDF (catalogue)" rose bonbon dans onglet Ma Liste (data-testid='export-pdf-birthlist-btn')
-- Format : en-tête rose MamanDouce, catégories couleur cyclées (Jaune→Bleu→Rouge→Vert→Violet), articles avec ♥ et étoile "Essentiel", footer "Partagez votre liste avec votre famille"
-- Validé : PDF 13.6 KB, 3 catégories, 4 articles, footer correct (Gemini analysis 95% confidence)
+**🔧 Refactor NavigationSections.jsx**
+- 1110 → **13 lignes** (-99%) via barrel `./navigation/`
+- 7 sous-modules extraits :
+  - `_shared.jsx` (PASTEL_STYLES, PastelMosaicCard, PastelPillCard, PinnedSectionsProvider, CollapsibleSection)
+  - `PreconceptionSection.jsx`, `PregnancySection.jsx`, `BabyPreparationSection.jsx`
+  - `PostpartumSection.jsx`, `FaqBabySection.jsx`, `ServicesSection.jsx`, `SolidaritySection.jsx`
 
-**🐛 Fix 401 'Erreur chargement layout'**
-- `HomeLayoutContext.js` : vérifie présence du token avant `loadLayout()` + silence 401 silencieux dans le catch
+**🔧 Refactor DragDropComponents.jsx**
+- 727 → **17 lignes** (-98%) via barrel `./dragdrop/`
+- 4 sous-modules : DraggableItem.jsx, ItemGroup.jsx, GroupContentPopup.jsx, DropZone.jsx
+- + constants.js déjà extrait en v10.2
 
-**🧪 Tests : iteration_58.json — Backend 8/8 + Frontend 100%, 0 régression**
-- `/app/backend/tests/test_neriacorp_scanner.py` (nouveau)
+**🧪 Tests : iteration_59.json — Backend 14/14 + Frontend 100%**
+- `/app/backend/tests/test_neriacorp_scanner.py` (TestScannerAnalyzeVideo : 6 nouveaux tests)
+- Sample MP4 généré via imageio-ffmpeg (3 KB, 2s blue color)
 
-### v10.4.0 — Scanner IA + UI fixes (11 Fév 2026)
-- Refonte rose bonbon, TrackingPage containers unifiés, contours postpartum, Fête du jour + SA badge
-- Scanner IA public (remplacé en v10.5 par NeriaCorp admin-only)
+### v10.5.0 — NeriaCorp Intelligence Admin-Only (11 Fév 2026)
+- Scanner IA gaté get_admin_user + prompt strict 5 apps
+- PDF Liste de Naissance + fix 401 layout
 
-### v10.3.0 — Export PDF Bilan cycle
-### v10.2.0 — Refactor scalabilité (CycleTrackingPage, DragDropComponents)
-### v10.1.0 — Birth List + DPA
+### v10.4.0 → v10.1.0 — Voir historique versions
 
 ## Architecture actuelle
 ```
 /app/backend/routes/
-└── scanner_ai.py             (NeriaCorp Intelligence, admin-only)
+└── scanner_ai.py             (image + vidéo, admin-only)
 
 /app/backend/tests/
-├── test_neriacorp_scanner.py (NEW v10.5 — 8/8 PASS)
-└── test_scanner_ai.py        (legacy — backup)
+└── test_neriacorp_scanner.py (14 tests, 100% PASS)
 
-/app/frontend/src/
-├── pages/
-│   ├── AdminPage.js          (5e drawer "neriacorp" doré)
-│   ├── BirthListPage.js      (bouton PDF dans Ma Liste)
-│   └── birthlist/
-│       └── birthListPdf.js   (NEW)
-├── components/
-│   ├── admin/
-│   │   └── NeriaCorpScannerTab.jsx (NEW — dynamic UI selon visual_type)
-│   └── cycle/                (depuis v10.2)
-└── contexts/
-    └── HomeLayoutContext.js  (401 silencieux + check token avant fetch)
+/app/frontend/src/components/home/
+├── NavigationSections.jsx    (13 l. — barrel)
+├── DragDropComponents.jsx    (17 l. — barrel)
+├── navigation/               (7 fichiers, max 239 l.)
+│   ├── _shared.jsx
+│   ├── PreconceptionSection.jsx
+│   ├── PregnancySection.jsx
+│   ├── BabyPreparationSection.jsx
+│   ├── PostpartumSection.jsx
+│   ├── FaqBabySection.jsx
+│   ├── ServicesSection.jsx
+│   └── SolidaritySection.jsx
+└── dragdrop/                 (5 fichiers, max 538 l.)
+    ├── DraggableItem.jsx
+    ├── ItemGroup.jsx
+    ├── GroupContentPopup.jsx
+    ├── DropZone.jsx
+    └── constants.js
 ```
 
-## Apps NeriaCorp détectables
-| App        | Theme color | Pack price | Modules métier                                                |
-|------------|-------------|------------|----------------------------------------------------------------|
-| VisaTrace  | #1A5CAD     | 29.99 €    | profile_detected, social_inventory, risk_assessment, billing |
-| Heritia    | #8B4513     | 60.00 €    | inventory_update, recipe_hook, club_status                    |
-| VeoVision  | #000000     | 40.00 €    | authenticity_report, multi_diffusion_ads, ad_status           |
-| Vellumia   | #D4AF37     | 60.00 €    | artistic_analysis, scene_breakdown, premium_options           |
-| Aevis      | #2E8B57     | 40.00 €    | pos_items, pos_layout                                          |
-
 ## Roadmap restante
-- 🟡 P2 : Refactor `NavigationSections.jsx` (1109 lignes — déferé v10.6)
-- 🟡 P2 : Split `DragDropComponents.jsx` (727 lignes)
-- 🟡 P1 : **Scanner IA Vidéo → Annonce de vente 30s** (Gemini 3 Pro multimodal) — promis
+- 🟢 P3 : Optimisation early-reject 413 via header Content-Length sur analyze-video (review comment, non bloquant)
+- 🟢 P3 : Export CSV/Excel des audits NeriaCorp (suggestion v10.5)
 - ⚪ Action utilisateur : déploiement Railway + Play Store
 
 *MàJ : 11 Fév 2026*
