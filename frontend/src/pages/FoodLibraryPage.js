@@ -275,20 +275,10 @@ function FoodLibraryPage() {
               {displayFoods.map((food, index) => {
                 const badge = getSafetyBadge(food.safe_for_pregnancy);
                 // Couleurs pastel selon le statut
-                const pastelStyle = food.safe_for_pregnancy === 'yes' 
-                  ? {
-                      bg: 'linear-gradient(160deg, #f0fdf4 0%, #d1fae5 40%, #a7f3d0 100%)',
-                      shadow: '0 4px 12px -4px rgba(34,197,94,0.15)',
-                    }
-                  : food.safe_for_pregnancy === 'caution'
-                    ? {
-                        bg: 'linear-gradient(160deg, #fff7ed 0%, #fed7aa 40%, #fdba74 100%)',
-                        shadow: '0 4px 12px -4px rgba(249,115,22,0.15)',
-                      }
-                    : {
-                        bg: 'linear-gradient(160deg, #fef2f2 0%, #fecaca 40%, #fca5a5 100%)',
-                        shadow: '0 4px 12px -4px rgba(239,68,68,0.15)',
-                      };
+                const pastelStyle = {
+                  bg: 'linear-gradient(160deg, #ffffff 0%, #ffffff 25%, #fefefe 50%, #fafafa 80%, #f5f5f7 100%)',
+                  shadow: '0 4px 12px -4px rgba(0,0,0,0.06)',
+                };
                 return (
                   <div
                     key={index}
@@ -321,9 +311,12 @@ function FoodLibraryPage() {
                             />
                           </button>
                         </div>
-                        <span className={`inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full text-xs font-medium bg-white/60 backdrop-blur-sm ${badge.color.includes('text') ? badge.color.split(' ').find(c => c.startsWith('text-')) : 'text-slate-600'}`}>
-                          {getSafetyIcon(food.safe_for_pregnancy)}
-                          {badge.text}
+                        <span className={`inline-flex items-center gap-1 mt-2 px-2.5 py-1 rounded-full text-xs font-bold ${
+                          food.safe_for_pregnancy === 'yes' ? 'bg-emerald-100 text-emerald-700' :
+                          food.safe_for_pregnancy === 'caution' ? 'bg-orange-100 text-orange-700' :
+                          'bg-red-100 text-red-700'
+                        }`}>
+                          {food.safe_for_pregnancy === 'yes' ? 'Sur' : food.safe_for_pregnancy === 'caution' ? 'Précaution' : 'Interdit'}
                         </span>
                         {food.reason && (
                           <p className="mt-2 text-xs text-slate-600 line-clamp-2">{food.reason}</p>

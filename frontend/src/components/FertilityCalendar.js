@@ -766,7 +766,7 @@ export default function FertilityCalendar({
 
         {/* Modal ajout rapport — Données écrites sur le jour sélectionné */}
         {showAddRapport && selectedDate && (
-          <div className="fixed inset-0 bg-black/30 z-60 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/30 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
             <Card className="bg-white rounded-2xl p-5 w-full max-w-xs">
               <h4 className="text-lg font-bold text-slate-700 mb-2">
                 {formatDateWithWeekday(selectedDate)}
