@@ -1,4 +1,48 @@
-# MamanDouce v10.9.0 — QR code partageable NeriaCorp
+# MamanDouce v10.10.0 — Bugfixes prioritaires + Polissage UI
+
+## ✅ Sessions récentes
+
+### v10.10.0 — Polissage UI + AutoRefresh (12 Fév 2026)
+**🔒 SÉCURITÉ SYSTÈME**
+- `.emergent/emergent.yml` **intact** (format JSON natif plateforme, non modifié)
+- Accès Admin **VÉRIFIÉ FONCTIONNEL** via 3-points → Admin → /admin (5 tiroirs visibles)
+
+**🐛 Bug 1 — Menu 3-points cliquable**
+- Cause : `handleClickOutside` fermait le menu sur `mousedown` avant que le `click` ne fire (dropdown rendu OUTSIDE le menuRef)
+- Fix : `handleClickOutside` vérifie maintenant aussi `menuDropdownRef` (qui existait déjà mais n'était pas utilisé)
+- Test E2E : click "Premium" → /pricing ✅, click "Admin" → /admin ✅
+
+**🐛 Bug 2 — Language picker layout shift**
+- Cause : `p-1` + `hover:scale-110` + emoji sans line-height fixe = sub-pixel reflow lors du re-render
+- Fix : wrapper `width: 28, height: 28, flexShrink: 0, alignSelf: 'center'` + bouton `padding: 0` + span `lineHeight: '28px', display: 'block'`
+- Résultat : shift x=0px, y=1px (sub-pixel résiduel browser, imperceptible)
+
+**🎨 Bug 3 — Cartes harmonisées 112px**
+- WeekDisplayWidget (compact) et NameOfTheDay (compact) : hauteur fixe 112px, layout flex column centered, text-center
+- `.badge-semaine-x` reçoit le même dark shadow que `.badge-fete-du-jour`
+- Both still clickable (`onClick → /cycle-tracking` / `/cycle-tracking?calendar=true`)
+
+**🔄 Auto-Refresh global**
+- Nouveau `contexts/AutoRefreshContext.js` (provider + `useAutoRefresh()` hook)
+- Tick toutes les 60s, pause auto via `document.visibilityState`
+- Wrappé dans App.js entre ThemeProvider et HomeLayoutProvider
+- N'ajoute AUCUN DOM (juste un compteur en context) → 0 scroll vertical induit
+
+**🧪 Tests visuels OK**
+- Menu 3-points: 7 items cliquables, Admin atteint
+- Language picker: shift ≤1px (sub-pixel)
+- Card heights equalisées 112px
+- HomePage reste 100dvh + overflow:hidden (no scroll)
+
+### v10.9.0 — QR code partageable NeriaCorp
+### v10.5-10.8 — NeriaCorp Intelligence + Vidéo + Plug-and-play + Orchestration
+
+## Roadmap restante
+- 🟢 P3 : Bouton "Renvoyer" pour resynchroniser publications mock
+- 🟢 P3 : Export CSV/Excel audits + publications NeriaCorp
+- ⚪ Action utilisateur : clés API 5 apps + Railway + Play Store
+
+*MàJ : 12 Fév 2026*
 
 ## ✅ Sessions récentes
 

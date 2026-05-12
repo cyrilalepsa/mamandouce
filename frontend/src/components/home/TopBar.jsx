@@ -41,14 +41,22 @@ function LanguageInlineFlag() {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef} style={{ width: 28, height: 28, flexShrink: 0, alignSelf: 'center' }}>
       <button
         onClick={(e) => { e.stopPropagation(); setIsOpen(prev => !prev); }}
-        className="p-1 flex items-center justify-center transition-all duration-200 hover:scale-110"
-        style={{ background: 'none', border: 'none', boxShadow: 'none' }}
+        className="flex items-center justify-center"
+        style={{
+          width: 28,
+          height: 28,
+          background: 'none',
+          border: 'none',
+          boxShadow: 'none',
+          padding: 0,
+          cursor: 'pointer',
+        }}
         data-testid="language-bubble-btn"
       >
-        <span className="text-xl">{currentLanguage.flag}</span>
+        <span style={{ fontSize: 20, lineHeight: '28px', display: 'block' }}>{currentLanguage.flag}</span>
       </button>
       {isOpen && (
         <div className="absolute top-10 right-0 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden" style={{ minWidth: '200px', zIndex: 9999 }}>
@@ -126,10 +134,12 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
 
   const hasNotifications = unreadMessages > 0 || adminUnreadMessages > 0;
 
-  // Fermer le menu quand on clique ailleurs
+  // Fermer le menu quand on clique ailleurs (mais PAS sur le dropdown lui-même)
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      const insideTrigger = menuRef.current && menuRef.current.contains(event.target);
+      const insideDropdown = menuDropdownRef.current && menuDropdownRef.current.contains(event.target);
+      if (!insideTrigger && !insideDropdown) {
         setMenuOpen(false);
       }
     };

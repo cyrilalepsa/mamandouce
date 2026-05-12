@@ -16,10 +16,11 @@ export function WeekDisplayWidget({ pregnancyProfile, t, compact = false, naviga
   if (compact) {
     return (
       <div 
-        className="relative overflow-hidden rounded-3xl px-4 py-3 h-full flex flex-col justify-center items-center cursor-pointer active:scale-[0.98] badge-semaine-x"
+        className="relative overflow-hidden px-4 py-3 cursor-pointer active:scale-[0.98] badge-semaine-x w-full flex flex-col justify-center items-center text-center"
         style={{
-          height: '96px',
-          minHeight: '96px',
+          height: '112px',
+          minHeight: '112px',
+          maxHeight: '112px',
           borderRadius: '20px',
           color: '#4A4A4A',
           transform: 'translateZ(0)',
@@ -30,8 +31,8 @@ export function WeekDisplayWidget({ pregnancyProfile, t, compact = false, naviga
         onClick={() => navigate && navigate('/cycle-tracking')}
         data-testid="week-display-card"
       >
-        <p className="relative text-[10px] mb-0.5 font-semibold" style={{ color: '#9d174d' }}>✨ {t('pregnancy.youAreAt', 'Vous êtes à la')}</p>
-        <p className="relative text-lg font-bold" style={{ 
+        <p className="relative text-[10px] mb-1 font-semibold leading-tight" style={{ color: '#9d174d' }}>✨ {t('pregnancy.youAreAt', 'Vous êtes à la')}</p>
+        <p className="relative text-xl font-bold leading-tight" style={{ 
           background: 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #a855f7 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
@@ -39,7 +40,7 @@ export function WeekDisplayWidget({ pregnancyProfile, t, compact = false, naviga
         }}>
           {t('pregnancy.week', 'Semaine')} {pregnancyProfile.current_week}
         </p>
-        <p className="relative text-[10px] font-medium" style={{ color: '#9d174d' }}>
+        <p className="relative text-[11px] mt-1 font-medium leading-tight" style={{ color: '#9d174d' }}>
           Trimestre {pregnancyProfile.trimester || Math.ceil(pregnancyProfile.current_week / 13)} • SA
         </p>
       </div>

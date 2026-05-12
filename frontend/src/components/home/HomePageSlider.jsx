@@ -110,9 +110,9 @@ export function HomePageSlider({
           className="w-1/2 flex-shrink-0 px-0.5 no-layout-shift overflow-hidden"
           style={{ minHeight: '480px' }}
         >
-          {/* Semaine X et Fête du jour - layout adaptatif */}
+          {/* Semaine X et Fête du jour - layout adaptatif (cartes harmonisées 112px) */}
           {hasPregnancyProfile ? (
-            <div className="grid grid-cols-2 gap-3 card-stable card-fade-in pb-4" style={{ minHeight: '96px' }}>
+            <div className="grid grid-cols-2 gap-3 card-stable card-fade-in pb-4" style={{ minHeight: '112px' }}>
               <WeekDisplayWidget pregnancyProfile={pregnancyProfile} t={t} compact navigate={navigate} />
               <NameOfTheDay isDarkMode={isDarkMode} compact={true} />
             </div>

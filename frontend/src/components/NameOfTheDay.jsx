@@ -102,10 +102,11 @@ export default function NameOfTheDay({ compact = false, fullWidth = false }) {
     
     return (
       <div 
-        className="relative overflow-hidden rounded-3xl px-4 py-3 h-full flex flex-col justify-center items-center cursor-pointer active:scale-[0.98] badge-fete-du-jour"
+        className="relative overflow-hidden px-4 py-3 cursor-pointer active:scale-[0.98] badge-fete-du-jour w-full flex flex-col justify-center items-center text-center"
         style={{
-          height: '96px',
-          minHeight: '96px',
+          height: '112px',
+          minHeight: '112px',
+          maxHeight: '112px',
           borderRadius: '20px',
           color: '#4A4A4A',
           transform: 'translateZ(0)',
@@ -118,12 +119,12 @@ export default function NameOfTheDay({ compact = false, fullWidth = false }) {
       >
         <div className="relative flex items-center gap-1 mb-1">
           <Sparkles className="w-3 h-3 text-amber-500" />
-          <span className="text-[10px] font-semibold" style={{ color: '#92400e' }}>
+          <span className="text-[10px] font-semibold leading-tight" style={{ color: '#92400e' }}>
             {t('home.nameOfTheDay', 'Fête du jour')}
           </span>
         </div>
-        <span className="relative text-2xl mb-0.5">🎉</span>
-        <p className="relative font-bold text-base" style={{ 
+        <span className="relative text-xl mb-0.5 leading-tight">🎉</span>
+        <p className="relative font-bold text-base leading-tight" style={{ 
           background: 'linear-gradient(90deg, #d97706 0%, #ea580c 50%, #d97706 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
@@ -131,8 +132,7 @@ export default function NameOfTheDay({ compact = false, fullWidth = false }) {
         }}>
           {displayNames}
         </p>
-        {/* Date */}
-        <p className="relative text-xs mt-0.5 font-medium" style={{ color: '#92400e' }}>{dateStr}</p>
+        <p className="relative text-[11px] mt-1 font-medium leading-tight" style={{ color: '#92400e' }}>{dateStr}</p>
       </div>
     );
   }

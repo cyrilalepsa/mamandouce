@@ -5,6 +5,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { SubscriptionGate } from './components/SubscriptionGate';
 import { OfflineSyncIndicator } from './components/OfflineSyncIndicator';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { AutoRefreshProvider } from './contexts/AutoRefreshContext';
 import { checkFirstVisitLanguage } from './i18n';
 import { toast } from 'sonner';
 import AuthPage from './pages/AuthPage';
@@ -139,6 +140,7 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
+        <AutoRefreshProvider>
         <HomeLayoutProvider>
           <NewBadgeProvider>
             <MaintenanceBanner />
@@ -221,6 +223,7 @@ function App() {
           </div>
         </NewBadgeProvider>
       </HomeLayoutProvider>
+        </AutoRefreshProvider>
     </ThemeProvider>
   </ErrorBoundary>
   );
