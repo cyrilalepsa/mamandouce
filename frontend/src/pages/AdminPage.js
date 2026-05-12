@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, HandCoins, Eye, Crown, Baby, ChevronDown, Bell, Smartphone, Shield, HandHeart, Calculator, CheckCircle, Brain } from 'lucide-react';
+import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, HandCoins, Eye, Crown, Baby, ChevronDown, Bell, Smartphone, Shield, HandHeart, Calculator, CheckCircle, Brain, Image } from 'lucide-react';
 import api from '../utils/api';
 import PageHeader from '../components/PageHeader';
 import { toast } from 'sonner';
@@ -23,6 +23,7 @@ import {
 import AccountingDashboard from '../components/admin/AccountingDashboard';
 import ContributionsManager from '../components/admin/ContributionsManager';
 import NeriaCorpScannerTab from '../components/admin/NeriaCorpScannerTab';
+import FlyerGenerator from '../components/FlyerModule/FlyerGenerator';
 
 function AdminPage() {
   const navigate = useNavigate();
@@ -291,6 +292,7 @@ function AdminPage() {
     finances:  '#A7F3D0, #6EE7B7',   // menthe
     tools:     '#BAE6FD, #7DD3FC',   // bleu
     neriacorp: '#FEF3C7, #FCD34D',   // or (Section Spéciale)
+    flyer:     '#FBCFE8, #F9A8D4',   // rose pastel (Marketing)
   };
 
   const toggleSub = (id) => setOpenSubs(prev => ({ ...prev, [id]: !prev[id] }));
@@ -425,6 +427,13 @@ function AdminPage() {
         <DrawerTile id="neriacorp" icon={Brain} label="🧠 NeriaCorp Intelligence">
           <SubDrawer id="neriacorp-scanner" label="Scanner IA Admin-Only" icon={Brain} defaultOpen={true}>
             <NeriaCorpScannerTab />
+          </SubDrawer>
+        </DrawerTile>
+
+        {/* 6. ROSE — FLYER MARKETING (squelette, à compléter) */}
+        <DrawerTile id="flyer" icon={Image} label="🖼️ Flyer Marketing">
+          <SubDrawer id="flyer-generator" label="Neria Creative" icon={Image} defaultOpen={true}>
+            <FlyerGenerator />
           </SubDrawer>
         </DrawerTile>
 
