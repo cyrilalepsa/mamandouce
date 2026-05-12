@@ -1,4 +1,56 @@
-# MamanDouce v10.8.0 — Branchement APIs métier NeriaCorp (plug-and-play)
+# MamanDouce v10.9.0 — QR code partageable NeriaCorp
+
+## ✅ Sessions récentes
+
+### v10.9.0 — QR code publication (11 Fév 2026)
+**📲 QR code partageable depuis chaque publication**
+- Lib client-side : **qrcode** npm (220×220, error-correction M)
+- Nouveau composant `PublicationQRCode.jsx` :
+  - Toggle "Afficher le QR partageable" (bouton bg-white/20 dans la display_card)
+  - Canvas avec couleur `theme_color` de l'app cible (ex: brun Heritia, vert Aevis…)
+  - Affichage de l'ID en font-mono sous le QR
+  - **Télécharger PNG** (filename `neriacorp-{pub_id}.png`)
+  - **Partager** via Web Share API avec fichier PNG joint (fallback presse-papiers)
+- Payload encodé : `{REACT_APP_BACKEND_URL}/api/scanner/publications/{publication_id}`
+
+**🆕 Endpoint backend pour la résolution**
+- `GET /api/scanner/publications/{publication_id}` (admin-only)
+- Retourne le doc complet enrichi avec `theme_color`
+- Cible des QR scannés depuis n'importe quelle app NeriaCorp (les apps doivent forwarder le scan à cet endpoint avec le token admin)
+- 404 si ID inconnu, 403 si non-admin
+
+**🧪 Tests manuels OK**
+- Resolve admin → 200 avec theme_color enrichi ✅
+- Resolve ID inconnu → 404 ✅
+- Resolve sans token → 403 ✅
+- Frontend : E2E flow scan texte Heritia → click "Valider & Injecter" → publish mock → toggle QR → canvas 220×220 brun #8B4513 affiché ✅
+
+### v10.8.0 — APIs métier plug-and-play NeriaCorp
+### v10.7.0 — Orchestration 1-clic + Early-Reject 413
+### v10.5-10.6 — NeriaCorp Intelligence + Scanner Vidéo + Refactor
+
+## Architecture actuelle
+```
+/app/backend/routes/scanner_ai.py
+├── POST /api/scanner/analyze
+├── POST /api/scanner/analyze-video
+├── POST /api/scanner/publish
+├── GET  /api/scanner/audit
+├── GET  /api/scanner/apps
+├── GET  /api/scanner/publications
+└── GET  /api/scanner/publications/{id}      (NEW — resolve pour QR)
+
+/app/frontend/src/components/admin/
+├── NeriaCorpScannerTab.jsx                  (intègre PublicationQRCode)
+└── PublicationQRCode.jsx                    (NEW — QR client-side)
+```
+
+## Roadmap restante
+- 🟢 P3 : Bouton "Renvoyer" pour resynchroniser les publications mock (suggestion v10.8)
+- 🟢 P3 : Export CSV/Excel des audits + publications NeriaCorp
+- ⚪ Action utilisateur : ajouter les vraies clés API des 5 apps + Railway + Play Store
+
+*MàJ : 11 Fév 2026*
 
 ## ✅ Sessions récentes
 

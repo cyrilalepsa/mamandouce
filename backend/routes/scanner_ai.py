@@ -552,3 +552,26 @@ async def list_publications(
         "currency": "EUR",
         "by_target": by_target,
     }
+
+
+@router.get("/scanner/publications/{publication_id}")
+async def resolve_publication(
+    publication_id: str,
+    admin: User = Depends(get_admin_user),
+):
+    """Résout un publication_id en métadonnées complètes.
+    Endpoint cible des QR codes scannés depuis les apps NeriaCorp.
+    Admin-only (No-Log : pas exposé publiquement)."""
+    pub = await db.scanner_publications.find_one(
+        {"publication_id": publication_id},
+        {"_id": 0, "admin_id": 0},
+    )
+    if not pub:
+        raise HTTPException(status_code=404, detail=f"Publication {publication_id} introuvable")
+
+    # Enrichir avec theme_color
+    target_app = pub.get("target_app")
+    app_meta = APP_DEFAULTS.get(target_app, {})
+    pub["theme_color"] = app_meta.get("theme_color")
+
+    return pub

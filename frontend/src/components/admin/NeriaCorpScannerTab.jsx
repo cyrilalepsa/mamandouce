@@ -19,6 +19,7 @@ import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { toast } from 'sonner';
 import api from '../../utils/api';
+import PublicationQRCode from './PublicationQRCode';
 
 /**
  * Compresse une image en JPEG 800x600 max, qualité 0.85
@@ -466,15 +467,22 @@ export default function NeriaCorpScannerTab() {
               )}
             </Button>
             {publishResult && (
-              <div className={`mt-2 text-[11px] rounded-lg px-2 py-1.5 ${publishResult.status === 'published_live' ? 'bg-emerald-500/30' : 'bg-white/15'}`}>
-                <span className="font-bold">
-                  {publishResult.status === 'published_live' ? '✓ LIVE' : '⚠ MOCK'}
-                </span>
-                {' · '}
-                <span className="font-mono font-bold">{publishResult.publication_id}</span>
-                {' · '}
-                <span>+{publishResult.revenue_billed} {publishResult.currency}</span>
-              </div>
+              <>
+                <div className={`mt-2 text-[11px] rounded-lg px-2 py-1.5 ${publishResult.status === 'published_live' ? 'bg-emerald-500/30' : 'bg-white/15'}`}>
+                  <span className="font-bold">
+                    {publishResult.status === 'published_live' ? '✓ LIVE' : '⚠ MOCK'}
+                  </span>
+                  {' · '}
+                  <span className="font-mono font-bold">{publishResult.publication_id}</span>
+                  {' · '}
+                  <span>+{publishResult.revenue_billed} {publishResult.currency}</span>
+                </div>
+                <PublicationQRCode
+                  publicationId={publishResult.publication_id}
+                  themeColor={themeColor}
+                  targetApp={publishResult.target_app}
+                />
+              </>
             )}
           </Card>
 
