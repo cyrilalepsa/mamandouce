@@ -66,7 +66,6 @@ from routes.accounting import router as accounting_router
 from routes.emotional import router as emotional_router
 from routes.tirelire import router as tirelire_router
 from routes.babynames import router as babynames_router
-from routes.scanner_ai import router as scanner_ai_router
 
 # Include all routers
 api_router.include_router(auth_router)
@@ -94,7 +93,6 @@ api_router.include_router(accounting_router)
 api_router.include_router(emotional_router)
 api_router.include_router(tirelire_router)
 api_router.include_router(babynames_router)
-api_router.include_router(scanner_ai_router)
 
 # Include main router
 app.include_router(api_router)
