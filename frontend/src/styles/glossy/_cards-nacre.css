@@ -86,3 +86,66 @@
 .glossy-reflect-pill {
   display: none !important;
 }
+/* ============================================
+   TEST NERIA-BRAIN / N2 : ÉCHANTILLON BULLE DE SAVON
+   ============================================ */
+/* Multi-sélecteurs pour écraser les bg-white !important et les sélecteurs génériques */
+div.bulle-savon-test,
+span.bulle-savon-test,
+button.bulle-savon-test,
+.bulle-savon-test {
+  /* 1. Translucide & Fond Perlé ultra-léger (Laisse traverser l'Aurore Boréale) */
+  background: radial-gradient(circle at 30% 30%, 
+    rgba(255, 255, 255, 0.35) 0%, 
+    rgba(255, 255, 255, 0.1) 40%, 
+    rgba(245, 247, 250, 0.03) 70%, 
+    rgba(235, 242, 255, 0.18) 100%
+  ) !important;
+
+  /* 2. Irisation Arc-en-ciel de savon (Reflets subtils rose corail et bleu ciel) */
+  box-shadow: 
+    0 8px 32px 0 rgba(15, 23, 42, 0.05),
+    inset 0 4px 12px rgba(255, 255, 255, 0.65),           /* Brillance haute */
+    inset -6px -6px 14px rgba(255, 140, 159, 0.15),       /* Reflet Rose Corail bas (#FF8C9F) */
+    inset 6px -6px 14px rgba(124, 214, 255, 0.15) !important; /* Reflet Bleu Aurore bas (#7CD6FF) */
+
+  /* 3. Bordure fine comme le contour d'une vraie bulle */
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  border-radius: 24px !important;
+  
+  /* 4. Effet Premium Glassmorphism (Floute magnifiquement le fond au passage) */
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Le point de reflet spéculaire (Le coup d'éclat soleil 3D) */
+div.bulle-savon-test::before,
+span.bulle-savon-test::before,
+button.bulle-savon-test::before,
+.bulle-savon-test::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute;
+  top: 6px;
+  left: 14px;
+  width: 16px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.85) !important;
+  border-radius: 50% !important;
+  transform: rotate(-15deg) !important;
+  pointer-events: none !important;
+  z-index: 10 !important;
+}
+
+/* Neutralisation complète des reflets linéaires gris/froids de la charte de base */
+div.bulle-savon-test::after,
+span.bulle-savon-test::after,
+button.bulle-savon-test::after,
+.bulle-savon-test::after {
+  display: none !important;
+  content: none !important;
+}
