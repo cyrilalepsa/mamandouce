@@ -1,0 +1,118 @@
+{
+  "identity": {
+    "name": "MamanDouce",
+    "tone": "Maternal, Reassuring, Soft, Scientific yet Warm",
+    "theme_strategy": "Light Mode Only (Soft Pastels)",
+    "core_metaphor": "Floating on a cloud (Feathers, Cotton, Softness)"
+  },
+  "typography": {
+    "font_family_heading": "Nunito, sans-serif",
+    "font_family_body": "Quicksand, sans-serif",
+    "instructions": "Use Nunito (rounded) for all headings to convey friendliness. Use Quicksand for body text for optimal readability with a soft touch. Avoid sharp, geometric fonts.",
+    "scale": {
+      "h1": "text-4xl md:text-5xl font-bold tracking-tight text-slate-700",
+      "h2": "text-3xl font-semibold text-slate-600",
+      "body": "text-base md:text-lg text-slate-600 leading-relaxed"
+    }
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "base": "#87CEEB",
+        "tailwind": "bg-sky-300",
+        "gradient": "from-sky-200 to-sky-50"
+      },
+      "secondary": {
+        "base": "#FFD1DC",
+        "tailwind": "bg-pink-200",
+        "soft": "bg-pink-50"
+      },
+      "accent": {
+        "base": "#E0F7FA",
+        "tailwind": "bg-cyan-50"
+      },
+      "text": {
+        "primary": "#475569",
+        "secondary": "#64748B",
+        "tailwind_primary": "text-slate-600",
+        "tailwind_secondary": "text-slate-500"
+      },
+      "background": {
+        "main": "#F8FAFC",
+        "card": "#FFFFFF",
+        "tailwind_main": "bg-slate-50"
+      }
+    },
+    "gradients": {
+      "hero": "bg-gradient-to-b from-sky-200 via-sky-100 to-white",
+      "card_hover": "bg-gradient-to-br from-white to-pink-50"
+    }
+  },
+  "layout_strategy": {
+    "container": "max-w-md mx-auto md:max-w-4xl lg:max-w-6xl",
+    "spacing": "p-6 md:p-10",
+    "border_radius": {
+      "card": "rounded-3xl",
+      "button": "rounded-full",
+      "input": "rounded-2xl"
+    },
+    "shadows": {
+      "soft": "shadow-[0_8px_30px_rgb(0,0,0,0.04)]",
+      "floating": "shadow-[0_20px_50px_rgb(0,0,0,0.08)]"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-gradient-to-r from-sky-400 to-sky-300 text-white rounded-full px-8 py-3 font-bold shadow-lg hover:shadow-sky-200/50 transition-all hover:-translate-y-0.5",
+      "secondary": "bg-white text-sky-500 border border-sky-100 rounded-full px-8 py-3 font-semibold hover:bg-sky-50 transition-all"
+    },
+    "cards": {
+      "base": "bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-shadow duration-300",
+      "glass": "bg-white/60 backdrop-blur-xl border border-white/40 shadow-sm"
+    },
+    "inputs": {
+      "base": "w-full rounded-2xl border-slate-200 bg-white/80 px-4 py-3 text-slate-600 focus:border-sky-300 focus:ring-4 focus:ring-sky-100 transition-all outline-none"
+    }
+  },
+  "visual_enhancers": {
+    "clouds_and_feathers": {
+      "description": "Floating elements in the background. Use CSS animations or Framer Motion to make them drift slowly.",
+      "implementation": "Use SVGs for clouds and feathers with 'animate-pulse' or custom keyframes (float-up-down).",
+      "z_index": "z-0 relative"
+    },
+    "pregnancy_disk": {
+      "description": "Interactive circular slider to select Last Menstrual Period (LMP). Must look like a physical wheel.",
+      "style": "Circular UI, rotating dial, pastel colors."
+    }
+  },
+  "images": {
+    "hero_bg": "https://images.unsplash.com/photo-1754338370498-13a2a8a27bac?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTJ8MHwxfHNlYXJjaHwzfHxzb2Z0JTIwd2hpdGUlMjBjbG91ZHMlMjBibHVlJTIwc2t5fGVufDB8fHx8MTc3MzMyMDAwN3ww&ixlib=rb-4.1.0&q=85",
+    "cloud_texture": "https://images.unsplash.com/photo-1768938360590-bf49368f0e9b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTJ8MHwxfHNlYXJjaHwyfHxzb2Z0JTIwd2hpdGUlMjBjbG91ZHMlMjBibHVlJTIwc2t5fGVufDB8fHx8MTc3MzMyMDAwN3ww&ixlib=rb-4.1.0&q=85",
+    "pregnant_woman_hero": "https://images.unsplash.com/photo-1558636411-95b6f3dbfa6a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODR8MHwxfHNlYXJjaHwzfHxwcmVnbmFudCUyMHdvbWFuJTIwaG9sZGluZyUyMGJlbGx5JTIwc29mdCUyMGxpZ2h0fGVufDB8fHx8MTc3MzMyMDAxMHww&ixlib=rb-4.1.0&q=85",
+    "fetus_illustration": "https://images.unsplash.com/photo-1716929806153-4e3f66242de0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwzfHxodW1hbiUyMGVtYnJ5byUyMGZldHVzJTIwZGV2ZWxvcG1lbnQlMjBzdGFnZXMlMjBtZWRpY2FsJTIwaWxsdXN0cmF0aW9ufGVufDB8fHx8MTc3MzMyOTk4Mnww&ixlib=rb-4.1.0&q=85"
+  },
+  "icons": {
+    "library": "lucide-react",
+    "mapping": {
+      "caf": "Users",
+      "ameli": "HeartHandshake",
+      "mairie": "Landmark",
+      "scan": "ScanBarcode",
+      "calendar": "CalendarHeart",
+      "food": "Apple",
+      "search": "Search"
+    }
+  },
+  "instructions_to_main_agent": {
+    "logo_implementation": "Since explicit logo images for CAF/Ameli were not found, use the mapped Lucide icons with specific brand colors: CAF (Blue #0055A4), Ameli (Blue/Red), Mairie (Red/White/Blue or Neutral). Wrap them in a rounded-xl container.",
+    "cloud_feathers_implementation": "Create a 'BackgroundEffects' component that renders SVG clouds/feathers absolutely positioned with low opacity (10-20%) and slow animation.",
+    "pregnancy_calculator": "Create a visually distinct 'CalculatorCard' with a date picker. Use date-fns for logic.",
+    "food_scanner": "Use a mock scanner interface if webcam is not available, but design the UI to look like a camera viewport with a scan line animation."
+  },
+  "UNIVERSAL_GUIDELINES": [
+    "Do not use default shadcn styles blindly; override radius to 'rounded-3xl' and shadows to 'soft'.",
+    "Use 'Nunito' for all headings. Import it via Google Fonts in index.css.",
+    "Ensure high contrast for text (Slate-600/700) against the soft pastel backgrounds.",
+    "Add 'data-testid' to all interactive elements."
+  ]
+}

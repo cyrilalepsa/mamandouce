@@ -1,0 +1,38 @@
+/* ============================================
+   MAMANDOUCE - VARIABLES CSS GLOBALES
+   Mode clair uniquement - Nacre & Contraste
+   ============================================ */
+:root {
+  /* ===== MODE CLAIR - NACRE DOUX ===== */
+  --md-bg-primary: #FFF8F9;  /* Nacre rose ultra-léger au lieu de blanc pur */
+  --md-bg-secondary: #FFF5F7;
+  --md-bg-tertiary: #FFEFF3;
+  --md-bg-accent: #F8F0FF;
+  
+  /* Textes - CONTRASTE AMÉLIORÉ - Gris anthracite/Chocolat foncé */
+  --md-text-primary: #2D2A32;  /* Plus foncé pour meilleure lisibilité */
+  --md-text-secondary: #4A4458;  /* Gris chocolat */
+  --md-text-muted: #6B6480;  /* Gris violet doux */
+  
+  /* Couleurs d'accent pastel */
+  --md-accent-pink: #f8b4c8;
+  --md-accent-peach: #ffd4c8;
+  --md-accent-lavender: #e0d4f8;
+  --md-accent-mint: #d4f8e8;
+  
+  /* Glassmorphism - Nacre rosé */
+  --md-glass-bg: rgba(255, 248, 250, 0.85);  /* Fond nacre au lieu de blanc */
+  --md-glass-border: rgba(255, 220, 230, 0.6);
+  --md-glass-shadow: rgba(180, 150, 170, 0.2);
+  
+  /* Halos pastel lumineux */
+  --md-glow-pink: rgba(255, 200, 220, 0.5);
+  --md-glow-peach: rgba(255, 220, 200, 0.4);
+  --md-glow-lavender: rgba(220, 200, 255, 0.4);
+  --md-glow-white: rgba(255, 255, 255, 0.6);
+  
+  /* Couleurs d'accent dynamiques */
+  --md-accent-primary: #e8a4b8;
+  --md-accent-secondary: #f0b4c8;
+  --md-accent-glow: rgba(232, 164, 184, 0.15);
+}

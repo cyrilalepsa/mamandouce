@@ -1,0 +1,25 @@
+/* ============================================
+   FOND AURORE BORÉALE NACRÉE
+   ============================================ */
+body,
+.gradient-bg,
+.min-h-screen {
+  /* AURORE NACRÉE v3 - Fondu bleu/rose avec fine ligne nacre centrale */
+  background: linear-gradient(135deg, 
+    #7CD6FF 0%, 
+    #7CD6FF 15%,
+    #B8E8FF 30%,
+    #FFFFFF 48%, 
+    #FFFFFF 52%, 
+    #FFE4EC 70%,
+    #FFD1DC 85%,
+    #FFD1DC 100%
+  ) fixed !important;
+  background-attachment: fixed !important;
+}
+
+/* Pull-to-refresh autorisé — overscroll-behavior contain */
+body {
+  overscroll-behavior-y: contain !important;
+  overflow: auto !important;
+}

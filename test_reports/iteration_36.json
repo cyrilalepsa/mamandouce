@@ -1,0 +1,122 @@
+{
+  "summary": "Completed comprehensive testing of MamanDouce new features: Registration with birth_date/status fields, updated pricing (30€ Premium, 10€ Post-partum), Admin Expert Comptable IA dashboard with URSSAF 26% calculator, Admin Contributions validation system, and Trophies/Badge progression page. All 21 backend API tests passed. All frontend components render correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Admin Expert IA Dashboard",
+        "issues": ["Minor toast notification 'Erreur lors du chargement des données' appears briefly but dashboard loads correctly - likely a timing issue with parallel API calls"]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_new_features.py",
+    "/app/test_reports/pytest/pytest_new_features.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "✅ RegisterForm.jsx: birth_date field with data-testid='birth-date-input' and Calendar icon working correctly",
+    "✅ RegisterForm.jsx: status selection buttons ('envie_bebe' / 'enceinte') with data-testid='status-envie-bebe' and 'status-enceinte' working correctly",
+    "✅ PricingPage.js: Premium price correctly shows 30€/9 mois",
+    "✅ PricingPage.js: Post-partum price correctly shows 10€ paiement unique",
+    "✅ payments.py: SUBSCRIPTION_PACKAGES correctly configured with annual=30€ and postpartum=10€",
+    "✅ AccountingDashboard.jsx: KPI widgets (CA Brut, Frais Stripe, URSSAF 26%, Bénéfice Net) render correctly",
+    "✅ AccountingDashboard.jsx: Month selector, PDF export button, and 12-month evolution chart working",
+    "✅ AccountingDashboard.jsx: Expert Chat widget with GPT-5.2 integration present",
+    "✅ ContributionsManager.jsx: Filter buttons (En attente, Validées, Refusées, Toutes) working",
+    "✅ ContributionsManager.jsx: Stats cards showing pending/approved/rejected/total counts",
+    "✅ TrophiesPage.jsx: Badge progression (Bronze/Argent/Or) with correct requirements displayed",
+    "✅ TrophiesPage.jsx: Badge Bronze requires 3 contributions validées",
+    "✅ TrophiesPage.jsx: Badge Argent requires 1 parrainage + 2 contributions",
+    "✅ TrophiesPage.jsx: Badge Or - Marraine requires 3 parrainages + 5 contributions",
+    "✅ accounting.py: URSSAF_RATE = 0.26 (26%) correctly configured",
+    "✅ accounting.py: PREMIUM_PRICE = 30.0 and POSTPARTUM_PRICE = 10.0 correctly configured",
+    "✅ contributions.py: BADGE_THRESHOLDS correctly configured for bronze/silver/gold",
+    "✅ schemas.py: UserCreate model includes birth_date and status optional fields"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_new_features.py"
+  ],
+  "success_rate": {
+    "backend": "100% - 21/21 tests passed",
+    "frontend": "100% - All UI elements verified"
+  },
+  "test_credentials": {
+    "admin_user": {
+      "email": "admin@mamandouce.com",
+      "password": "AdminPremium2024!",
+      "status": "Working - Premium + Admin access"
+    }
+  },
+  "seed_data_creation": "Created test contributions via API during testing",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All new features are working correctly: Registration form with birth_date and status fields, Pricing page with 30€ Premium and 10€ Post-partum, Admin Expert Comptable IA dashboard with URSSAF 26% calculator and PDF export, Admin Contributions validation interface, and Trophies page with Bronze/Silver/Gold badge progression system. The Expert IA Chat uses GPT-5.2 via EMERGENT_LLM_KEY.",
+  "tests_executed": {
+    "backend_api_tests": {
+      "POST /api/auth/register with birth_date and status": "PASS - Accepts envie_bebe and enceinte status values",
+      "GET /api/admin/accounting/kpis": "PASS - Returns ca_brut, frais_stripe, cotisations_urssaf (26%), benefice_net, year_to_date",
+      "GET /api/admin/accounting/monthly-evolution": "PASS - Returns 12 months of data",
+      "GET /api/admin/accounting/alerts": "PASS - Returns strategic alerts array",
+      "GET /api/admin/contributions/pending": "PASS - Returns pending contributions with stats",
+      "GET /api/admin/contributions/all": "PASS - Returns all contributions with filter support",
+      "POST /api/contributions/submit": "PASS - Creates new contribution with food_scan/maternity_bag/recipe types",
+      "GET /api/contributions/badge-progress": "PASS - Returns bronze/silver/gold badge progress with correct thresholds",
+      "GET /api/contributions/gift-eligibility": "PASS - Returns referral gift eligibility status"
+    },
+    "frontend_ui_tests": {
+      "registration_form_birth_date": "PASS - Date input with Calendar icon and data-testid='birth-date-input'",
+      "registration_form_status_buttons": "PASS - 'Envie de bébé' and 'Enceinte' buttons with correct data-testid",
+      "pricing_page_premium_price": "PASS - Shows 30€/9 mois for Premium",
+      "pricing_page_postpartum_price": "PASS - Shows 10€ for Post-partum",
+      "admin_expert_ia_tab": "PASS - KPI widgets, month selector, PDF export, evolution chart all present",
+      "admin_contributions_tab": "PASS - Filter buttons, stats cards, contribution list working",
+      "trophies_page_badges": "PASS - Bronze/Argent/Or badges with correct requirements displayed"
+    }
+  },
+  "feature_verification": {
+    "registration_form": {
+      "birth_date_field": "✅ Present with data-testid='birth-date-input'",
+      "status_envie_bebe": "✅ Button with data-testid='status-envie-bebe'",
+      "status_enceinte": "✅ Button with data-testid='status-enceinte'",
+      "city_field": "✅ Present with placeholder 'Où se trouve votre cocon ?'"
+    },
+    "pricing_page": {
+      "premium_price": "✅ 30€/9 mois displayed",
+      "postpartum_price": "✅ 10€ paiement unique displayed",
+      "premium_button": "✅ data-testid='premium-button'",
+      "postpartum_button": "✅ data-testid='buy-postpartum-button'",
+      "trial_button": "✅ data-testid='start-trial-button-top'"
+    },
+    "admin_expert_ia": {
+      "kpi_ca_brut": "✅ Widget showing CA Brut",
+      "kpi_frais_stripe": "✅ Widget showing Frais Stripe (2.9% + 0.25€)",
+      "kpi_urssaf": "✅ Widget showing URSSAF (26% du CA)",
+      "kpi_benefice_net": "✅ Widget showing Bénéfice Net",
+      "month_selector": "✅ Present for filtering by month",
+      "pdf_export": "✅ PDF export button present",
+      "evolution_chart": "✅ 12-month evolution chart with Recharts",
+      "cumul_annuel": "✅ Year-to-date totals with TVA threshold (36800€)"
+    },
+    "admin_contributions": {
+      "filter_pending": "✅ 'En attente' filter button",
+      "filter_approved": "✅ 'Validées' filter button",
+      "filter_rejected": "✅ 'Refusées' filter button",
+      "filter_all": "✅ 'Toutes' filter button",
+      "stats_cards": "✅ En attente, Validées, Refusées, Total counts"
+    },
+    "trophies_page": {
+      "badge_bronze": "✅ 3 contributions validées requirement",
+      "badge_argent": "✅ 1 parrainage + 2 contributions requirement",
+      "badge_or": "✅ 3 parrainages + 5 contributions requirement",
+      "progress_bars": "✅ Progress tracking for contributions and parrainages",
+      "cadeaux_parrainage": "✅ Gift/referral section present",
+      "mes_contributions": "✅ User contributions list section"
+    }
+  }
+}

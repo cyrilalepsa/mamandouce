@@ -1,0 +1,8 @@
+{
+  "appId": "com.mamandouce.app",
+  "appName": "MamanDouce",
+  "webDir": "build",
+  "server": {
+    "androidScheme": "https"
+  }
+}

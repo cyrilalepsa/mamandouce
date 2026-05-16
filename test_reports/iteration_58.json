@@ -1,0 +1,31 @@
+{
+  "summary": "Iteration 58 — Full backend + frontend validation of MamanDouce v10.5 NeriaCorp Intelligence (Admin-Only Scanner IA) + Birth List PDF + 401 layout fix. Backend: 8/8 pytest PASS on preview URL — POST /api/scanner/analyze with admin + image returns full {metadata.source_app, confidence_score, operation_mode:'Admin_Only', business, display_card.title/summary/main_action/theme_color/visual_type LIST|GRID|REPORT, financial.estimated_revenue/currency:'EUR'}; admin + text_input only also 200; no input → 400; non-admin → 403. GET /api/scanner/apps admin returns 5 apps (VisaTrace #1A5CAD/29.99, Heritia #8B4513/60, VeoVision #000000/40, Vellumia #D4AF37/60, Aevis #2E8B57/40) + operation_mode 'Admin_Only'; non-admin → 403. GET /api/scanner/audit admin returns {scans, total_count, total_revenue, currency:'EUR', by_app}; non-admin → 403. Frontend: /admin (admin@mamandouce.com) shows the golden NeriaCorp Intelligence drawer with data-testid='drawer-neriacorp'; clicking it opens SubDrawer 'Scanner IA Admin-Only' with No-Log banner, Photo+Importer buttons, Texte textarea, Métadonnées JSON input, 'Analyser via NeriaCorp Intelligence' CTA. /birth-list 'Ma Liste' tab with seeded favorites shows data-testid='export-pdf-birthlist-btn' with classes 'btn-rose-bonbon' and label 'Télécharger en PDF (catalogue)'; clicking it triggers a download of 'mamandouce-liste-naissance-2026-05-11.pdf' (13.6 KB). /scanner-ai is no longer accessible (body content empty/minimal — route removed). NO 'Erreur chargement layout' console log on /auth before login (verified — 0 matches in console).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_neriacorp_scanner.py",
+    "/app/test_reports/pytest/pytest_neriacorp_scanner.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "scanner_ai.py (NeriaCorp) uses Depends(get_admin_user) on all 3 endpoints — admin gate is enforced uniformly.",
+    "Backfill logic (theme_color + estimated_revenue from APP_DEFAULTS, currency default 'EUR', operation_mode='Admin_Only') guarantees a stable response shape even if GPT-4o omits fields — defensive and correct.",
+    "No-Log policy correctly persists only admin_id/email, source_app, confidence_score, estimated_revenue, currency, created_at to scanner_audit (no image_base64, no business JSON) — privacy honored.",
+    "Audit endpoint excludes _id via projection {_id:0} — safe for JSON serialization.",
+    "JSON fence stripping (```json ... ```) before json.loads is robust; falls back to 502 with the first 200 chars of raw IA output — good error visibility.",
+    "BirthListPage favorites are stored as an array of item IDs (strings) in 'mamandouce_birthlist_favorites' — confirmed and works with PDF export."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_neriacorp_scanner.py (new)"
+  ],
+  "success_rate": {"backend": "100% (8/8)", "frontend": "100% on requested checks"},
+  "test_credentials": {
+    "admin": "admin@mamandouce.com / AdminPremium2024! — working",
+    "non_admin_created_for_test": "testnonadmin58@test.com / test123 (registered via /api/auth/register with body {email,password,name})"
+  },
+  "seed_data_creation": "1) Synthetic JPEG rotisserie menu (800x600, PIL) for NeriaCorp image analysis — produces source_app=Aevis with visual_type=GRID. 2) localStorage 'mamandouce_birthlist_favorites' = ['lit-bebe','matelas','biberons','tetines','body','pyjamas'] for birth list PDF test. 3) New non-admin account testnonadmin58@test.com for 403 path.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "1) Login uses /auth, testids email-input/password-input/submit-button, popups 'Non, plus tard' + 'C''est parti' / 'Passer'. 2) Register endpoint requires {email,password,name} (not first_name/last_name) and returns {access_token,token_type}; login returns 'token' OR 'access_token'. 3) NeriaCorp tests live at /app/backend/tests/test_neriacorp_scanner.py — independent of the legacy /api/scanner/analyze-document route (which still exists alongside the new /api/scanner/analyze). 4) BirthListPage favorites localStorage 'mamandouce_birthlist_favorites' = JSON array of item.id strings (e.g., 'lit-bebe', not objects); injecting objects shows count in header but empty 'Ma Liste'. 5) NeriaCorp drawer testid in AdminPage = 'drawer-neriacorp' (golden tile). 6) Public route /scanner-ai now renders empty content (Scanner IA route removed from App.js + Services tile removed from NavigationSections.jsx).",
+  "rca_of_the_issue": "Not applicable — all features verified working end-to-end."
+}
