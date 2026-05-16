@@ -86,3 +86,49 @@
 .glossy-reflect-pill {
   display: none !important;
 }
+/* ============================================
+   CHARTE N2 / NERIACORP : LA BULLE DE SAVON PRODUCTION
+   ============================================ */
+.bulle-savon-test {
+  /* 1. Fond Translucide Nacré (Fusionne avec ton Aurore Boréale #7CD6FF et #FFD1DC) */
+  background: radial-gradient(circle at 20% 20%, 
+    rgba(255, 255, 255, 0.45) 0%, 
+    rgba(255, 255, 255, 0.15) 35%, 
+    rgba(245, 247, 250, 0.05) 65%, 
+    rgba(235, 242, 255, 0.22) 100%
+  ) !important;
+
+  /* 2. Irisation Tridimensionnelle (Le film de savon arc-en-ciel) */
+  box-shadow: 
+    0 8px 32px 0 rgba(15, 23, 42, 0.04),
+    inset 0 4px 12px 0 rgba(255, 255, 255, 0.75),            /* Brillance Haute */
+    inset -6px -6px 14px 0 rgba(255, 140, 159, 0.16),         /* Reflet Rose Corail MamanDouce */
+    inset 6px -6px 14px 0 rgba(124, 214, 255, 0.16) !important; /* Reflet Bleu Aurore */
+
+  /* 3. Contour en verre trempé ultra-fin */
+  border: 1px solid rgba(255, 255, 255, 0.55) !important;
+  border-radius: 24px !important;
+  
+  /* 4. Effet Flou Verre (Sécurisé pour éviter les glitchs graphiques) */
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* Le point de brillance spéculaire (Le coup d'éclat du soleil sur la sphère) */
+.bulle-savon-test::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  top: 6px !important;
+  left: 14px !important;
+  width: 16px !important;
+  height: 6px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 50% !important;
+  transform: rotate(-15deg) !important;
+  pointer-events: none !important;
+  z-index: 10 !important;
+}
