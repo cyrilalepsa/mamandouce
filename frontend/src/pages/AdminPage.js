@@ -22,7 +22,6 @@ import {
 } from '../components/admin';
 import AccountingDashboard from '../components/admin/AccountingDashboard';
 import ContributionsManager from '../components/admin/ContributionsManager';
-import NeriaCorpScannerTab from '../components/admin/NeriaCorpScannerTab';
 import FlyerGenerator from '../components/FlyerModule/FlyerGenerator';
 
 function AdminPage() {
@@ -291,7 +290,6 @@ function AdminPage() {
     messaging: '#FECDD3, #FDA4AF',   // rose
     finances:  '#A7F3D0, #6EE7B7',   // menthe
     tools:     '#BAE6FD, #7DD3FC',   // bleu
-    neriacorp: '#FEF3C7, #FCD34D',   // or (Section Spéciale)
     flyer:     '#FBCFE8, #F9A8D4',   // rose pastel (Marketing)
   };
 
@@ -420,20 +418,6 @@ function AdminPage() {
           </SubDrawer>
           <SubDrawer id="foods" label="Aliments à valider" icon={Apple}>
             <FoodsTab pendingFoods={pendingFoods} foodStats={foodStats} loadPendingFoods={loadPendingFoods} />
-          </SubDrawer>
-        </DrawerTile>
-
-        {/* 5. OR — SECTION SPÉCIALE NeriaCorp Intelligence (Admin-Only, isolée) */}
-        <DrawerTile id="neriacorp" icon={Brain} label="🧠 NeriaCorp Intelligence">
-          <SubDrawer id="neriacorp-scanner" label="Scanner IA Admin-Only" icon={Brain} defaultOpen={true}>
-            <NeriaCorpScannerTab />
-          </SubDrawer>
-        </DrawerTile>
-
-        {/* 6. ROSE — FLYER MARKETING (squelette, à compléter) */}
-        <DrawerTile id="flyer" icon={Image} label="🖼️ Flyer Marketing">
-          <SubDrawer id="flyer-generator" label="Neria Creative" icon={Image} defaultOpen={true}>
-            <FlyerGenerator />
           </SubDrawer>
         </DrawerTile>
 
