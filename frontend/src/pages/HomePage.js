@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { PartyPopper } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { PartyPopper, RefreshCw } from 'lucide-react'; // Ajout de RefreshCw pour un indicateur visuel nacre
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
@@ -36,6 +36,12 @@ function HomePage() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [earnedTrophy, setEarnedTrophy] = useState(null); // 'bronze', 'silver', 'gold' ou null
   
+  // 🧼 ÉTATS POUR LE PULL-TO-REFRESH CUSTOM
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const scrollContainerRef = useRef(null);
+  const touchStartRef = useRef(0);
+  
   // Hook pour le tutoriel
   const { 
     showTutorial, 
@@ -61,49 +67,37 @@ function HomePage() {
   const checkRapportInFertileWindow = (profile) => {
     if (!profile || !profile.last_period_date) return false;
     
-    // Charger les rapports depuis localStorage
     const savedRapports = localStorage.getItem('mamandouce_rapports');
     if (!savedRapports) return false;
     
     const rapportDates = JSON.parse(savedRapports);
     if (rapportDates.length === 0) return false;
     
-    // Calculer la fenêtre de fertilité
     const lastPeriod = new Date(profile.last_period_date);
     const cycleLength = profile.cycle_length || 28;
     const lutealPhase = 14;
     const ovulationDay = cycleLength - lutealPhase;
     
-    // Calculer la date d'ovulation
     const ovulationDate = new Date(lastPeriod);
     ovulationDate.setDate(ovulationDate.getDate() + ovulationDay);
     
-    // Fenêtre de fertilité: 5 jours avant l'ovulation jusqu'à 1 jour après
     const fertileStart = new Date(ovulationDate);
     fertileStart.setDate(fertileStart.getDate() - 5);
     const fertileEnd = new Date(ovulationDate);
     fertileEnd.setDate(fertileEnd.getDate() + 1);
     
-    // Ajuster pour les cycles suivants si nécessaire
     const today = new Date();
     while (fertileEnd < today) {
-      // Passer au cycle suivant
       const daysToAdd = cycleLength;
       fertileStart.setDate(fertileStart.getDate() + daysToAdd);
       fertileEnd.setDate(fertileEnd.getDate() + daysToAdd);
     }
     
-    // Vérifier si un rapport est dans la fenêtre de fertilité actuelle ou passée récente
     for (const rapportDateStr of rapportDates) {
       const rapportDate = new Date(rapportDateStr);
-      
-      // Vérifier pour le cycle actuel et le cycle précédent
-      // Cycle actuel
       if (rapportDate >= fertileStart && rapportDate <= fertileEnd) {
         return true;
       }
-      
-      // Cycle précédent (pour couvrir une grossesse potentielle en cours)
       const prevFertileStart = new Date(fertileStart);
       prevFertileStart.setDate(prevFertileStart.getDate() - cycleLength);
       const prevFertileEnd = new Date(fertileEnd);
@@ -113,7 +107,6 @@ function HomePage() {
         return true;
       }
     }
-    
     return false;
   };
 
@@ -131,13 +124,11 @@ function HomePage() {
       const profileRes = await api.pregnancy.getProfile();
       setPregnancyProfile(profileRes.data);
       
-      // Vérifier si un rapport est dans une fenêtre de fertilité
       const hasRapport = checkRapportInFertileWindow(profileRes.data);
       setHasRapportInFertileWindow(hasRapport);
     } catch (error) {
       console.error('Erreur chargement données:', error);
     } finally {
-      // Marquer comme chargé pour éviter les saccades
       setTimeout(() => setIsLoaded(true), 100);
     }
   };
@@ -149,27 +140,88 @@ function HomePage() {
       if (progress?.gold?.earned) setEarnedTrophy('gold');
       else if (progress?.silver?.earned) setEarnedTrophy('silver');
       else if (progress?.bronze?.earned) setEarnedTrophy('bronze');
-    } catch (e) {
-      // Pas de trophée ou API non disponible
+    } catch (e) {}
+  };
+
+  // 🧼 GESTION DU REFRESH MANUEL (TACTILE & SOURIS)
+  const handleTouchStart = (e) => {
+    if (scrollContainerRef.current.scrollTop === 0 && !isRefreshing) {
+      touchStartRef.current = e.touches ? e.touches[0].clientY : e.clientY;
     }
   };
 
+  const handleTouchMove = (e) => {
+    if (touchStartRef.current === 0 || isRefreshing) return;
+    
+    const currentY = e.touches ? e.touches[0].clientY : e.clientY;
+    const pull = currentY - touchStartRef.current;
+    
+    // Si on tire vers le bas au sommet du défilement
+    if (pull > 0 && scrollContainerRef.current.scrollTop === 0) {
+      // Résistance élastique pour faire premium
+      const resistance = Math.min(70, pull * 0.4);
+      setPullDistance(resistance);
+      if (e.cancelable) e.preventDefault();
+    }
+  };
 
-  // Navigation vers la page de modification d'avatar
+  const handleTouchEnd = async () => {
+    touchStartRef.current = 0;
+    if (pullDistance >= 50) {
+      setIsRefreshing(true);
+      setPullDistance(50);
+      
+      // Lancement du rechargement frais depuis Python (Railway)
+      await Promise.all([loadUserData(), loadTrophyData()]);
+      
+      setIsRefreshing(false);
+      setPullDistance(0);
+    } else {
+      setPullDistance(0);
+    }
+  };
+
   const handleAvatarClick = () => {
     navigate('/profile?tab=avatar');
   };
 
   const isAdmin = userRole === 'admin' || userEmail === ADMIN_EMAIL;
-  // La carte Semaine X ne s'affiche que si:
-  // 1. Il y a un profil de grossesse avec une semaine
-  // 2. ET un rapport a été enregistré dans une fenêtre de fertilité
   const hasPregnancyProfile = pregnancyProfile && pregnancyProfile.current_week && hasRapportInFertileWindow;
 
   return (
-    <div className="gradient-bg relative" style={{ height: '100dvh', overflow: 'hidden', overscrollBehaviorY: 'contain' }}>
+    <div 
+      className="gradient-bg relative" 
+      style={{ height: '100dvh', overflow: 'hidden', overscrollBehaviorY: 'contain' }}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleTouchStart}
+      onMouseMove={handleTouchMove}
+      onMouseUp={handleTouchEnd}
+    >
+        {/* INDICATEUR DE SOURIS / PULL REFRESH IRISÉ STYLE BULLE */}
+        <div 
+          className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center transition-all duration-200 pointer-events-none z-50"
+          style={{
+            top: `${pullDistance - 35}px`,
+            opacity: pullDistance > 15 ? 1 : 0,
+          }}
+        >
+          <div className="nacre-bombe flex items-center justify-center w-10 h-10 border-radius-full" style={{ borderRadius: '50%', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(5px)' }}>
+            <RefreshCw className={`w-5 h-5 text-pink-400 ${isRefreshing ? 'animate-spin' : ''}`} style={{ transform: `rotate(${pullDistance * 5}deg)` }} />
+          </div>
+        </div>
 
-        <div className="relative z-10">
+        {/* CONTENEUR DE SCROLL INTERNE PRINCIPAL */}
+        <div 
+          ref={scrollContainerRef}
+          className="relative z-10 w-full h-full overflow-y-auto"
+          style={{ 
+            transition: pullDistance === 0 ? 'transform 0.3s cubic-bezier(0.1, 0.8, 0.2, 1)' : 'none',
+            transform: `translateY(${pullDistance}px)`,
+            height: '100dvh'
+          }}
+        >
           <div 
             className={`max-w-4xl mx-auto p-6 space-y-6 transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
             style={{ contain: 'layout style' }}
@@ -193,9 +245,8 @@ function HomePage() {
                 <AppTitle size="xl" showSubtitle={false} />
               </div>
 
-              {/* Salutation avec avatar CLIQUABLE - hauteur fixe pour éviter le layout shift */}
+              {/* Salutation avec avatar CLIQUABLE */}
               <div className="flex flex-col items-center gap-3 min-h-[100px]">
-                {/* Avatar Premium avec aura solaire */}
                 <PremiumSunAvatar
                   isPremium={isPremium}
                   userAvatar={userAvatar}
@@ -218,7 +269,7 @@ function HomePage() {
                   <span className="text-pink-400 ml-2">❤️</span>
                 </h2>
                 
-                {/* Message Bonne Fête si le prénom de l'utilisateur est fêté aujourd'hui */}
+                {/* Message Bonne Fête */}
                 {isNameCelebratedToday(displayName || userName) && (
                   <div className="mt-3 bg-gradient-to-r from-amber-100 via-yellow-100 to-orange-100 rounded-2xl px-4 py-3 border-2 border-amber-300 shadow-lg animate-bounce-slow">
                     <div className="flex items-center justify-center gap-2">
@@ -243,20 +294,20 @@ function HomePage() {
                 userAvatarConfig={userAvatarConfig}
                 onPageTypeChange={setCurrentPageType}
                 onAvatarClick={handleAvatarClick}
+                disabledScroll={pullDistance > 0} // Optionnel pour bloquer les actions pendant le tirage
               />
             </div>
 
           </div>
         </div>
         
-        {/* Tutoriel interactif (première connexion ou replay) */}
+        {/* Tutoriels et popups (en dehors du scroll principal pour rester fixes) */}
         <InteractiveTutorial 
           isVisible={showInteractiveTutorial} 
           onComplete={isFirstTimeTutorial ? completeInteractiveTutorial : closeInteractiveTutorial}
           isFirstTime={isFirstTimeTutorial}
         />
         
-        {/* Popup tutoriel/astuces (accessible via le bouton info) */}
         <TutorialPopup 
           isVisible={showTutorial} 
           onClose={dismissTutorial}
@@ -264,12 +315,10 @@ function HomePage() {
           onReplayTutorial={replayInteractiveTutorial}
         />
         
-        {/* Bulle ampoule - Nouveautés (toujours visible après le tutoriel interactif) */}
         {tutorialDismissed && (
           <NewsBubble hasNews={hasNews} onClick={openPopup} />
         )}
         
-        {/* Popup des nouveautés */}
         <NewsPopup 
           isVisible={isPopupOpen}
           updates={updates}
@@ -277,7 +326,6 @@ function HomePage() {
           onMarkAsSeen={markAsSeen}
         />
         
-        {/* Bouton info en bas à gauche */}
         {tutorialDismissed && (
           <InfoButton onClick={openTutorial} />
         )}
