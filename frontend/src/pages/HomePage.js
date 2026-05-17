@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { PartyPopper, RefreshCw } from 'lucide-react'; // Ajout de RefreshCw pour un indicateur visuel nacre
+import { PartyPopper, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
@@ -156,9 +156,7 @@ function HomePage() {
     const currentY = e.touches ? e.touches[0].clientY : e.clientY;
     const pull = currentY - touchStartRef.current;
     
-    // Si on tire vers le bas au sommet du défilement
     if (pull > 0 && scrollContainerRef.current.scrollTop === 0) {
-      // Résistance élastique pour faire premium
       const resistance = Math.min(70, pull * 0.4);
       setPullDistance(resistance);
       if (e.cancelable) e.preventDefault();
@@ -171,7 +169,6 @@ function HomePage() {
       setIsRefreshing(true);
       setPullDistance(50);
       
-      // Lancement du rechargement frais depuis Python (Railway)
       await Promise.all([loadUserData(), loadTrophyData()]);
       
       setIsRefreshing(false);
@@ -207,7 +204,7 @@ function HomePage() {
             opacity: pullDistance > 15 ? 1 : 0,
           }}
         >
-          <div className="nacre-bombe flex items-center justify-center w-10 h-10 border-radius-full" style={{ borderRadius: '50%', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(5px)' }}>
+          <div className="nacre-bombe flex items-center justify-center w-10 h-10" style={{ borderRadius: '50%', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(5px)' }}>
             <RefreshCw className={`w-5 h-5 text-pink-400 ${isRefreshing ? 'animate-spin' : ''}`} style={{ transform: `rotate(${pullDistance * 5}deg)` }} />
           </div>
         </div>
@@ -269,7 +266,7 @@ function HomePage() {
                   <span className="text-pink-400 ml-2">❤️</span>
                 </h2>
                 
-                {/* Message Bonne Fête */}
+                {/* Message Bonne Fête si activé */}
                 {isNameCelebratedToday(displayName || userName) && (
                   <div className="mt-3 bg-gradient-to-r from-amber-100 via-yellow-100 to-orange-100 rounded-2xl px-4 py-3 border-2 border-amber-300 shadow-lg animate-bounce-slow">
                     <div className="flex items-center justify-center gap-2">
@@ -277,15 +274,48 @@ function HomePage() {
                       <span className="text-lg font-bold text-amber-700" style={{ fontFamily: "'Caveat', cursive" }}>
                         🎉 {t('home.happyNameDay')} {displayName || userName} ! 🎉
                       </span>
-                      <PartyPopper className="w-5 h-5 text-amber-600" />
                     </div>
                   </div>
                 )}
+
+                {/* 🎯 LES DEUX CARTES JUMELLES CENTRÉES ET COMPACTES */}
+                <div className="w-full max-w-sm mx-auto mt-2 px-2">
+                  <div className="grid grid-cols-2 gap-3">
+                    
+                    {/* Carte Semaine */}
+                    <div className="bulle-savon-test flex flex-col justify-center items-center text-center h-[85px] w-full p-2 box-border">
+                      <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">
+                        {t('home.youAreAt', 'Vous êtes à la')}
+                      </span>
+                      <span className="text-lg font-bold text-pink-400 my-0.5">
+                        Semaine {pregnancyProfile?.current_week || '4'}
+                      </span>
+                      <span className="text-[10px] text-sky-400 font-medium">
+                        Trimestre 1 • SA
+                      </span>
+                    </div>
+
+                    {/* Carte Fête du jour */}
+                    <div className="bulle-savon-test flex flex-col justify-center items-center text-center h-[85px] w-full p-2 box-border">
+                      <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">
+                        {t('home.nameDay', 'Fête du jour')}
+                      </span>
+                      <span className="text-lg font-bold text-amber-500 my-0.5">
+                        🎉 Ida
+                      </span>
+                      <span className="text-[10px] text-sky-400 font-medium">
+                        13 avril
+                      </span>
+                    </div>
+
+                  </div>
+                </div>
+
               </div>
             </div>
 
             {/* Contenu personnalisable avec pages multiples */}
-            <div className="pt-8">
+            <div className="pt-4">
               <CustomizableHome 
                 pregnancyProfile={pregnancyProfile}
                 hasPregnancyProfile={hasPregnancyProfile}
@@ -294,14 +324,14 @@ function HomePage() {
                 userAvatarConfig={userAvatarConfig}
                 onPageTypeChange={setCurrentPageType}
                 onAvatarClick={handleAvatarClick}
-                disabledScroll={pullDistance > 0} // Optionnel pour bloquer les actions pendant le tirage
+                disabledScroll={pullDistance > 0}
               />
             </div>
 
           </div>
         </div>
         
-        {/* Tutoriels et popups (en dehors du scroll principal pour rester fixes) */}
+        {/* Tutoriels et popups */}
         <InteractiveTutorial 
           isVisible={showInteractiveTutorial} 
           onComplete={isFirstTimeTutorial ? completeInteractiveTutorial : closeInteractiveTutorial}
