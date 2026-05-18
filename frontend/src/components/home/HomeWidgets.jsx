@@ -8,21 +8,21 @@ import { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Heart } from 'lucide-react';
 
-// Widget "Semaine de grossesse" - Version compact et normale
+// =========================================================================
+// 1. WIDGET "SEMAINE DE GROSSESSE" — UNIQUEMENT CE BLOC TOUT EN HAUT
+// =========================================================================
 export function WeekDisplayWidget({ pregnancyProfile, t, compact = false, navigate }) {
   if (!pregnancyProfile?.current_week) return null;
   
-  // Mode compact (côte à côte avec Fête du jour) - Cliquable vers suivi de cycle
   if (compact) {
     return (
       <div 
-        className="relative overflow-hidden px-4 py-3 cursor-pointer active:scale-[0.98] badge-semaine-x w-full flex flex-col justify-center items-center text-center"
+        className="relative overflow-hidden px-4 py-3 cursor-pointer badge-semaine-x w-full flex flex-col justify-center items-center text-center bg-white/10 backdrop-blur-md border border-white/20 shadow-lg transition-all duration-200 hover:bg-white/20 active:scale-95"
         style={{
           height: '112px',
           minHeight: '112px',
           maxHeight: '112px',
-          borderRadius: '20px',
-          color: '#4A4A4A',
+          borderRadius: '20px', // Forme Pill
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden',
           WebkitBackfaceVisibility: 'hidden',
@@ -31,39 +31,32 @@ export function WeekDisplayWidget({ pregnancyProfile, t, compact = false, naviga
         onClick={() => navigate && navigate('/cycle-tracking')}
         data-testid="week-display-card"
       >
-        <p className="relative text-[10px] mb-1 font-semibold leading-tight" style={{ color: '#9d174d' }}>✨ {t('pregnancy.youAreAt', 'Vous êtes à la')}</p>
-        <p className="relative text-xl font-bold leading-tight" style={{ 
-          background: 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #a855f7 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-        }}>
-          {t('pregnancy.week', 'Semaine')} {pregnancyProfile.current_week}
+        <p className="relative text-[10px] font-semibold uppercase tracking-wide leading-none mb-1 text-rose-200">
+          ✨ {t('pregnancy.youAreAt', 'Vous êtes à la')}
         </p>
-        <p className="relative text-[11px] mt-1 font-medium leading-tight" style={{ color: '#9d174d' }}>
-          Trimestre {pregnancyProfile.trimester || Math.ceil(pregnancyProfile.current_week / 13)} • SA
+        <p className="relative text-2xl font-black text-white leading-none bg-gradient-to-r from-pink-200 to-amber-200 bg-clip-text text-transparent">
+          W{pregnancyProfile.current_week}
+        </p>
+        <p className="relative text-[10px] font-medium leading-none mt-1 text-rose-300">
+          Trim {pregnancyProfile.trimester || Math.ceil(pregnancyProfile.current_week / 13)} • SA
         </p>
       </div>
     );
   }
   
-  // Mode normal (pleine largeur)
   return (
-    <Card className="badge-semaine-x rounded-2xl px-4 py-3 border-0" data-testid="week-display-card">
+    <Card className="badge-semaine-x rounded-2xl px-4 py-3 border border-white/20 bg-white/10 backdrop-blur-sm" data-testid="week-display-card">
       <div className="relative flex items-center justify-between">
         <div>
-          <p className="text-[11px]" style={{ color: '#9d174d' }}>{t('pregnancy.youAreAt', 'Vous êtes à la')}</p>
-          <p className="text-base font-bold" style={{ 
-            background: 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #a855f7 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}>{t('pregnancy.week', 'Semaine')} {pregnancyProfile.current_week} SA</p>
+          <p className="text-[11px] text-rose-200">{t('pregnancy.youAreAt', 'Vous êtes à la')}</p>
+          <p className="text-base font-bold text-white bg-gradient-to-r from-pink-200 to-amber-200 bg-clip-text text-transparent">
+            {t('pregnancy.week', 'Semaine')} {pregnancyProfile.current_week} SA
+          </p>
         </div>
         <div className="text-right">
-          <p className="text-[11px]" style={{ color: '#9d174d' }}>{t('pregnancy.trimester', 'Trimestre')} {pregnancyProfile.trimester || Math.ceil(pregnancyProfile.current_week / 13)}</p>
+          <p className="text-[11px] text-rose-200">{t('pregnancy.trimester', 'Trimestre')} {pregnancyProfile.trimester || Math.ceil(pregnancyProfile.current_week / 13)}</p>
           {pregnancyProfile.estimated_due_date && (
-            <p className="text-sm font-bold" style={{ color: '#be185d' }}>
+            <p className="text-sm font-bold text-amber-200">
               {new Date(pregnancyProfile.estimated_due_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
             </p>
           )}
@@ -72,6 +65,8 @@ export function WeekDisplayWidget({ pregnancyProfile, t, compact = false, naviga
     </Card>
   );
 }
+
+
 
 // Carte cliquable "Les étapes de votre plus beau voyage" - Style Chamallow sans fond
 export function JourneyStepsCard({ t, navigate }) {
