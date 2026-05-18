@@ -230,20 +230,33 @@ export function AgendaCard({
             </div>
           </div>
 
-          {/* Nidation estimée si rapports enregistrés DANS LA FENÊTRE DE FERTILITÉ */}
+          {/* Nidation estimée — Version Pédagogique avec Mode Fantôme si pas de rapport */}
           {(() => {
             const implantation = getNextImplantation && getNextImplantation();
             if (!implantation || !agendaData) return null;
             
-            // Vérifier si le rapport est dans la fenêtre de fertilité
             const rapportDate = new Date(implantation.rapportDate);
             const fertileStart = new Date(agendaData.fertileStart);
             const fertileEnd = new Date(agendaData.fertileEnd);
-            
-            // Le rapport doit être entre fertileStart et fertileEnd pour afficher la nidation
             const isInFertileWindow = rapportDate >= fertileStart && rapportDate <= fertileEnd;
             
-            if (!isInFertileWindow) return null;
+            if (!isInFertileWindow) {
+              return (
+                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                  <div className="flex items-center gap-3 opacity-60">
+                    <div className="w-10 h-10 bg-slate-300 rounded-xl flex items-center justify-center">
+                      <Info className="w-5 h-5 text-slate-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-slate-500 font-semibold">Nidation estimée</p>
+                      <p className="text-xs text-slate-500 leading-normal mt-0.5">
+                        Elle s'affichera ici dès qu'un rapport sexuel sera enregistré durant votre fenêtre de fertilité.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
             
             return (
               <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-200">
