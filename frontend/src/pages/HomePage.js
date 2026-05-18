@@ -278,42 +278,52 @@ function HomePage() {
                   </div>
                 )}
 
-                {/* 🎯 LES DEUX CARTES JUMELLES CENTRÉES ET COMPACTES */}
-                <div className="w-full max-w-sm mx-auto mt-2 px-2">
-                  <div className="grid grid-cols-2 gap-3">
-                    
-                    {/* Carte Semaine */}
-                    <div className="bulle-savon-test flex flex-col justify-center items-center text-center h-[85px] w-full p-2 box-border">
-                      <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">
-                        {t('home.youAreAt', 'Vous êtes à la')}
-                      </span>
-                      <span className="text-lg font-bold text-pink-400 my-0.5">
-                        Semaine {pregnancyProfile?.current_week || '4'}
-                      </span>
-                      <span className="text-[10px] text-sky-400 font-medium">
-                        Trimestre 1 • SA
-                      </span>
-                    </div>
+                {/* 🎯 BLOC DES DEUX CARTES JUMELLES NETTOYÉ ET SÉCURISÉ */}
+				<div className="w-full max-w-sm mx-auto mt-2 px-2">
+				  <div className="grid grid-cols-2 gap-3">
+					
+					{/* 1. Carte Semaine (Raccourci Suivi de Cycle) */}
+					<button 
+					  onClick={() => navigate('/cycle-tracking')} // Ajuste la route si nécessaire
+					  className="bulle-savon-test flex flex-col justify-center items-center text-center h-[85px] w-full p-2 box-border transition-transform active:scale-95 cursor-pointer focus:outline-none"
+					  style={{
+						background: 'linear-gradient(135deg, rgba(255, 140, 159, 0.22), rgba(255, 255, 255, 0.45))',
+						border: '1px solid rgba(255, 140, 159, 0.35)',
+					  }}
+					>
+					  <span className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">
+						{t('home.youAreAt', 'Vous êtes à la')}
+					  </span>
+					  <span className="text-lg font-bold text-pink-500 my-0.5">
+						Semaine {pregnancyProfile?.current_week || '9'}
+					  </span>
+					  <span className="text-[10px] text-sky-500 font-medium">
+						Trimestre 1 • SA
+					  </span>
+					</button>
 
-                    {/* Carte Fête du jour */}
-                    <div className="bulle-savon-test flex flex-col justify-center items-center text-center h-[85px] w-full p-2 box-border">
-                      <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">
-                        {t('home.nameDay', 'Fête du jour')}
-                      </span>
-                      <span className="text-lg font-bold text-amber-500 my-0.5">
-                        🎉 Ida
-                      </span>
-                      <span className="text-[10px] text-sky-400 font-medium">
-                        13 avril
-                      </span>
-                    </div>
+					{/* 2. Carte Fête du Jour (Raccourci Calendrier) */}
+					<button 
+					  onClick={() => navigate('/cycle-tracking?tab=calendar')} // Ajuste le paramètre d'onglet selon ta logique
+					  className="bulle-savon-test flex flex-col justify-center items-center text-center h-[85px] w-full p-2 box-border transition-transform active:scale-95 cursor-pointer focus:outline-none"
+					  style={{
+						background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(255, 255, 255, 0.45))',
+						border: '1px solid rgba(234, 179, 8, 0.3)',
+					  }}
+					>
+					  <span className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">
+						{t('home.nameDay', 'Fête du jour')}
+					  </span>
+					  <span className="text-lg font-bold text-amber-600 my-0.5">
+						🎉 Pascal
+					  </span>
+					  <span className="text-[10px] text-sky-500 font-medium">
+						17 mai
+					  </span>
+					</button>
 
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
+				  </div>
+				</div>
             {/* Contenu personnalisable avec pages multiples */}
             <div className="pt-4">
               <CustomizableHome 
