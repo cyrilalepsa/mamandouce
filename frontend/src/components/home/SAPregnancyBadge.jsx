@@ -3,14 +3,8 @@ import { useNavigate } from 'react-router-dom';
 
 /**
  * Bulle "SA X" (Semaines d'Aménorrhée) — affichée à côté de la Fête du jour
- * dès que l'utilisatrice a cliqué sur "Je suis enceinte !" (CycleTrackingPage).
- *
- * Lecture :
- *  - localStorage.mamandouce_pregnant === 'true'
- *  - localStorage.mamandouce_due_date (ISO date, DPA = règles + 280 j)
- *
- * SA = 40 - (DPA - today) / 7
- *
+ * dès que l'utilisatrice a cliqué sur "Je suis enceinte !".
+ * * Version Premium Pill Translucide NeriaCorp
  * Cliquable → /cycle-tracking
  */
 export function SAPregnancyBadge({ compact = false }) {
@@ -32,23 +26,30 @@ export function SAPregnancyBadge({ compact = false }) {
     return (
       <div
         onClick={() => navigate('/cycle-tracking')}
-        className="badge-sa-pregnancy rounded-2xl px-3 py-2 flex flex-col items-center justify-center"
+        className="badge-sa-pregnancy bg-white/10 backdrop-blur-md border border-white/20 shadow-lg px-3 py-2 flex flex-col items-center justify-center transition-all duration-200 hover:bg-white/20 active:scale-95 cursor-pointer"
+        style={{
+          height: '112px',
+          minWidth: '112px',
+          borderRadius: '20px', // Forme Pill d'origine préservée
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden'
+        }}
         data-testid="sa-pregnancy-badge"
       >
-        <span className="text-[10px] font-semibold text-pink-700">Grossesse</span>
-        <span className="text-base font-bold text-pink-800 leading-tight">SA {sa}</span>
+        <span className="text-[10px] font-semibold text-rose-200 uppercase tracking-wide leading-none mb-1">Grossesse</span>
+        <span className="text-xl font-black text-white leading-tight bg-gradient-to-r from-pink-200 to-amber-200 bg-clip-text text-transparent">
+          SA {sa}
+        </span>
       </div>
     );
   }
 
+  // Version normale
   return (
-    <div
-      onClick={() => navigate('/cycle-tracking')}
-      className="badge-sa-pregnancy rounded-full px-3 py-1 inline-flex items-center gap-1.5"
-      data-testid="sa-pregnancy-badge"
-    >
-      <span className="text-sm">🤰</span>
-      <span className="text-xs font-bold text-pink-800">SA {sa}</span>
+    <div className="p-4 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-sm">
+      <span className="text-sm font-semibold text-slate-700">Semaines d'Aménorrhée : </span>
+      <span className="text-base font-bold text-pink-600">SA {sa}</span>
     </div>
   );
 }
