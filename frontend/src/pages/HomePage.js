@@ -8,7 +8,7 @@ import { AvatarPreview } from '../components/profile/AvatarBuilder';
 import PremiumSunAvatar from '../components/profile/PremiumSunAvatar';
 import { isNameCelebratedToday } from '../data/saintsCalendar';
 import LanguageBubble from '../components/LanguageBubble';
-import CustomizableHome from '../components/home/CustomizableHome'; // 👈 L'IMPORT CORRECT EST ICI !
+import CustomizableHome from '../components/home/CustomizableHome'; // 👈 Import par défaut isolé corrigé
 import {
   TopBar,
   TutorialPopup,
@@ -268,11 +268,10 @@ function HomePage() {
                   </div>
                 )}
 
-                {/* 🎯 BLOC DES DEUX CARTES JUMELLES CORRIGÉES (FLEX + JUSTIFY-BETWEEN + HEIGHT RESPIRANTE) */}
-                <div className="w-full max-w-sm mx-auto mt-3 px-2">
+                {/* 🎯 CARTES REHAUSSÉES À MIN-H-[96PX] ET AVEC PADDING HARMONIEUX */}
+                <div className="w-full max-w-sm mx-auto mt-2 px-2">
                   <div className="grid grid-cols-2 gap-3">
                     
-                    {/* 1. Carte Semaine */}
                     <button 
                       onClick={() => navigate('/cycle-tracking')}
                       className="bulle-savon-test flex flex-col justify-between items-center text-center min-h-[96px] w-full p-3 box-border transition-transform active:scale-95 cursor-pointer focus:outline-none"
@@ -293,7 +292,6 @@ function HomePage() {
                       </span>
                     </button>
 
-                    {/* 2. Carte Fête du Jour */}
                     <button 
                       onClick={() => navigate('/cycle-tracking?tab=calendar')}
                       className="bulle-savon-test flex flex-col justify-between items-center text-center min-h-[96px] w-full p-3 box-border transition-transform active:scale-95 cursor-pointer focus:outline-none"
@@ -319,7 +317,7 @@ function HomePage() {
               </div>
             </div>
 
-            {/* Contenu personnalisable (On injecte les règles CSS pour masquer les bannières doublons) */}
+            {/* Injection des sélecteurs CSS pour nettoyer le doublon "Yves" de CustomizableHome */}
             <div className="pt-4 [&_#celebrate-section]:hidden [&_div[class*='celebrate']]:hidden">
               <CustomizableHome 
                 pregnancyProfile={pregnancyProfile}
