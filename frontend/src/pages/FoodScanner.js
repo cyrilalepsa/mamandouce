@@ -26,61 +26,39 @@ function FoodScanner() {
   const [activeTab, setActiveTab] = useState('camera');
   const [favorites, setFavorites] = useState(new Set());
   const [scanning, setScanning] = useState(false);
-  
-  // 🛡️ VERROU DE SÉCURITÉ ANTI-DOUBLE-CLIC ET TRIPLE-TRAME CAMERA
-  const [isProcessing, setIsProcessing] = useState(false);
-  
-  const [scansRemaining, setScansRemaining] = useState(5);
+  const [isProcessing, setIsProcessing] = useState(false); // 👈 Verrou matériel de sécurité
   const [showAddFoodModal, setShowAddFoodModal] = useState(false);
+  const [newFoodData, setNewFoodData] = useState({ name: '', barcode: '', category: '', notes: '' });
   const [addingFood, setAddingFood] = useState(false);
-  const [newFoodData, setNewFoodData] = useState({
-    name: '',
-    barcode: '',
-    category: 'Autre',
-    notes: '',
-    safety_status: 'unknown'
-  });
-
+  const [notFound, setNotFound] = useState(false);
+  const html5QrCodeRef = useRef(null);
   const scannerRef = useRef(null);
+  
+  const scansThisWeek = subscriptionStatus?.scans_this_week || 0;
+  const scansRemaining = isPremium ? -1 : Math.max(0, 5 - scansThisWeek);
 
   useEffect(() => {
-    loadScansCount();
     loadFavorites();
-    
-    const params = new URLSearchParams(location.search);
-    if (params.get('tab') === 'search') {
-      setActiveTab('search');
+    if (location.state?.openAddModal) {
+      setShowAddFoodModal(true);
     }
-
     return () => {
-      if (scannerRef.current) {
-        scannerRef.current.stop().catch(err => console.error("Erreur nettoyage scanner:", err));
-      }
+      stopScanner();
     };
-  }, [location]);
-
-  const loadScansCount = async () => {
-    try {
-      const response = await api.get('/api/scan/usage');
-      setScansRemaining(response.data.remaining);
-    } catch (err) {
-      console.error('Erreur comptage scans:', err);
-    }
-  };
+  }, [location.state]);
 
   const loadFavorites = async () => {
     try {
-      const response = await api.get('/api/scan/favorites');
-      setFavorites(new Set(response.data.map(f => f.food_id)));
-    } catch (err) {
-      console.error('Erreur favoris:', err);
+      const response = await api.favorites.getAll();
+      const favNames = new Set(response.data.map(f => f.name));
+      setFavorites(favNames);
+    } catch (error) {
+      console.error('Erreur chargement favoris:', error);
     }
   };
 
   const startScanner = async () => {
-    // Si déjà en train d'allumer, d'éteindre ou d'analyser, on bloque le clic parasite
-    if (isProcessing) return;
-
+    if (isProcessing) return; // Sécurité anti-rafale
     try {
       if (scannerRef.current) {
         await stopScanner();
@@ -98,33 +76,22 @@ function FoodScanner() {
           aspectRatio: 1.0
         },
         async (decodedText) => {
-          // 🛡️ DOUBLE VÉRIFICATION : Si un scan est déjà en cours de traitement, on jette la trame suivante
+          // Bloquer les lectures multiples successives immédiates
           if (isProcessing) return;
-          
           setIsProcessing(true);
-          setScanning(false);
           
-          try {
-            // Éteindre le flux caméra matériel en premier pour libérer le thread
-            if (scannerRef.current) {
-              await scannerRef.current.stop();
-              scannerRef.current = null;
-            }
-            setBarcode(decodedText);
-            await handleBarcodeScanned(decodedText);
-          } catch (err) {
-            console.error("Erreur lors de l'arrêt du scanner post-scan:", err);
-          } finally {
-            setIsProcessing(false);
-          }
+          await stopScanner();
+          setBarcode(decodedText);
+          await handleBarcodeScanned(decodedText);
+          setIsProcessing(false);
         },
         (errorMessage) => {
-          // Callback silencieux pour la recherche continue de lignes
+          // Échecs d'analyse silencieux (trames floues)
         }
       );
     } catch (err) {
-      console.error("Erreur démarrage scanner:", err);
-      toast.error(t('scanner.cameraError', "Impossible d'accéder à la caméra."));
+      console.error("Erreur démarrage caméra:", err);
+      toast.error("Impossible d'accéder à la caméra. Vérifiez les permissions.");
       setScanning(false);
       setIsProcessing(false);
     }
@@ -133,7 +100,6 @@ function FoodScanner() {
   const stopScanner = async () => {
     if (scannerRef.current) {
       try {
-        setScanning(false);
         await scannerRef.current.stop();
         scannerRef.current = null;
       } catch (err) {
@@ -144,10 +110,20 @@ function FoodScanner() {
   };
 
   const handleBarcodeScanned = async (code) => {
-    if (!code) return;
-
     if (!isPremium && scansRemaining <= 0) {
-      showPremiumToast();
+      toast.error(
+        <div>
+          <p className="font-bold">Limite atteinte !</p>
+          <p>5 scans/semaine en version gratuite.</p>
+          <button 
+            onClick={() => navigate('/pricing')}
+            className="mt-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm"
+          >
+            Passer à Premium
+          </button>
+        </div>,
+        { duration: 5000 }
+      );
       return;
     }
     
@@ -156,394 +132,511 @@ function FoodScanner() {
       const response = await api.scan.barcode(code);
       setResult(response.data);
       setSearchResults([]);
-      toast.success(t('scanner.productFound', 'Produit trouvé !'));
-      loadScansCount();
+      toast.success('Produit trouvé !');
     } catch (error) {
       if (error.response?.status === 403) {
-        showPremiumToast();
-      } else if (error.response?.status === 404) {
-        setNewFoodData(prev => ({ ...prev, barcode: code, name: '' }));
-        setShowAddFoodModal(true);
-        toast.info(t('scanner.productUnknown', 'Produit non répertorié. Vous pouvez le proposer !'));
+        toast.error(
+          <div>
+            <p className="font-bold">Limite atteinte !</p>
+            <p>5 scans/semaine en version gratuite.</p>
+            <button 
+              onClick={() => navigate('/pricing')}
+              className="mt-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm"
+            >
+              Passer à Premium
+            </button>
+          </div>,
+          { duration: 5000 }
+        );
       } else {
-        toast.error(t('scanner.scanError', 'Erreur lors du scan'));
+        toast.error('Erreur lors du scan');
       }
-    } finally {
+    } finaly {
       setLoading(false);
     }
+  };
+
+  const toggleFavorite = async (food) => {
+    try {
+      if (favorites.has(food.name)) {
+        await api.favorites.remove(food.name);
+        setFavorites(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(food.name);
+          return newSet;
+        });
+        toast.success('Retiré des favoris');
+      } else {
+        await api.favorites.add({
+          name: food.name,
+          status: food.safe_for_pregnancy || food.status || 'unknown',
+          reason: food.reason || '',
+          category: food.category || ''
+        });
+        setFavorites(prev => new Set([...prev, food.name]));
+        toast.success('Ajouté aux favoris');
+      }
+    } catch (error) {
+      toast.error('Erreur lors de la modification des favoris');
+    }
+  };
+
+  const handleManualBarcode = async (e) => {
+    e.preventDefault();
+    if (!barcode.trim() || isProcessing) return;
+    setIsProcessing(true);
+    await handleBarcodeScanned(barcode);
+    setIsProcessing(false);
   };
 
   const handleSearch = async (e) => {
-    if (e) e.preventDefault();
-    if (!searchQuery.trim()) return;
-
+    e.preventDefault();
+    if (!searchQuery.trim() || isProcessing) return;
+    
+    if (!isPremium && scansRemaining <= 0) {
+      toast.error(
+        <div>
+          <p className="font-bold">Limite atteinte !</p>
+          <p>5 recherches/semaine en version gratuite.</p>
+          <button 
+            onClick={() => navigate('/pricing')}
+            className="mt-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm"
+          >
+            Passer à Premium
+          </button>
+        </div>,
+        { duration: 5000 }
+      );
+      return;
+    }
+    
     setLoading(true);
-    setResult(null);
+    setNotFound(false);
+    setIsProcessing(true);
     try {
       const response = await api.scan.search(searchQuery);
       setSearchResults(response.data);
+      setResult(null);
       if (response.data.length === 0) {
-        toast.info(t('scanner.noResults', 'Aucun produit trouvé'));
+        setNotFound(true);
+        setNewFoodData(prev => ({ ...prev, name: searchQuery }));
       }
     } catch (error) {
-      toast.error(t('scanner.searchError', 'Erreur lors de la recherche'));
+      if (error.response?.status === 403) {
+        toast.error(
+          <div>
+            <p className="font-bold">Limite atteinte !</p>
+            <p>5 recherches/semaine en version gratuite.</p>
+            <button 
+              onClick={() => navigate('/pricing')}
+              className="mt-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm"
+            >
+              Passer à Premium
+            </button>
+          </div>,
+          { duration: 5000 }
+        );
+      } else {
+        toast.error('Erreur lors de la recherche');
+      }
     } finally {
       setLoading(false);
+      setIsProcessing(false);
     }
   };
 
-  const toggleFavorite = async (foodId) => {
-    try {
-      if (favorites.has(foodId)) {
-        await api.delete(`/api/scan/favorites/${foodId}`);
-        setFavorites(prev => {
-          const next = new Set(prev);
-          next.delete(foodId);
-          return next;
-        });
-        toast.success(t('scanner.removedFromFavorites', 'Enlevé des favoris'));
-      } else {
-        await api.post('/api/scan/favorites', { food_id: foodId });
-        setFavorites(prev => new Set([...prev, foodId]));
-        toast.success(t('scanner.addedToFavorites', 'Ajouté aux favoris'));
-      }
-    } catch (err) {
-      toast.error(t('common.error'));
-    }
-  };
-
-  const handleAddFoodSubmit = async (e) => {
+  const handleAddFood = async (e) => {
     e.preventDefault();
-    if (!newFoodData.name.trim()) return;
-
+    if (!newFoodData.name.trim() || addingFood) return;
+    
     setAddingFood(true);
     try {
-      await api.post('/api/scan/propose', newFoodData);
-      toast.success(t('scanner.proposalSuccess', 'Merci ! Votre proposition est en cours d\'examen.'));
+      await api.foodLibrary.addFood(newFoodData);
+      toast.success('Aliment soumis pour vérification !');
       setShowAddFoodModal(false);
-    } catch (err) {
-      toast.error(t('scanner.proposalError', 'Erreur lors de l\'envoi'));
+      setNewFoodData({ name: '', barcode: '', category: '', notes: '' });
+      setNotFound(false);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erreur lors de l\'ajout');
     } finally {
       setAddingFood(false);
     }
   };
 
-  const showPremiumToast = () => {
-    toast.error(
-      <div className="p-1">
-        <p className="font-bold text-slate-800 flex items-center gap-1.5">
-          <Crown className="w-4 h-4 text-amber-500 fill-amber-500" />
-          {t('scanner.limitReached', 'Limite atteinte !')}
-        </p>
-        <p className="text-xs text-slate-600 mt-1">
-          {t('scanner.limitNote', 'Vous avez épuisé vos 5 scans gratuits de la semaine.')}
-        </p>
-        <Button 
-          onClick={() => { toast.dismiss(); navigate('/pricing'); }}
-          className="mt-3 w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-full py-1.5 text-xs font-bold shadow-sm"
-        >
-          {t('scanner.upgradePremium', 'Devenir Premium')}
-        </Button>
-      </div>,
-      { duration: 6000, position: 'top-center' }
-    );
-  };
-
-  const getStatusIcon = (status) => {
+  const getSafetyIcon = (status) => {
     switch (status) {
-      case 'safe': return <ShieldCheck className="w-8 h-8 text-green-500" />;
-      case 'moderate': return <ShieldAlert className="w-8 h-8 text-amber-500" />;
-      case 'danger': return <ShieldX className="w-8 h-8 text-red-500" />;
-      default: return <AlertTriangle className="w-8 h-8 text-slate-400" />;
+      case 'safe':
+        return <ShieldCheck className="w-5 h-5 text-green-500" />;
+      case 'caution':
+        return <ShieldAlert className="w-5 h-5 text-yellow-500" />;
+      case 'avoid':
+        return <AlertTriangle className="w-5 h-5 text-orange-500" />;
+      case 'unsafe':
+        return <ShieldX className="w-5 h-5 text-red-500" />;
+      default:
+        return <ShieldAlert className="w-5 h-5 text-gray-400" />;
     }
   };
 
-  const getStatusBadgeClass = (status) => {
+  const getSafetyText = (status) => {
     switch (status) {
-      case 'safe': return 'bg-green-50 text-green-700 border-green-200';
-      case 'moderate': return 'bg-amber-50 text-amber-700 border-amber-200';
-      case 'danger': return 'bg-red-50 text-red-700 border-red-200';
-      default: return 'bg-slate-50 text-slate-600 border-slate-200';
+      case 'safe':
+        return { text: t('scanner.safe'), color: 'text-green-600 bg-green-50' };
+      case 'caution':
+        return { text: t('scanner.caution'), color: 'text-yellow-600 bg-yellow-50' };
+      case 'avoid':
+        return { text: t('scanner.avoid'), color: 'text-orange-600 bg-orange-50' };
+      case 'unsafe':
+        return { text: t('scanner.unsafe'), color: 'text-red-600 bg-red-50' };
+      default:
+        return { text: t('scanner.unknown'), color: 'text-gray-600 bg-gray-50' };
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-24">
-      <PageHeader title={t('scanner.title')} subtitle={t('scanner.subtitle')} />
+    <div className="min-h-screen gradient-bg p-6">
+      <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
+        <PageHeader title={t('scanner.title')} />
 
-      <div className="max-w-md mx-auto px-4 mt-4">
-        {/* Barre de limitation pour les comptes gratuits */}
-        {!isPremium && (
-          <Card className="p-3 mb-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl flex items-center justify-between">
+        {!subscriptionLoading && !isPremium && (
+          <div className={`rounded-2xl p-3 flex items-center justify-between ${
+            scansRemaining > 0 ? 'bg-amber-50 border border-amber-200' : 'bg-red-50 border border-red-200'
+          }`}>
             <div className="flex items-center gap-2">
-              <Crown className="w-4 h-4 text-amber-600 animate-pulse" />
-              <span className="text-xs font-semibold text-amber-800">
-                {t('scanner.scansLeft', 'Scans gratuits restants :')} <span className="font-bold text-sm bg-white px-2 py-0.5 rounded-full ml-1 border border-amber-300 shadow-sm">{scansRemaining}/5</span>
+              {scansRemaining > 0 ? (
+                <AlertTriangle className="w-5 h-5 text-amber-500" />
+              ) : (
+                <Lock className="w-5 h-5 text-red-500" />
+              )}
+              <span className={`text-sm font-medium ${scansRemaining > 0 ? 'text-amber-700' : 'text-red-700'}`}>
+                {scansRemaining > 0 
+                  ? (scansRemaining > 1 ? t('scanner.scansRemainingPlural', { count: scansRemaining }) : t('scanner.scansRemaining', { count: scansRemaining }))
+                  : t('scanner.limitReachedWeek')
+                }
               </span>
             </div>
-            <button 
+            <button
               onClick={() => navigate('/pricing')}
-              className="text-[11px] font-bold text-purple-700 hover:text-purple-900 underline decoration-2"
+              className="flex items-center gap-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-3 py-1.5 rounded-full hover:opacity-90 transition-opacity"
             >
-              {t('scanner.unlimited', 'Passer à l\'illimité')}
+              <Crown className="w-3 h-3" />
+              Premium
             </button>
-          </Card>
-        )}
-
-        {/* Onglets Navigation Intérieure */}
-        <div className="flex bg-slate-200/60 p-1 rounded-2xl mb-4 gap-1">
-          <button
-            onClick={() => { stopScanner(); setActiveTab('camera'); }}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${
-              activeTab === 'camera' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-            }`}
-          >
-            <Camera className="w-4 h-4" />
-            {t('scanner.tabCamera')}
-          </button>
-          <button
-            onClick={() => { stopScanner(); setActiveTab('search'); }}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${
-              activeTab === 'search' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-            }`}
-          >
-            <Search className="w-4 h-4" />
-            {t('scanner.tabSearch')}
-          </button>
-        </div>
-
-        {/* CONTENU ONGLET CAMERA */}
-        {activeTab === 'camera' && (
-          <div className="space-y-4">
-            <Card className="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm relative">
-              <div className="p-4 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-600 tracking-wide uppercase">
-                  {t('scanner.barcodeScanner')}
-                </span>
-                {scanning && (
-                  <button 
-                    onClick={stopScanner}
-                    className="p-1 rounded-full bg-slate-200 hover:bg-slate-300 transition-colors"
-                  >
-                    <X className="w-4 h-4 text-slate-600" />
-                  </button>
-                )}
-              </div>
-
-              <div className="p-6 flex flex-col items-center justify-center min-h-[260px] relative bg-slate-950">
-                {scanning ? (
-                  <div id="qr-reader" className="w-full max-w-[280px] overflow-hidden rounded-2xl border-2 border-sky-400 shadow-lg"></div>
-                ) : (
-                  <div className="text-center space-y-3 z-10 p-4">
-                    <div className="w-14 h-14 rounded-full bg-slate-900 flex items-center justify-center mx-auto border border-slate-800 shadow-md">
-                      <Camera className="w-6 h-6 text-slate-400" />
-                    </div>
-                    <p className="text-sm text-slate-400 font-medium max-w-[200px] mx-auto">
-                      {t('scanner.cameraPrompt')}
-                    </p>
-                    <Button
-                      onClick={startScanner}
-                      disabled={isProcessing}
-                      className="mt-2 bg-gradient-to-r from-sky-500 to-sky-400 text-white rounded-full px-8 py-3.5 text-xs font-bold shadow-md hover:opacity-95 disabled:opacity-50"
-                    >
-                      <Camera className="w-4 h-4 mr-2" />
-                      {t('scanner.startCamera')}
-                    </Button>
-                  </div>
-                )}
-                {scanning && (
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 z-20 pointer-events-none">
-                    <p className="text-[10px] text-sky-300 font-semibold tracking-wider uppercase animate-pulse">
-                      {t('scanner.alignBarcode', 'Alignez le code-barres')}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </Card>
           </div>
         )}
 
-        {/* CONTENU ONGLET RECHERCHE */}
+        {!subscriptionLoading && isPremium && (
+          <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-3 flex items-center gap-2">
+            <Crown className="w-5 h-5 text-purple-600" />
+            <span className="text-sm font-medium text-purple-700">{t('scanner.unlimitedScans')}</span>
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          <Button
+            disabled={isProcessing}
+            onClick={() => { setActiveTab('camera'); if (!scanning) startScanner(); }}
+            data-testid="camera-tab"
+            className={`flex-1 rounded-full py-3 font-semibold ${activeTab === 'camera' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
+          >
+            <Camera className="w-4 h-4 mr-2" />
+            {t('scanner.camera')}
+          </Button>
+          <Button
+            disabled={isProcessing}
+            onClick={() => { stopScanner(); setActiveTab('manual'); }}
+            data-testid="manual-tab"
+            className={`flex-1 rounded-full py-3 font-semibold ${activeTab === 'manual' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
+          >
+            <Keyboard className="w-4 h-4 mr-2" />
+            {t('scanner.manual')}
+          </Button>
+          <Button
+            disabled={isProcessing}
+            onClick={() => { stopScanner(); setActiveTab('search'); }}
+            data-testid="search-tab"
+            className={`flex-1 rounded-full py-3 font-semibold ${activeTab === 'search' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
+          >
+            <Search className="w-4 h-4 mr-2" />
+            {t('scanner.search')}
+          </Button>
+        </div>
+
+        {activeTab === 'camera' && (
+          <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
+            <div className="text-center mb-4">
+              <p className="text-slate-600 mb-4">{t('scanner.pointCamera')}</p>
+              
+              <div id="qr-reader" className="mx-auto rounded-2xl overflow-hidden" style={{ maxWidth: '100%' }}></div>
+              
+              {!scanning && (
+                <Button
+                  disabled={isProcessing}
+                  onClick={startScanner}
+                  data-testid="start-camera"
+                  className="mt-4 bg-gradient-to-r from-sky-500 to-sky-400 text-white rounded-full px-8 py-3 font-semibold"
+                >
+                  <Camera className="w-5 h-5 mr-2" />
+                  {t('scanner.startCamera')}
+                </Button>
+              )}
+              
+              {scanning && (
+                <Button
+                  disabled={isProcessing}
+                  onClick={stopScanner}
+                  data-testid="stop-camera"
+                  className="mt-4 bg-red-500 text-white rounded-full px-8 py-3 font-semibold"
+                >
+                  <X className="w-5 h-5 mr-2" />
+                  {t('scanner.stopCamera')}
+                </Button>
+              )}
+            </div>
+          </Card>
+        )}
+
+        {activeTab === 'manual' && (
+          <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
+            <form onSubmit={handleManualBarcode} className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-slate-600 mb-2 block">{t('scanner.barcodeEAN')}</label>
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder={t('scanner.barcodeExample')}
+                  value={barcode}
+                  onChange={(e) => setBarcode(e.target.value)}
+                  className="rounded-xl border-slate-200 focus:ring-sky-500"
+                  data-testid="barcode-input"
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={loading || !barcode.trim() || isProcessing}
+                data-testid="scan-button"
+                className="w-full bg-gradient-to-r from-sky-500 to-sky-400 text-white rounded-full py-3 font-semibold disabled:opacity-50"
+              >
+                {loading ? t('scanner.searching') : t('scanner.searchProduct')}
+              </Button>
+            </form>
+          </Card>
+        )}
+
         {activeTab === 'search' && (
-          <form onSubmit={handleSearch} className="flex gap-2 mb-4">
-            <Input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('scanner.searchPlaceholder', 'Ex: Jambon, Biscuits, Maquillage...')}
-              className="rounded-2xl border-slate-200 bg-white px-4 h-11 text-sm shadow-sm"
-            />
-            <Button type="submit" disabled={loading} className="bg-purple-600 hover:bg-purple-700 text-white rounded-2xl px-4 h-11 shadow-sm">
-              <Search className="w-4 h-4" />
-            </Button>
-          </form>
-        )}
-
-        {/* CHARGEMENT DES REQUÊTES */}
-        {loading && (
-          <Card className="p-8 rounded-3xl text-center space-y-3 border border-slate-100 bg-white shadow-sm">
-            <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="text-xs font-semibold text-slate-500 tracking-wider uppercase">{t('scanner.analyzing', 'Analyse du produit...')}</p>
+          <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
+            <form onSubmit={handleSearch} className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-slate-600 mb-2 block">{t('scanner.foodName')}</label>
+                <Input
+                  type="text"
+                  placeholder={t('scanner.searchPlaceholder')}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="rounded-xl border-slate-200 focus:ring-sky-500"
+                  data-testid="search-input"
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={loading || !searchQuery.trim() || isProcessing}
+                data-testid="search-button"
+                className="w-full bg-gradient-to-r from-pink-500 to-pink-400 text-white rounded-full py-3 font-semibold disabled:opacity-50"
+              >
+                {loading ? t('scanner.searching') : t('common.search')}
+              </Button>
+            </form>
           </Card>
         )}
 
-        {/* RÉSULTATS DU SCAN UNIQUE */}
-        {result && !loading && (
-          <Card className="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-md animate-fade-in space-y-0">
-            <div className={`p-4 border-b flex items-center justify-between ${getStatusBadgeClass(result.safety_status)}`}>
-              <div className="flex items-center gap-3">
-                {getStatusIcon(result.safety_status)}
-                <div>
-                  <h4 className="font-bold text-sm leading-tight">{result.name}</h4>
-                  <p className="text-[11px] font-medium opacity-80 mt-0.5">{result.brand || t('scanner.unknownBrand')} • {result.barcode}</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => toggleFavorite(result.id)}
-                className="p-2 rounded-full bg-white/80 hover:bg-white shadow-sm transition-transform active:scale-90"
-              >
-                <Heart className={`w-4 h-4 ${favorites.has(result.id) ? 'text-rose-500 fill-rose-500' : 'text-slate-400'}`} />
-              </button>
-            </div>
-
-            <div className="p-5 space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <span className="text-xs font-bold text-slate-500 tracking-wide uppercase">{t('scanner.evaluation')}</span>
-                <span className={`px-3 py-1 rounded-full text-xs font-extrabold border ${getStatusBadgeClass(result.safety_status)}`}>
-                  {t(`scanner.status.${result.safety_status}`)}
-                </span>
-              </div>
-
-              {result.description && (
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase">{t('scanner.details')}</span>
-                  <p className="text-xs text-slate-600 leading-relaxed bg-slate-50/50 p-3 rounded-xl border border-slate-100">{result.description}</p>
-                </div>
+        {result && (
+          <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 animate-fade-in" data-testid="result-card">
+            <div className="flex items-start gap-4">
+              {result.image_url && (
+                <img src={result.image_url} alt={result.name} className="w-24 h-24 object-cover rounded-2xl" />
               )}
-
-              {result.contraindications && result.contraindications.length > 0 && (
-                <div className="space-y-2">
-                  <span className="text-[10px] font-bold text-red-500 tracking-wider uppercase flex items-center gap-1">
-                    <AlertTriangle className="w-3 h-3" />
-                    {t('scanner.warnings')}
-                  </span>
-                  <div className="bg-red-50/30 border border-red-100 rounded-xl p-3 space-y-1.5">
-                    {result.contraindications.map((c, idx) => (
-                      <p key={idx} className="text-xs font-medium text-red-700 flex items-start gap-1.5">
-                        <span className="mt-1 w-1.5 h-1.5 bg-red-500 rounded-full shrink-0"></span>
-                        {c}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </Card>
-        )}
-
-        {/* LISTE DES RÉSULTATS DE RECHERCHE TEXTE */}
-        {searchResults.length > 0 && !loading && (
-          <div className="space-y-2">
-            <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase pl-1 block mb-1">
-              {t('scanner.searchResults', 'Résultats de recherche')}
-            </span>
-            {searchResults.map((item) => (
-              <Card 
-                key={item.id}
-                onClick={async () => {
-                  setResult(item);
-                  setSearchResults([]);
-                }}
-                className="p-3 bg-white rounded-2xl border border-slate-100 shadow-sm hover:border-purple-200 transition-all cursor-pointer flex items-center justify-between"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-1 rounded-full bg-slate-50">
-                    {getStatusIcon(item.safety_status)}
-                  </div>
+              <div className="flex-1">
+                <div className="flex items-start justify-between">
                   <div>
-                    <h5 className="font-bold text-xs text-slate-700">{item.name}</h5>
-                    <p className="text-[10px] text-slate-400 mt-0.5">{item.brand || 'Marque inconnue'}</p>
+                    <h3 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{result.name}</h3>
+                    {result.brand && <p className="text-slate-500 text-sm">{result.brand}</p>}
+                  </div>
+                  <button
+                    onClick={() => toggleFavorite(result)}
+                    data-testid="favorite-button"
+                    className="p-2 rounded-full hover:bg-pink-50 transition-colors"
+                  >
+                    <Heart 
+                      className={`w-6 h-6 ${favorites.has(result.name) ? 'fill-pink-500 text-pink-500' : 'text-slate-300'}`} 
+                    />
+                  </button>
+                </div>
+                <div className={`inline-flex items-center gap-2 mt-3 px-4 py-2 rounded-full ${getSafetyText(result.safe_for_pregnancy).color}`}>
+                  {getSafetyIcon(result.safe_for_pregnancy)}
+                  <span className="font-semibold">{getSafetyText(result.safe_for_pregnancy).text}</span>
+                </div>
+                {result.reason && (
+                  <p className="mt-3 text-sm text-slate-600 bg-slate-50 p-3 rounded-xl">{result.reason}</p>
+                )}
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {searchResults.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>{t('common.results')} ({searchResults.length})</h3>
+            {searchResults.map((item, index) => (
+              <Card key={index} className="bg-white rounded-3xl p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 card-hover" data-testid={`search-result-${index}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h4 className="font-bold text-slate-700">{item.name}</h4>
+                    <p className="text-sm text-slate-500">{item.category}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${getSafetyText(item.safe_for_pregnancy).color}`}>
+                      {getSafetyIcon(item.safe_for_pregnancy)}
+                      <span className="text-xs font-semibold">{getSafetyText(item.safe_for_pregnancy).text}</span>
+                    </div>
+                    <button
+                      onClick={() => toggleFavorite(item)}
+                      data-testid={`favorite-button-${index}`}
+                      className="p-2 rounded-full hover:bg-pink-50 transition-colors"
+                    >
+                      <Heart 
+                        className={`w-5 h-5 ${favorites.has(item.name) ? 'fill-pink-500 text-pink-500' : 'text-slate-300'}`} 
+                      />
+                    </button>
                   </div>
                 </div>
-                <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border ${getStatusBadgeClass(item.safety_status)}`}>
-                  {t(`scanner.status.${item.safety_status}`)}
-                </span>
               </Card>
             ))}
           </div>
         )}
-      </div>
 
-      {/* POPUP DE PROPOSITION DE NOUVEAU PRODUIT (404) */}
-      <Dialog open={showAddFoodModal} onOpenChange={setShowAddFoodModal}>
-        <DialogContent className="bg-white rounded-3xl w-[92%] max-w-sm p-5 shadow-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-md font-bold text-slate-800 text-center flex items-center justify-center gap-2">
-              <Plus className="w-5 h-5 text-purple-600 bg-purple-50 p-1 rounded-full" />
-              {t('scanner.proposeProduct')}
-            </DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleAddFoodSubmit} className="space-y-4 mt-2">
-            <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">{t('scanner.productName')} *</label>
-              <Input
-                type="text"
-                required
-                value={newFoodData.name}
-                onChange={(e) => setNewFoodData(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="Ex: Biscuits Avoine Bio"
-                className="rounded-xl border-slate-200 h-10 text-xs"
-                data-testid="add-food-name"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">{t('scanner.barcode')}</label>
-              <Input
-                type="text"
-                disabled
-                value={newFoodData.barcode}
-                className="rounded-xl bg-slate-50 border-slate-200 h-10 text-xs font-mono text-slate-500"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">{t('library.category')}</label>
-              <select
-                value={newFoodData.category}
-                onChange={(e) => setNewFoodData(prev => ({ ...prev, category: e.target.value }))}
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 h-10 text-xs text-slate-600 focus:outline-none focus:border-purple-500"
-              >
-                <option value="Alimentation">{t('library.food')}</option>
-                <option value="Cosmétique">{t('library.cosmetics')}</option>
-                <option value="Compléments">{t('library.supplements')}</option>
-                <option value="Autre">{t('library.other')}</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">{t('scanner.notesComments')}</label>
-              <textarea
-                value={newFoodData.notes}
-                onChange={(e) => setNewFoodData(prev => ({ ...prev, notes: e.target.value }))}
-                placeholder={t('scanner.additionalInfo')}
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 resize-none h-16 focus:outline-none focus:border-purple-500"
-                data-testid="add-food-notes"
-              />
-            </div>
-            <div className="pt-2">
+        {notFound && searchQuery && searchResults.length === 0 && (
+          <Card className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 border-2 border-amber-200" data-testid="not-found-card">
+            <div className="text-center">
+              <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
+              <h3 className="text-xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                {t('scanner.foodNotFound')}
+              </h3>
+              <p className="text-slate-600 mb-4">
+                "{searchQuery}" {t('scanner.notInDatabase')}
+              </p>
               <Button
-                type="submit"
-                disabled={addingFood || !newFoodData.name.trim()}
-                data-testid=\"submit-add-food\"
-                className="w-full bg-gradient-to-r from-green-500 to-green-400 text-white rounded-full py-2.5 text-xs font-bold shadow-md disabled:opacity-50"
+                onClick={() => {
+                  setNewFoodData(prev => ({ ...prev, name: searchQuery }));
+                  setShowAddFoodModal(true);
+                }}
+                data-testid="add-unknown-food"
+                className="bg-gradient-to-r from-pink-400 to-pink-300 text-white rounded-full px-6 py-3 font-semibold"
               >
-                {addingFood ? t('common.sending') : t('scanner.submitForReview')}
+                <Plus className="w-5 h-5 mr-2" />
+                {t('scanner.proposeFood')}
               </Button>
             </div>
-            <p className="text-[10px] text-slate-400 text-center leading-normal">
-              {t('scanner.proposalNote')}
-            </p>
-          </form>
-        </DialogContent>
-      </Dialog>
+          </Card>
+        )}
+
+        <div className="flex gap-3">
+          <Button
+            onClick={() => navigate('/library')}
+            data-testid="go-to-library"
+            className="flex-1 bg-white text-slate-600 border border-slate-200 rounded-2xl py-3 font-semibold hover:bg-slate-50"
+          >
+            <Library className="w-5 h-5 mr-2" />
+            {t('scanner.seeLibrary')}
+          </Button>
+          <Button
+            onClick={() => setShowAddFoodModal(true)}
+            data-testid="add-new-food"
+            className="flex-1 bg-gradient-to-r from-green-400 to-green-300 text-white rounded-2xl py-3 font-semibold"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            {t('scanner.addFood')}
+          </Button>
+        </div>
+
+        <Dialog open={showAddFoodModal} onOpenChange={setShowAddFoodModal}>
+          <DialogContent className="bg-white rounded-3xl max-w-md" data-testid="add-food-modal">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-slate-700" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                {t('scanner.proposeFoodTitle')}
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleAddFood} className="space-y-4 mt-4">
+              <div>
+                <label className="text-sm font-semibold text-slate-600 mb-2 block">{t('scanner.foodNameRequired')}</label>
+                <Input
+                  value={newFoodData.name}
+                  onChange={(e) => setNewFoodData(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder={t('scanner.foodNamePlaceholder')}
+                  className="rounded-xl"
+                  data-testid="add-food-name"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-sm font-semibold text-slate-600 mb-2 block">{t('scanner.barcodeOptional')}</label>
+                <Input
+                  value={newFoodData.barcode}
+                  onChange={(e) => setNewFoodData(prev => ({ ...prev, barcode: e.target.value }))}
+                  placeholder="Ex: 3700000000000"
+                  className="rounded-xl"
+                  data-testid="add-food-barcode"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-semibold text-slate-600 mb-2 block">{t('scanner.category')}</label>
+                <select
+                  value={newFoodData.category}
+                  onChange={(e) => setNewFoodData(prev => ({ ...prev, category: e.target.value }))}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-600"
+                  data-testid="add-food-category"
+                >
+                  <option value="">{t('scanner.selectCategory')}</option>
+                  <option value="Fruits">{t('library.fruits')}</option>
+                  <option value="Légumes">{t('library.vegetables')}</option>
+                  <option value="Viandes">{t('library.meat')}</option>
+                  <option value="Poissons">{t('library.fish')}</option>
+                  <option value="Produits laitiers">{t('library.dairy')}</option>
+                  <option value="Fromages">{t('library.dairy')}</option>
+                  <option value="Céréales">{t('library.grains')}</option>
+                  <option value="Légumineuses">{t('library.grains')}</option>
+                  <option value="Boissons">{t('library.beverages')}</option>
+                  <option value="Condiments">{t('library.other')}</option>
+                  <option value="Produits sucrés">{t('library.sweets')}</option>
+                  <option value="Autre">{t('library.other')}</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-semibold text-slate-600 mb-2 block">{t('scanner.notesComments')}</label>
+                <textarea
+                  value={newFoodData.notes}
+                  onChange={(e) => setNewFoodData(prev => ({ ...prev, notes: e.target.value }))}
+                  placeholder={t('scanner.additionalInfo')}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-600 resize-none h-20"
+                  data-testid="add-food-notes"
+                />
+              </div>
+              <div className="pt-2">
+                <Button
+                  type="submit"
+                  disabled={addingFood || !newFoodData.name.trim()}
+                  data-testid="submit-add-food"
+                  className="w-full bg-gradient-to-r from-green-400 to-green-300 text-white rounded-full py-3 font-bold disabled:opacity-50"
+                >
+                  {addingFood ? t('common.sending') : t('scanner.submitForReview')}
+                </Button>
+              </div>
+              <p className="text-xs text-slate-500 text-center">
+                {t('scanner.proposalNote')}
+              </p>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 }
