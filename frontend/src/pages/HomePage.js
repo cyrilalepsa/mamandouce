@@ -277,58 +277,62 @@ function HomePage() {
                     </div>
                   </div>
                 )}
-				{/* 🎯 BLOC DES DEUX CARTES JUMELLES STYLISÉES ET COLORÉES */}
+				{/* 🎯 BLOC DES DEUX CARTES JUMELLES - STYLE BULLE DE SAVON TRANSPARENTE & NACRÉE */}
 				<div className="w-full max-w-sm mx-auto mt-4 px-2">
-				  <div className="grid grid-cols-2 gap-4">
+				  <div className={`grid ${pregnancyProfile?.current_week ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}>
 					
-					{/* 1. Carte Semaine (Raccourci Suivi de Cycle - Rose/Pêche Nacré) */}
-					<button 
-					  onClick={() => navigate('/cycle-tracking')}
-					  className="relative flex flex-col justify-center items-center text-center h-[90px] w-full p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none overflow-hidden"
-					  style={{
-						background: 'linear-gradient(135deg, rgba(255, 182, 193, 0.45) 0%, rgba(255, 240, 245, 0.6) 100%)',
-						border: '1.5px solid rgba(255, 105, 180, 0.4)',
-						borderRadius: '24px',
-						backdropFilter: 'blur(8px)',
-						boxShadow: 'inset 0 4px 12px rgba(255, 255, 255, 0.7), 0 6px 16px rgba(255, 140, 159, 0.15)'
-					  }}
-					>
-					  {/* Reflet brillant style bulle */}
-					  <div className="absolute top-1 left-3 w-8 h-2 bg-white/40 rounded-full filter blur-[1px] -rotate-12" />
-					  
-					  <span className="text-[10px] text-rose-600 uppercase tracking-wider font-bold mb-0.5" style={{ fontFamily: "'Quicksand', sans-serif" }}>
-						{t('home.youAreAt', 'Vous êtes à la')}
-					  </span>
-					  <span className="text-xl font-extrabold text-pink-600 my-0.5 drop-shadow-sm">
-						Semaine {pregnancyProfile?.current_week || '9'}
-					  </span>
-					  <span className="text-[10px] text-rose-500/90 font-semibold bg-white/50 px-2 py-0.5 rounded-full mt-0.5">
-						Trimestre 1 • SA
-					  </span>
-					</button>
+					{/* 1. Carte Semaine (Rose Poudré Translucide) */}
+					{pregnancyProfile?.current_week && (
+					  <button 
+						onClick={() => navigate('/cycle-tracking')}
+						className="relative flex flex-col justify-center items-center text-center h-[90px] w-full p-2 box-border transition-all active:scale-95 cursor-pointer focus:outline-none overflow-hidden"
+						style={{
+						  background: 'linear-gradient(135deg, rgba(255, 192, 203, 0.2) 0%, rgba(255, 255, 255, 0.25) 100%)',
+						  border: '1px solid rgba(255, 105, 180, 0.3)',
+						  borderRadius: '24px',
+						  backdropFilter: 'blur(12px)',
+						  WebkitBackdropFilter: 'blur(12px)',
+						  boxShadow: 'inset 0 2px 6px rgba(255, 255, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.03)'
+						}}
+					  >
+						{/* Reflet de la bulle en haut à gauche */}
+						<div className="absolute top-1 left-2.5 w-6 h-1.5 bg-white/40 rounded-full filter blur-[0.5px] -rotate-12" />
+						
+						<span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
+						  {t('home.youAreAt', 'Vous êtes à la')}
+						</span>
+						<span className="text-base font-bold text-pink-500 my-0.5">
+						  Semaine {pregnancyProfile.current_week}
+						</span>
+						<span className="text-[9px] text-sky-500 font-medium bg-white/40 px-1.5 py-0.5 rounded-full">
+						  Trimestre 1 • SA
+						</span>
+					  </button>
+					)}
 
-					{/* 2. Carte Fête du Jour (Raccourci Calendrier - Jaune/Ambre Nacré) */}
+					{/* 2. Carte Fête du Jour (Ambre Doré Translucide) */}
 					<button 
 					  onClick={() => navigate('/cycle-tracking?tab=calendar')}
-					  className="relative flex flex-col justify-center items-center text-center h-[90px] w-full p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none overflow-hidden"
+					  className="relative flex flex-col justify-center items-center text-center h-[90px] w-full p-2 box-border transition-all active:scale-95 cursor-pointer focus:outline-none overflow-hidden"
 					  style={{
-						background: 'linear-gradient(135deg, rgba(254, 240, 138, 0.5) 0%, rgba(255, 253, 222, 0.6) 100%)',
-						border: '1.5px solid rgba(234, 179, 8, 0.4)',
+						background: 'linear-gradient(135deg, rgba(254, 240, 138, 0.18) 0%, rgba(255, 255, 255, 0.25) 100%)',
+						border: '1px solid rgba(234, 179, 8, 0.25)',
 						borderRadius: '24px',
-						backdropFilter: 'blur(8px)',
-						boxShadow: 'inset 0 4px 12px rgba(255, 255, 255, 0.7), 0 6px 16px rgba(234, 179, 8, 0.12)'
+						backdropFilter: 'blur(12px)',
+						WebkitBackdropFilter: 'blur(12px)',
+						boxShadow: 'inset 0 2px 6px rgba(255, 255, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.03)'
 					  }}
 					>
-					  {/* Reflet brillant style bulle */}
-					  <div className="absolute top-1 left-3 w-8 h-2 bg-white/40 rounded-full filter blur-[1px] -rotate-12" />
+					  {/* Reflet de la bulle en haut à gauche */}
+					  <div className="absolute top-1 left-2.5 w-6 h-1.5 bg-white/40 rounded-full filter blur-[0.5px] -rotate-12" />
 					  
-					  <span className="text-[10px] text-amber-700 uppercase tracking-wider font-bold mb-0.5" style={{ fontFamily: "'Quicksand', sans-serif" }}>
+					  <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
 						{t('home.nameDay', 'Fête du jour')}
 					  </span>
-					  <span className="text-xl font-extrabold text-amber-600 my-0.5 drop-shadow-sm">
+					  <span className="text-base font-bold text-amber-600 my-0.5">
 						🎉 Pascal
 					  </span>
-					  <span className="text-[10px] text-amber-700/90 font-semibold bg-white/50 px-2 py-0.5 rounded-full mt-0.5">
+					  <span className="text-[9px] text-amber-600/80 font-medium bg-white/40 px-1.5 py-0.5 rounded-full">
 						17 mai
 					  </span>
 					</button>
