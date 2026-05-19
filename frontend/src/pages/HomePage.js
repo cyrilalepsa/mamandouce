@@ -277,7 +277,7 @@ function HomePage() {
                     </div>
                   </div>
                 )}
-				{/* 🎯 BLOC DES DEUX CARTES JUMELLES DE TYPE BULLE DE CRISTAL TRANSLUCIDE */}
+				{/* 🎯 BLOC DES DEUX CARTES JUMELLES - STYLE BULLE DE CRISTAL TRANSLUCIDE */}
                 <div className="w-full max-w-sm mx-auto mt-4 px-2">
                   <div className={`grid ${pregnancyProfile?.current_week ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}>
                     
@@ -285,26 +285,26 @@ function HomePage() {
                     {pregnancyProfile?.current_week && (
                       <button 
                         onClick={() => navigate('/cycle-tracking')}
-                        className="relative flex flex-col justify-between items-center text-center w-full min-h-[95px] p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none overflow-hidden"
+                        className="relative flex flex-col justify-between items-center text-center w-full min-h-[100px] p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none overflow-hidden"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(255, 182, 193, 0.25) 0%, rgba(255, 255, 255, 0.4) 100%)',
-                          border: '1px solid rgba(255, 105, 180, 0.3)',
+                          background: 'linear-gradient(135deg, rgba(255, 182, 193, 0.2) 0%, rgba(255, 255, 255, 0.35) 100%)',
+                          border: '1px solid rgba(255, 105, 180, 0.25)',
                           borderRadius: '24px',
                           backdropFilter: 'blur(10px)',
                           WebkitBackdropFilter: 'blur(10px)',
-                          boxShadow: 'inset 0 4px 10px rgba(255, 255, 255, 0.6), 0 4px 12px rgba(255, 140, 159, 0.08)'
+                          boxShadow: 'inset 0 4px 10px rgba(255, 255, 255, 0.6), 0 4px 12px rgba(255, 140, 159, 0.05)'
                         }}
                       >
                         {/* Reflet brillant style bulle */}
-                        <div className="absolute top-1 left-3 w-8 h-2 bg-white/50 rounded-full filter blur-[0.5px] -rotate-12" />
+                        <div className="absolute top-1 left-3 w-8 h-2 bg-white/40 rounded-full filter blur-[0.5px] -rotate-12" />
                         
                         <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
                           {t('home.youAreAt', 'Vous êtes à la')}
                         </span>
-                        <span className="text-xl font-bold text-pink-500 my-0.5 drop-shadow-sm">
+                        <span className="text-lg font-bold text-pink-500 my-0.5">
                           Semaine {pregnancyProfile.current_week}
                         </span>
-                        <span className="text-[10px] text-sky-500 font-medium bg-white/60 px-2 py-0.5 rounded-full shadow-sm">
+                        <span className="text-[10px] text-sky-500 font-medium bg-white/50 px-2 py-0.5 rounded-full shadow-sm">
                           Trimestre 1 • SA
                         </span>
                       </button>
@@ -313,26 +313,26 @@ function HomePage() {
                     {/* 2. Carte Fête du Jour (Raccourci Calendrier - Ambre Doré Translucide) */}
                     <button 
                       onClick={() => navigate('/cycle-tracking?tab=calendar')}
-                      className="relative flex flex-col justify-between items-center text-center w-full min-h-[95px] p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none overflow-hidden"
+                      className="relative flex flex-col justify-between items-center text-center w-full min-h-[100px] p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none overflow-hidden"
                       style={{
-                        background: 'linear-gradient(135deg, rgba(254, 240, 138, 0.22) 0%, rgba(255, 255, 255, 0.4) 100%)',
-                        border: '1px solid rgba(234, 179, 8, 0.25)',
+                        background: 'linear-gradient(135deg, rgba(254, 240, 138, 0.15) 0%, rgba(255, 255, 255, 0.35) 100%)',
+                        border: '1px solid rgba(234, 179, 8, 0.2)',
                         borderRadius: '24px',
                         backdropFilter: 'blur(10px)',
                         WebkitBackdropFilter: 'blur(10px)',
-                        boxShadow: 'inset 0 4px 10px rgba(255, 255, 255, 0.6), 0 4px 12px rgba(234, 179, 8, 0.05)'
+                        boxShadow: 'inset 0 4px 10px rgba(255, 255, 255, 0.6), 0 4px 12px rgba(234, 179, 8, 0.03)'
                       }}
                     >
                       {/* Reflet brillant style bulle */}
-                      <div className="absolute top-1 left-3 w-8 h-2 bg-white/50 rounded-full filter blur-[0.5px] -rotate-12" />
+                      <div className="absolute top-1 left-3 w-8 h-2 bg-white/40 rounded-full filter blur-[0.5px] -rotate-12" />
                       
                       <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
                         {t('home.nameDay', 'Fête du jour')}
                       </span>
-                      <span className="text-xl font-bold text-amber-600 my-0.5 drop-shadow-sm">
+                      <span className="text-lg font-bold text-amber-600 my-0.5">
                         🎉 Pascal
                       </span>
-                      <span className="text-[10px] text-amber-600 font-medium bg-white/60 px-2 py-0.5 rounded-full shadow-sm">
+                      <span className="text-[10px] text-amber-600 font-medium bg-white/50 px-2 py-0.5 rounded-full shadow-sm">
                         17 mai
                       </span>
                     </button>
