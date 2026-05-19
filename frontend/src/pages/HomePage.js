@@ -277,69 +277,80 @@ function HomePage() {
                     </div>
                   </div>
                 )}
+				{/* 🎯 BLOC DES DEUX CARTES JUMELLES STYLISÉES ET COLORÉES */}
+				<div className="w-full max-w-sm mx-auto mt-4 px-2">
+				  <div className="grid grid-cols-2 gap-4">
+					
+					{/* 1. Carte Semaine (Raccourci Suivi de Cycle - Rose/Pêche Nacré) */}
+					<button 
+					  onClick={() => navigate('/cycle-tracking')}
+					  className="relative flex flex-col justify-center items-center text-center h-[90px] w-full p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none overflow-hidden"
+					  style={{
+						background: 'linear-gradient(135deg, rgba(255, 182, 193, 0.45) 0%, rgba(255, 240, 245, 0.6) 100%)',
+						border: '1.5px solid rgba(255, 105, 180, 0.4)',
+						borderRadius: '24px',
+						backdropFilter: 'blur(8px)',
+						boxShadow: 'inset 0 4px 12px rgba(255, 255, 255, 0.7), 0 6px 16px rgba(255, 140, 159, 0.15)'
+					  }}
+					>
+					  {/* Reflet brillant style bulle */}
+					  <div className="absolute top-1 left-3 w-8 h-2 bg-white/40 rounded-full filter blur-[1px] -rotate-12" />
+					  
+					  <span className="text-[10px] text-rose-600 uppercase tracking-wider font-bold mb-0.5" style={{ fontFamily: "'Quicksand', sans-serif" }}>
+						{t('home.youAreAt', 'Vous êtes à la')}
+					  </span>
+					  <span className="text-xl font-extrabold text-pink-600 my-0.5 drop-shadow-sm">
+						Semaine {pregnancyProfile?.current_week || '9'}
+					  </span>
+					  <span className="text-[10px] text-rose-500/90 font-semibold bg-white/50 px-2 py-0.5 rounded-full mt-0.5">
+						Trimestre 1 • SA
+					  </span>
+					</button>
 
-                {/* 🎯 BLOC DES DEUX CARTES JUMELLES NETTOYÉ ET SÉCURISÉ */}
-                <div className="w-full max-w-sm mx-auto mt-2 px-2">
-                  <div className="grid grid-cols-2 gap-3">
-                    
-                    {/* 1. Carte Semaine (Raccourci Suivi de Cycle) */}
-                    <button 
-                      onClick={() => navigate('/cycle-tracking')}
-                      className="bulle-savon-test flex flex-col justify-center items-center text-center h-[85px] w-full p-2 box-border transition-transform active:scale-95 cursor-pointer focus:outline-none"
-                      style={{
-                        background: 'linear-gradient(135deg, rgba(255, 140, 159, 0.22), rgba(255, 255, 255, 0.45))',
-                        border: '1px solid rgba(255, 140, 159, 0.35)',
-                      }}
-                    >
-                      <span className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">
-                        {t('home.youAreAt', 'Vous êtes à la')}
-                      </span>
-                      <span className="text-lg font-bold text-pink-500 my-0.5">
-                        Semaine {pregnancyProfile?.current_week || '9'}
-                      </span>
-                      <span className="text-[10px] text-sky-500 font-medium">
-                        Trimestre 1 • SA
-                      </span>
-                    </button>
+					{/* 2. Carte Fête du Jour (Raccourci Calendrier - Jaune/Ambre Nacré) */}
+					<button 
+					  onClick={() => navigate('/cycle-tracking?tab=calendar')}
+					  className="relative flex flex-col justify-center items-center text-center h-[90px] w-full p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none overflow-hidden"
+					  style={{
+						background: 'linear-gradient(135deg, rgba(254, 240, 138, 0.5) 0%, rgba(255, 253, 222, 0.6) 100%)',
+						border: '1.5px solid rgba(234, 179, 8, 0.4)',
+						borderRadius: '24px',
+						backdropFilter: 'blur(8px)',
+						boxShadow: 'inset 0 4px 12px rgba(255, 255, 255, 0.7), 0 6px 16px rgba(234, 179, 8, 0.12)'
+					  }}
+					>
+					  {/* Reflet brillant style bulle */}
+					  <div className="absolute top-1 left-3 w-8 h-2 bg-white/40 rounded-full filter blur-[1px] -rotate-12" />
+					  
+					  <span className="text-[10px] text-amber-700 uppercase tracking-wider font-bold mb-0.5" style={{ fontFamily: "'Quicksand', sans-serif" }}>
+						{t('home.nameDay', 'Fête du jour')}
+					  </span>
+					  <span className="text-xl font-extrabold text-amber-600 my-0.5 drop-shadow-sm">
+						🎉 Pascal
+					  </span>
+					  <span className="text-[10px] text-amber-700/90 font-semibold bg-white/50 px-2 py-0.5 rounded-full mt-0.5">
+						17 mai
+					  </span>
+					</button>
 
-                    {/* 2. Carte Fête du Jour (Raccourci Calendrier) */}
-                    <button 
-                      onClick={() => navigate('/cycle-tracking?tab=calendar')}
-                      className="bulle-savon-test flex flex-col justify-center items-center text-center h-[85px] w-full p-2 box-border transition-transform active:scale-95 cursor-pointer focus:outline-none"
-                      style={{
-                        background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(255, 255, 255, 0.45))',
-                        border: '1px solid rgba(234, 179, 8, 0.3)',
-                      }}
-                    >
-                      <span className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">
-                        {t('home.nameDay', 'Fête du jour')}
-                      </span>
-                      <span className="text-lg font-bold text-amber-600 my-0.5">
-                        🎉 Pascal
-                      </span>
-                      <span className="text-[10px] text-sky-500 font-medium">
-                        17 mai
-                      </span>
-                    </button>
-
-                  </div>
-                </div>
+				  </div>
+				</div>
               </div> {/* <-- BALISE FERMÉE ICI POUR L'AVATAR ET LE BIENVENUE */}
             </div> {/* <-- BALISE FERMÉE ICI POUR LE BLOC DEFAULT DE LOGO */}
 
-            {/* Contenu personnalisable avec pages multiples */}
-            <div className="pt-4">
-              <CustomizableHome 
-                pregnancyProfile={pregnancyProfile}
-                hasPregnancyProfile={hasPregnancyProfile}
-                userName={displayName || userName}
-                userAvatar={userAvatar}
-                userAvatarConfig={userAvatarConfig}
-                onPageTypeChange={setCurrentPageType}
-                onAvatarClick={handleAvatarClick}
-                disabledScroll={pullDistance > 0}
-              />
-            </div>
+            {/* Contenu personnalisable */}
+			<div className="mt-2">
+				<CustomizableHome 
+				pregnancyProfile={pregnancyProfile}
+				hasPregnancyProfile={hasPregnancyProfile}
+				userName={displayName || userName}
+				userAvatar={userAvatar}
+				userAvatarConfig={userAvatarConfig}
+				onPageTypeChange={setCurrentPageType}
+				onAvatarClick={handleAvatarClick}
+				disabledScroll={pullDistance > 0}
+			  />
+			</div>
 
           </div>
         </div>
