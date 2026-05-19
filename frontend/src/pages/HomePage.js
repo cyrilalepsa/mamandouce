@@ -8,9 +8,9 @@ import { AvatarPreview } from '../components/profile/AvatarBuilder';
 import PremiumSunAvatar from '../components/profile/PremiumSunAvatar';
 import { isNameCelebratedToday } from '../data/saintsCalendar';
 import LanguageBubble from '../components/LanguageBubble';
+import CustomizableHome from '../components/home/CustomizableHome'; // 👈 L'IMPORT CORRECT EST ICI !
 import {
   TopBar,
-  CustomizableHome,
   TutorialPopup,
   InfoButton,
   useTutorial,
@@ -34,15 +34,13 @@ function HomePage() {
   const [currentPageType, setCurrentPageType] = useState('default');
   const [hasRapportInFertileWindow, setHasRapportInFertileWindow] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [earnedTrophy, setEarnedTrophy] = useState(null); // 'bronze', 'silver', 'gold' ou null
+  const [earnedTrophy, setEarnedTrophy] = useState(null);
   
-  // 🧼 ÉTATS POUR LE PULL-TO-REFRESH CUSTOM
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
   const scrollContainerRef = useRef(null);
   const touchStartRef = useRef(0);
   
-  // Hook pour le tutoriel
   const { 
     showTutorial, 
     showInteractiveTutorial, 
@@ -55,7 +53,6 @@ function HomePage() {
     closeInteractiveTutorial 
   } = useTutorial();
   
-  // Hook pour les nouveautés (fleur de lotus)
   const { hasNews, updates, isPopupOpen, openPopup, closePopup, markAsSeen } = useNews();
 
   useEffect(() => {
@@ -63,7 +60,6 @@ function HomePage() {
     loadTrophyData();
   }, []);
 
-  // Vérifie si un rapport a été enregistré dans une fenêtre de fertilité
   const checkRapportInFertileWindow = (profile) => {
     if (!profile || !profile.last_period_date) return false;
     
@@ -143,7 +139,6 @@ function HomePage() {
     } catch (e) {}
   };
 
-  // 🧼 GESTION DU REFRESH MANUEL (TACTILE & SOURIS)
   const handleTouchStart = (e) => {
     if (scrollContainerRef.current.scrollTop === 0 && !isRefreshing) {
       touchStartRef.current = e.touches ? e.touches[0].clientY : e.clientY;
@@ -196,7 +191,6 @@ function HomePage() {
       onMouseMove={handleTouchMove}
       onMouseUp={handleTouchEnd}
     >
-        {/* INDICATEUR DE SOURIS / PULL REFRESH IRISÉ STYLE BULLE */}
         <div 
           className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center transition-all duration-200 pointer-events-none z-50"
           style={{
@@ -209,7 +203,6 @@ function HomePage() {
           </div>
         </div>
 
-        {/* CONTENEUR DE SCROLL INTERNE PRINCIPAL */}
         <div 
           ref={scrollContainerRef}
           className="relative z-10 w-full h-full overflow-y-auto"
@@ -230,7 +223,6 @@ function HomePage() {
               userAvatarConfig={userAvatarConfig}
             />
 
-            {/* Logo et bienvenue - visible UNIQUEMENT sur la page socle (default) */}
             <div 
               className="min-h-[180px]"
               style={{ 
@@ -242,7 +234,6 @@ function HomePage() {
                 <AppTitle size="xl" showSubtitle={false} />
               </div>
 
-              {/* Salutation avec avatar CLIQUABLE */}
               <div className="flex flex-col items-center gap-3 min-h-[100px]">
                 <PremiumSunAvatar
                   isPremium={isPremium}
@@ -266,7 +257,6 @@ function HomePage() {
                   <span className="text-pink-400 ml-2">❤️</span>
                 </h2>
                 
-                {/* Message Bonne Fête si activé */}
                 {isNameCelebratedToday(displayName || userName) && (
                   <div className="mt-3 bg-gradient-to-r from-amber-100 via-yellow-100 to-orange-100 rounded-2xl px-4 py-3 border-2 border-amber-300 shadow-lg animate-bounce-slow">
                     <div className="flex items-center justify-center gap-2">
@@ -277,89 +267,75 @@ function HomePage() {
                     </div>
                   </div>
                 )}
-				{/* 🎯 BLOC DES DEUX CARTES JUMELLES - STYLE BULLE DE CRISTAL TRANSLUCIDE */}
-                <div className="w-full max-w-sm mx-auto mt-4 px-2">
-                  <div className={`grid ${pregnancyProfile?.current_week ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}>
-                    
-                    {/* 1. Carte Semaine (Raccourci Suivi de Cycle - Rose Poudré Translucide) */}
-                    {pregnancyProfile?.current_week && (
-                      <button 
-                        onClick={() => navigate('/cycle-tracking')}
-                        className="relative flex flex-col justify-between items-center text-center w-full min-h-[100px] p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none overflow-hidden"
-                        style={{
-                          background: 'linear-gradient(135deg, rgba(255, 182, 193, 0.2) 0%, rgba(255, 255, 255, 0.35) 100%)',
-                          border: '1px solid rgba(255, 105, 180, 0.25)',
-                          borderRadius: '24px',
-                          backdropFilter: 'blur(10px)',
-                          WebkitBackdropFilter: 'blur(10px)',
-                          boxShadow: 'inset 0 4px 10px rgba(255, 255, 255, 0.6), 0 4px 12px rgba(255, 140, 159, 0.05)'
-                        }}
-                      >
-                        {/* Reflet brillant style bulle */}
-                        <div className="absolute top-1 left-3 w-8 h-2 bg-white/40 rounded-full filter blur-[0.5px] -rotate-12" />
-                        
-                        <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
-                          {t('home.youAreAt', 'Vous êtes à la')}
-                        </span>
-                        <span className="text-lg font-bold text-pink-500 my-0.5">
-                          Semaine {pregnancyProfile.current_week}
-                        </span>
-                        <span className="text-[10px] text-sky-500 font-medium bg-white/50 px-2 py-0.5 rounded-full shadow-sm">
-                          Trimestre 1 • SA
-                        </span>
-                      </button>
-                    )}
 
-                    {/* 2. Carte Fête du Jour (Raccourci Calendrier - Ambre Doré Translucide) */}
+                {/* 🎯 BLOC DES DEUX CARTES JUMELLES CORRIGÉES (FLEX + JUSTIFY-BETWEEN + HEIGHT RESPIRANTE) */}
+                <div className="w-full max-w-sm mx-auto mt-3 px-2">
+                  <div className="grid grid-cols-2 gap-3">
+                    
+                    {/* 1. Carte Semaine */}
                     <button 
-                      onClick={() => navigate('/cycle-tracking?tab=calendar')}
-                      className="relative flex flex-col justify-between items-center text-center w-full min-h-[100px] p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none overflow-hidden"
+                      onClick={() => navigate('/cycle-tracking')}
+                      className="bulle-savon-test flex flex-col justify-between items-center text-center min-h-[96px] w-full p-3 box-border transition-transform active:scale-95 cursor-pointer focus:outline-none"
                       style={{
-                        background: 'linear-gradient(135deg, rgba(254, 240, 138, 0.15) 0%, rgba(255, 255, 255, 0.35) 100%)',
-                        border: '1px solid rgba(234, 179, 8, 0.2)',
-                        borderRadius: '24px',
-                        backdropFilter: 'blur(10px)',
-                        WebkitBackdropFilter: 'blur(10px)',
-                        boxShadow: 'inset 0 4px 10px rgba(255, 255, 255, 0.6), 0 4px 12px rgba(234, 179, 8, 0.03)'
+                        background: 'linear-gradient(135deg, rgba(255, 140, 159, 0.22), rgba(255, 255, 255, 0.45))',
+                        border: '1px solid rgba(255, 140, 159, 0.35)',
+                        borderRadius: '20px'
                       }}
                     >
-                      {/* Reflet brillant style bulle */}
-                      <div className="absolute top-1 left-3 w-8 h-2 bg-white/40 rounded-full filter blur-[0.5px] -rotate-12" />
-                      
+                      <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
+                        {t('home.youAreAt', 'Vous êtes à la')}
+                      </span>
+                      <span className="text-lg font-bold text-pink-500 my-0.5">
+                        Semaine {pregnancyProfile?.current_week || '9'}
+                      </span>
+                      <span className="text-[10px] text-sky-500 font-medium bg-white/40 px-2 py-0.5 rounded-full shadow-sm">
+                        Trimestre 1 • SA
+                      </span>
+                    </button>
+
+                    {/* 2. Carte Fête du Jour */}
+                    <button 
+                      onClick={() => navigate('/cycle-tracking?tab=calendar')}
+                      className="bulle-savon-test flex flex-col justify-between items-center text-center min-h-[96px] w-full p-3 box-border transition-transform active:scale-95 cursor-pointer focus:outline-none"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(255, 255, 255, 0.45))',
+                        border: '1px solid rgba(234, 179, 8, 0.3)',
+                        borderRadius: '20px'
+                      }}
+                    >
                       <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
                         {t('home.nameDay', 'Fête du jour')}
                       </span>
                       <span className="text-lg font-bold text-amber-600 my-0.5">
                         🎉 Pascal
                       </span>
-                      <span className="text-[10px] text-amber-600 font-medium bg-white/50 px-2 py-0.5 rounded-full shadow-sm">
+                      <span className="text-[10px] text-amber-600 font-medium bg-white/40 px-2 py-0.5 rounded-full shadow-sm">
                         17 mai
                       </span>
                     </button>
 
                   </div>
                 </div>
-
               </div>
             </div>
-            {/* Contenu personnalisable */}
-			<div className="mt-2">
-				<CustomizableHome 
-				pregnancyProfile={pregnancyProfile}
-				hasPregnancyProfile={hasPregnancyProfile}
-				userName={displayName || userName}
-				userAvatar={userAvatar}
-				userAvatarConfig={userAvatarConfig}
-				onPageTypeChange={setCurrentPageType}
-				onAvatarClick={handleAvatarClick}
-				disabledScroll={pullDistance > 0}
-			  />
-			</div>
+
+            {/* Contenu personnalisable (On injecte les règles CSS pour masquer les bannières doublons) */}
+            <div className="pt-4 [&_#celebrate-section]:hidden [&_div[class*='celebrate']]:hidden">
+              <CustomizableHome 
+                pregnancyProfile={pregnancyProfile}
+                hasPregnancyProfile={hasPregnancyProfile}
+                userName={displayName || userName}
+                userAvatar={userAvatar}
+                userAvatarConfig={userAvatarConfig}
+                onPageTypeChange={setCurrentPageType}
+                onAvatarClick={handleAvatarClick}
+                disabledScroll={pullDistance > 0}
+              />
+            </div>
 
           </div>
         </div>
         
-        {/* Tutoriels et popups */}
         <InteractiveTutorial 
           isVisible={showInteractiveTutorial} 
           onComplete={isFirstTimeTutorial ? completeInteractiveTutorial : closeInteractiveTutorial}
