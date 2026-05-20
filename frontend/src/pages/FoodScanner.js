@@ -55,6 +55,7 @@ function FoodScanner() {
   };
 
   const startScanner = async () => {
+    if (isProcessingRef.current) return;
     try {
       if (scannerRef.current) {
         await stopScanner();
