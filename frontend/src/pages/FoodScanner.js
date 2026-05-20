@@ -26,12 +26,9 @@ function FoodScanner() {
   const [activeTab, setActiveTab] = useState('camera');
   const [favorites, setFavorites] = useState(new Set());
   const [scanning, setScanning] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false); // 👈 Verrou matériel de sécurité
-  const [showAddFoodModal, setShowAddFoodModal] = useState(false);
-  const [newFoodData, setNewFoodData] = useState({ name: '', barcode: '', category: '', notes: '' });
-  const [addingFood, setAddingFood] = useState(false);
-  const [notFound, setNotFound] = useState(false);
-  const html5QrCodeRef = useRef(null);
+  
+  // 🛡️ LE BOUCLIER ANTI-RAFALE : On utilise une ref pour un blocage physique instantané
+  const isProcessingRef = useRef(false); 
   const scannerRef = useRef(null);
   
   const scansThisWeek = subscriptionStatus?.scans_this_week || 0;
@@ -58,13 +55,13 @@ function FoodScanner() {
   };
 
   const startScanner = async () => {
-    if (isProcessing) return; // Sécurité anti-rafale
     try {
       if (scannerRef.current) {
         await stopScanner();
       }
       
       setScanning(true);
+      isProcessingRef.current = false; // Réinitialisation du bouclier
       const html5QrCode = new Html5Qrcode("qr-reader");
       scannerRef.current = html5QrCode;
       
@@ -76,24 +73,26 @@ function FoodScanner() {
           aspectRatio: 1.0
         },
         async (decodedText) => {
-          // Bloquer les lectures multiples successives immédiates
-          if (isProcessing) return;
-          setIsProcessing(true);
+          // 🛑 BLOCAGE INSTANTANÉ : Si une analyse est déjà en cours, on ignore totalement
+          if (isProcessingRef.current) return;
+          isProcessingRef.current = true;
           
           await stopScanner();
           setBarcode(decodedText);
           await handleBarcodeScanned(decodedText);
-          setIsProcessing(false);
+          
+          // On relâche le verrou après le traitement
+          isProcessingRef.current = false;
         },
         (errorMessage) => {
-          // Échecs d'analyse silencieux (trames floues)
+          // Échecs d'analyse silencieux
         }
       );
     } catch (err) {
       console.error("Erreur démarrage caméra:", err);
       toast.error("Impossible d'accéder à la caméra. Vérifiez les permissions.");
       setScanning(false);
-      setIsProcessing(false);
+      isProcessingRef.current = false;
     }
   };
 
@@ -151,7 +150,7 @@ function FoodScanner() {
       } else {
         toast.error('Erreur lors du scan');
       }
-    } finaly {
+    } finally { // ✅ Correction du "finally" avec deux l
       setLoading(false);
     }
   };
@@ -183,15 +182,15 @@ function FoodScanner() {
 
   const handleManualBarcode = async (e) => {
     e.preventDefault();
-    if (!barcode.trim() || isProcessing) return;
-    setIsProcessing(true);
+    if (!barcode.trim() || isProcessingRef.current) return;
+    isProcessingRef.current = true;
     await handleBarcodeScanned(barcode);
-    setIsProcessing(false);
+    isProcessingRef.current = false;
   };
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (!searchQuery.trim() || isProcessing) return;
+    if (!searchQuery.trim() || isProcessingRef.current) return;
     
     if (!isPremium && scansRemaining <= 0) {
       toast.error(
@@ -212,7 +211,7 @@ function FoodScanner() {
     
     setLoading(true);
     setNotFound(false);
-    setIsProcessing(true);
+    isProcessingRef.current = true;
     try {
       const response = await api.scan.search(searchQuery);
       setSearchResults(response.data);
@@ -241,7 +240,7 @@ function FoodScanner() {
       }
     } finally {
       setLoading(false);
-      setIsProcessing(false);
+      isProcessingRef.current = false;
     }
   };
 
@@ -293,6 +292,11 @@ function FoodScanner() {
     }
   };
 
+  const [showAddFoodModal, setShowAddFoodModal] = useState(false);
+  const [newFoodData, setNewFoodData] = useState({ name: '', barcode: '', category: '', notes: '' });
+  const [addingFood, setAddingFood] = useState(false);
+  const [notFound, setNotFound] = useState(false);
+
   return (
     <div className="min-h-screen gradient-bg p-6">
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
@@ -334,7 +338,7 @@ function FoodScanner() {
 
         <div className="flex gap-2">
           <Button
-            disabled={isProcessing}
+            disabled={isProcessingRef.current}
             onClick={() => { setActiveTab('camera'); if (!scanning) startScanner(); }}
             data-testid="camera-tab"
             className={`flex-1 rounded-full py-3 font-semibold ${activeTab === 'camera' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
@@ -343,7 +347,7 @@ function FoodScanner() {
             {t('scanner.camera')}
           </Button>
           <Button
-            disabled={isProcessing}
+            disabled={isProcessingRef.current}
             onClick={() => { stopScanner(); setActiveTab('manual'); }}
             data-testid="manual-tab"
             className={`flex-1 rounded-full py-3 font-semibold ${activeTab === 'manual' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
@@ -352,7 +356,7 @@ function FoodScanner() {
             {t('scanner.manual')}
           </Button>
           <Button
-            disabled={isProcessing}
+            disabled={isProcessingRef.current}
             onClick={() => { stopScanner(); setActiveTab('search'); }}
             data-testid="search-tab"
             className={`flex-1 rounded-full py-3 font-semibold ${activeTab === 'search' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
@@ -371,7 +375,7 @@ function FoodScanner() {
               
               {!scanning && (
                 <Button
-                  disabled={isProcessing}
+                  disabled={isProcessingRef.current}
                   onClick={startScanner}
                   data-testid="start-camera"
                   className="mt-4 bg-gradient-to-r from-sky-500 to-sky-400 text-white rounded-full px-8 py-3 font-semibold"
@@ -383,7 +387,7 @@ function FoodScanner() {
               
               {scanning && (
                 <Button
-                  disabled={isProcessing}
+                  disabled={isProcessingRef.current}
                   onClick={stopScanner}
                   data-testid="stop-camera"
                   className="mt-4 bg-red-500 text-white rounded-full px-8 py-3 font-semibold"
@@ -413,7 +417,7 @@ function FoodScanner() {
               </div>
               <Button
                 type="submit"
-                disabled={loading || !barcode.trim() || isProcessing}
+                disabled={loading || !barcode.trim() || isProcessingRef.current}
                 data-testid="scan-button"
                 className="w-full bg-gradient-to-r from-sky-500 to-sky-400 text-white rounded-full py-3 font-semibold disabled:opacity-50"
               >
@@ -439,7 +443,7 @@ function FoodScanner() {
               </div>
               <Button
                 type="submit"
-                disabled={loading || !searchQuery.trim() || isProcessing}
+                disabled={loading || !searchQuery.trim() || isProcessingRef.current}
                 data-testid="search-button"
                 className="w-full bg-gradient-to-r from-pink-500 to-pink-400 text-white rounded-full py-3 font-semibold disabled:opacity-50"
               >
