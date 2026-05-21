@@ -293,7 +293,7 @@ function HomePage() {
                     </button>
 
                     <button 
-                      onClick={() => navigate('/cycle-tracking?tab=calendar')}
+                      onClick={() => navigate('/cycle-tracking?calendar=true')}
                       className="bulle-savon-test flex flex-col justify-between items-center text-center min-h-[96px] w-full p-3 box-border transition-transform active:scale-95 cursor-pointer focus:outline-none"
                       style={{
                         background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(255, 255, 255, 0.45))',
@@ -301,14 +301,19 @@ function HomePage() {
                         borderRadius: '20px'
                       }}
                     >
+                      {/* Titre en gris/bleu intermédiaire */}
                       <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
                         {t('home.nameDay', 'Fête du jour')}
                       </span>
-                      <span className="text-lg font-bold text-amber-600 my-0.5">
-                        🎉 Pascal
+                      
+                      {/* 🔥 Prénom en noir adouci (slate-800) au lieu de orange ou blanc */}
+                      <span className="text-lg font-bold text-slate-800 my-0.5 capitalize">
+                        🎉 {nameOfTheDay || 'À fêter'}
                       </span>
-                      <span className="text-[10px] text-amber-600 font-medium bg-white/40 px-2 py-0.5 rounded-full shadow-sm">
-                        17 mai
+                      
+                      {/* 🔥 Date en noir adouci sur sa gélule blanche transparente */}
+                      <span className="text-[10px] text-slate-800 font-medium bg-white/50 px-2 py-0.5 rounded-full shadow-sm">
+                        {new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
                       </span>
                     </button>
 
