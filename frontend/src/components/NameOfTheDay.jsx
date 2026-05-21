@@ -56,30 +56,6 @@ export default function NameOfTheDay({ compact = false, fullWidth = false }) {
   }
 
   // 2. Rendu en mode Pleine Largeur (Pas enceinte, la pill s'étire et renvoie aussi au calendrier)
-  return (
-    <div 
-      onClick={() => navigate('/cycle-tracking?calendar=true')}
-      className="w-full relative overflow-hidden px-5 py-4 cursor-pointer flex items-center justify-between bg-white/10 backdrop-blur-md border border-white/20 shadow-lg transition-all duration-200 hover:bg-white/20 active:scale-95"
-      style={{
-        borderRadius: '20px',
-        transform: 'translateZ(0)',
-        backfaceVisibility: 'hidden'
-      }}
-      data-testid="name-of-the-day"
-    >
-      <div className="flex items-center gap-3">
-        <Sparkles className="w-5 h-5 text-amber-200 flex-shrink-0 animate-pulse" />
-        <div className="flex flex-col items-start">
-          <span className="text-[10px] font-semibold text-amber-200 uppercase tracking-wide leading-none mb-1">
-            {t('home.saintTodayShort', 'À Fêter Aujourd\'hui')}
-          </span>
-          <span className="text-lg font-bold text-white leading-none">
-            {nameOfTheDay}
-          </span>
-        </div>
-      </div>
-      
-      <span className="text-base">✨</span>
-    </div>
-  );
+  return null;
+    
 }
