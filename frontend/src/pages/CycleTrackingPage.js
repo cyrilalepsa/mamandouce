@@ -69,14 +69,16 @@ function CycleTrackingPage() {
   // Couleurs thématiques avec luminosité augmentée pour mode sombre
   const getThemeColor = (baseColor, darkColor) => isDarkMode ? darkColor : baseColor;
 
-  useEffect(() => {
-    loadData();
+useEffect(() => {
+    loadCycleData();
     loadRapportDates();
-    loadSymptoms();
-    loadCycleHistory();
-    loadCycleAnalysis();
-    checkBannerStatus();
-  }, []);
+
+    // 🎯 Détection universelle du paramètre ?calendar=true
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('calendar') === 'true') {
+      setShowCalendar(true);
+    }
+  }, []); // 👈 On laisse le tableau vide pour que ça ne s'exécute qu'UNE SEULE FOIS au chargement
 
   const loadData = async () => {
     try {
