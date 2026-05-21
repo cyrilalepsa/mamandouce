@@ -70,15 +70,18 @@ function CycleTrackingPage() {
   const getThemeColor = (baseColor, darkColor) => isDarkMode ? darkColor : baseColor;
 
 useEffect(() => {
-    loadCycleData();
-    loadRapportDates();
-
-    // 🎯 Détection universelle du paramètre ?calendar=true
+    // 🎯 Détection du paramètre ?calendar=true
     const params = new URLSearchParams(window.location.search);
     if (params.get('calendar') === 'true') {
       setShowCalendar(true);
+      setLoading(false); // 🔥 ICI : Version corrigée ! "loading" et pas "isLoading"
+      return; 
     }
-  }, []); // 👈 On laisse le tableau vide pour que ça ne s'exécute qu'UNE SEULE FOIS au chargement
+
+    // Sinon, chargement normal
+    loadCycleData();
+    loadRapportDates();
+  }, []);n laisse le tableau vide pour que ça ne s'exécute qu'UNE SEULE FOIS au chargement
 
   const loadData = async () => {
     try {
