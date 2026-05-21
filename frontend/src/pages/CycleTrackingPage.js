@@ -81,7 +81,7 @@ useEffect(() => {
     // Sinon, chargement normal
     loadCycleData();
     loadRapportDates();
-  }, []);n laisse le tableau vide pour que ça ne s'exécute qu'UNE SEULE FOIS au chargement
+  }, []); //On laisse le tableau vide pour que ça ne s'exécute qu'UNE SEULE FOIS au chargement
 
   const loadData = async () => {
     try {
