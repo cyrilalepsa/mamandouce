@@ -1,89 +1,19 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { ArrowLeft, CalendarDays, Settings, Save, CalendarRange, Egg, Heart, Droplets, Baby, Info, TestTube, Moon, Sun, Sparkles, Plus, X, History, Brain, AlertTriangle, TrendingUp } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Card } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { toast } from 'sonner';
-import api from '../utils/api';
-import FertilityCalendar from '../components/FertilityCalendar';
-import { getCurrentLanguage } from '../i18n';
-import { useTheme } from '../contexts/ThemeContext';
-import { SYMPTOM_OPTIONS, MOOD_OPTIONS } from '../components/cycle/constants';
-import { SymptomsModal } from '../components/cycle/SymptomsModal';
-import { CycleHistoryModal } from '../components/cycle/CycleHistoryModal';
-import { InitialSetupModal } from '../components/cycle/InitialSetupModal';
-import { CycleReportModal } from '../components/cycle/CycleReportModal';
-import { PregnancyToggle } from '../components/cycle/PregnancyToggle';
-
-function CycleTrackingPage() {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { t } = useTranslation();
-  const currentLang = getCurrentLanguage();
-  const { isDarkMode } = useTheme();
-  
-  const [lastPeriodDate, setLastPeriodDate] = useState('');
-  const [cycleLength, setCycleLength] = useState(28);
-  const [agendaData, setAgendaData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  // Ouvrir le calendrier automatiquement si ?calendar=true dans l'URL
-  const [showCalendar, setShowCalendar] = useState(searchParams.get('calendar') === 'true');
-  const [rapportDates, setRapportDates] = useState([]);
-  
-  // Nouveaux états
-  const [showSymptomModal, setShowSymptomModal] = useState(false);
-  const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [isPregnant, setIsPregnant] = useState(() => localStorage.getItem('mamandouce_pregnant') === 'true');
-  const [dueDate, setDueDate] = useState(() => localStorage.getItem('mamandouce_due_date') || '');
-  const [todaySymptoms, setTodaySymptoms] = useState([]);
-  const [todayMood, setTodayMood] = useState(null);
-  const [todayTemp, setTodayTemp] = useState('');
-  const [symptomsHistory, setSymptomsHistory] = useState({});
-  const [cycleHistory, setCycleHistory] = useState([]);
-  
-  // États pour l'IA des cycles
-  const [useAICalculation, setUseAICalculation] = useState(true);
-  const [cycleAnalysis, setCycleAnalysis] = useState(null);
-  const [showIrregularBanner, setShowIrregularBanner] = useState(true);
-  const [showInitialSetup, setShowInitialSetup] = useState(false);
-  const [initialDates, setInitialDates] = useState(['', '', '']);
-  const [showCycleReport, setShowCycleReport] = useState(false);
-  const [cycleReport, setCycleReport] = useState(null);
-  
-  // Couleurs mode sombre - BLANC PUR pour lisibilité maximale
-  const cardBg = isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100';
-  const cardBgGradient = isDarkMode ? 'bg-slate-800' : '';
-  const textPrimary = isDarkMode ? 'text-white' : 'text-slate-700';
-  const textSecondary = isDarkMode ? 'text-white' : 'text-slate-600';
-  const textMuted = isDarkMode ? 'text-white/90' : 'text-slate-500';
-  const inputBg = isDarkMode ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-slate-200';
-  const dropdownBg = isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-slate-700';
-  
-  // Ombre de texte obligatoire pour lisibilité sur fond glossy
-  const textShadow = isDarkMode ? { textShadow: '1px 1px 3px rgba(0,0,0,1)' } : {};
-  
-  // Couleurs thématiques avec luminosité augmentée pour mode sombre
-  const getThemeColor = (baseColor, darkColor) => isDarkMode ? darkColor : baseColor;
-
 useEffect(() => {
     // 🎯 Détection du paramètre ?calendar=true
     const params = new URLSearchParams(window.location.search);
     if (params.get('calendar') === 'true') {
       setShowCalendar(true);
-      setLoading(false); // 🔥 ICI : Version corrigée ! "loading" et pas "isLoading"
+      setLoading(false); // 🔥 Coupe proprement le chargement
       return; 
     }
 
     // Sinon, chargement normal
-    loadCycleData();
+    loadCycleData(); // ✅ Appelle la bonne fonction désormais
     loadRapportDates();
-  }, []); //On laisse le tableau vide pour que ça ne s'exécute qu'UNE SEULE FOIS au chargement
+  }, []); // ✅ Nettoyé des phrases de commentaires qui traînaient
 
-  const loadData = async () => {
+  // 🔥 NOM CORRIGÉ : "loadCycleData" pour correspondre au useEffect
+  const loadCycleData = async () => {
     try {
       const profileRes = await api.pregnancy.getProfile();
       if (profileRes.data && profileRes.data.last_period_date) {
@@ -538,7 +468,6 @@ useEffect(() => {
         {/* Formulaire de configuration */}
         {showForm && (
           <Card className={`rounded-2xl p-4 mb-4 space-y-4 border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-br from-purple-50 to-pink-50 border-0'}`}>
-            {/* Toggle IA vs Manuel */}
             <div className={`flex items-center justify-between p-3 rounded-xl ${isDarkMode ? 'bg-slate-700' : 'bg-white/70'}`}>
               <div className="flex items-center gap-2">
                 <Brain className={`w-5 h-5 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`} />
@@ -552,7 +481,6 @@ useEffect(() => {
               </button>
             </div>
             
-            {/* Info IA */}
             {useAICalculation && cycleAnalysis?.has_enough_data && (
               <div className={`p-3 rounded-xl ${isDarkMode ? 'bg-purple-900/30 border border-purple-800' : 'bg-purple-50 border border-purple-100'}`}>
                 <div className="flex items-center gap-2 mb-2">
@@ -582,7 +510,6 @@ useEffect(() => {
               />
             </div>
             
-            {/* Sélecteur de durée - conditionnel */}
             {!useAICalculation && (
               <div>
                 <label className={`text-sm font-semibold ${textSecondary} mb-1 block`} style={textShadow}>
@@ -602,7 +529,6 @@ useEffect(() => {
               </div>
             )}
             
-            {/* Affichage durée calculée par IA */}
             {useAICalculation && (
               <div className={`flex items-center justify-between p-3 rounded-xl ${isDarkMode ? 'bg-slate-700' : 'bg-white/70'}`}>
                 <span className={`text-sm ${textSecondary}`} style={textShadow}>Durée calculée par l'IA :</span>
@@ -632,7 +558,7 @@ useEffect(() => {
         ) : agendaData ? (
           <div className="space-y-3">
             
-            {/* NOUVEAU: Jour actuel du cycle + Phase */}
+            {/* Jour actuel du cycle + Phase */}
             <Card className={`rounded-xl p-3 border shadow-sm ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-r from-violet-50 via-purple-50 to-fuchsia-50 border-0'}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -665,7 +591,6 @@ useEffect(() => {
                 </div>
               </div>
               
-              {/* Barre de progression du cycle */}
               <div className="mt-3">
                 <div className={`h-1.5 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-700' : 'bg-white/60'}`}>
                   <div 
@@ -738,7 +663,6 @@ useEffect(() => {
                 </div>
               </div>
               
-              {/* Conseil test d'ovulation */}
               <div className={`mt-2 pt-2 border-t ${isDarkMode ? 'border-slate-700' : 'border-emerald-100'}`}>
                 <div className="flex items-center gap-2">
                   <span className="text-sm">💡</span>
@@ -779,7 +703,7 @@ useEffect(() => {
               </div>
             </Card>
 
-            {/* NOUVEAU: Date de test de grossesse */}
+            {/* Date de test de grossesse */}
             <Card className={`rounded-xl p-3 border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-r from-cyan-50 to-sky-50 border-0'}`}>
               <div className="flex items-center gap-2">
                 <div className="w-9 h-9 bg-gradient-to-br from-violet-400 to-purple-500 rounded-lg flex items-center justify-center">
@@ -795,7 +719,7 @@ useEffect(() => {
               </p>
             </Card>
 
-            {/* NOUVEAU: Bouton pour noter les symptômes */}
+            {/* Notez vos symptômes */}
             <Card 
               onClick={() => setShowSymptomModal(true)}
               className={`rounded-xl p-3 border cursor-pointer hover:shadow-md transition-all active:scale-[0.98] ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-r from-amber-50 to-yellow-50 border-0'}`}
@@ -827,16 +751,14 @@ useEffect(() => {
               </div>
             </Card>
 
-            {/* Nidation estimée si rapports enregistrés DANS LA FENÊTRE DE FERTILITÉ */}
+            {/* Nidation estimée */}
             {(() => {
               const implantation = getNextImplantation();
               if (!implantation || !agendaData) return null;
               
-              // Vérifier si le rapport est dans la fenêtre de fertilité
               const rapportDate = new Date(implantation.rapportDate);
               const fertileStart = new Date(agendaData.fertileStart);
               const fertileEnd = new Date(agendaData.fertileEnd);
-              
               const isInFertileWindow = rapportDate >= fertileStart && rapportDate <= fertileEnd;
               
               if (!isInFertileWindow) return null;
@@ -878,7 +800,7 @@ useEffect(() => {
               </Card>
             )}
 
-            {/* NOUVEAU: Historique des cycles */}
+            {/* Historique des cycles */}
             {cycleHistory.length > 0 && (
               <Card 
                 onClick={() => setShowHistoryModal(true)}
@@ -903,20 +825,20 @@ useEffect(() => {
 
             {/* Info cycle */}
             <div className="text-center pt-1">
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-400 mb-3">
                 Cycle: {agendaData.cycleLength}j • Dernières règles: {formatDateShort(lastPeriodDate)}
               </p>
 
-            {/* Bouton "Je suis enceinte !" + Affichage DPA — composant extrait */}
-            <PregnancyToggle
-              isPregnant={isPregnant}
-              dueDate={dueDate}
-              lastPeriodDate={lastPeriodDate}
-              onPregnant={(dpaStr) => {
-                setIsPregnant(true);
-                setDueDate(dpaStr);
-              }}
-            />
+              {/* ✅ CORRECTION : Sorti de la balise <p> pour éviter l'erreur de rendu HTML DOM */}
+              <PregnancyToggle
+                isPregnant={isPregnant}
+                dueDate={dueDate}
+                lastPeriodDate={lastPeriodDate}
+                onPregnant={(dpaStr) => {
+                  setIsPregnant(true);
+                  setDueDate(dpaStr);
+                }}
+              />
             </div>
           </div>
         ) : (
@@ -933,8 +855,7 @@ useEffect(() => {
         )}
       </div>
 
-
-      {/* Modal Symptômes (composant extrait) */}
+      {/* Modal Symptômes */}
       <SymptomsModal
         isOpen={showSymptomModal}
         onClose={() => setShowSymptomModal(false)}
@@ -949,7 +870,7 @@ useEffect(() => {
         onSave={saveSymptoms}
       />
 
-      {/* Modal Historique des cycles (composant extrait) */}
+      {/* Modal Historique des cycles */}
       <CycleHistoryModal
         isOpen={showHistoryModal}
         onClose={() => setShowHistoryModal(false)}
@@ -966,7 +887,6 @@ useEffect(() => {
         isOpen={showCalendar}
         onClose={() => {
           setShowCalendar(false);
-          // Si on est venu directement au calendrier via ?calendar=true, revenir à la page précédente
           if (searchParams.get('calendar') === 'true') {
             navigate(-1);
           }
@@ -977,8 +897,7 @@ useEffect(() => {
         onRemoveRapport={handleRemoveRapport}
       />
       
-
-      {/* Modal Configuration Initiale IA (composant extrait) */}
+      {/* Modal Configuration Initiale IA */}
       <InitialSetupModal
         isOpen={showInitialSetup}
         onSkip={() => { setShowInitialSetup(false); localStorage.setItem('cycle_initial_setup_done', 'true'); }}
@@ -993,7 +912,7 @@ useEffect(() => {
         loading={loading}
       />
 
-      {/* Modal Rapport de Cycle (composant extrait) */}
+      {/* Modal Rapport de Cycle */}
       <CycleReportModal
         isOpen={showCycleReport}
         onClose={() => setShowCycleReport(false)}
