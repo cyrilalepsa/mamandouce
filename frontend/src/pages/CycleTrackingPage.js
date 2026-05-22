@@ -16,6 +16,7 @@ import { CycleHistoryModal } from '../components/cycle/CycleHistoryModal';
 import { InitialSetupModal } from '../components/cycle/InitialSetupModal';
 import { CycleReportModal } from '../components/cycle/CycleReportModal';
 import { PregnancyToggle } from '../components/cycle/PregnancyToggle';
+import confetti from 'canvas-confetti';
 
 function CycleTrackingPage() {
   const navigate = useNavigate();
@@ -900,14 +901,92 @@ useEffect(() => {
                 Cycle: {agendaData.cycleLength}j • Dernières règles: {formatDateShort(lastPeriodDate)}
               </p>
 
-              {/* ✅ CORRECTION : Sorti de la balise <p> pour éviter l'erreur de rendu HTML DOM */}
-              <PregnancyToggle
-                isPregnant={isPregnant}
-                dueDate={dueDate}
-                lastPeriodDate={lastPeriodDate}
-                onPregnant={(dpaStr) => {
-                  setIsPregnant(true);
-                  setDueDate(dpaStr);
+             {/* Bouton "Je suis enceinte !" + Affichage DPA — composant extrait */}
+            <PregnancyToggle
+              isPregnant={isPregnant}
+              dueDate={dueDate}
+              lastPeriodDate={lastPeriodDate}
+             onPregnant={(dpaStr) => {
+			  setIsPregnant(true);
+			  setDueDate(dpaStr);
+
+			  // ==========================================
+			  // 🚀 1. LES CONFETTIS (CŒURS EN MOUVEMENT)
+			  // ==========================================
+			  const scalar = 2;
+			  const heart1 = confetti.shapeFromText({ text: '❤️', scalar });
+			  const heart2 = confetti.shapeFromText({ text: '💖', scalar });
+			  const heart3 = confetti.shapeFromText({ text: '💝', scalar });
+
+			  const defaults = {
+				spread: 360,
+				ticks: 140,
+				gravity: 0.45,
+				decay: 0.94,
+				startVelocity: 35,
+				shapes: [heart1, heart2, heart3],
+				scalar
+			  };
+
+			  confetti({ ...defaults, particleCount: 45, origin: { y: 0.6 } });
+			  confetti({ ...defaults, particleCount: 25, angle: 60, spread: 70, origin: { x: 0.05, y: 0.8 } });
+			  confetti({ ...defaults, particleCount: 25, angle: 120, spread: 70, origin: { x: 0.95, y: 0.8 } });
+
+			  // ==========================================
+			  // ✨ 2. LES SCINTILLEMENTS (ÉTOILES)
+			  // ==========================================
+			  // On crée un conteneur temporaire pour afficher tes 8 étoiles fixes
+			  const sparkleContainer = document.createElement('div');
+			  sparkleContainer.style.position = 'fixed';
+			  sparkleContainer.style.top = '0';
+			  sparkleContainer.style.left = '0';
+			  sparkleContainer.style.width = '100vw';
+			  sparkleContainer.style.height = '100vh';
+			  sparkleContainer.style.pointerEvents = 'none';
+			  sparkleContainer.style.zIndex = '9999'; // Par-dessus tout le monde
+			  document.body.appendChild(sparkleContainer);
+
+			  // Injection des keyframes d'animation de ton scintillement si jamais ils ne sont pas dans ton CSS brut
+			  if (!document.getElementById('sparkle-animation-style')) {
+				const style = document.createElement('style');
+				style.id = 'sparkle-animation-style';
+				style.innerHTML = `
+				  @keyframes sparkleGlow {
+					0%, 100% { transform: scale(0.5); opacity: 0.2; }
+					50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 8px #fff, 0 0 15px rgba(255,255,255,0.8); }
+				  }
+				`;
+				document.head.appendChild(style);
+			  }
+
+			  // Tableau de tes 8 positions exactes
+			  const sparkles = [
+				['-5%','50%',5],  ['10%','90%',4], ['25%','-5%',5],  ['50%','105%',6],
+				['75%','-5%',4],  ['90%','85%',5], ['50%','-8%',4],  ['15%','15%',6]
+			  ];
+
+			  sparkles.forEach(([t, l, s], i) => {
+				const el = document.createElement('div');
+				el.style.position = 'absolute';
+				el.style.top = t.includes('-') || parseInt(t) > 100 ? `calc(50% + ${t})` : t; // Gère les débordements sur l'écran global
+				el.style.left = l.includes('-') || parseInt(l) > 100 ? `calc(50% + ${l})` : l;
+				el.style.width = `${s}px`;
+				el.style.height = `${s}px`;
+				el.style.background = '#ffffff';
+				el.style.borderRadius = '50%';
+				el.style.boxShadow = '0 0 4px #fff, 0 0 8px rgba(255,255,255,0.6)';
+				el.style.animation = `sparkleGlow ${1.5 + (i % 3) * 0.4}s ease-in-out infinite`;
+				el.style.animationDelay = `${(i * 0.3) % 1.5}s`;
+				sparkleContainer.appendChild(el);
+			  });
+
+			  // 🗑️ Nettoyage automatique : on retire les scintillements après 5 secondes
+			  setTimeout(() => {
+				sparkleContainer.style.transition = 'opacity 1s ease-out';
+				sparkleContainer.style.opacity = '0';
+				setTimeout(() => sparkleContainer.remove(), 1000);
+			  }, 4500);
+			}}
                 }}
               />
             </div>
