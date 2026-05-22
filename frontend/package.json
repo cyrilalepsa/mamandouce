@@ -75,9 +75,10 @@
   },
 "scripts": {
   "start": "craco start",
-  "build": "CI=false craco build",
+  "build": "CI=false npm install && CI=false npx craco build",
   "test": "craco test"
 },
+
   },
   "browserslist": {
     "production": [
