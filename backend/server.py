@@ -4,6 +4,7 @@ Main FastAPI application with modular routes
 Optimized for Low Memory Profile (Railway)
 """
 from fastapi import FastAPI, APIRouter
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 import os
@@ -183,3 +184,33 @@ async def shutdown_db_client():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
+# =====================================================================
+# 🌐 SERVICE FRONTEND FINAL (Fix 404)
+# =====================================================================
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
+
+# Liste des dossiers possibles générés par Vite ou Webpack
+POSSIBLE_DIRS = [ROOT_DIR / "dist", ROOT_DIR / "build", ROOT_DIR / "client" / "build"]
+FRONTEND_DIR = next((d for d in POSSIBLE_DIRS if d.exists()), None)
+
+if FRONTEND_DIR:
+    logger.info(f"✅ Frontend trouvé dans : {FRONTEND_DIR}")
+    
+    # 1. On monte les fichiers statiques (images, css, js)
+    # On monte le dossier racine pour être sûr de trouver le manifest et le favicon
+    app.mount("/assets", StaticFiles(directory=FRONTEND_DIR / "assets"), name="assets")
+    
+    # 2. La "Route Joker" : tout ce qui n'est pas /api est envoyé vers index.html
+    @app.get("/{catchall:path}", include_in_schema=False)
+    async def serve_react_app(catchall: str):
+        # Si c'est un fichier réel (ex: logo.png), on le sert
+        file_path = FRONTEND_DIR / catchall
+        if file_path.is_file():
+            return FileResponse(file_path)
+            
+        # Sinon, on renvoie index.html (pour React Router)
+        return FileResponse(FRONTEND_DIR / "index.html")
+else:
+    logger.error("❌ ERREUR CRITIQUE : Aucun dossier de build (dist/build) détecté.")
