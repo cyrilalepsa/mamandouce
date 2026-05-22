@@ -1,3 +1,74 @@
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { ArrowLeft, CalendarDays, Settings, Save, CalendarRange, Egg, Heart, Droplets, Baby, Info, TestTube, Moon, Sun, Sparkles, Plus, X, History, Brain, AlertTriangle, TrendingUp } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { toast } from 'sonner';
+import api from '../utils/api';
+import FertilityCalendar from '../components/FertilityCalendar';
+import { getCurrentLanguage } from '../i18n';
+import { useTheme } from '../contexts/ThemeContext';
+import { SYMPTOM_OPTIONS, MOOD_OPTIONS } from '../components/cycle/constants';
+import { SymptomsModal } from '../components/cycle/SymptomsModal';
+import { CycleHistoryModal } from '../components/cycle/CycleHistoryModal';
+import { InitialSetupModal } from '../components/cycle/InitialSetupModal';
+import { CycleReportModal } from '../components/cycle/CycleReportModal';
+import { PregnancyToggle } from '../components/cycle/PregnancyToggle';
+
+function CycleTrackingPage() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
+  const currentLang = getCurrentLanguage();
+  const { isDarkMode } = useTheme();
+  
+  const [lastPeriodDate, setLastPeriodDate] = useState('');
+  const [cycleLength, setCycleLength] = useState(28);
+  const [agendaData, setAgendaData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  // Ouvrir le calendrier automatiquement si ?calendar=true dans l'URL
+  const [showCalendar, setShowCalendar] = useState(searchParams.get('calendar') === 'true');
+  const [rapportDates, setRapportDates] = useState([]);
+  
+  // Nouveaux états
+  const [showSymptomModal, setShowSymptomModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [isPregnant, setIsPregnant] = useState(() => localStorage.getItem('mamandouce_pregnant') === 'true');
+  const [dueDate, setDueDate] = useState(() => localStorage.getItem('mamandouce_due_date') || '');
+  const [todaySymptoms, setTodaySymptoms] = useState([]);
+  const [todayMood, setTodayMood] = useState(null);
+  const [todayTemp, setTodayTemp] = useState('');
+  const [symptomsHistory, setSymptomsHistory] = useState({});
+  const [cycleHistory, setCycleHistory] = useState([]);
+  
+  // États pour l'IA des cycles
+  const [useAICalculation, setUseAICalculation] = useState(true);
+  const [cycleAnalysis, setCycleAnalysis] = useState(null);
+  const [showIrregularBanner, setShowIrregularBanner] = useState(true);
+  const [showInitialSetup, setShowInitialSetup] = useState(false);
+  const [initialDates, setInitialDates] = useState(['', '', '']);
+  const [showCycleReport, setShowCycleReport] = useState(false);
+  const [cycleReport, setCycleReport] = useState(null);
+  
+  // Couleurs mode sombre - BLANC PUR pour lisibilité maximale
+  const cardBg = isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100';
+  const cardBgGradient = isDarkMode ? 'bg-slate-800' : '';
+  const textPrimary = isDarkMode ? 'text-white' : 'text-slate-700';
+  const textSecondary = isDarkMode ? 'text-white' : 'text-slate-600';
+  const textMuted = isDarkMode ? 'text-white/90' : 'text-slate-500';
+  const inputBg = isDarkMode ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-slate-200';
+  const dropdownBg = isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-slate-700';
+  
+  // Ombre de texte obligatoire pour lisibilité sur fond glossy
+  const textShadow = isDarkMode ? { textShadow: '1px 1px 3px rgba(0,0,0,1)' } : {};
+  
+  // Couleurs thématiques avec luminosité augmentée pour mode sombre
+  const getThemeColor = (baseColor, darkColor) => isDarkMode ? darkColor : baseColor;
+
 useEffect(() => {
     // 🎯 Détection du paramètre ?calendar=true
     const params = new URLSearchParams(window.location.search);
