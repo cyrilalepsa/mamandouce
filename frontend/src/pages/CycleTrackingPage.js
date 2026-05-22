@@ -461,8 +461,7 @@ useEffect(() => {
     const total = cycleHistory.reduce((sum, c) => sum + c.cycleLength, 0);
     return Math.round(total / cycleHistory.length);
   };
-
-  return (
+return (
     <div className="min-h-screen gradient-bg">
       <div className="max-w-2xl mx-auto p-4 sm:p-6">
         {/* Header */}
@@ -482,7 +481,6 @@ useEffect(() => {
             <p className={`text-sm ${textMuted}`} style={textShadow}>{t('fertility.trackYourCycle', 'Calendrier fertilité')}</p>
           </div>
           <div className="flex items-center gap-2">
-            {/* Bouton rapport de cycle */}
             {cycleAnalysis?.has_enough_data && (
               <Button
                 onClick={loadCycleReport}
@@ -503,15 +501,14 @@ useEffect(() => {
             </Button>
             <Button
               onClick={() => setShowForm(!showForm)}
-              className={`rounded-full p-2 ${isDarkMode ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-              title={t('common.edit')}
+              className={`rounded-full p-2 ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-slate-700 shadow-sm'}`}
             >
               <Settings className="w-5 h-5" />
             </Button>
           </div>
         </div>
-        
-        {/* Bannière cycle irrégulier détecté */}
+
+        {/* Bannière d'irrégularité */}
         {showIrregularBanner && cycleAnalysis?.is_irregular && (
           <Card className={`rounded-2xl p-4 mb-4 border ${isDarkMode ? 'bg-amber-900/30 border-amber-700' : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200'}`}>
             <div className="flex items-start gap-3">
@@ -526,11 +523,7 @@ useEffect(() => {
                   J'ajuste vos fenêtres de fertilité avec une marge de sécurité de {cycleAnalysis.safety_margin} jour{cycleAnalysis.safety_margin > 1 ? 's' : ''}.
                 </p>
               </div>
-              <Button
-                onClick={dismissBanner}
-                variant="ghost"
-                className={`p-1 rounded-full ${isDarkMode ? 'hover:bg-amber-800/50 text-amber-400' : 'hover:bg-amber-200 text-amber-600'}`}
-              >
+              <Button onClick={dismissBanner} variant="ghost" className={`p-1 rounded-full ${isDarkMode ? 'hover:bg-amber-800/50 text-amber-400' : 'hover:bg-amber-200 text-amber-600'}`}>
                 <X className="w-4 h-4" />
               </Button>
             </div>
@@ -540,536 +533,186 @@ useEffect(() => {
         {/* Formulaire de configuration */}
         {showForm && (
           <Card className={`rounded-2xl p-4 mb-4 space-y-4 border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-br from-purple-50 to-pink-50 border-0'}`}>
-            <div className={`flex items-center justify-between p-3 rounded-xl ${isDarkMode ? 'bg-slate-700' : 'bg-white/70'}`}>
-              <div className="flex items-center gap-2">
-                <Brain className={`w-5 h-5 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`} />
-                <span className={`font-medium ${textPrimary}`} style={textShadow}>Calcul automatique par IA</span>
-              </div>
-              <button
-                onClick={() => setUseAICalculation(!useAICalculation)}
-                className={`relative w-12 h-6 rounded-full transition-colors ${useAICalculation ? 'bg-gradient-to-r from-purple-500 to-pink-500' : isDarkMode ? 'bg-slate-600' : 'bg-slate-300'}`}
-              >
-                <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${useAICalculation ? 'translate-x-6' : 'translate-x-0.5'}`} />
-              </button>
+            <div className={`flex flex-col gap-2`}>
+              <label className={`text-sm font-medium ${textSecondary}`}>Date des dernières règles :</label>
+              <Input type="date" value={lastPeriodDate} onChange={(e) => setLastPeriodDate(e.target.value)} className={inputBg} />
             </div>
-            
-            {useAICalculation && cycleAnalysis?.has_enough_data && (
-              <div className={`p-3 rounded-xl ${isDarkMode ? 'bg-purple-900/30 border border-purple-800' : 'bg-purple-50 border border-purple-100'}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className={`w-4 h-4 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`} />
-                  <span className={`font-medium text-sm ${isDarkMode ? 'text-purple-300' : 'text-purple-700'}`} style={textShadow}>Analyse IA ({cycleAnalysis.cycle_count} cycles)</span>
-                </div>
-                <p className={`text-sm ${isDarkMode ? 'text-purple-200/80' : 'text-purple-600'}`} style={textShadow}>
-                  Durée moyenne : <strong>{cycleAnalysis.average_length}</strong> jours 
-                  (variation : ±{cycleAnalysis.variation_days} jours)
-                </p>
-                <p className={`text-xs mt-1 ${isDarkMode ? 'text-purple-300/60' : 'text-purple-500'}`} style={textShadow}>
-                  Score de régularité : {cycleAnalysis.regularity_score}%
-                </p>
-              </div>
-            )}
-            
-            <div>
-              <label className={`text-sm font-semibold ${textSecondary} mb-1 block`} style={textShadow}>
-                {t('home.lastPeriodDate', 'Date de début des dernières règles')}
-              </label>
-              <Input
-                type="date"
-                value={lastPeriodDate}
-                onChange={(e) => setLastPeriodDate(e.target.value)}
-                className={`rounded-xl ${inputBg}`}
-                data-testid="period-date-input"
-              />
+            <div className={`flex flex-col gap-2`}>
+              <label className={`text-sm font-medium ${textSecondary}`}>Durée habituelle du cycle (jours) :</label>
+              <Input type="number" value={cycleLength} onChange={(e) => setCycleLength(parseInt(e.target.value) || 28)} className={inputBg} />
             </div>
-            
-            {!useAICalculation && (
-              <div>
-                <label className={`text-sm font-semibold ${textSecondary} mb-1 block`} style={textShadow}>
-                  {t('home.cycleLength', 'Durée du cycle')}
-                </label>
-                <select
-                  value={cycleLength}
-                  onChange={(e) => setCycleLength(parseInt(e.target.value))}
-                  className={`w-full rounded-xl border px-4 py-2 ${dropdownBg}`}
-                  style={textShadow}
-                  data-testid="cycle-length-select"
-                >
-                  {[24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35].map(days => (
-                    <option key={days} value={days}>{days} {t('home.days', 'jours')} {days === 28 && `(${t('common.standard', 'standard')})`}</option>
-                  ))}
-                </select>
-              </div>
-            )}
-            
-            {useAICalculation && (
-              <div className={`flex items-center justify-between p-3 rounded-xl ${isDarkMode ? 'bg-slate-700' : 'bg-white/70'}`}>
-                <span className={`text-sm ${textSecondary}`} style={textShadow}>Durée calculée par l'IA :</span>
-                <span className={`font-bold ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`} style={textShadow}>
-                  {cycleAnalysis?.recommended_cycle_length || cycleLength} jours
-                </span>
-              </div>
-            )}
-            
-            <Button
-              onClick={handleSave}
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full py-2"
-              data-testid="save-button"
-            >
+            <Button onClick={handleSave} disabled={loading} className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full py-2" data-testid="save-button">
               <Save className="w-4 h-4 mr-2" />
               {loading ? t('common.sending', 'Envoi...') : t('common.save', 'Enregistrer')}
             </Button>
           </Card>
         )}
 
-        {/* Contenu principal */}
+        {/* Contenu principal de l'agenda */}
         {initialLoading ? (
           <div className="flex justify-center py-12">
             <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : agendaData ? (
-          <div className="space-y-3">
-            
-            {/* Jour actuel du cycle + Phase */}
-            <Card className={`rounded-xl p-3 border shadow-sm ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-r from-violet-50 via-purple-50 to-fuchsia-50 border-0'}`}>
+          <div className="space-y-4">
+            {/* Infos clés du cycle */}
+            <Card className={`rounded-xl p-4 border shadow-sm ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-r from-violet-50 via-purple-50 to-fuchsia-50 border-0'}`}>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-11 h-11 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl flex items-center justify-center shadow-md">
-                    <span className="text-lg font-bold text-white" style={textShadow}>J{agendaData.dayOfCycle}</span>
-                  </div>
-                  <div>
-                    <p className={`text-xs font-medium ${isDarkMode ? 'text-white' : 'text-slate-500'}`} style={textShadow}>Jour du cycle</p>
-                    <p className={`text-sm font-bold ${isDarkMode ? 'text-purple-300' : 'text-purple-700'}`} style={textShadow}>
-                      Jour {agendaData.dayOfCycle} sur {agendaData.cycleLength}
-                    </p>
-                  </div>
+                <div>
+                  <p className={`text-xs font-medium ${isDarkMode ? 'text-white' : 'text-slate-500'}`}>Jour du cycle</p>
+                  <p className={`text-lg font-bold ${isDarkMode ? 'text-purple-300' : 'text-purple-700'}`}>Jour {agendaData.dayOfCycle} sur {agendaData.cycleLength}</p>
                 </div>
-                <div className={`px-2 py-1 rounded-full flex items-center gap-1 ${
-                  agendaData.phase === 'follicular' 
-                    ? (isDarkMode ? 'bg-amber-900/50 text-amber-300' : 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700')
-                    : (isDarkMode ? 'bg-indigo-900/50 text-indigo-300' : 'bg-gradient-to-r from-indigo-100 to-violet-100 text-indigo-700')
-                }`}>
-                  {agendaData.phase === 'follicular' ? (
-                    <>
-                      <Sun className="w-3 h-3" />
-                      <span className="text-[10px] font-semibold" style={textShadow}>Folliculaire</span>
-                    </>
-                  ) : (
-                    <>
-                      <Moon className="w-3 h-3" />
-                      <span className="text-[10px] font-semibold" style={textShadow}>Lutéale</span>
-                    </>
-                  )}
-                </div>
-              </div>
-              
-              <div className="mt-3">
-                <div className={`h-1.5 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-700' : 'bg-white/60'}`}>
-                  <div 
-                    className="h-full bg-gradient-to-r from-violet-400 via-purple-500 to-fuchsia-500 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((agendaData.dayOfCycle / agendaData.cycleLength) * 100, 100)}%` }}
-                  />
-                </div>
-                <div className={`flex justify-between mt-1 text-[10px] ${isDarkMode ? 'text-slate-400' : 'text-slate-400'}`} style={textShadow}>
-                  <span>Règles</span>
-                  <span>Ovulation</span>
-                  <span>Fin</span>
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center text-white font-bold">
+                  J{agendaData.dayOfCycle}
                 </div>
               </div>
             </Card>
 
-            {/* Alerte période fertile */}
-            {agendaData.inFertileWindow && (
-              <Card className={`rounded-xl p-3 border ${isDarkMode ? 'bg-rose-900/30 border-rose-800' : 'bg-gradient-to-r from-rose-100 to-pink-100 border-rose-200'}`}>
-                <div className="flex items-center gap-2">
-                  <div className="w-9 h-9 bg-rose-400 rounded-lg flex items-center justify-center">
-                    <Heart className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className={`font-bold text-sm ${isDarkMode ? 'text-rose-300' : 'text-rose-700'}`} style={textShadow}>
-                        {agendaData.isOvulationDay ? t('fertility.ovulationToday', "Jour d'ovulation !") : t('fertility.inFertileWindow', 'Période fertile !')}
-                      </p>
-                      <span className="animate-pulse w-2 h-2 bg-rose-500 rounded-full"></span>
-                    </div>
-                    <p className={`text-xs ${isDarkMode ? 'text-rose-200' : 'text-rose-600'}`} style={textShadow}>
-                      {agendaData.isOvulationDay 
-                        ? t('calculator.ovulationTip', "C'est le moment idéal pour concevoir")
-                        : `${t('calculator.ovulationPeak', 'Pic d\'ovulation')} ${t('calculator.inDays', { days: agendaData.daysToOvulation })}`}
-                    </p>
-                  </div>
-                </div>
+            {/* Boutons d'historique et symptômes */}
+            <div className="grid grid-cols-2 gap-3">
+              <Card onClick={() => setShowSymptomModal(true)} className="rounded-xl p-3 border cursor-pointer hover:shadow-md transition-all text-center bg-white border-slate-100">
+                <Sparkles className="w-5 h-5 mx-auto text-amber-500 mb-1" />
+                <span className="text-xs font-semibold text-slate-700">Symptômes</span>
               </Card>
-            )}
-
-            {/* Pic d'ovulation */}
-            <Card className={`rounded-xl p-3 border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-r from-sky-50 to-indigo-50 border-0'}`}>
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 bg-gradient-to-br from-sky-400 to-indigo-400 rounded-lg flex items-center justify-center">
-                  <Egg className="w-4 h-4 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className={`text-xs font-medium ${isDarkMode ? 'text-white' : 'text-slate-500'}`} style={textShadow}>{t('calculator.ovulationPeak', 'Pic d\'ovulation')}</p>
-                  {agendaData.ovulationRange ? (
-                    <p className={`text-base font-bold ${isDarkMode ? 'text-sky-300' : 'text-sky-600'}`} style={textShadow}>
-                      Du {formatDateShort(agendaData.ovulationRange.start)} au {formatDateShort(agendaData.ovulationRange.end)}
-                    </p>
-                  ) : (
-                    <p className={`text-base font-bold ${isDarkMode ? 'text-sky-300' : 'text-sky-600'}`} style={textShadow}>{formatDateFull(agendaData.ovulationDate)}</p>
-                  )}
-                </div>
-              </div>
-            </Card>
-
-            {/* Fenêtre de fertilité */}
-            <Card className={`rounded-xl p-3 border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-r from-emerald-50 to-teal-50 border-0'}`}>
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 bg-gradient-to-br from-red-400 to-rose-500 rounded-lg flex items-center justify-center">
-                  <Heart className="w-4 h-4 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className={`text-xs font-medium ${isDarkMode ? 'text-white' : 'text-slate-500'}`} style={textShadow}>{t('calculator.fertileWindow', 'Fenêtre de fertilité')}</p>
-                  <p className={`text-sm font-bold ${isDarkMode ? 'text-emerald-300' : 'text-emerald-600'}`} style={textShadow}>
-                    {formatDateShort(agendaData.fertileStart)} → {formatDateShort(agendaData.fertileEnd)}
-                  </p>
-                </div>
-              </div>
-              
-              <div className={`mt-2 pt-2 border-t ${isDarkMode ? 'border-slate-700' : 'border-emerald-100'}`}>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm">💡</span>
-                  <p className={`text-[10px] flex-1 ${isDarkMode ? 'text-emerald-300' : 'text-emerald-700'}`} style={textShadow}>
-                    Test d'ovulation Clearblue Digital recommandé
-                  </p>
-                  <a 
-                    href="https://fr.clearblue.com/tests-ovulation" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center shadow-sm border ${isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-emerald-200'}`}
-                  >
-                    <Info className={`w-3 h-3 ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
-                  </a>
-                </div>
-              </div>
-            </Card>
-
-            {/* Prochaines règles */}
-            <Card className={`rounded-xl p-3 border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-r from-pink-50 to-rose-50 border-0'}`}>
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 bg-gradient-to-br from-green-400 to-emerald-500 rounded-lg flex items-center justify-center">
-                  <Droplets className="w-4 h-4 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className={`text-xs font-medium ${isDarkMode ? 'text-white' : 'text-slate-500'}`} style={textShadow}>{t('fertility.nextPeriod', 'Prochaines règles')}</p>
-                  {agendaData.nextPeriodRange ? (
-                    <p className={`text-base font-bold ${isDarkMode ? 'text-pink-300' : 'text-pink-600'}`} style={textShadow}>
-                      Du {formatDateShort(agendaData.nextPeriodRange.start)} au {formatDateShort(agendaData.nextPeriodRange.end)}
-                    </p>
-                  ) : (
-                    <p className={`text-base font-bold ${isDarkMode ? 'text-pink-300' : 'text-pink-600'}`} style={textShadow}>{formatDateFull(agendaData.nextPeriod)}</p>
-                  )}
-                  {agendaData.daysToNextPeriod > 0 && (
-                    <p className={`text-[10px] ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`} style={textShadow}>Dans {agendaData.daysToNextPeriod} jours</p>
-                  )}
-                </div>
-              </div>
-            </Card>
-
-            {/* Date de test de grossesse */}
-            <Card className={`rounded-xl p-3 border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-r from-cyan-50 to-sky-50 border-0'}`}>
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 bg-gradient-to-br from-violet-400 to-purple-500 rounded-lg flex items-center justify-center">
-                  <TestTube className="w-4 h-4 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className={`text-xs font-medium ${isDarkMode ? 'text-white' : 'text-slate-500'}`} style={textShadow}>Test de grossesse fiable</p>
-                  <p className={`text-sm font-bold ${isDarkMode ? 'text-cyan-300' : 'text-cyan-600'}`} style={textShadow}>À partir du {formatDateFull(agendaData.testDate)}</p>
-                </div>
-              </div>
-              <p className={`text-[10px] mt-2 pl-11 ${isDarkMode ? 'text-cyan-300/80' : 'text-cyan-700'}`} style={textShadow}>
-                💡 Attendez 1 jour après le retard de règles pour un résultat fiable
-              </p>
-            </Card>
-
-            {/* Notez vos symptômes */}
-            <Card 
-              onClick={() => setShowSymptomModal(true)}
-              className={`rounded-xl p-3 border cursor-pointer hover:shadow-md transition-all active:scale-[0.98] ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-r from-amber-50 to-yellow-50 border-0'}`}
-              data-testid="symptoms-btn"
-            >
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-lg flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className={`text-xs font-medium ${isDarkMode ? 'text-white' : 'text-slate-500'}`} style={textShadow}>Notez vos symptômes</p>
-                  {todaySymptoms.length > 0 || todayMood ? (
-                    <div className="flex flex-wrap gap-1 mt-0.5">
-                      {todayMood && (
-                        <span className="text-sm">{MOOD_OPTIONS.find(m => m.id === todayMood)?.emoji}</span>
-                      )}
-                      {todaySymptoms.slice(0, 4).map(s => (
-                        <span key={s} className="text-sm">{SYMPTOM_OPTIONS.find(opt => opt.id === s)?.emoji}</span>
-                      ))}
-                      {todaySymptoms.length > 4 && (
-                        <span className={`text-[10px] self-center ${isDarkMode ? 'text-amber-300' : 'text-amber-600'}`}>+{todaySymptoms.length - 4}</span>
-                      )}
-                    </div>
-                  ) : (
-                    <p className={`text-xs font-medium ${isDarkMode ? 'text-amber-300' : 'text-amber-600'}`} style={textShadow}>Humeur, douleurs...</p>
-                  )}
-                </div>
-                <Plus className={`w-5 h-5 ${isDarkMode ? 'text-amber-300' : 'text-amber-500'}`} />
-              </div>
-            </Card>
-
-            {/* Nidation estimée */}
-            {(() => {
-              const implantation = getNextImplantation();
-              if (!implantation || !agendaData) return null;
-              
-              const rapportDate = new Date(implantation.rapportDate);
-              const fertileStart = new Date(agendaData.fertileStart);
-              const fertileEnd = new Date(agendaData.fertileEnd);
-              const isInFertileWindow = rapportDate >= fertileStart && rapportDate <= fertileEnd;
-              
-              if (!isInFertileWindow) return null;
-              
-              return (
-                <Card className={`rounded-xl p-3 border ${isDarkMode ? 'bg-slate-800 border-amber-700' : 'bg-gradient-to-r from-orange-50 to-amber-50 border-amber-200'}`}>
-                  <div className="flex items-center gap-2">
-                    <div className="w-9 h-9 bg-gradient-to-br from-blue-400 to-sky-500 rounded-lg flex items-center justify-center">
-                      <Baby className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <p className={`text-xs font-medium ${isDarkMode ? 'text-white' : 'text-slate-500'}`} style={textShadow}>{t('fertility.estimatedImplantation', 'Nidation estimée')}</p>
-                      <p className={`text-sm font-bold ${isDarkMode ? 'text-amber-300' : 'text-amber-600'}`} style={textShadow}>
-                        {formatDateShort(implantation.early)} → {formatDateShort(implantation.late)}
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-              );
-            })()}
-
-            {/* Rapports enregistrés */}
-            {rapportDates && rapportDates.length > 0 && (
-              <Card className={`rounded-xl p-3 border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-rose-50 border-0'}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <Heart className={`w-4 h-4 ${isDarkMode ? 'text-rose-400' : 'text-rose-500'}`} />
-                  <span className={`text-xs font-semibold ${isDarkMode ? 'text-rose-300' : 'text-rose-700'}`} style={textShadow}>{t('fertility.recordedIntercourse', 'Rapports enregistrés')}</span>
-                </div>
-                <div className="flex flex-wrap gap-1">
-                  {rapportDates.slice(-5).map((date, index) => (
-                    <span key={index} className="text-xs px-2 py-1 rounded-full border" style={{ background: '#ffffff', color: '#ef4444', borderColor: '#fecaca', fontWeight: 600 }}>
-                      {formatDateShort(date)}
-                    </span>
-                  ))}
-                  {rapportDates.length > 5 && (
-                    <span className={`text-xs self-center ${isDarkMode ? 'text-rose-400' : 'text-rose-500'}`}>+{rapportDates.length - 5}</span>
-                  )}
-                </div>
+              <Card onClick={() => setShowHistoryModal(true)} className="rounded-xl p-3 border cursor-pointer hover:shadow-md transition-all text-center bg-white border-slate-100">
+                <History className="w-5 h-5 mx-auto text-emerald-500 mb-1" />
+                <span className="text-xs font-semibold text-slate-700">Historique</span>
               </Card>
-            )}
+            </div>
 
-            {/* Historique des cycles */}
-            {cycleHistory.length > 0 && (
-              <Card 
-                onClick={() => setShowHistoryModal(true)}
-                className={`rounded-xl p-3 border cursor-pointer hover:shadow-md transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-r from-slate-50 to-gray-50 border-0'}`}
-                data-testid="history-btn"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-9 h-9 bg-gradient-to-br from-green-400 to-emerald-500 rounded-lg flex items-center justify-center">
-                    <History className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <p className={`text-xs font-medium ${isDarkMode ? 'text-white' : 'text-slate-500'}`} style={textShadow}>Historique des cycles</p>
-                    <p className={`text-sm font-medium ${isDarkMode ? 'text-slate-200' : 'text-slate-700'}`} style={textShadow}>
-                      {cycleHistory.length} cycle{cycleHistory.length > 1 ? 's' : ''}
-                      {getAverageCycleLength() && <span className={isDarkMode ? 'text-slate-400' : 'text-slate-500'}> • Moy: {getAverageCycleLength()}j</span>}
-                    </p>
-                  </div>
-                  <CalendarDays className={`w-4 h-4 ${isDarkMode ? 'text-slate-400' : 'text-slate-400'}`} />
-                </div>
-              </Card>
-            )}
-
-            {/* Info cycle */}
-            <div className="text-center pt-1">
-              <p className="text-xs text-slate-400 mb-3">
+            {/* Info cycle & Bouton "Je suis enceinte" */}
+            <div className="text-center pt-2">
+              <p className={`text-xs ${textMuted} mb-3`}>
                 Cycle: {agendaData.cycleLength}j • Dernières règles: {formatDateShort(lastPeriodDate)}
               </p>
 
-             {/* Bouton "Je suis enceinte !" + Affichage DPA — composant extrait */}
-            <PregnancyToggle
-              isPregnant={isPregnant}
-              dueDate={dueDate}
-              lastPeriodDate={lastPeriodDate}
-             onPregnant={(dpaStr) => {
-			  setIsPregnant(true);
-			  setDueDate(dpaStr);
+              {/* 🎯 INTEGRATION DE L'EFFET COMBINÉ (Cœurs + Scintillements) */}
+              <PregnancyToggle
+                isPregnant={isPregnant}
+                dueDate={dueDate}
+                lastPeriodDate={lastPeriodDate}
+                onPregnant={(dpaStr) => {
+                  setIsPregnant(true);
+                  setDueDate(dpaStr);
 
-			  // ==========================================
-			  // 🚀 1. LES CONFETTIS (CŒURS EN MOUVEMENT)
-			  // ==========================================
-			  const scalar = 2;
-			  const heart1 = confetti.shapeFromText({ text: '❤️', scalar });
-			  const heart2 = confetti.shapeFromText({ text: '💖', scalar });
-			  const heart3 = confetti.shapeFromText({ text: '💝', scalar });
+                  // 🚀 1. LES JETS DE COEURS
+                  const scalar = 2;
+                  const heart1 = confetti.shapeFromText({ text: '❤️', scalar });
+                  const heart2 = confetti.shapeFromText({ text: '💖', scalar });
+                  const heart3 = confetti.shapeFromText({ text: '💝', scalar });
 
-			  const defaults = {
-				spread: 360,
-				ticks: 140,
-				gravity: 0.45,
-				decay: 0.94,
-				startVelocity: 35,
-				shapes: [heart1, heart2, heart3],
-				scalar
-			  };
+                  const defaults = {
+                    spread: 360,
+                    ticks: 140,
+                    gravity: 0.45,
+                    decay: 0.94,
+                    startVelocity: 35,
+                    shapes: [heart1, heart2, heart3],
+                    scalar
+                  };
+                  confetti({ ...defaults, particleCount: 45, origin: { y: 0.6 } });
+                  confetti({ ...defaults, particleCount: 25, angle: 60, spread: 70, origin: { x: 0.05, y: 0.8 } });
+                  confetti({ ...defaults, particleCount: 25, angle: 120, spread: 70, origin: { x: 0.95, y: 0.8 } });
 
-			  confetti({ ...defaults, particleCount: 45, origin: { y: 0.6 } });
-			  confetti({ ...defaults, particleCount: 25, angle: 60, spread: 70, origin: { x: 0.05, y: 0.8 } });
-			  confetti({ ...defaults, particleCount: 25, angle: 120, spread: 70, origin: { x: 0.95, y: 0.8 } });
+                  // ✨ 2. LES 8 SCINTILLEMENTS FIXES
+                  const sparkleContainer = document.createElement('div');
+                  sparkleContainer.style.position = 'fixed';
+                  sparkleContainer.style.top = '0';
+                  sparkleContainer.style.left = '0';
+                  sparkleContainer.style.width = '100vw';
+                  sparkleContainer.style.height = '100vh';
+                  sparkleContainer.style.pointerEvents = 'none';
+                  sparkleContainer.style.zIndex = '9999';
+                  document.body.appendChild(sparkleContainer);
 
-			  // ==========================================
-			  // ✨ 2. LES SCINTILLEMENTS (ÉTOILES)
-			  // ==========================================
-			  // On crée un conteneur temporaire pour afficher tes 8 étoiles fixes
-			  const sparkleContainer = document.createElement('div');
-			  sparkleContainer.style.position = 'fixed';
-			  sparkleContainer.style.top = '0';
-			  sparkleContainer.style.left = '0';
-			  sparkleContainer.style.width = '100vw';
-			  sparkleContainer.style.height = '100vh';
-			  sparkleContainer.style.pointerEvents = 'none';
-			  sparkleContainer.style.zIndex = '9999'; // Par-dessus tout le monde
-			  document.body.appendChild(sparkleContainer);
+                  if (!document.getElementById('sparkle-animation-style')) {
+                    const style = document.createElement('style');
+                    style.id = 'sparkle-animation-style';
+                    style.innerHTML = `
+                      @keyframes sparkleGlow {
+                        0%, 100% { transform: scale(0.6); opacity: 0.3; }
+                        50% { transform: scale(1.4); opacity: 1; box-shadow: 0 0 10px #fff, 0 0 20px rgba(255,255,255,0.8); }
+                      }
+                    `;
+                    document.head.appendChild(style);
+                  }
 
-			  // Injection des keyframes d'animation de ton scintillement si jamais ils ne sont pas dans ton CSS brut
-			  if (!document.getElementById('sparkle-animation-style')) {
-				const style = document.createElement('style');
-				style.id = 'sparkle-animation-style';
-				style.innerHTML = `
-				  @keyframes sparkleGlow {
-					0%, 100% { transform: scale(0.5); opacity: 0.2; }
-					50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 8px #fff, 0 0 15px rgba(255,255,255,0.8); }
-				  }
-				`;
-				document.head.appendChild(style);
-			  }
+                  const sparkles = [
+                    ['5%','50%',5],  ['10%','90%',4], ['25%','5%',5],  ['50%','95%',6],
+                    ['75%','5%',4],  ['90%','85%',5], ['50%','12%',4], ['15%','15%',6]
+                  ];
 
-			  // Tableau de tes 8 positions exactes
-			  const sparkles = [
-				['-5%','50%',5],  ['10%','90%',4], ['25%','-5%',5],  ['50%','105%',6],
-				['75%','-5%',4],  ['90%','85%',5], ['50%','-8%',4],  ['15%','15%',6]
-			  ];
+                  sparkles.forEach(([t, l, s], i) => {
+                    const el = document.createElement('div');
+                    el.style.position = 'absolute';
+                    el.style.top = t;
+                    el.style.left = l;
+                    el.style.width = `${s}px`;
+                    el.style.height = `${s}px`;
+                    el.style.background = '#ffffff';
+                    el.style.borderRadius = '50%';
+                    el.style.boxShadow = '0 0 4px #fff, 0 0 8px rgba(255,255,255,0.6)';
+                    el.style.animation = `sparkleGlow ${1.8 + (i % 3) * 0.4}s ease-in-out infinite`;
+                    el.style.animationDelay = `${(i * 0.3) % 2}s`;
+                    sparkleContainer.appendChild(el);
+                  });
 
-			  sparkles.forEach(([t, l, s], i) => {
-				const el = document.createElement('div');
-				el.style.position = 'absolute';
-				el.style.top = t.includes('-') || parseInt(t) > 100 ? `calc(50% + ${t})` : t; // Gère les débordements sur l'écran global
-				el.style.left = l.includes('-') || parseInt(l) > 100 ? `calc(50% + ${l})` : l;
-				el.style.width = `${s}px`;
-				el.style.height = `${s}px`;
-				el.style.background = '#ffffff';
-				el.style.borderRadius = '50%';
-				el.style.boxShadow = '0 0 4px #fff, 0 0 8px rgba(255,255,255,0.6)';
-				el.style.animation = `sparkleGlow ${1.5 + (i % 3) * 0.4}s ease-in-out infinite`;
-				el.style.animationDelay = `${(i * 0.3) % 1.5}s`;
-				sparkleContainer.appendChild(el);
-			  });
-
-			  // 🗑️ Nettoyage automatique : on retire les scintillements après 5 secondes
-			  setTimeout(() => {
-				sparkleContainer.style.transition = 'opacity 1s ease-out';
-				sparkleContainer.style.opacity = '0';
-				setTimeout(() => sparkleContainer.remove(), 1000);
-			  }, 4500);
-			}}
+                  setTimeout(() => {
+                    sparkleContainer.style.transition = 'opacity 1s ease-out';
+                    sparkleContainer.style.opacity = '0';
+                    setTimeout(() => sparkleContainer.remove(), 1000);
+                  }, 4000);
                 }}
               />
             </div>
           </div>
         ) : (
-          <Card className="bg-white rounded-2xl p-6 text-center border-0 shadow-lg">
-            <CalendarDays className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500 mb-3 text-sm">{t('fertility.enterPeriodDate', 'Renseignez la date de début de vos dernières règles pour voir vos prévisions')}</p>
-            <Button
-              onClick={() => setShowForm(true)}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full px-6 py-2 text-sm"
-            >
-              {t('home.configureMyeCycle', 'Configurer mon cycle')}
-            </Button>
-          </Card>
+          <div className="text-center py-12 text-slate-500">Configurez votre cycle pour commencer.</div>
         )}
       </div>
 
-      {/* Modal Symptômes */}
-      <SymptomsModal
-        isOpen={showSymptomModal}
-        onClose={() => setShowSymptomModal(false)}
-        isDarkMode={isDarkMode}
-        textShadow={textShadow}
-        todayMood={todayMood}
-        setTodayMood={setTodayMood}
-        todaySymptoms={todaySymptoms}
-        toggleSymptom={toggleSymptom}
-        todayTemp={todayTemp}
-        setTodayTemp={setTodayTemp}
-        onSave={saveSymptoms}
-      />
-
-      {/* Modal Historique des cycles */}
-      <CycleHistoryModal
-        isOpen={showHistoryModal}
-        onClose={() => setShowHistoryModal(false)}
-        isDarkMode={isDarkMode}
-        textShadow={textShadow}
-        cycleHistory={cycleHistory}
-        averageCycleLength={getAverageCycleLength()}
-        onDelete={deleteCycleFromHistory}
-        getLocale={getLocale}
-      />
-
-      {/* Calendrier Modal */}
+      {/* Modals de l'application */}
       <FertilityCalendar
         isOpen={showCalendar}
-        onClose={() => {
-          setShowCalendar(false);
-          if (searchParams.get('calendar') === 'true') {
-            navigate(-1);
-          }
-        }}
+        onClose={() => setShowCalendar(false)}
         agendaData={agendaData}
         rapportDates={rapportDates}
         onAddRapport={handleAddRapport}
         onRemoveRapport={handleRemoveRapport}
       />
-      
-      {/* Modal Configuration Initiale IA */}
+      <SymptomsModal
+        isOpen={showSymptomModal}
+        onClose={() => setShowSymptomModal(false)}
+        onSave={saveSymptoms}
+        symptoms={todaySymptoms}
+        toggleSymptom={toggleSymptom}
+        mood={todayMood}
+        setMood={setTodayMood}
+        temperature={todayTemp}
+        setTemperature={setTodayTemp}
+        isDarkMode={isDarkMode}
+      />
+      <CycleHistoryModal
+        isOpen={showHistoryModal}
+        onClose={() => setShowHistoryModal(false)}
+        history={cycleHistory}
+        averageCycleLength={getAverageCycleLength()}
+        onDelete={deleteCycleFromHistory}
+        getLocale={getLocale}
+      />
       <InitialSetupModal
         isOpen={showInitialSetup}
         onSkip={() => { setShowInitialSetup(false); localStorage.setItem('cycle_initial_setup_done', 'true'); }}
         onSave={saveInitialDates}
         isDarkMode={isDarkMode}
-        textShadow={textShadow}
-        textSecondary={textSecondary}
-        textMuted={textMuted}
-        inputBg={inputBg}
         initialDates={initialDates}
         setInitialDates={setInitialDates}
         loading={loading}
       />
-
-      {/* Modal Rapport de Cycle */}
       <CycleReportModal
         isOpen={showCycleReport}
         onClose={() => setShowCycleReport(false)}
         isDarkMode={isDarkMode}
-        textShadow={textShadow}
-        textSecondary={textSecondary}
-        textMuted={textMuted}
         cycleReport={cycleReport}
       />
     </div>
@@ -1077,3 +720,4 @@ useEffect(() => {
 }
 
 export default CycleTrackingPage;
+ 
