@@ -2,9 +2,9 @@
 // Structure: pays -> genre -> lettre -> [{ name, meaning, personality }]
 
 // Import de la base massive des prénoms français (1000+)
-import { frenchNames } from './babyNamesFR.js';
+import { frenchNames } from './babyNamesFR.jsx';
 // Import de la base des prénoms américains
-import { americanNames } from './babyNamesUS.js';
+import { americanNames } from './babyNamesUS.jsx';
 
 export const countries = {
   europe: [

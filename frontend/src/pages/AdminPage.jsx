@@ -22,7 +22,6 @@ import {
 } from '../components/admin';
 import AccountingDashboard from '../components/admin/AccountingDashboard';
 import ContributionsManager from '../components/admin/ContributionsManager';
-import FlyerGenerator from '../components/FlyerModule/FlyerGenerator';
 
 function AdminPage() {
   const navigate = useNavigate();
@@ -290,7 +289,6 @@ function AdminPage() {
     messaging: '#FECDD3, #FDA4AF',   // rose
     finances:  '#A7F3D0, #6EE7B7',   // menthe
     tools:     '#BAE6FD, #7DD3FC',   // bleu
-    flyer:     '#FBCFE8, #F9A8D4',   // rose pastel (Marketing)
   };
 
   const toggleSub = (id) => setOpenSubs(prev => ({ ...prev, [id]: !prev[id] }));
