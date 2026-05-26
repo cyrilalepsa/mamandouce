@@ -1,9 +1,10 @@
 {
-  "name": "frontend",
+  "name": "ton-projet",
   "version": "0.1.0",
-  "private": true,
-  "engines": {
-    "node": ">=18.0.0"
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@capacitor/android": "5",
@@ -72,15 +73,13 @@
     "vaul": "^1.1.2",
     "zod": "^3.24.4"
   },
-<<<<<<< HEAD
+ 
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
-=======
 },
 
->>>>>>> b8b5ea3552f50647587a6db90bbb2527563b0c12
   },
   "browserslist": {
     "production": [
