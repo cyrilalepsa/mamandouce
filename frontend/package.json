@@ -72,10 +72,15 @@
     "vaul": "^1.1.2",
     "zod": "^3.24.4"
   },
+<<<<<<< HEAD
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
+=======
+},
+
+>>>>>>> b8b5ea3552f50647587a6db90bbb2527563b0c12
   },
   "browserslist": {
     "production": [
