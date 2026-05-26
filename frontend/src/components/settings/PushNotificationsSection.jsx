@@ -58,7 +58,7 @@ export function PushNotificationsSection({ preferences, setPreferences, onSave }
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
         
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/notifications/vapid-public-key`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/notifications/vapid-public-key`, {
           signal: controller.signal
         });
         clearTimeout(timeoutId);
