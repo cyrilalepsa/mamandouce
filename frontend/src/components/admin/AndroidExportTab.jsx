@@ -68,7 +68,7 @@ export function AndroidExportTab() {
     try {
       // Create a link to trigger download
       const token = localStorage.getItem('token');
-      const downloadUrl = `${process.env.REACT_APP_BACKEND_URL}/api/admin/android/download`;
+      const downloadUrl = `${import.meta.env.VITE_BACKEND_URL}/api/admin/android/download`;
       
       const response = await fetch(downloadUrl, {
         headers: {
