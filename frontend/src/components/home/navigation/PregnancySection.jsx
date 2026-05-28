@@ -30,7 +30,7 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
       defaultOpen={false}
       sectionId="pregnancy"
     >
-
+		<div className="glass-bubble-theme"> {/* <- C'est ici que la magie opère */}
       {/* Scanner, Bibliothèque, Favoris, Historique */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <PastelMosaicCard color="green" onClick={() => navigate('/scanner')} testId="scanner-nav">
