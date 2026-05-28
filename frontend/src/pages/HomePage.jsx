@@ -6,9 +6,10 @@ import api from '../utils/api';
 import AppTitle from '../components/AppTitle';
 import { AvatarPreview } from '../components/profile/AvatarBuilder';
 import PremiumSunAvatar from '../components/profile/PremiumSunAvatar';
-import { isNameCelebratedToday } from '../data/saintsCalendar';
+// --- MODIFICATION : Ajout de getSaintOfTheDay ici ---
+import { isNameCelebratedToday, getSaintOfTheDay } from '../data/saintsCalendar'; 
 import LanguageBubble from '../components/LanguageBubble';
-import CustomizableHome from '../components/home/CustomizableHome'; // 👈 Import par défaut isolé corrigé
+import CustomizableHome from '../components/home/CustomizableHome';
 import {
   TopBar,
   TutorialPopup,
@@ -36,6 +37,9 @@ function HomePage() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [earnedTrophy, setEarnedTrophy] = useState(null);
   
+  // --- MODIFICATION : Ajout de la variable d'état ---
+  const [nameOfTheDay, setNameOfTheDay] = useState('');
+  
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
   const scrollContainerRef = useRef(null);
@@ -58,6 +62,12 @@ function HomePage() {
   useEffect(() => {
     loadUserData();
     loadTrophyData();
+    
+    // --- MODIFICATION : Chargement du saint du jour au démarrage ---
+    const saintData = getSaintOfTheDay();
+    if (saintData) {
+      setNameOfTheDay(saintData.name);
+    }
   }, []);
 
   const checkRapportInFertileWindow = (profile) => {
@@ -268,7 +278,6 @@ function HomePage() {
                   </div>
                 )}
 
-                {/* 🎯 CARTES REHAUSSÉES À MIN-H-[96PX] ET AVEC PADDING HARMONIEUX */}
                 <div className="w-full max-w-sm mx-auto mt-2 px-2">
                   <div className="grid grid-cols-2 gap-3">
                     
@@ -301,17 +310,14 @@ function HomePage() {
                         borderRadius: '20px'
                       }}
                     >
-                      {/* Titre en gris/bleu intermédiaire */}
                       <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
                         {t('home.nameDay', 'Fête du jour')}
                       </span>
                       
-                      {/* 🔥 Prénom en noir adouci (slate-800) au lieu de orange ou blanc */}
                       <span className="text-lg font-bold text-slate-800 my-0.5 capitalize">
                         🎉 {nameOfTheDay || 'À fêter'}
                       </span>
                       
-                      {/* 🔥 Date en noir adouci sur sa gélule blanche transparente */}
                       <span className="text-[10px] text-slate-800 font-medium bg-white/50 px-2 py-0.5 rounded-full shadow-sm">
                         {new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
                       </span>
@@ -322,7 +328,6 @@ function HomePage() {
               </div>
             </div>
 
-            {/* Injection des sélecteurs CSS pour nettoyer le doublon "Yves" de CustomizableHome */}
             <div className="pt-4 [&_#celebrate-section]:hidden [&_div[class*='celebrate']]:hidden">
               <CustomizableHome 
                 pregnancyProfile={pregnancyProfile}
