@@ -165,3 +165,8 @@ button:active {
   100% { transform: scale(1); }
 }
 .heart-burst { animation: heartBurstAnim 1.5s ease-in-out infinite; }
+
+/* Empêche le rebond du navigateur lors du scroll sur mobile */
+body, html {
+  overscroll-behavior-y: contain;
+}
