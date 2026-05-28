@@ -91,8 +91,6 @@
    ============================================ */
 .bulle-savon-test {
   /* 1. Fond Translucide Nacré (Fusionne avec ton Aurore Boréale #7CD6FF et #FFD1DC) */
-  
-{
   background: radial-gradient(circle at 20% 20%, 
     rgba(255, 255, 255, 0.45) 0%, 
     rgba(255, 255, 255, 0.15) 35%, 
