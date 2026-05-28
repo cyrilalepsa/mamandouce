@@ -91,6 +91,11 @@
    ============================================ */
 .bulle-savon-test {
   /* 1. Fond Translucide Nacré (Fusionne avec ton Aurore Boréale #7CD6FF et #FFD1DC) */
+  
+  /* --- SECTION TEST : Bulle de Savon (Scopeé) --- */
+ .glass-bubble-theme [class*="rounded-"], 
+ .glass-bubble-theme .Card,
+ .glass-bubble-theme [class*="Card"] {
   background: radial-gradient(circle at 20% 20%, 
     rgba(255, 255, 255, 0.45) 0%, 
     rgba(255, 255, 255, 0.15) 35%, 
