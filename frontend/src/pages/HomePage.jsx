@@ -61,11 +61,14 @@ function HomePage() {
     loadUserData();
     loadTrophyData();
     
-    // Initialisation sécurisée de la fête du jour
+    // 🎯 Extraction sécurisée pour éviter l'erreur React #31
     if (typeof getSaintOfTheDay === 'function') {
       try {
         const todaySaint = getSaintOfTheDay(new Date());
-        if (todaySaint) setNameOfTheDay(todaySaint);
+        if (todaySaint) {
+          const saintName = typeof todaySaint === 'object' ? todaySaint.name : todaySaint;
+          setNameOfTheDay(saintName || '');
+        }
       } catch (e) {
         console.error("Erreur calendrier des saints:", e);
       }
@@ -97,7 +100,7 @@ function HomePage() {
     const today = new Date();
     while (fertileEnd < today) {
       const daysToAdd = cycleLength;
-      fertileStart.setDate(fertileStart.getDate() + daysToAdd);
+      fertileStart.setDate(fertileStart.setDate() + daysToAdd);
       fertileEnd.setDate(fertileEnd.getDate() + daysToAdd);
     }
     
@@ -283,7 +286,7 @@ function HomePage() {
                 <div className="w-full max-w-sm mx-auto mt-2 px-2">
                   <div className="grid grid-cols-2 gap-3">
                     
-                    {/* BUTTON 1 : SEMAINE DE GROSSESSE - TEXTURE FILM DE SAVON */}
+                    {/* BOUTON SEMAINE - VISUEL BULLE DE SAVON IRISÉE */}
                     <button 
                       onClick={() => navigate('/cycle-tracking')}
                       className="flex flex-col justify-between items-center text-center min-h-[96px] w-full p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none relative overflow-hidden group"
@@ -309,7 +312,7 @@ function HomePage() {
                       </span>
                     </button>
 
-                    {/* BUTTON 2 : JOUR DE FÊTE - TEXTURE FILM DE SAVON */}
+                    {/* BOUTON FÊTE DU JOUR - VISUEL BULLE DE SAVON IRISÉE */}
                     <button 
                       onClick={() => navigate('/cycle-tracking?calendar=true')}
                       className="flex flex-col justify-between items-center text-center min-h-[96px] w-full p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none relative overflow-hidden group"
@@ -328,7 +331,7 @@ function HomePage() {
                         {t('home.nameDay', 'Fête du jour')}
                       </span>
                       <span className="text-lg font-bold text-slate-800 my-0.5 capitalize relative z-10">
-                        🎉 {nameOfTheDay || 'À fêter'}
+                        🎉 {typeof nameOfTheDay === 'object' ? nameOfTheDay.name : (nameOfTheDay || 'À fêter')}
                       </span>
                       <span className="text-[10px] text-slate-800 font-medium bg-white/60 px-2 py-0.5 rounded-full shadow-sm relative z-10">
                         {new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
