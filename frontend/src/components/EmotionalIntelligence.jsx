@@ -1,15 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
-import { X, Heart, Cake, Gift, Sparkles, PartyPopper, Baby, Calendar } from 'lucide-react';
+import { X, Heart, Sparkles, Baby } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import api from '../utils/api';
 import confetti from 'canvas-confetti';
 
+// 🌟 Forme de cœur pour le feu d'artifice
+const heartShape = confetti.shapeFromPath({ 
+  path: 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z' 
+});
+
 // Celebration Modal for special events
 const CelebrationModal = ({ event, onClose }) => {
   useEffect(() => {
     if (event?.celebration) {
-      // Trigger confetti for celebrations
       const colors = event.type === 'pregnancy_announcement' 
         ? ['#FFD700', '#FF69B4', '#FFA500', '#FF1493']
         : ['#FF69B4', '#FFB6C1', '#FFC0CB', '#FFE4E1'];
@@ -68,49 +72,72 @@ const CelebrationModal = ({ event, onClose }) => {
           onClick={onClose}
           className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-6 py-2 rounded-full font-bold"
         >
-          Merci ! 💕
+          Merci ! ❤️
         </Button>
       </Card>
     </div>
   );
 };
 
-// Pregnancy Announcement Celebration (special WAOUH effect)
+// 🎆 Écran géant de célébration (Feu d'artifice Avatar sécurisé)
 const PregnancyAnnouncementCelebration = ({ onComplete }) => {
   useEffect(() => {
-    // Multiple confetti bursts
     const duration = 5000;
     const animationEnd = Date.now() + duration;
-    const colors = ['#FFD700', '#FF69B4', '#FFA500', '#FF1493', '#FFB6C1'];
 
-    const frame = () => {
-      confetti({
-        particleCount: 5,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0 },
-        colors
-      });
-      confetti({
-        particleCount: 5,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1 },
-        colors
-      });
+    const pinkHeartsColors = ['#ff85b3', '#ff4d94', '#ffd1e1', '#ffffff'];
+    const shimmerColors = ['#FFD700', '#ffffff', '#FFE4E1', '#E2E8F0'];
 
-      if (Date.now() < animationEnd) {
-        requestAnimationFrame(frame);
+    // 🌟 Utilisation d'un Intervalle avec nettoyage strict
+    const interval = setInterval(() => {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+        return;
       }
-    };
-    frame();
+
+      const randomX = Math.random() * 0.6 + 0.2;
+
+      // Salves de cœurs alternées gauche / droite
+      confetti({
+        particleCount: 35,
+        startVelocity: 40,
+        spread: 70,
+        origin: { x: Math.random() > 0.5 ? 0.25 : 0.75, y: 0.6 },
+        shapes: [heartShape],
+        colors: pinkHeartsColors,
+        scalar: 2,
+        gravity: 0.8
+      });
+
+      // Explosion de scintillements Or et Diamant en hauteur
+      if (Math.random() > 0.3) {
+        confetti({
+          particleCount: 50,
+          startVelocity: 50,
+          spread: 120,
+          origin: { x: randomX, y: Math.floor(Math.random() * 0.2) + 0.3 },
+          shapes: ['circle'],
+          colors: shimmerColors,
+          scalar: 0.6,
+          gravity: 1.1,
+          ticks: 100
+        });
+      }
+    }, 300);
 
     const timeout = setTimeout(onComplete, duration);
-    return () => clearTimeout(timeout);
+
+    // ✨ NETTOYAGE CRUCIAL : Si le composant se ferme, on stoppe TOUT immédiatement
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
   }, [onComplete]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-pink-500/90 via-rose-400/90 to-amber-400/90 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-pink-500/95 via-rose-400/95 to-amber-400/95 backdrop-blur-md animate-fade-in">
       <div className="text-center p-8">
         <div className="relative">
           <Baby className="w-24 h-24 text-white mx-auto mb-6 animate-bounce" />
@@ -119,7 +146,7 @@ const PregnancyAnnouncementCelebration = ({ onComplete }) => {
         </div>
         
         <h1 className="text-4xl font-bold text-white mb-4 drop-shadow-lg" style={{ fontFamily: 'Nunito, sans-serif' }}>
-          🎉 Félicitations ! 🎉
+          ✨ Félicitations ! ✨
         </h1>
         
         <p className="text-2xl text-white/90 mb-6">
@@ -128,14 +155,14 @@ const PregnancyAnnouncementCelebration = ({ onComplete }) => {
         
         <p className="text-white/80 max-w-md mx-auto mb-8">
           Une nouvelle aventure commence... 
-          MamanDouce t'accompagne dans ce magnifique voyage ! 💕
+          MamanDouce t'accompagne dans ce magnifique voyage ! 🌸
         </p>
         
         <Button 
           onClick={onComplete}
           className="bg-white text-pink-600 px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition-all"
         >
-          Commencer l'aventure ✨
+          Commencer l'aventure 🚀
         </Button>
       </div>
     </div>
@@ -159,15 +186,13 @@ export function EmotionalIntelligenceProvider({ children }) {
         setCurrentNotification(res.data.notifications[0]);
       }
     } catch (error) {
-      // Silently fail - don't disrupt user experience
       console.log('Emotional notifications check failed');
     }
   }, []);
 
   useEffect(() => {
-    // Check on mount and periodically
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 60000 * 30); // Every 30 minutes
+    const interval = setInterval(fetchNotifications, 60000 * 30);
     return () => clearInterval(interval);
   }, [fetchNotifications]);
 
@@ -177,33 +202,18 @@ export function EmotionalIntelligenceProvider({ children }) {
         await api.post('/emotional/mark-celebrated', null, {
           params: { event_type: currentNotification.type }
         });
-      } catch (e) {
-        // Silently fail
-      }
+      } catch (e) {}
     }
     
-    // Show next notification or close
     const remaining = notifications.slice(1);
     setNotifications(remaining);
     setCurrentNotification(remaining[0] || null);
-  };
-
-  const announcePregnancy = async () => {
-    try {
-      const res = await api.post('/emotional/pregnancy-announced');
-      if (res.data.trigger_celebration) {
-        setShowPregnancyCelebration(true);
-      }
-    } catch (error) {
-      console.error('Error announcing pregnancy:', error);
-    }
   };
 
   return (
     <>
       {children}
       
-      {/* Celebration Modal */}
       {currentNotification && !showPregnancyCelebration && (
         <CelebrationModal 
           event={currentNotification} 
@@ -211,7 +221,6 @@ export function EmotionalIntelligenceProvider({ children }) {
         />
       )}
       
-      {/* Pregnancy Announcement Celebration */}
       {showPregnancyCelebration && (
         <PregnancyAnnouncementCelebration 
           onComplete={() => setShowPregnancyCelebration(false)} 
@@ -221,7 +230,6 @@ export function EmotionalIntelligenceProvider({ children }) {
   );
 }
 
-// Hook to trigger pregnancy announcement
 export function useEmotionalIntelligence() {
   const announcePregnancy = async () => {
     try {
