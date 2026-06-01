@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti'; 
-import NameOfTheDay from './NameOfTheDay'; 
+import NameOfTheDay from '../NameOfTheDay'; 
 
 // Path SVG pour l'effet wow pluie de cœurs
 const heart = confetti.shapeFromPath({ 
