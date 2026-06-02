@@ -413,6 +413,18 @@
 		<div id="root"></div>
 
         <script type="module" src="/src/main.jsx"></script>
+		<script>
+		// Écouter les messages en provenance du Service Worker
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.addEventListener('message', function(event) {
+				if (event.data && event.data.type === 'SW_UPDATED') {
+					console.log('[App] Nouvelle version détectée (' + event.data.version + '). Rafraîchissement...');
+					// Optionnel : Tu peux afficher un toast ou recharger directement
+					window.location.reload();
+				}
+			});
+		}
+	</script>
     </body>
 </html>
  
