@@ -16,14 +16,16 @@ export function PregnancyToggle({ isPregnant, dueDate, lastPeriodDate, onPregnan
 
   // 🧮 Calcul de la Semaine d'Aménorrhée (SA) et du Trimestre
   const pregnancyInfo = useMemo(() => {
-    if (!lastPeriodDate) return { week: 10, trimester: 1 };
+    if (!lastPeriodDate) return { week: 10, trimester: 1 }; // Fallback par défaut
     const start = new Date(lastPeriodDate);
     const today = new Date();
     const diffDays = Math.floor((today - start) / (1000 * 60 * 60 * 24));
     const currentWeek = Math.max(1, Math.floor(diffDays / 7) + 1);
+    
     let trimester = 1;
     if (currentWeek > 14 && currentWeek <= 28) trimester = 2;
     if (currentWeek > 28) trimester = 3;
+    
     return { week: currentWeek, trimester };
   }, [lastPeriodDate]);
 
@@ -31,58 +33,59 @@ export function PregnancyToggle({ isPregnant, dueDate, lastPeriodDate, onPregnan
    * ❤️🎆 Clic sur "Je suis enceinte" : Sequence de FEUX D'ARTIFICE Magique
    */
   const handleClick = () => {
-    // ✨ Définition des éléments magiques
+    // 🛡️ SÉCURITÉ : Évite un crash fatal si la date est manquante ou invalide
+    if (!lastPeriodDate) {
+      console.error("Impossible de calculer la DPA : lastPeriodDate est manquant.");
+      return;
+    }
+
     const shapes = {
       hearts: [heart],
-      sparkles: ['circle'] // Les petits cercles rapides font l'effet scintillement
+      sparkles: ['circle']
     };
 
     const palettes = {
       bonbonPinks: ['#ff85b3', '#ff4d94', '#ffd1e1', '#ffffff'],
-      magicLights: ['#ffffff', '#FFD700', '#AEC6CF'] // Blanc, Or pur, Argent scintillant
+      magicLights: ['#ffffff', '#FFD700', '#AEC6CF']
     };
 
-    // Fonction helper pour lancer un tir precis
     const shoot = (opts) => confetti(Object.assign({
-      ticks: 300,        // Durée de vie des particules
-      gravity: 0.9,      // Chute un peu plus lente pour faire aérien
-      startVelocity: 45, // Vitesse initiale
-      zIndex: 100,       // Toujours au-dessus de tout
-      spread: 100        // Largeur de l'explosion
+      ticks: 300,        
+      gravity: 0.9,      
+      startVelocity: 45, 
+      zIndex: 100,       
+      spread: 100        
     }, opts));
 
-    // 💥💥 1. LANCEMENT DE LA SÉQUENCE MAGIQUE EN cascade (Timing précis)
-
-    // A. Premier bouquet de COEUURS BONBON (Centre-Gauche, Bas)
+    // A. Premier bouquet de COEURS BONBON (Centre-Gauche, Bas)
     shoot({ 
       particleCount: 80, 
       origin: { x: 0.40, y: 0.70 }, 
       shapes: shapes.hearts, 
       colors: palettes.bonbonPinks, 
-      scalar: 2.2 // Gros cœurs
+      scalar: 2.2 
     });
 
-    // B. Deuxième bouquet de COEURS NACRÉS (Centre-Droite, un peu plus tard)
+    // B. Deuxième bouquet de COEURS NACRÉS (Centre-Droite)
     setTimeout(() => shoot({ 
       particleCount: 70, 
       origin: { x: 0.60, y: 0.60 }, 
       shapes: shapes.hearts, 
       colors: palettes.bonbonPinks, 
-      scalar: 1.8 // Un peu plus petits
+      scalar: 1.8 
     }), 200);
 
-    // C. 💥💥💥 L'EXPLOSION CENTRALE DE SCINTILLEMENTS LUMINEUX (Haut, Rapide, Diffuse)
-    // C'est ICI que se crée l'effet "Avatar/Magie"
+    // C. L'EXPLOSION CENTRALE DE SCINTILLEMENTS LUMINEUX
     setTimeout(() => shoot({ 
-      particleCount: 200, // Plein de petites particules !
-      origin: { x: 0.50, y: 0.40 }, // Plus haut dans l'écran
+      particleCount: 200, 
+      origin: { x: 0.50, y: 0.40 }, 
       shapes: shapes.sparkles, 
-      colors: palettes.magicLights, // La palette de LUMIÈRE
-      scalar: 0.7, // Minuscules particules scintillantes
-      startVelocity: 60, // EXPLOSION ultra-rapide
-      spread: 360, // Dans toutes les directions
-      gravity: 1.1, // Chute plus rapide (scintillements qui tombent)
-      ticks: 200 // Durent moins longtemps
+      colors: palettes.magicLights, 
+      scalar: 0.7, 
+      startVelocity: 60, 
+      spread: 360, 
+      gravity: 1.1, 
+      ticks: 200 
     }), 450);
 
     // D. Un rappel final mix (Milieu)
@@ -96,20 +99,26 @@ export function PregnancyToggle({ isPregnant, dueDate, lastPeriodDate, onPregnan
       gravity: 0.6 
     }), 800);
 
-    // ---💾 Traitement des données---
+    // 💾 --- Traitement des données & Sauvegarde ---
     const dpa = new Date(lastPeriodDate);
     dpa.setDate(dpa.getDate() + 280);
     const dpaStr = dpa.toISOString().split('T')[0];
+    
     localStorage.setItem('mamandouce_pregnant', 'true');
     localStorage.setItem('mamandouce_due_date', dpaStr);
-    onPregnant(dpaStr);
+    
+    // Déclenchement du callback parent
+    if (onPregnant) {
+      onPregnant(dpaStr);
+    }
   };
 
-  // ---RENDU (AUCUN CHANGEMENT ICI)---
+  // ==========================================
+  // ---               RENDU                ---
+  // ==========================================
 
   // 🌸 CAS 1 : PAGE SUIVI DE CYCLE (mode="cycle")
   if (mode === "cycle") {
-    // ÉTAT : Déjà enceinte
     if (isPregnant && dueDate) {
       const formattedDate = new Date(dueDate).toLocaleDateString('fr-FR', {
         day: 'numeric', month: 'long', year: 'numeric'
@@ -131,7 +140,6 @@ export function PregnancyToggle({ isPregnant, dueDate, lastPeriodDate, onPregnan
       );
     } 
     
-    // ÉTAT : Pas encore enceinte (Bouton Rose Bonbon)
     return (
       <button
         onClick={handleClick}
@@ -176,5 +184,6 @@ export function PregnancyToggle({ isPregnant, dueDate, lastPeriodDate, onPregnan
       </div>
     );
   }
+
   return null;
 }
