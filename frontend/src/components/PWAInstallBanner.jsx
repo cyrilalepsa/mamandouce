@@ -84,14 +84,16 @@ export function PWAInstallBanner() {
             <Download className="w-5 h-5" />
           </div>
           <div className="flex-1">
-            <p className="font-bold text-sm">Installer MamanDouce</p>
-            {isIOS ? (
-              <p className="text-xs opacity-90">
-                Appuyez sur <span className="font-bold">⬆️ Partager</span> puis <span className="font-bold">"Sur l'écran d'accueil"</span>
-              </p>
-            ) : (
-              <p className="text-xs opacity-90">Accédez rapidement depuis votre écran d'accueil</p>
-            )}
+		  <p className="font-bold text-sm text-white">Installer MamanDouce</p>
+		{isIOS ? (
+		  <p className="text-xs text-purple-100 opacity-90 mt-0.5">
+			Appuyez sur <span className="font-bold text-white">⬆️ Partager</span> puis <span className="font-bold text-white">"Sur l'écran d'accueil"</span>
+		  </p>
+		) : (
+		  <p className="text-xs text-purple-100 opacity-90 mt-0.5">
+			Accédez rapidement depuis votre écran d'accueil
+		  </p>
+        )}
           </div>
         </div>
         
