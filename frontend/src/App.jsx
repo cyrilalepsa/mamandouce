@@ -83,7 +83,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+ useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       setIsAuthenticated(true);
@@ -102,7 +102,7 @@ function App() {
         });
       }, 1500);
     }
-    
+
     // Cacher le loader initial HTML quand React est prêt
     if (window.hideInitialLoader) {
       window.hideInitialLoader();
@@ -114,25 +114,27 @@ function App() {
         registration.update().catch(err => console.log('SW update check failed:', err));
       });
 
-   // Écouter les notifications de mise à jour du Service Worker
-	navigator.serviceWorker.addEventListener('message', (event) => {
-	if (event.data && event.data.type === 'SW_UPDATED') {
-    console.log('New version available:', event.data.version);
-    
-    // Un joli Toast non-intrusif mais visible qui reste à l'écran
-    toast.info("Mise à jour disponible ! ✨", {
-      description: "Une nouvelle version de MamanDouce a été déployée. Cliquez pour l'activer.",
-      duration: Infinity, // Empêche le toast de disparaître tout seul
-      position: 'top-center', // Parfaitement visible sur mobile
-      action: {
-        label: "Actualiser",
-        onClick: () => {
-          window.location.reload(); // Ne recharge QUE si l'utilisatrice clique sur le bouton
+      // 🍞 Un seul écouteur unique, directement connecté à ton UI React avec Sonner
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'SW_UPDATED') {
+          console.log('New version available:', event.data.version);
+          
+          // On déclenche ton toast Sonner existant
+          toast.info("Mise à jour disponible ! ✨", {
+            description: `La version ${event.data.version} de MamanDouce est prête.`,
+            duration: Infinity, // Le toast reste visible tant qu'on ne clique pas
+            position: 'top-center',
+            action: {
+              label: "Actualiser",
+              onClick: () => {
+                window.location.reload(); // Rechargement propre à la demande
+              }
+            }
+          });
         }
-      }
-    });
-  }
-});
+      });
+    } // 👈 Accolade fermée pour le if ('serviceWorker' in navigator)
+  }, []); // 👈 Clôture propre du hook useEffect
 
   const ProtectedRoute = ({ children, requireSubscription = true }) => {
     if (loading) return <div>Chargement...</div>;
