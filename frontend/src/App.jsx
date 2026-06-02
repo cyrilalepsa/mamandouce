@@ -83,7 +83,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
- useEffect(() => {
+useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       setIsAuthenticated(true);
@@ -128,12 +128,13 @@ function App() {
               label: "Actualiser",
               onClick: () => {
                 window.location.reload(); // Rechargement propre à la demande
-			});
-		}
+              }
+            }
+          });
+        }
       });
     }
   }, []);
-
   const ProtectedRoute = ({ children, requireSubscription = true }) => {
     if (loading) return <div>Chargement...</div>;
     if (!isAuthenticated) return <Navigate to="/auth" />;
