@@ -114,16 +114,25 @@ function App() {
         registration.update().catch(err => console.log('SW update check failed:', err));
       });
 
-      // Listen for SW messages to auto-reload on update
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        if (event.data && event.data.type === 'SW_UPDATED') {
-          console.log('New version available:', event.data.version);
-          // Auto-reload to get new version
-          window.location.reload();
+   // Écouter les notifications de mise à jour du Service Worker
+	navigator.serviceWorker.addEventListener('message', (event) => {
+	if (event.data && event.data.type === 'SW_UPDATED') {
+    console.log('New version available:', event.data.version);
+    
+    // Un joli Toast non-intrusif mais visible qui reste à l'écran
+    toast.info("Mise à jour disponible ! ✨", {
+      description: "Une nouvelle version de MamanDouce a été déployée. Cliquez pour l'activer.",
+      duration: Infinity, // Empêche le toast de disparaître tout seul
+      position: 'top-center', // Parfaitement visible sur mobile
+      action: {
+        label: "Actualiser",
+        onClick: () => {
+          window.location.reload(); // Ne recharge QUE si l'utilisatrice clique sur le bouton
         }
-      });
-    }
-  }, []);
+      }
+    });
+  }
+});
 
   const ProtectedRoute = ({ children, requireSubscription = true }) => {
     if (loading) return <div>Chargement...</div>;
