@@ -132,7 +132,9 @@ function App() {
       }
     });
   }
-});
+  });
+    }
+  }, []);
 
   const ProtectedRoute = ({ children, requireSubscription = true }) => {
     if (loading) return <div>Chargement...</div>;
