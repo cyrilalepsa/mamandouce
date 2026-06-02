@@ -128,13 +128,11 @@ function App() {
               label: "Actualiser",
               onClick: () => {
                 window.location.reload(); // Rechargement propre à la demande
-              }
-            }
-          });
-        }
+			});
+		}
       });
-    } // 👈 Accolade fermée pour le if ('serviceWorker' in navigator)
-  }, []); // 👈 Clôture propre du hook useEffect
+    }
+  }, []);
 
   const ProtectedRoute = ({ children, requireSubscription = true }) => {
     if (loading) return <div>Chargement...</div>;
