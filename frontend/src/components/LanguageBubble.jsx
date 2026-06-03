@@ -52,7 +52,7 @@ export function LanguageBubble() {
       {/* Language dropdown */}
       {isOpen && (
         <div 
-          className="absolute top-10 left-0 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
+          className="absolute top-10 left-20 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
           style={{ 
             minWidth: '200px',
             zIndex: 9999,
