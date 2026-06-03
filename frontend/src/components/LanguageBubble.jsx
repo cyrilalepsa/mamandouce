@@ -49,17 +49,15 @@ export function LanguageBubble() {
 
   return (
     <div className="absolute top-4 right-14" style={{ zIndex: 50 }} ref={dropdownRef}>
-			{/* Language dropdown */}
-			{isOpen && (
-			  <div 
-				// Remplace "right-0" par "left-0" ici
-				className="absolute top-10 left-0 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden" 
-				style={{ 
-				  minWidth: '200px',
-				  zIndex: 9999,
-				  animation: 'fadeInDown 0.2s ease-out'
-				}}
-  >
+      {/* Language dropdown */}
+      {isOpen && (
+        <div 
+          className="absolute top-10 left-0 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
+          style={{ 
+            minWidth: '200px',
+            zIndex: 9999,
+            animation: 'fadeInDown 0.2s ease-out'
+          }}
         >
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-pink-50 to-purple-50 border-b border-slate-100">
