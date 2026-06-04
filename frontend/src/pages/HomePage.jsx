@@ -16,6 +16,7 @@ import {
   useTutorial,
   InteractiveTutorial
 } from '../components/home';
+
 import { NewsBubble, NewsPopup, useNews } from '../components/home/NewsBubble';
 
 const ADMIN_EMAIL = 'cyrilalepsa@gmail.com';
@@ -285,7 +286,19 @@ function HomePage() {
 
                 <div className="w-full max-w-sm mx-auto mt-2 px-2">
                   <div className="grid grid-cols-2 gap-3">
-                    
+					export function Homepage() {
+					  const [isLangOpen, setIsLangOpen] = useState(false);
+
+					  return (
+						<div className="relative">
+						  {/* Ton LanguageBubble contrôlé */}
+						  <LanguageBubble isOpen={isLangOpen} onToggle={setIsLangOpen} />
+
+						  {/* Remplacement des bulles semaine */}
+						  {!isLangOpen && (
+							<div className="week-bubbles-container">
+							  {/* Tes bulles semaine ici */}
+							
                     {/* BOUTON SEMAINE - VISUEL BULLE DE SAVON IRISÉE */}
                     <button 
                       onClick={() => navigate('/cycle-tracking')}
@@ -311,7 +324,11 @@ function HomePage() {
                         Trimestre 1 • SA
                       </span>
                     </button>
-
+				</div>
+			  )}
+			</div>
+		);
+	}        
                     {/* BOUTON FÊTE DU JOUR - VISUEL BULLE DE SAVON IRISÉE */}
                     <button 
                       onClick={() => navigate('/cycle-tracking?calendar=true')}
