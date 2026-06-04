@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { languages, changeLanguage, getCurrentLanguage } from '../i18n';
 import { Check, X } from 'lucide-react';
 import { toast } from 'sonner';
+export function LanguageBubble({ isOpen, onToggle }) { // Ajout des props
 
 export function LanguageBubble() {
   const { t } = useTranslation();
@@ -47,12 +48,12 @@ export function LanguageBubble() {
     setIsOpen(prev => !prev);
   };
 
-  return (
+ return (
     <div className="absolute top-4 right-14" style={{ zIndex: 50 }} ref={dropdownRef}>
       {/* Language dropdown */}
       {isOpen && (
         <div 
-          className="absolute top-10 -left-20 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
+          className="absolute top-10 right-0 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden" // Changement ici : right-0 au lieu de -left-20
           style={{ 
             minWidth: '200px',
             zIndex: 9999,
@@ -63,13 +64,24 @@ export function LanguageBubble() {
           <div className="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-pink-50 to-purple-50 border-b border-slate-100">
             <span className="text-sm font-semibold text-slate-600">{t('settings.language')}</span>
             <button
-              onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}
+              onClick={(e) => { e.stopPropagation(); onToggle(false); }} // Appelle la fonction parent
               className="p-1 hover:bg-slate-200 rounded-full transition-colors"
             >
               <X className="w-4 h-4 text-slate-400" />
             </button>
-          </div>
-          
+        </div>
+         )}
+
+			  <button
+				onClick={() => onToggle(!isOpen)} // Appelle la fonction parent
+				className="p-1 flex items-center justify-center transition-all duration-200 hover:scale-110 hover:opacity-80"
+				data-testid="language-bubble-btn"
+			  >
+				<span className="text-2xl">{currentLanguage.flag}</span>
+			  </button>
+			</div>
+		  );
+		}		 
           {/* Language list */}
           <div className="max-h-[300px] overflow-y-auto py-1">
             {languages.map((lang) => (
