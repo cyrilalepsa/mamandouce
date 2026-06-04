@@ -288,47 +288,50 @@ function HomePage() {
                   <div className="grid grid-cols-2 gap-3">
 					export function Homepage() {
 					  const [isLangOpen, setIsLangOpen] = useState(false);
+					  const [showWeekCard, setShowWeekCard] = useState(false); // État pour afficher la carte Semaine
 
 					  return (
 						<div className="relative">
 						  {/* Ton LanguageBubble contrôlé */}
 						  <LanguageBubble isOpen={isLangOpen} onToggle={setIsLangOpen} />
 
-						  {/* Remplacement des bulles semaine */}
-						  {!isLangOpen && (
+						  {/* Le déclencheur "Je suis enceinte !" */}
+						  <button onClick={() => setShowWeekCard(true)} className="ton-bouton-style">
+							Je suis enceinte !
+						  </button>
+
+						  {/* La carte Semaine n'apparaît que si showWeekCard est true 
+							  ET que le menu langue n'est pas ouvert pour éviter les chevauchements */}
+						  {(showWeekCard && !isLangOpen) && (
 							<div className="week-bubbles-container">
-							  {/* Tes bulles semaine ici */}
-							
-                    {/* BOUTON SEMAINE - VISUEL BULLE DE SAVON IRISÉE */}
-                    <button 
-                      onClick={() => navigate('/cycle-tracking')}
-                      className="flex flex-col justify-between items-center text-center min-h-[96px] w-full p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none relative overflow-hidden group"
-                      style={{
-                        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.08) 100%)',
-                        backdropFilter: 'blur(12px)',
-                        WebkitBackdropFilter: 'blur(12px)',
-                        border: '1px solid rgba(255, 140, 159, 0.45)',
-                        borderRadius: '20px',
-                        boxShadow: 'inset 0 12px 24px -4px rgba(255, 255, 255, 0.65), inset 6px 0 14px -2px rgba(255, 140, 159, 0.25), inset -6px -6px 14px -2px rgba(196, 181, 253, 0.25), 0 8px 24px -8px rgba(74, 74, 74, 0.06)'
-                      }}
-                    >
-                      <div className="absolute top-[3px] left-[6%] right-[6%] pointer-events-none rounded-[inherit]" style={{ height: '26%', background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 100%)' }} />
-                      
-                      <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold relative z-10">
-                        {t('home.youAreAt', 'Vous êtes à la')}
-                      </span>
-                      <span className="text-lg font-bold text-pink-500 my-0.5 relative z-10">
-                        Semaine {pregnancyProfile?.current_week || '9'}
-                      </span>
-                      <span className="text-[10px] text-sky-500 font-medium bg-white/50 px-2 py-0.5 rounded-full shadow-sm relative z-10">
-                        Trimestre 1 • SA
-                      </span>
-                    </button>
-				</div>
-			  )}
-			</div>
-		);
-	}        
+							  <button 
+								onClick={() => navigate('/cycle-tracking')}
+								className="flex flex-col justify-between items-center text-center min-h-[96px] w-full p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none relative overflow-hidden group"
+								style={{
+								   background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.08) 100%)',
+								   backdropFilter: 'blur(12px)',
+								   WebkitBackdropFilter: 'blur(12px)',
+								   border: '1px solid rgba(255, 140, 159, 0.45)',
+								   borderRadius: '20px',
+								   boxShadow: 'inset 0 12px 24px -4px rgba(255, 255, 255, 0.65), inset 6px 0 14px -2px rgba(255, 140, 159, 0.25), inset -6px -6px 14px -2px rgba(196, 181, 253, 0.25), 0 8px 24px -8px rgba(74, 74, 74, 0.06)'
+								}}
+							  >
+								<div className="absolute top-[3px] left-[6%] right-[6%] pointer-events-none rounded-[inherit]" style={{ height: '26%', background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 100%)' }} />
+								<span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold relative z-10">
+								  {t('home.youAreAt', 'Vous êtes à la')}
+								</span>
+								<span className="text-lg font-bold text-pink-500 my-0.5 relative z-10">
+								  Semaine {pregnancyProfile?.current_week || '9'}
+								</span>
+								<span className="text-[10px] text-sky-500 font-medium bg-white/50 px-2 py-0.5 rounded-full shadow-sm relative z-10">
+								  Trimestre 1 • SA
+								</span>
+							  </button>
+							</div>
+						  )}
+						</div>
+					  );
+}
                     {/* BOUTON FÊTE DU JOUR - VISUEL BULLE DE SAVON IRISÉE */}
                     <button 
                       onClick={() => navigate('/cycle-tracking?calendar=true')}
