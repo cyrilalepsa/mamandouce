@@ -34,7 +34,7 @@ WEEKLY_TIPS = [
         "description": "C'est le moment de faire un test de grossesse. Le cœur de l'embryon commence à battre ! Prenez rdv pour votre première consultation prénatale.",
         "embryo_size": "2mm",
         "development": "Formation du tube neural, début des battements cardiaques (110-130 bpm)",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/4befeea54d8091b6cd2b1736afd8dac0f73fb4f8e6c3efaea611001d85df4d91.png",
+        "image_url": "",
         "administrative_tasks": []
     },
     {
@@ -70,7 +70,7 @@ WEEKLY_TIPS = [
         "description": "Tous les organes principaux se forment. Évitez les aliments à risque (fromages au lait cru, charcuterie, poisson cru). Première échographie possible.",
         "embryo_size": "1.6cm",
         "development": "Tous les organes majeurs sont présents, bras et jambes se développent",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/23f4562fad153b8e62e14694223ae6959fb24abb5470509159f3d4eefecc8da9.png",
+        "image_url": "",
         "administrative_tasks": ['✅ URGENT : Envoyer la déclaration de grossesse à la CPAM (volet 1 et 2)', '✅ URGENT : Envoyer le volet 3 à la CAF', '📅 Prendre RDV pour la 1ère échographie (11-13 SA)', "💰 Vérifier vos droits à la PAJE (Prestation d'Accueil du Jeune Enfant)"]
     },
     {
@@ -106,7 +106,7 @@ WEEKLY_TIPS = [
         "description": "Félicitations ! Premier trimestre terminé. Échographie de datation. Les risques diminuent considérablement. Vous pouvez annoncer votre grossesse.",
         "embryo_size": "5.4cm",
         "development": "Tous les organes et systèmes sont en place et continuent de maturer",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/75d7248c29f91d3ebaf2c92f181264d88edb28b61def6b8a70a05f989e4c0d6c.png",
+        "image_url": "",
         "administrative_tasks": ['🏥 Choisir définitivement votre maternité', "📞 Contacter la maternité pour connaître les modalités d'inscription", '👶 Si non mariés : penser à la reconnaissance anticipée', '📋 Commencer le carnet de maternité (remis par médecin/sage-femme)']
     },
     {
@@ -178,7 +178,7 @@ WEEKLY_TIPS = [
         "description": "Mi-grossesse ! Le fœtus bouge beaucoup. Surveillez votre tension artérielle. Continuez l'exercice doux. Massages prénataux bénéfiques.",
         "embryo_size": "16cm",
         "development": "Mouvements perceptibles par la mère, cycle veille-sommeil établi",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/c4dd0a23b5f863619b7d5f8641ceee5e10ec23e23eb08b187a6b5670389334f6.png",
+        "image_url": "",
         "administrative_tasks": ['👶 Reconnaissance anticipée (si non mariés) - à faire avant la naissance', '🏠 Commencer à chercher un mode de garde (crèche/assistante maternelle)', '💰 Se renseigner sur le complément de libre choix du mode de garde (CMG)', '📋 2ème consultation prénatale obligatoire']
     },
     {
@@ -250,7 +250,7 @@ WEEKLY_TIPS = [
         "description": "Consultations mensuelles deviennent bimensuelles. Le fœtus est très actif. Dormez avec un coussin entre les jambes. Continuez le fer et calcium.",
         "embryo_size": "35cm",
         "development": "Cerveau se développe rapidement, poumons presque matures",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/79026c4d3a21cf1fcc7ec44c1d68a87aff71e749688af33ee9f14d3704033ca2.png",
+        "image_url": "",
         "administrative_tasks": ['✅ INSCRIPTION CRÈCHE si pas encore fait (sinon trop tard !)', '📞 Confirmer inscription assistante maternelle ou crèche', "👶 Cours de préparation à l'accouchement (8 séances remboursées)", '🏥 3ème échographie (32 SA) - prendre RDV']
     },
     {
@@ -322,7 +322,7 @@ WEEKLY_TIPS = [
         "description": "Bébé est presque prêt. Surveillez les signes du travail (contractions régulières, perte des eaux, perte du bouchon muqueux). Évitez les voyages.",
         "embryo_size": "46cm",
         "development": "Tous les organes fonctionnels, accumulation de graisse",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/86bb6d560f9a0976b73d74d475c7199d64b0a988ab03529eca453712214c6287.png",
+        "image_url": "",
         "administrative_tasks": ["📞 Numéros d'urgence facilement accessibles", '🚗 Trajet maternité testé, plan B préparé', '📱 Téléphone chargé en permanence', "👶 Vérifier que TOUT est prêt pour l'accueil de bébé"]
     },
     {

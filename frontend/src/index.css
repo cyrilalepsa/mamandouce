@@ -208,30 +208,6 @@ a,
 }
 
 
-/* Cacher la bannière Wake up servers d'Emergent */
-div[style*="position: fixed"][style*="bottom: 0"],
-div[style*="position:fixed"][style*="bottom:0"],
-.emergent-banner,
-.wake-up-banner,
-.preview-banner,
-[class*="wake-servers"],
-[class*="wakeup"],
-[id*="wake-servers"],
-[id*="emergent-banner"],
-/* Cacher les bannières Emergent spécifiques */
-div[class*="spinning" i],
-div[class*="emergent" i]:not([data-testid]) {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  height: 0 !important;
-  width: 0 !important;
-  overflow: hidden !important;
-  position: absolute !important;
-  left: -9999px !important;
-}
-
 /* Forcer l'affichage du bouton de pagination */
 #page-dots {
   display: flex !important;

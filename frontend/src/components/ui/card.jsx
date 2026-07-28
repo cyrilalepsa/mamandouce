@@ -13,8 +13,48 @@ const hasGradientBackground = (className) => {
          className.includes('glossy-card-');
 };
 
-const Card = React.forwardRef(({ className, glossy, glossyColor, children, ...props }, ref) => {
-  // Auto-détecter si on doit appliquer glossy basé sur les classes
+/**
+ * @param {'default'|'flat'|'glass'|'glass-interactive'} variant
+ *   - default: comportement historique (glossy auto)
+ *   - flat: carte info statique (plat)
+ *   - glass / glass-interactive: glassmorphism bombé (éléments cliquables)
+ */
+const Card = React.forwardRef(({ className, glossy, glossyColor, variant = 'default', interactive, children, ...props }, ref) => {
+  const isInteractive =
+    interactive === true ||
+    variant === 'glass' ||
+    variant === 'glass-interactive' ||
+    typeof props.onClick === 'function' ||
+    props.role === 'button';
+
+  if (variant === 'flat') {
+    return (
+      <div
+        ref={ref}
+        className={cn("rounded-xl border bg-card text-card-foreground card-flat", className)}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  }
+
+  if (isInteractive) {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "rounded-xl relative overflow-hidden card-glass-interactive cursor-pointer",
+          glossyColor && `glossy-card-${glossyColor}`,
+          className
+        )}
+        {...props}
+      >
+        <div className="relative z-[2]">{children}</div>
+      </div>
+    );
+  }
+
   const shouldGlossy = glossy || hasGradientBackground(className);
   
   if (shouldGlossy) {
@@ -35,7 +75,7 @@ const Card = React.forwardRef(({ className, glossy, glossyColor, children, ...pr
   return (
     <div
       ref={ref}
-      className={cn("rounded-xl border bg-card text-card-foreground shadow", className)}
+      className={cn("rounded-xl border bg-card text-card-foreground shadow card-flat", className)}
       {...props}
     >
       {children}

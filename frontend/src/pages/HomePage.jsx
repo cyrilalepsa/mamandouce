@@ -7,8 +7,8 @@ import AppTitle from '../components/AppTitle';
 import { AvatarPreview } from '../components/profile/AvatarBuilder';
 import PremiumSunAvatar from '../components/profile/PremiumSunAvatar';
 import { isNameCelebratedToday, getSaintOfTheDay } from '../data/saintsCalendar';
-import LanguageBubble from '../components/LanguageBubble';
 import CustomizableHome from '../components/home/CustomizableHome';
+import { PregnancyToggle } from '../components/cycle/PregnancyToggle';
 import {
   TopBar,
   TutorialPopup,
@@ -36,6 +36,12 @@ function HomePage() {
   const [hasRapportInFertileWindow, setHasRapportInFertileWindow] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [earnedTrophy, setEarnedTrophy] = useState(null);
+  const [isPregnantHome, setIsPregnantHome] = useState(
+    () => localStorage.getItem('mamandouce_pregnant') === 'true'
+  );
+  const [dueDateHome, setDueDateHome] = useState(
+    () => localStorage.getItem('mamandouce_due_date') || ''
+  );
   
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
@@ -74,6 +80,21 @@ function HomePage() {
         console.error("Erreur calendrier des saints:", e);
       }
     }
+  }, []);
+
+  // Resync cartes grossesse à chaque retour sur l'accueil
+  useEffect(() => {
+    const syncPregnant = () => {
+      setIsPregnantHome(localStorage.getItem('mamandouce_pregnant') === 'true');
+      setDueDateHome(localStorage.getItem('mamandouce_due_date') || '');
+    };
+    syncPregnant();
+    window.addEventListener('focus', syncPregnant);
+    window.addEventListener('storage', syncPregnant);
+    return () => {
+      window.removeEventListener('focus', syncPregnant);
+      window.removeEventListener('storage', syncPregnant);
+    };
   }, []);
 
   const checkRapportInFertileWindow = (profile) => {
@@ -285,80 +306,16 @@ function HomePage() {
                 )}
 
                 <div className="w-full max-w-sm mx-auto mt-2 px-2">
-                  <div className="grid grid-cols-2 gap-3">
-					export function Homepage() {
-					  const [isLangOpen, setIsLangOpen] = useState(false);
-					  const [showWeekCard, setShowWeekCard] = useState(false); // État pour afficher la carte Semaine
-
-					  return (
-						<div className="relative">
-						  {/* Ton LanguageBubble contrôlé */}
-						  <LanguageBubble isOpen={isLangOpen} onToggle={setIsLangOpen} />
-
-						  {/* Le déclencheur "Je suis enceinte !" */}
-						  <button onClick={() => setShowWeekCard(true)} className="ton-bouton-style">
-							Je suis enceinte !
-						  </button>
-
-						  {/* La carte Semaine n'apparaît que si showWeekCard est true 
-							  ET que le menu langue n'est pas ouvert pour éviter les chevauchements */}
-						  {(showWeekCard && !isLangOpen) && (
-							<div className="week-bubbles-container">
-							  <button 
-								onClick={() => navigate('/cycle-tracking')}
-								className="flex flex-col justify-between items-center text-center min-h-[96px] w-full p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none relative overflow-hidden group"
-								style={{
-								   background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.08) 100%)',
-								   backdropFilter: 'blur(12px)',
-								   WebkitBackdropFilter: 'blur(12px)',
-								   border: '1px solid rgba(255, 140, 159, 0.45)',
-								   borderRadius: '20px',
-								   boxShadow: 'inset 0 12px 24px -4px rgba(255, 255, 255, 0.65), inset 6px 0 14px -2px rgba(255, 140, 159, 0.25), inset -6px -6px 14px -2px rgba(196, 181, 253, 0.25), 0 8px 24px -8px rgba(74, 74, 74, 0.06)'
-								}}
-							  >
-								<div className="absolute top-[3px] left-[6%] right-[6%] pointer-events-none rounded-[inherit]" style={{ height: '26%', background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 100%)' }} />
-								<span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold relative z-10">
-								  {t('home.youAreAt', 'Vous êtes à la')}
-								</span>
-								<span className="text-lg font-bold text-pink-500 my-0.5 relative z-10">
-								  Semaine {pregnancyProfile?.current_week || '9'}
-								</span>
-								<span className="text-[10px] text-sky-500 font-medium bg-white/50 px-2 py-0.5 rounded-full shadow-sm relative z-10">
-								  Trimestre 1 • SA
-								</span>
-							  </button>
-							</div>
-						  )}
-						</div>
-					  );
-}
-                    {/* BOUTON FÊTE DU JOUR - VISUEL BULLE DE SAVON IRISÉE */}
-                    <button 
-                      onClick={() => navigate('/cycle-tracking?calendar=true')}
-                      className="flex flex-col justify-between items-center text-center min-h-[96px] w-full p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none relative overflow-hidden group"
-                      style={{
-                        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.08) 100%)',
-                        backdropFilter: 'blur(12px)',
-                        WebkitBackdropFilter: 'blur(12px)',
-                        border: '1px solid rgba(234, 179, 8, 0.4)',
-                        borderRadius: '20px',
-                        boxShadow: 'inset 0 12px 24px -4px rgba(255, 255, 255, 0.65), inset 6px 0 14px -2px rgba(234, 179, 8, 0.2), inset -6px -6px 14px -2px rgba(196, 181, 253, 0.25), 0 8px 24px -8px rgba(74, 74, 74, 0.06)'
-                      }}
-                    >
-                      <div className="absolute top-[3px] left-[6%] right-[6%] pointer-events-none rounded-[inherit]" style={{ height: '26%', background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 100%)' }} />
-
-                      <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold relative z-10">
-                        {t('home.nameDay', 'Fête du jour')}
-                      </span>
-                      <span className="text-lg font-bold text-slate-800 my-0.5 capitalize relative z-10">
-                        🎉 {typeof nameOfTheDay === 'object' ? nameOfTheDay.name : (nameOfTheDay || 'À fêter')}
-                      </span>
-                      <span className="text-[10px] text-slate-800 font-medium bg-white/60 px-2 py-0.5 rounded-full shadow-sm relative z-10">
-                        {new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
-                      </span>
-                    </button>
-
-                  </div>
+                  <PregnancyToggle
+                    mode="home"
+                    isPregnant={isPregnantHome}
+                    dueDate={dueDateHome}
+                    lastPeriodDate={pregnancyProfile?.last_period_date}
+                    onPregnant={(dpaStr) => {
+                      setIsPregnantHome(true);
+                      setDueDateHome(dpaStr);
+                    }}
+                  />
                 </div>
               </div>
             </div>

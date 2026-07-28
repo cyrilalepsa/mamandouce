@@ -1,14 +1,41 @@
 // Calendrier des prénoms du jour par pays
 // France: Saints catholiques, Espagne: Santoral, Italie: Onomastico, etc.
 
-// Fonction pour obtenir le prénom du jour selon le pays
+/** Prénoms de secours (jamais de carte vide). */
+const FALLBACK_NAMES = [
+  'Marie', 'Jean', 'Anne', 'Pierre', 'Claire', 'Paul', 'Sophie', 'Louis',
+  'Camille', 'Thomas', 'Léa', 'Nicolas', 'Emma', 'Antoine', 'Julie', 'Lucas',
+];
+
+/**
+ * Prénom(s) du jour selon la langue.
+ * Garantit toujours au moins un prénom (fallback FR puis liste de secours).
+ */
 export const getNameOfTheDay = (date, langCode) => {
   const month = date.getMonth() + 1;
   const day = date.getDate();
   const key = `${month}-${day}`;
-  
-  const calendar = nameCalendars[langCode] || nameCalendars.fr;
-  return calendar[key] || { names: [], celebration: "" };
+
+  const pick = (entry) =>
+    entry?.names?.find((n) => typeof n === 'string' && n.trim().length > 0);
+
+  const local = nameCalendars[langCode]?.[key];
+  const localName = pick(local);
+  if (localName) {
+    return { ...local, names: local.names.filter(Boolean) };
+  }
+
+  const fr = nameCalendars.fr?.[key];
+  const frName = pick(fr);
+  if (frName) {
+    return { ...fr, names: fr.names.filter(Boolean) };
+  }
+
+  // Secours déterministe : un prénom selon le jour de l'année
+  const start = new Date(date.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((date - start) / 86400000);
+  const name = FALLBACK_NAMES[dayOfYear % FALLBACK_NAMES.length];
+  return { names: [name], celebration: name };
 };
 
 // Calendriers par pays

@@ -2,7 +2,7 @@
  * FoodScannerAI - Scanner IA pour analyser les aliments
  * Utilise la caméra ou l'upload pour identifier les aliments
  */
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
@@ -61,6 +61,23 @@ export default function FoodScannerAI({ isOpen, onClose }) {
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
+
+  // Arrêter le flux caméra à la fermeture / démontage (évite fuite média)
+  useEffect(() => {
+    if (!isOpen) {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
+      return undefined;
+    }
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
+    };
+  }, [isOpen]);
   
   const textShadow = isDarkMode ? { textShadow: '1px 1px 3px rgba(0,0,0,1)' } : {};
   const cardBg = isDarkMode ? 'bg-slate-800' : 'bg-white';
@@ -492,7 +509,7 @@ export default function FoodScannerAI({ isOpen, onClose }) {
                     <div>
                       <p className="font-semibold text-pink-600 text-sm">Tu peux nous aider !</p>
                       <p className="text-xs text-purple-500 mt-1">
-                        Envoie cet aliment pour qu'un expert l'analyse. Tu gagneras des points vers ton badge !
+                        Envoie cet aliment pour qu'un expert l'analyse. Tu gagneras des N20 pour faire progresser ton badge !
                       </p>
                     </div>
                   </div>

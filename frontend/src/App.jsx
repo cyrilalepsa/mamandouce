@@ -8,6 +8,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { AutoRefreshProvider } from './contexts/AutoRefreshContext';
 import { checkFirstVisitLanguage } from './i18n';
 import { toast } from 'sonner';
+import api from './utils/api';
 import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import PregnancyCalculator from './pages/PregnancyCalculator';
@@ -75,7 +76,6 @@ import { EmotionalIntelligenceProvider } from './components/EmotionalIntelligenc
 import { NewBadgeProvider } from './components/NewBadge';
 import { PWAInstallBanner } from './components/PWAInstallBanner';
 import { Toaster } from './components/ui/sonner';
-import LanguageBubble from './components/LanguageBubble';
 import { HomeLayoutProvider } from './contexts/HomeLayoutContext';
 import MaintenanceBanner from './components/MaintenanceBanner';
 
@@ -84,11 +84,26 @@ function App() {
   const [loading, setLoading] = useState(true);
 
 useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsAuthenticated(true);
-    }
-    setLoading(false);
+    let cancelled = false;
+
+    const bootstrapAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        if (!cancelled) setLoading(false);
+        return;
+      }
+      try {
+        await api.auth.me();
+        if (!cancelled) setIsAuthenticated(true);
+      } catch {
+        localStorage.removeItem('token');
+        if (!cancelled) setIsAuthenticated(false);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    bootstrapAuth();
     
     // Vérifier si c'est la première visite et afficher la langue détectée
     const detectedLang = checkFirstVisitLanguage();
@@ -109,31 +124,37 @@ useEffect(() => {
     }
 
     // Force Service Worker update check on app load
+    const onSwMessage = (event) => {
+      if (event.data && event.data.type === 'SW_UPDATED') {
+        console.log('New version available:', event.data.version);
+        
+        toast.info("Mise à jour disponible ! ✨", {
+          description: `La version ${event.data.version} de MamanDouce est prête.`,
+          duration: Infinity,
+          position: 'top-center',
+          action: {
+            label: "Actualiser",
+            onClick: () => {
+              window.location.reload();
+            }
+          }
+        });
+      }
+    };
+
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then(registration => {
         registration.update().catch(err => console.log('SW update check failed:', err));
       });
-
-      // 🍞 Un seul écouteur unique, directement connecté à ton UI React avec Sonner
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        if (event.data && event.data.type === 'SW_UPDATED') {
-          console.log('New version available:', event.data.version);
-          
-          // On déclenche ton toast Sonner existant
-          toast.info("Mise à jour disponible ! ✨", {
-            description: `La version ${event.data.version} de MamanDouce est prête.`,
-            duration: Infinity, // Le toast reste visible tant qu'on ne clique pas
-            position: 'top-center',
-            action: {
-              label: "Actualiser",
-              onClick: () => {
-                window.location.reload(); // Rechargement propre à la demande
-              }
-            }
-          });
-        }
-      });
+      navigator.serviceWorker.addEventListener('message', onSwMessage);
     }
+
+    return () => {
+      cancelled = true;
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.removeEventListener('message', onSwMessage);
+      }
+    };
   }, []);
   const ProtectedRoute = ({ children, requireSubscription = true }) => {
     if (loading) return <div>Chargement...</div>;

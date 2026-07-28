@@ -161,26 +161,37 @@ export function PregnancyToggle({ isPregnant, dueDate, lastPeriodDate, onPregnan
   if (mode === "home") {
     if (isPregnant && dueDate) {
       return (
-        <div className="w-full mt-4 animate-fade-in">
+        <div className="w-full mt-2 animate-fade-in">
           <div className="grid grid-cols-2 gap-3 w-full">
-            <div 
+            <button
+              type="button"
               onClick={() => navigate('/cycle-tracking')}
-              className="card_nacre relative overflow-hidden px-4 py-3 cursor-pointer w-full flex flex-col justify-between items-center text-center transition-all duration-200 hover:opacity-90 active:scale-95"
-              style={{ height: '112px', minHeight: '112px', maxHeight: '112px' }}
+              className="relative overflow-hidden flex flex-col justify-between items-center text-center w-full p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none card-glass-interactive glass-accent-pink rounded-[20px]"
+              style={{
+                height: '112px',
+                minHeight: '112px',
+              }}
               data-testid="sa-week-card"
             >
-              <span className="relative z-10 text-[10px] text-white/70 uppercase tracking-wider font-semibold leading-none mt-1">vous êtes à la</span>
-              <span className="relative z-10 text-xl font-bold text-white leading-tight my-auto">Semaine {pregnancyInfo.week}</span>
-              <span className="relative z-10 text-[10px] text-white/90 font-medium px-2.5 py-0.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">Trimestre {pregnancyInfo.trimester} • SA</span>
-            </div>
+              <span className="relative z-10 text-[10px] text-[#2C2C2C]/80 uppercase tracking-wider font-semibold">
+                Vous êtes à la
+              </span>
+              <span className="relative z-10 text-lg font-bold text-pink-600 my-0.5">
+                Semaine {pregnancyInfo.week}
+              </span>
+              <span className="relative z-10 text-[10px] text-[#2C2C2C] font-medium bg-white/55 px-2.5 py-0.5 rounded-full shadow-sm">
+                Trimestre {pregnancyInfo.trimester} • SA
+              </span>
+            </button>
             <NameOfTheDay compact={true} />
           </div>
         </div>
       );
     }
+    // Pas encore enceinte : uniquement la fête du jour (pleine largeur)
     return (
-      <div className="w-full mt-4 animate-fade-in">
-        <NameOfTheDay compact={false} />
+      <div className="w-full mt-2 animate-fade-in" style={{ width: '100%' }}>
+        <NameOfTheDay compact={false} fullWidth={true} />
       </div>
     );
   }

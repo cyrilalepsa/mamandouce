@@ -17,7 +17,7 @@ Votre application est prête pour être publiée sur Google Play Store !
 ### Étape 2 : Générer l'APK/AAB avec PWABuilder (Méthode la plus simple)
 
 1. Allez sur [www.pwabuilder.com](https://www.pwabuilder.com)
-2. Entrez l'URL de votre app : `https://nacre-glossy-ui.preview.emergentagent.com`
+2. Entrez l'URL de votre app : `https://mamandouce.app` (ou votre URL de production)
 3. Cliquez sur **"Start"**
 4. Attendez l'analyse (quelques secondes)
 5. Cliquez sur **"Package for stores"**
@@ -127,8 +127,8 @@ MamanDouce est conçue par des professionnels pour vous accompagner tout au long
 
 ### Coordonnées
 - **Email** : contact@mamandouce.app
-- **Site web** : https://nacre-glossy-ui.preview.emergentagent.com
-- **Politique de confidentialité** : https://nacre-glossy-ui.preview.emergentagent.com/privacy
+- **Site web** : https://mamandouce.app
+- **Politique de confidentialité** : https://mamandouce.app/privacy
 
 ---
 

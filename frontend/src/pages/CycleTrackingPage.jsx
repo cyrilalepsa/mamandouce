@@ -73,16 +73,15 @@ function CycleTrackingPage() {
 useEffect(() => {
     // 🎯 Détection du paramètre ?calendar=true
     const params = new URLSearchParams(window.location.search);
-    if (params.get('calendar') === 'true') {
+    const openCalendar = params.get('calendar') === 'true';
+    if (openCalendar) {
       setShowCalendar(true);
-      setLoading(false); // 🔥 Coupe proprement le chargement
-      return; 
     }
 
-    // Sinon, chargement normal
-    loadCycleData(); // ✅ Appelle la bonne fonction désormais
+    // Toujours charger les données cycle (sinon calendrier sans couleurs/légende utile)
+    loadCycleData();
     loadRapportDates();
-  }, []); // ✅ Nettoyé des phrases de commentaires qui traînaient
+  }, []);
 
   // 🔥 NOM CORRIGÉ : "loadCycleData" pour correspondre au useEffect
   const loadCycleData = async () => {
@@ -467,7 +466,7 @@ return (
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <Button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/')}
             variant="ghost"
             className={`p-2 rounded-full ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-white/50'}`}
             data-testid="back-button"
@@ -674,7 +673,13 @@ return (
       {/* Modals de l'application */}
       <FertilityCalendar
         isOpen={showCalendar}
-        onClose={() => setShowCalendar(false)}
+        onClose={() => {
+          setShowCalendar(false);
+          // Si ouvert depuis la carte « Fête du jour », retour accueil
+          if (searchParams.get('calendar') === 'true') {
+            navigate('/');
+          }
+        }}
         agendaData={agendaData}
         rapportDates={rapportDates}
         onAddRapport={handleAddRapport}

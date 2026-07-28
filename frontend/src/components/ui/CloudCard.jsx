@@ -82,25 +82,37 @@ export function CloudCard({
   ...props 
 }) {
   const palette = colorPalettes[color] || colorPalettes.pink;
+  const interactive = typeof onClick === 'function';
   
   return (
     <div
-      className={`relative overflow-hidden ${pill ? 'rounded-full' : 'rounded-3xl'} ${onClick ? 'cursor-pointer active:scale-[0.98]' : ''} ${className}`}
-      style={{
-        background: palette.gradient,
-        boxShadow: palette.shadow,
-        border: palette.border,
-        transform: 'translateZ(0)',
-        ...style
-      }}
+      className={`relative overflow-hidden ${pill ? 'rounded-full' : 'rounded-3xl'} ${
+        interactive
+          ? 'card-glass-interactive cursor-pointer active:scale-[0.98] shadow'
+          : 'card-flat'
+      } ${className}`}
+      style={
+        interactive
+          ? {
+              // Couleur pastel soft conservée sous le glass
+              backgroundImage: palette.gradient,
+              border: palette.border,
+              transform: 'translateZ(0)',
+              ...style,
+            }
+          : {
+              background: palette.gradient,
+              boxShadow: 'none',
+              border: palette.border,
+              transform: 'translateZ(0)',
+              ...style,
+            }
+      }
       onClick={onClick}
       data-testid={testId}
       {...props}
     >
-      {/* Voile blanc supprimé — Zéro voile sur les cartes */}
-      
-      {/* Contenu */}
-      <div className="relative">
+      <div className="relative z-[2]">
         {children}
       </div>
     </div>

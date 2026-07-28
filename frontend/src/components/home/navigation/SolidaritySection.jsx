@@ -12,6 +12,7 @@ import { useSubscription } from '../../SubscriptionGate';
 import { toast } from 'sonner';
 import api from '../../../utils/api';
 import { PastelMosaicCard, PastelPillCard, CollapsibleSection, usePinnedSections, PASTEL_STYLES } from './_shared';
+import { N20Amount } from '../../N20Icon';
 
 export function SolidaritySection() {
   const navigate = useNavigate();
@@ -79,9 +80,9 @@ export function SolidaritySection() {
                 <PiggyBank className={`w-6 h-6 ${isUnlocked ? 'text-yellow-600' : 'text-pink-500'}`} />
               </div>
               <div>
-                <p className="text-xs text-slate-600 font-medium">Ma Tirelire</p>
+                <p className="text-xs text-slate-600 font-medium">Ma Tirelire N20</p>
                 <p className={`text-2xl font-bold ${isUnlocked ? 'text-yellow-600' : 'text-pink-500'}`}>
-                  {loading ? '...' : `${balance}€`}
+                  {loading ? '...' : <N20Amount value={balance} size={22} valueClassName="text-2xl font-bold" />}
                 </p>
               </div>
             </div>
@@ -96,7 +97,11 @@ export function SolidaritySection() {
           <div className="mb-2">
             <div className="flex justify-between text-xs text-slate-500 mb-1">
               <span>Progression</span>
-              <span>{balance}€ / {goal}€</span>
+              <span className="inline-flex items-center gap-1">
+                <N20Amount value={balance} size={12} />
+                <span>/</span>
+                <N20Amount value={goal} size={12} />
+              </span>
             </div>
             <div className="h-3 bg-white/50 rounded-full overflow-hidden">
               <div 

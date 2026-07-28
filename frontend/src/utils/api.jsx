@@ -100,9 +100,15 @@ export const api = {
     deleteMessage: (messageId) => axios.delete(`${API}/contact/messages/${messageId}`, getAuthHeaders()),
   },
   notifications: {
+    // Push / VAPID
     getVapidKey: () => axios.get(`${API}/notifications/vapid-public-key`),
     subscribe: (subscription, userEmail) => axios.post(`${API}/notifications/subscribe`, { subscription, user_email: userEmail }, getAuthHeaders()),
     unsubscribe: (subscription) => axios.post(`${API}/notifications/unsubscribe`, { subscription }, getAuthHeaders()),
+    // In-app notifications
+    create: (data) => axios.post(`${API}/notifications`, data, getAuthHeaders()),
+    getAll: () => axios.get(`${API}/notifications`, getAuthHeaders()),
+    update: (id, completed) => axios.put(`${API}/notifications/${id}?completed=${completed}`, {}, getAuthHeaders()),
+    delete: (id) => axios.delete(`${API}/notifications/${id}`, getAuthHeaders()),
   },
   history: {
     getSearch: () => axios.get(`${API}/food/history/search`, getAuthHeaders()),
@@ -134,12 +140,6 @@ export const api = {
         reminder_type: reminderType 
       }, getAuthHeaders()),
     deleteReminder: (appointmentId) => axios.delete(`${API}/medical/reminder/${appointmentId}`, getAuthHeaders()),
-  },
-  notifications: {
-    create: (data) => axios.post(`${API}/notifications`, data, getAuthHeaders()),
-    getAll: () => axios.get(`${API}/notifications`, getAuthHeaders()),
-    update: (id, completed) => axios.put(`${API}/notifications/${id}?completed=${completed}`, {}, getAuthHeaders()),
-    delete: (id) => axios.delete(`${API}/notifications/${id}`, getAuthHeaders()),
   },
   tips: {
     getWeekly: (week) => axios.get(`${API}/tips/weekly/${week}`, getAuthHeaders()),

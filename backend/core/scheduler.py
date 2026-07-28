@@ -37,6 +37,9 @@ async def send_due_reminders_job():
     
     print(f"[Scheduler] Found {len(due_reminders)} due reminders to send")
     
+    import os
+    frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+    
     for reminder in due_reminders:
         history_entry = {
             "id": str(uuid.uuid4()),
@@ -96,7 +99,7 @@ async def send_due_reminders_job():
                                     N'oubliez pas de préparer vos documents et questions pour le médecin.
                                 </p>
                                 <div style="text-align: center; margin: 30px 0;">
-                                    <a href="https://nacre-glossy-ui.preview.emergentagent.com/medical" 
+                                    <a href="{frontend_url}/medical" 
                                        style="background: linear-gradient(135deg, #ec4899, #8b5cf6); 
                                               color: white; 
                                               text-decoration: none; 
@@ -224,6 +227,9 @@ async def send_trial_expiry_reminders_job():
     
     now = datetime.now(timezone.utc)
     
+    import os
+    frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+    
     # Find users whose trial expires in 1 day (23-25 hours from now)
     one_day_from_now_start = (now + timedelta(hours=23)).isoformat()
     one_day_from_now_end = (now + timedelta(hours=25)).isoformat()
@@ -263,7 +269,7 @@ async def send_trial_expiry_reminders_job():
                     resend.Emails.send({
                         "from": f"MamanDouce <{SENDER_EMAIL}>",
                         "to": [user_email],
-                        "reply_to": "support@cycafamily.com",
+                        "reply_to": "contact@mamandouce.app",
                         "subject": "⏰ Votre essai Premium expire demain !",
                         "tags": [
                             {"name": "category", "value": "trial-reminder"},
@@ -301,7 +307,7 @@ async def send_trial_expiry_reminders_job():
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                                 <tr>
                                     <td align="center" style="padding: 20px 0;">
-                                        <a href="https://nacre-glossy-ui.preview.emergentagent.com/pricing" target="_blank" style="background-color: #8b5cf6; border-radius: 30px; color: #ffffff; display: inline-block; font-size: 16px; font-weight: bold; padding: 16px 40px; text-decoration: none;">Passer à Premium - 27€ pour 9 mois</a>
+                                        <a href="{frontend_url}/pricing" target="_blank" style="background-color: #8b5cf6; border-radius: 30px; color: #ffffff; display: inline-block; font-size: 16px; font-weight: bold; padding: 16px 40px; text-decoration: none;">Passer à Premium - 27€ pour 9 mois</a>
                                     </td>
                                 </tr>
                             </table>

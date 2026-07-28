@@ -1,6 +1,6 @@
 """
-Service de traduction automatique utilisant GPT via Emergent Key
-Traduit le contenu du français vers les autres langues supportées
+Service de traduction automatique via OpenAI (SDK officiel).
+Traduit le contenu du français vers les autres langues supportées.
 """
 import os
 import json
@@ -8,7 +8,7 @@ import hashlib
 from datetime import datetime, timezone
 from typing import Optional, Dict, List
 from dotenv import load_dotenv
-from emergentintegrations.llm.chat import LlmChat, UserMessage
+from services.llm import chat_text, get_llm_api_key
 
 load_dotenv()
 
@@ -68,15 +68,11 @@ async def translate_text(
         return text
     
     try:
-        api_key = os.environ.get('EMERGENT_LLM_KEY')
-        if not api_key:
-            print("Warning: EMERGENT_LLM_KEY not found, returning original text")
+        if not get_llm_api_key():
+            print("Warning: OPENAI_API_KEY not found, returning original text")
             return text
         
-        # Initialiser le chat GPT
-        chat = LlmChat(
-            api_key=api_key,
-            session_id=f"translation-{cache_key[:8]}",
+        translated = await chat_text(
             system_message=f"""Tu es un traducteur professionnel. 
 Traduis le texte suivant du {SUPPORTED_LANGUAGES[source_lang]} vers le {SUPPORTED_LANGUAGES[target_lang]}.
 Règles importantes:
@@ -84,11 +80,11 @@ Règles importantes:
 - Préserve les balises HTML si présentes
 - Ne traduis PAS les noms propres, marques ou termes techniques
 - Retourne UNIQUEMENT la traduction, sans commentaire ni explication
-- Si le texte contient des emojis, garde-les"""
-        ).with_model("openai", "gpt-5.2")
-        
-        user_message = UserMessage(text=text)
-        translated = await chat.send_message(user_message)
+- Si le texte contient des emojis, garde-les""",
+            user_message=text,
+            temperature=0.3,
+            complexity="fast",
+        )
         
         # Nettoyer la réponse (enlever guillemets si présents)
         translated = translated.strip().strip('"').strip("'")
@@ -133,17 +129,14 @@ async def translate_batch(
         return texts
     
     try:
-        api_key = os.environ.get('EMERGENT_LLM_KEY')
-        if not api_key:
+        if not get_llm_api_key():
             return texts
         
         # Préparer le texte avec des séparateurs
         separator = "\n---SEPARATOR---\n"
         combined_text = separator.join([t for _, t in non_empty_indices])
         
-        chat = LlmChat(
-            api_key=api_key,
-            session_id=f"batch-translation-{datetime.now(timezone.utc).timestamp()}",
+        response = await chat_text(
             system_message=f"""Tu es un traducteur professionnel.
 Traduis les textes suivants du {SUPPORTED_LANGUAGES[source_lang]} vers le {SUPPORTED_LANGUAGES[target_lang]}.
 Les textes sont séparés par "---SEPARATOR---".
@@ -152,11 +145,11 @@ Règles:
 - Préserve les balises HTML
 - Ne traduis PAS les noms propres ou marques
 - Retourne les traductions séparées par "---SEPARATOR---" dans le même ordre
-- Pas de commentaires, juste les traductions"""
-        ).with_model("openai", "gpt-5.2")
-        
-        user_message = UserMessage(text=combined_text)
-        response = await chat.send_message(user_message)
+- Pas de commentaires, juste les traductions""",
+            user_message=combined_text,
+            temperature=0.3,
+            complexity="fast",
+        )
         
         # Parser la réponse
         translated_parts = response.split("---SEPARATOR---")

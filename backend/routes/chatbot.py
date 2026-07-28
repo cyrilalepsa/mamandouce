@@ -1,6 +1,6 @@
 """
 AI Chatbot for pregnancy-related questions
-Uses OpenAI GPT-4o-mini via Emergent integrations
+Uses OpenAI GPT via official SDK (autonomous — no Emergent)
 """
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -15,6 +15,7 @@ load_dotenv()
 from core.database import db
 from core.security import get_current_user
 from models.schemas import User
+from services.llm import chat_text, get_llm_api_key
 
 router = APIRouter(tags=["chatbot"])
 
@@ -50,15 +51,11 @@ class ChatResponse(BaseModel):
 @router.post("/chatbot/message", response_model=ChatResponse)
 async def send_chat_message(chat: ChatMessage, current_user: User = Depends(get_current_user)):
     """Send a message to the AI chatbot and get a response"""
-    from emergentintegrations.llm.chat import LlmChat, UserMessage
-    
     # Get or create session ID
     session_id = chat.session_id or str(uuid.uuid4())
     
-    # Get API key
-    api_key = os.environ.get("EMERGENT_LLM_KEY")
-    if not api_key:
-        raise HTTPException(status_code=503, detail="Service IA non configuré")
+    if not get_llm_api_key():
+        raise HTTPException(status_code=503, detail="Service IA non configuré (OPENAI_API_KEY)")
     
     try:
         # Load chat history for context
@@ -77,16 +74,11 @@ async def send_chat_message(chat: ChatMessage, current_user: User = Depends(get_
         if messages_context:
             system_with_context += f"\n\nHistorique de conversation récent:\n{messages_context}"
         
-        # Initialize chat
-        llm_chat = LlmChat(
-            api_key=api_key,
-            session_id=f"{current_user.id}_{session_id}",
-            system_message=system_with_context
-        ).with_model("openai", "gpt-4o-mini")
-        
-        # Send message
-        user_message = UserMessage(text=chat.message)
-        response = await llm_chat.send_message(user_message)
+        response = await chat_text(
+            system_message=system_with_context,
+            user_message=chat.message,
+            # Routage auto : symptômes / médical → gpt-4o, sinon gpt-4o-mini
+        )
         
         # Save user message to history
         await db.chat_history.insert_one({

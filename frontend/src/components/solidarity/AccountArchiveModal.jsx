@@ -13,6 +13,7 @@ import {
 import api from '../../utils/api';
 import { toast } from 'sonner';
 import { useTheme } from '../../contexts/ThemeContext';
+import { N20Amount } from '../N20Icon';
 
 export default function AccountArchiveModal({ isOpen, onClose, onConfirm }) {
   const { isDarkMode } = useTheme();
@@ -111,7 +112,9 @@ export default function AccountArchiveModal({ isOpen, onClose, onConfirm }) {
               {balance > 0 && (
                 <div className="bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/30 dark:to-purple-900/30 rounded-2xl p-5 text-center border border-pink-200 dark:border-pink-800">
                   <p className={`text-sm ${textMuted}`} style={textShadow}>Solde de votre cagnotte</p>
-                  <p className="text-4xl font-bold text-pink-600 my-2">{balance}€</p>
+                  <p className="text-4xl font-bold text-pink-600 my-2">
+                    <N20Amount value={balance} size={32} valueClassName="text-4xl font-bold text-pink-600" />
+                  </p>
                   <p className={`text-sm ${textMuted}`} style={textShadow}>
                     Ce montant peut être offert à une future maman
                   </p>
@@ -151,7 +154,8 @@ export default function AccountArchiveModal({ isOpen, onClose, onConfirm }) {
           {step === 2 && (
             <div className="space-y-4">
               <p className={`text-center ${textColor} font-medium mb-6`} style={textShadow}>
-                Envie de passer le relais ? Que faire de vos <span className="text-pink-500 font-bold">{balance}€</span> ?
+                Envie de passer le relais ? Que faire de vos{' '}
+                <N20Amount value={balance} size={14} valueClassName="text-pink-500 font-bold" className="inline-flex" /> ?
               </p>
               
               {/* Option 1: Offrir à une amie */}
@@ -168,7 +172,8 @@ export default function AccountArchiveModal({ isOpen, onClose, onConfirm }) {
                       Offrir à une amie
                     </p>
                     <p className={`text-sm ${textMuted}`} style={textShadow}>
-                      Transmettez vos {balance}€ à une personne de votre choix
+                      Transmettez vos{' '}
+                      <N20Amount value={balance} size={12} className="inline-flex" /> à une personne de votre choix
                     </p>
                   </div>
                 </div>
@@ -188,7 +193,8 @@ export default function AccountArchiveModal({ isOpen, onClose, onConfirm }) {
                       Transmettre au Relais Maman
                     </p>
                     <p className={`text-sm ${textMuted}`} style={textShadow}>
-                      Vos {balance}€ rejoignent le pot commun pour une autre maman
+                      Vos{' '}
+                      <N20Amount value={balance} size={12} className="inline-flex" /> rejoignent le pot commun pour une autre maman
                     </p>
                   </div>
                 </div>
@@ -225,7 +231,7 @@ export default function AccountArchiveModal({ isOpen, onClose, onConfirm }) {
                   <UserPlus className="w-8 h-8 text-white" />
                 </div>
                 <p className={`font-bold ${textColor} text-lg`} style={textShadow}>
-                  Offrir {balance}€ à une amie
+                  Offrir <N20Amount value={balance} size={18} className="inline-flex" /> à une amie
                 </p>
                 <p className={`text-sm ${textMuted} mt-1`} style={textShadow}>
                   Elle recevra un email avec un code cadeau
@@ -295,8 +301,16 @@ export default function AccountArchiveModal({ isOpen, onClose, onConfirm }) {
                 </div>
                 
                 <p className={`font-bold ${textColor} text-lg`} style={textShadow}>
-                  {donationChoice === 'friend' && `Offrir ${balance}€ à ${friendName || friendEmail}`}
-                  {donationChoice === 'relay' && `Transmettre ${balance}€ au Relais Maman`}
+                  {donationChoice === 'friend' && (
+                    <>
+                      Offrir <N20Amount value={balance} size={16} className="inline-flex" /> à {friendName || friendEmail}
+                    </>
+                  )}
+                  {donationChoice === 'relay' && (
+                    <>
+                      Transmettre <N20Amount value={balance} size={16} className="inline-flex" /> au Relais Maman
+                    </>
+                  )}
                   {donationChoice === 'none' && 'Clôturer sans transmission'}
                 </p>
                 
@@ -313,7 +327,9 @@ export default function AccountArchiveModal({ isOpen, onClose, onConfirm }) {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className={`text-sm ${textMuted}`} style={textShadow}>Cagnotte</span>
-                    <span className={`font-medium ${textColor}`} style={textShadow}>{balance}€</span>
+                    <span className={`font-medium ${textColor}`} style={textShadow}>
+                      <N20Amount value={balance} size={14} valueClassName={`font-medium ${textColor}`} />
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className={`text-sm ${textMuted}`} style={textShadow}>Destination</span>

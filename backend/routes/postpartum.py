@@ -1742,7 +1742,9 @@ async def approve_refund(user_id: str, approved: bool, current_user: User = Depe
         
         if payment_intent_id:
             try:
-                stripe.api_key = os.environ.get("STRIPE_API_KEY", "sk_test_emergent")
+                stripe.api_key = os.environ.get("STRIPE_API_KEY") or None
+                if not stripe.api_key:
+                    raise HTTPException(status_code=503, detail="Stripe non configuré (STRIPE_API_KEY manquant)")
                 refund_amount_cents = int(request["refund_amount"] * 100)
                 
                 refund = stripe.Refund.create(

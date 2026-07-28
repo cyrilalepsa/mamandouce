@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Baby } from 'lucide-react';
+import { getFetusImageUrl, getDefaultFetusImageUrl } from '../../utils/fetusAssets';
 
 // Données d'évolution du bébé par semaine
 const weeklyData = {
@@ -185,16 +186,7 @@ const weeklyData = {
   }
 };
 
-// Fonction pour obtenir l'image du fœtus selon la semaine
-const getFetuImage = (week) => {
-  // Arrondir à la semaine paire la plus proche disponible
-  const availableWeeks = [4, 5, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40];
-  const closestWeek = availableWeeks.reduce((prev, curr) => 
-    Math.abs(curr - week) < Math.abs(prev - week) ? curr : prev
-  );
-  
-  return `/assets/fetus/week-${String(closestWeek).padStart(2, '0')}.png`;
-};
+const getFetuImage = (week) => getFetusImageUrl(week);
 
 const BabyEvolutionWidget = () => {
   const [selectedWeek, setSelectedWeek] = useState(12);
@@ -316,7 +308,12 @@ const BabyEvolutionWidget = () => {
               filter: 'drop-shadow(0 8px 16px rgba(255, 183, 197, 0.3))'
             }}
             onError={(e) => {
-              e.target.style.display = 'none';
+              if (e.target.dataset.fallbackApplied === '1') {
+                e.target.style.display = 'none';
+                return;
+              }
+              e.target.dataset.fallbackApplied = '1';
+              e.target.src = getDefaultFetusImageUrl();
             }}
           />
         </div>

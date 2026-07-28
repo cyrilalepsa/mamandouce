@@ -15,6 +15,7 @@ import {
 import api from '../utils/api';
 import { toast } from 'sonner';
 import { useTheme } from '../contexts/ThemeContext';
+import { N20Amount } from '../components/N20Icon';
 
 function ReferralPage() {
   const navigate = useNavigate();
@@ -168,7 +169,7 @@ function ReferralPage() {
                     Ma Cagnotte de Complicité
                   </p>
                   <p className={`text-4xl font-bold ${isUnlocked ? 'text-yellow-600' : 'text-pink-500'}`}>
-                    {balance.toFixed(0)}€
+                    <N20Amount value={Number(balance.toFixed(0))} size={28} valueClassName="text-4xl font-bold" />
                   </p>
                 </div>
               </div>
@@ -183,7 +184,11 @@ function ReferralPage() {
             <div className="mb-3">
               <div className="flex justify-between text-xs mb-1">
                 <span className={isDarkMode ? 'text-slate-400' : 'text-slate-500'} style={textShadow}>Objectif</span>
-                <span className={isDarkMode ? 'text-slate-400' : 'text-slate-500'} style={textShadow}>{balance.toFixed(0)}€ / {goal}€</span>
+                <span className={`inline-flex items-center gap-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`} style={textShadow}>
+                  <N20Amount value={Number(balance.toFixed(0))} size={12} />
+                  <span>/</span>
+                  <N20Amount value={goal} size={12} />
+                </span>
               </div>
               <div className={`h-4 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-600' : 'bg-white/50'}`}>
                 <div 
@@ -200,7 +205,7 @@ function ReferralPage() {
             <p className={`text-sm text-center ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`} style={textShadow}>
               {isUnlocked 
                 ? '🎉 Passez le relais : offrez la sérénité à une amie !'
-                : `3€ offerts dès le départ • Partagez pour remplir la cagnotte`
+                : `3 N20 offerts dès le départ • Partagez pour remplir la cagnotte`
               }
             </p>
           </div>
@@ -317,7 +322,7 @@ function ReferralPage() {
                 Total gagné
               </p>
               <p className={`text-xl font-bold ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>
-                +{(successfulReferrals * 3)}€
+                <N20Amount value={successfulReferrals * 3} size={18} showSign valueClassName="text-xl font-bold" />
               </p>
             </div>
           </div>
@@ -406,13 +411,13 @@ function ReferralPage() {
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 text-sm font-bold text-purple-600">2</div>
               <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`} style={textShadow}>
-                Quand elles rejoignent le cercle, vous gagnez <strong className="text-purple-600">3€</strong> dans votre cagnotte
+                Quand elles rejoignent le cercle, vous gagnez <strong className="text-purple-600 inline-flex items-center gap-1"><N20Amount value={3} size={14} /></strong> dans votre cagnotte
               </p>
             </div>
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0 text-sm font-bold text-yellow-600">3</div>
               <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`} style={textShadow}>
-                À 30€, passez le relais : offrez la sérénité à une autre maman
+                À <N20Amount value={30} size={14} className="inline-flex" />, passez le relais : offrez la sérénité à une autre maman
               </p>
             </div>
           </div>

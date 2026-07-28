@@ -8,7 +8,7 @@ import logging
 import json
 
 from core.database import db
-from core.config import RESEND_API_KEY, SENDER_EMAIL, VAPID_PRIVATE_KEY, VAPID_CLAIMS_EMAIL
+from core.config import RESEND_API_KEY, SENDER_EMAIL, VAPID_PRIVATE_KEY, VAPID_CLAIMS_EMAIL, FRONTEND_URL
 from core.security import get_admin_user
 from models.schemas import (
     User, PromoCode, AdminMessage, ContactMessageRequest, AdminReplyRequest,
@@ -806,7 +806,7 @@ async def send_email_to_user(user_id: str, request: SendEmailRequest, admin: Use
                 </div>
                 <div class="footer">
                     <p>MamanDouce - Votre compagnon de grossesse</p>
-                    <p><a href="https://mamandouce.cycafamily.com" style="color: #ec4899;">mamandouce.cycafamily.com</a></p>
+                    <p><a href="{FRONTEND_URL}" style="color: #ec4899;">mamandouce.app</a> · NeriaCorp</p>
                 </div>
             </div>
         </body>
@@ -1962,8 +1962,8 @@ async def send_business_kit_email(admin: User = Depends(get_admin_user)):
         
         <p>Ou accédez directement aux fichiers :</p>
         <ul>
-            <li><a href="https://nacre-glossy-ui.preview.emergentagent.com/docs/BUSINESS_PLAN_MAMANDOUCE.md">Plan Business (Markdown)</a></li>
-            <li><a href="https://nacre-glossy-ui.preview.emergentagent.com/docs/CARTE_VISITE_MAMANDOUCE.html">Carte de Visite (HTML)</a></li>
+            <li><a href="/docs/BUSINESS_PLAN_MAMANDOUCE.md">Plan Business (Markdown)</a></li>
+            <li><a href="/docs/CARTE_VISITE_MAMANDOUCE.html">Carte de Visite (HTML)</a></li>
         </ul>
         
         <hr style="margin: 30px 0; border: none; border-top: 2px solid #e2e8f0;">

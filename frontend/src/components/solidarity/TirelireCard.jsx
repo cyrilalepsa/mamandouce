@@ -1,6 +1,6 @@
 /**
  * TirelireCard - Affichage de la Tirelire avec jauge visuelle
- * Gamification: 3€ initial + 3€/parrainage, déblocage à 30€
+ * Gamification: 3 N20 initial + 3 N20/parrainage, déblocage à 30 N20
  */
 import { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
@@ -12,6 +12,7 @@ import {
 import api from '../../utils/api';
 import { toast } from 'sonner';
 import { useTheme } from '../../contexts/ThemeContext';
+import { N20Amount } from '../N20Icon';
 
 export default function TirelireCard({ onGiftClick }) {
   const { isDarkMode } = useTheme();
@@ -84,7 +85,9 @@ export default function TirelireCard({ onGiftClick }) {
             </div>
             <div>
               <p className="text-white/80 text-sm font-medium" style={textShadow}>Ma Tirelire</p>
-              <p className="text-3xl font-bold text-white" style={textShadow}>{balance}€</p>
+              <p className="text-3xl font-bold text-white" style={textShadow}>
+                <N20Amount value={balance} size={26} valueClassName="text-3xl font-bold text-white" />
+              </p>
             </div>
           </div>
           {isUnlocked ? (
@@ -102,8 +105,10 @@ export default function TirelireCard({ onGiftClick }) {
             <span className={`text-sm font-medium ${textColor}`} style={textShadow}>
               Progression
             </span>
-            <span className={`text-sm font-bold ${isUnlocked ? 'text-green-500' : textColor}`} style={textShadow}>
-              {balance}€ / {goal}€
+            <span className={`text-sm font-bold inline-flex items-center gap-1 ${isUnlocked ? 'text-green-500' : textColor}`} style={textShadow}>
+              <N20Amount value={balance} size={12} valueClassName={`text-sm font-bold ${isUnlocked ? 'text-green-500' : textColor}`} />
+              <span>/</span>
+              <N20Amount value={goal} size={12} valueClassName={`text-sm font-bold ${isUnlocked ? 'text-green-500' : textColor}`} />
             </span>
           </div>
           
@@ -129,8 +134,12 @@ export default function TirelireCard({ onGiftClick }) {
             
             {/* Milestones */}
             <div className="absolute inset-0 flex items-center justify-between px-2">
-              <span className="text-xs font-bold text-white drop-shadow-lg">0€</span>
-              <span className="text-xs font-bold text-white drop-shadow-lg">30€</span>
+              <span className="text-xs font-bold text-white drop-shadow-lg inline-flex">
+                <N20Amount value={0} size={10} valueClassName="text-white text-xs font-bold" />
+              </span>
+              <span className="text-xs font-bold text-white drop-shadow-lg inline-flex">
+                <N20Amount value={goal} size={10} valueClassName="text-white text-xs font-bold" />
+              </span>
             </div>
           </div>
           
@@ -152,7 +161,10 @@ export default function TirelireCard({ onGiftClick }) {
                 <Heart className="w-4 h-4 text-green-500" />
               </div>
               <div className="flex-1">
-                <p className={`text-sm font-medium ${textColor}`} style={textShadow}>+3€ de complicité</p>
+                <p className={`text-sm font-medium ${textColor} inline-flex items-center gap-1 flex-wrap`} style={textShadow}>
+                  <N20Amount value={3} size={12} showSign valueClassName={`text-sm font-medium ${textColor}`} />
+                  <span>de complicité</span>
+                </p>
                 <p className={`text-xs ${textMuted}`} style={textShadow}>Offert dès le départ</p>
               </div>
             </div>
@@ -161,7 +173,10 @@ export default function TirelireCard({ onGiftClick }) {
                 <Users className="w-4 h-4 text-pink-500" />
               </div>
               <div className="flex-1">
-                <p className={`text-sm font-medium ${textColor}`} style={textShadow}>+3€ par parrainage</p>
+                <p className={`text-sm font-medium ${textColor} inline-flex items-center gap-1 flex-wrap`} style={textShadow}>
+                  <N20Amount value={3} size={12} showSign valueClassName={`text-sm font-medium ${textColor}`} />
+                  <span>par parrainage</span>
+                </p>
                 <p className={`text-xs ${textMuted}`} style={textShadow}>Une amie rejoint le cercle</p>
               </div>
             </div>
@@ -181,7 +196,14 @@ export default function TirelireCard({ onGiftClick }) {
           <div className={`text-center p-4 ${isDarkMode ? 'bg-slate-700' : 'bg-slate-50'} rounded-2xl`}>
             <Lock className={`w-6 h-6 mx-auto mb-2 ${textMuted}`} />
             <p className={`text-sm ${textMuted}`} style={textShadow}>
-              Encore <span className="font-bold text-pink-500">{goal - balance}€</span> pour débloquer
+              Encore{' '}
+              <N20Amount
+                value={goal - balance}
+                size={14}
+                valueClassName="font-bold text-pink-500"
+                className="inline-flex"
+              />{' '}
+              pour débloquer
             </p>
             <p className={`text-xs ${textMuted} mt-1`} style={textShadow}>
               "Passer le relais à une amie"
@@ -193,12 +215,16 @@ export default function TirelireCard({ onGiftClick }) {
         <div className="grid grid-cols-2 gap-3">
           <div className={`${isDarkMode ? 'bg-slate-700' : 'bg-green-50'} rounded-xl p-3 text-center`}>
             <TrendingUp className="w-5 h-5 text-green-500 mx-auto mb-1" />
-            <p className="text-lg font-bold text-green-600">{wallet?.total_earned || 0}€</p>
+            <p className="text-lg font-bold text-green-600">
+              <N20Amount value={wallet?.total_earned || 0} size={16} valueClassName="text-lg font-bold text-green-600" />
+            </p>
             <p className={`text-xs ${textMuted}`} style={textShadow}>Total gagné</p>
           </div>
           <div className={`${isDarkMode ? 'bg-slate-700' : 'bg-pink-50'} rounded-xl p-3 text-center`}>
             <Gift className="w-5 h-5 text-pink-500 mx-auto mb-1" />
-            <p className="text-lg font-bold text-pink-600">{wallet?.total_donated || 0}€</p>
+            <p className="text-lg font-bold text-pink-600">
+              <N20Amount value={wallet?.total_donated || 0} size={16} valueClassName="text-lg font-bold text-pink-600" />
+            </p>
             <p className={`text-xs ${textMuted}`} style={textShadow}>Total transmis</p>
           </div>
         </div>

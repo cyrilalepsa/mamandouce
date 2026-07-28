@@ -121,19 +121,17 @@ export function PastelCard({ color = 'pink', className = '', children, onClick, 
   );
 }
 
-// Carte pill pleine largeur — Blanc bombé
+// Carte pill pleine largeur — glass bombé si cliquable, plat sinon
 export function PastelPillCard({ color = 'pink', className = '', children, onClick }) {
+  const interactive = typeof onClick === 'function';
   return (
     <div 
-      className={`relative rounded-full overflow-hidden transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${onClick ? 'cursor-pointer' : ''} ${className}`}
-      style={{
-        background: 'linear-gradient(160deg, #ffffff 0%, #ffffff 20%, #fefefe 45%, #fafafa 70%, #f5f5f7 100%)',
-        boxShadow: '0 6px 16px -4px rgba(0,0,0,0.08), 0 3px 6px -2px rgba(0,0,0,0.04), inset -3px -3px 8px rgba(0,0,0,0.03), inset 3px 3px 8px rgba(255,255,255,0.95)',
-        border: '1px solid rgba(255,255,255,0.95)',
-      }}
+      className={`relative rounded-full overflow-hidden transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
+        interactive ? 'card-glass-interactive cursor-pointer shadow' : 'card-flat'
+      } ${className}`}
       onClick={onClick}
     >
-      <div className="relative px-4 py-2.5">
+      <div className="relative z-[2] px-4 py-2.5">
         {children}
       </div>
     </div>

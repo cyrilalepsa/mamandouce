@@ -9,10 +9,11 @@
   --md-bg-tertiary: #FFEFF3;
   --md-bg-accent: #F8F0FF;
   
-  /* Textes - CONTRASTE AMÉLIORÉ - Gris anthracite/Chocolat foncé */
-  --md-text-primary: #2D2A32;  /* Plus foncé pour meilleure lisibilité */
-  --md-text-secondary: #4A4458;  /* Gris chocolat */
-  --md-text-muted: #6B6480;  /* Gris violet doux */
+  /* Textes - CONTRASTE AMÉLIORÉ - Gris anthracite */
+  --md-text-anthracite: #2C2C2C;
+  --md-text-primary: #2C2C2C;  /* Anthracite — lisible sur glass clair */
+  --md-text-secondary: #3D3D3D;
+  --md-text-muted: #5A5A5A;
   
   /* Couleurs d'accent pastel */
   --md-accent-pink: #f8b4c8;

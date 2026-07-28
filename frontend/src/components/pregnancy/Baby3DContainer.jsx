@@ -3,76 +3,16 @@
  * Composant avec image hyperréaliste du bébé
  * Effet veilleuse (halos lumineux pastel) derrière l'image
  * Thème: Doux, Pastel et Lumineux
+ *
+ * Assets : emplacements existants /assets/fetus/* via fetusAssets
+ * (+ Cloudinary f_auto,q_auto si VITE_CLOUDINARY_CLOUD_NAME est défini)
  */
 import { useTheme } from '../../contexts/ThemeContext';
-
-// Images hyperréalistes du fœtus par semaine (20 images uniques générées par IA)
-const FETUS_IMAGES = {
-  // Semaines 1-4: Embryon précoce
-  1: '/assets/fetus/week-04.png',
-  2: '/assets/fetus/week-04.png',
-  3: '/assets/fetus/week-04.png',
-  4: '/assets/fetus/week-04.png',
-  // Semaines 5-6: Embryon avec bourgeon cardiaque
-  5: '/assets/fetus/week-05.png',
-  6: '/assets/fetus/week-06.png',
-  // Semaines 7-8: Embryon - membres visibles
-  7: '/assets/fetus/week-08.png',
-  8: '/assets/fetus/week-08.png',
-  // Semaines 9-10: Transition embryon/fœtus
-  9: '/assets/fetus/week-10.png',
-  10: '/assets/fetus/week-10.png',
-  // Semaines 11-12: Fœtus - traits du visage
-  11: '/assets/fetus/week-12.png',
-  12: '/assets/fetus/week-12.png',
-  // Semaines 13-14: Fœtus - coordination
-  13: '/assets/fetus/week-14.png',
-  14: '/assets/fetus/week-14.png',
-  // Semaines 15-16: Fœtus - mouvements actifs
-  15: '/assets/fetus/week-16.png',
-  16: '/assets/fetus/week-16.png',
-  // Semaines 17-18: Fœtus - vernix caseosa
-  17: '/assets/fetus/week-18.png',
-  18: '/assets/fetus/week-18.png',
-  // Semaines 19-20: Fœtus - mi-grossesse
-  19: '/assets/fetus/week-20.png',
-  20: '/assets/fetus/week-20.png',
-  // Semaines 21-22: Fœtus - lanugo visible
-  21: '/assets/fetus/week-22.png',
-  22: '/assets/fetus/week-22.png',
-  // Semaines 23-24: Fœtus - yeux s'ouvrent
-  23: '/assets/fetus/week-24.png',
-  24: '/assets/fetus/week-24.png',
-  // Semaines 25-26: Fœtus - respiration
-  25: '/assets/fetus/week-26.png',
-  26: '/assets/fetus/week-26.png',
-  // Semaines 27-28: Fœtus - graisse sous-cutanée
-  27: '/assets/fetus/week-28.png',
-  28: '/assets/fetus/week-28.png',
-  // Semaines 29-30: Fœtus - croissance rapide
-  29: '/assets/fetus/week-30.png',
-  30: '/assets/fetus/week-30.png',
-  // Semaines 31-32: Fœtus - peau lisse
-  31: '/assets/fetus/week-32.png',
-  32: '/assets/fetus/week-32.png',
-  // Semaines 33-34: Fœtus - poumons matures
-  33: '/assets/fetus/week-34.png',
-  34: '/assets/fetus/week-34.png',
-  // Semaines 35-36: Fœtus - position céphalique
-  35: '/assets/fetus/week-36.png',
-  36: '/assets/fetus/week-36.png',
-  // Semaines 37-38: Fœtus à terme précoce
-  37: '/assets/fetus/week-38.png',
-  38: '/assets/fetus/week-38.png',
-  // Semaines 39-42: Bébé prêt à naître
-  39: '/assets/fetus/week-40.png',
-  40: '/assets/fetus/week-40.png',
-  41: '/assets/fetus/week-40.png',
-  42: '/assets/fetus/week-40.png',
-};
-
-// Image par défaut (semaine 22)
-const DEFAULT_IMAGE = '/assets/bebe-foetus.png';
+import {
+  getFetusImageUrl,
+  getDefaultFetusImageUrl,
+  DEFAULT_FETUS_IMAGE,
+} from '../../utils/fetusAssets';
 
 export default function Baby3DContainer({ 
   week = 22,
@@ -81,8 +21,8 @@ export default function Baby3DContainer({
 }) {
   const { isDarkMode } = useTheme();
   
-  // Sélectionner l'image selon la semaine
-  const imageSrc = FETUS_IMAGES[week] || DEFAULT_IMAGE;
+  const imageSrc = getFetusImageUrl(week);
+  const fallbackSrc = getDefaultFetusImageUrl() || DEFAULT_FETUS_IMAGE;
 
   // Couleurs des halos - PASTEL LUMINEUX
   const glowOuter = isDarkMode 
@@ -142,7 +82,11 @@ export default function Baby3DContainer({
         src={imageSrc}
         alt="Votre bébé"
         className="relative z-10"
-        onError={(e) => { e.target.src = DEFAULT_IMAGE; }}
+        onError={(e) => {
+          if (e.target.dataset.fallbackApplied === '1') return;
+          e.target.dataset.fallbackApplied = '1';
+          e.target.src = fallbackSrc;
+        }}
         style={{
           maxWidth: '260px',
           maxHeight: '260px',

@@ -4,85 +4,48 @@ import { Card } from '../../ui/card';
 import { Lock, ChevronDown, Pin, PinOff } from 'lucide-react';
 import { toast } from 'sonner';
 
-// Styles pastel "CHAMALLOW 3D" pour les cartes - Semi-transparent avec backdrop-filter
+// Styles pastel soft pour glass bombé (couleurs conservées, alpha réduit)
 export const PASTEL_STYLES = {
-  pink: {
-    background: 'rgba(255, 240, 245, 0.7)',
-    boxShadow: '10px 10px 20px #D1D9E6, -10px -10px 20px #FFFFFF',
-  },
-  sky: {
-    background: 'rgba(224, 247, 250, 0.7)',
-    boxShadow: '10px 10px 20px #D1D9E6, -10px -10px 20px #FFFFFF',
-  },
-  green: {
-    background: 'rgba(220, 252, 231, 0.7)',
-    boxShadow: '10px 10px 20px #D1D9E6, -10px -10px 20px #FFFFFF',
-  },
-  purple: {
-    background: 'rgba(243, 232, 255, 0.7)',
-    boxShadow: '10px 10px 20px #D1D9E6, -10px -10px 20px #FFFFFF',
-  },
-  amber: {
-    background: 'rgba(254, 243, 199, 0.7)',
-    boxShadow: '10px 10px 20px #D1D9E6, -10px -10px 20px #FFFFFF',
-  },
-  red: {
-    background: 'rgba(254, 226, 226, 0.7)',
-    boxShadow: '10px 10px 20px #D1D9E6, -10px -10px 20px #FFFFFF',
-  },
-  violet: {
-    background: 'rgba(245, 243, 255, 0.7)',
-    boxShadow: '10px 10px 20px #D1D9E6, -10px -10px 20px #FFFFFF',
-  },
-  slate: {
-    background: 'rgba(241, 245, 249, 0.7)',
-    boxShadow: '10px 10px 20px #D1D9E6, -10px -10px 20px #FFFFFF',
-  },
+  pink: { accent: 'pink' },
+  sky: { accent: 'sky' },
+  green: { accent: 'green' },
+  purple: { accent: 'purple' },
+  amber: { accent: 'amber' },
+  red: { accent: 'red' },
+  violet: { accent: 'violet' },
+  slate: { accent: 'slate' },
 };
 
-// Composant carte pastel "CHAMALLOW 3D" bombée pour mosaïques
+// Composant carte pastel glass bombé pour mosaïques (interactif)
 export function PastelMosaicCard({ color = 'pink', onClick, children, className = '', testId, locked = false }) {
-  const style = PASTEL_STYLES[color] || PASTEL_STYLES.pink;
+  const accent = (PASTEL_STYLES[locked ? 'slate' : color] || PASTEL_STYLES.pink).accent;
   return (
     <div
       onClick={onClick}
       data-testid={testId}
-      className={`relative overflow-hidden rounded-2xl p-3 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-center ${className}`}
-      style={{
-        background: locked ? PASTEL_STYLES.slate.background : style.background,
-        boxShadow: locked ? PASTEL_STYLES.slate.boxShadow : style.boxShadow,
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
-        borderRadius: '20px',
-        color: '#4A4A4A',
-      }}
+      data-accent={accent}
+      className={`card-glass-interactive glass-accent-${accent} relative overflow-hidden rounded-2xl p-3 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-center shadow ${className}`}
+      style={{ borderRadius: '20px', color: '#2C2C2C' }}
     >
-      {/* Voile blanc supprimé */}
-      <div className="relative" style={{ color: '#4A4A4A' }}>
+      <div className="relative z-[2]" style={{ color: '#2C2C2C' }}>
         {children}
       </div>
     </div>
   );
 }
 
-// Composant carte pastel "CHAMALLOW 3D" pleine largeur (pill)
+// Composant carte pastel glass bombé pleine largeur (pill) — interactif
 export function PastelPillCard({ color = 'purple', onClick, children, className = '', testId }) {
-  const style = PASTEL_STYLES[color] || PASTEL_STYLES.purple;
+  const accent = (PASTEL_STYLES[color] || PASTEL_STYLES.purple).accent;
   return (
     <div
       onClick={onClick}
       data-testid={testId}
-      className={`relative overflow-hidden rounded-full px-4 py-2.5 cursor-pointer transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${className}`}
-      style={{
-        background: style.background,
-        boxShadow: style.boxShadow,
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
-        color: '#4A4A4A',
-      }}
+      data-accent={accent}
+      className={`card-glass-interactive glass-accent-${accent} relative overflow-hidden rounded-full px-4 py-2.5 cursor-pointer transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] shadow ${className}`}
+      style={{ color: '#2C2C2C' }}
     >
-      {/* Voile blanc supprimé */}
-      <div className="relative" style={{ color: '#4A4A4A' }}>
+      <div className="relative z-[2]" style={{ color: '#2C2C2C' }}>
         {children}
       </div>
     </div>

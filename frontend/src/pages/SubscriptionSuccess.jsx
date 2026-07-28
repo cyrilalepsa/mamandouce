@@ -16,43 +16,57 @@ function SubscriptionSuccess() {
   const { isDarkMode } = useTheme();
 
   useEffect(() => {
-    if (sessionId) {
-      pollPaymentStatus();
-    } else {
+    if (!sessionId) {
       setStatus('error');
+      return undefined;
     }
-  }, [sessionId]);
 
-  const pollPaymentStatus = async () => {
+    let cancelled = false;
+    let timeoutId = null;
     const maxAttempts = 5;
-    const pollInterval = 2000; // 2 secondes
+    const pollInterval = 2000;
+    let attempt = 0;
 
-    if (attempts >= maxAttempts) {
-      setStatus('timeout');
-      return;
-    }
+    const pollPaymentStatus = async () => {
+      if (cancelled) return;
 
-    try {
-      const response = await api.subscription.checkStatus(sessionId);
-      
-      if (response.data.payment_status === 'paid') {
-        setStatus('success');
-        toast.success('🎉 Abonnement Premium activé !');
-        setTimeout(() => navigate('/'), 3000);
-        return;
-      } else if (response.data.status === 'expired') {
-        setStatus('expired');
+      if (attempt >= maxAttempts) {
+        setStatus('timeout');
         return;
       }
 
-      // Continuer le polling
-      setAttempts(prev => prev + 1);
-      setTimeout(pollPaymentStatus, pollInterval);
-    } catch (error) {
-      console.error('Erreur vérification paiement:', error);
-      setStatus('error');
-    }
-  };
+      try {
+        const response = await api.subscription.checkStatus(sessionId);
+        if (cancelled) return;
+
+        if (response.data.payment_status === 'paid') {
+          setStatus('success');
+          toast.success('🎉 Abonnement Premium activé !');
+          timeoutId = setTimeout(() => {
+            if (!cancelled) navigate('/');
+          }, 3000);
+          return;
+        } else if (response.data.status === 'expired') {
+          setStatus('expired');
+          return;
+        }
+
+        attempt += 1;
+        setAttempts(attempt);
+        timeoutId = setTimeout(pollPaymentStatus, pollInterval);
+      } catch (error) {
+        console.error('Erreur vérification paiement:', error);
+        if (!cancelled) setStatus('error');
+      }
+    };
+
+    pollPaymentStatus();
+
+    return () => {
+      cancelled = true;
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [sessionId, navigate]);
 
   // Couleurs conditionnelles pour le mode sombre
   const cardBg = isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100';

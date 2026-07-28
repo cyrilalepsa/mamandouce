@@ -17,7 +17,7 @@ WEEKLY_TIPS = {
         "embryo_weight": "< 1 g",
         "fruit_comparison": "un grain de sable",
         "development": "L'œuf fécondé se divise en plusieurs cellules tout en descendant vers l'utérus.",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/567f5aaf98d3d7561c70ef9ccc960898b70a245510e02ff09397291427f4b8d1.png",
+        "image_url": "",
         "administrative_tasks": []
     },
     2: {
@@ -28,7 +28,7 @@ WEEKLY_TIPS = {
         "embryo_weight": "< 1 g",
         "fruit_comparison": "une graine de pavot",
         "development": "Les cellules se multiplient rapidement. Le blastocyste se prépare à l'implantation.",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/5f52def3945d90beceac7a74b216efcf80c8afafc8f885eeb96b4cfdcfd5f2af.png",
+        "image_url": "",
         "administrative_tasks": []
     },
     3: {
@@ -39,7 +39,7 @@ WEEKLY_TIPS = {
         "embryo_weight": "< 1 g",
         "fruit_comparison": "une graine de sésame",
         "development": "L'embryon s'enfouit dans la muqueuse utérine. Les premières connexions avec votre corps s'établissent.",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/52f53fe8fb4f90c2234895f6ea9d009ab295ec0aa5547ba29e28280fc76fdb99.png",
+        "image_url": "",
         "administrative_tasks": []
     },
     4: {
@@ -50,7 +50,7 @@ WEEKLY_TIPS = {
         "embryo_weight": "< 1 g",
         "fruit_comparison": "une graine de pavot",
         "development": "Le cœur commence à se former. Les premières cellules nerveuses apparaissent.",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/d98e4aeffa0b7c51bdbc3ca2dc3d57d5922fab22f31d3706d73e32b1d19d86d0.png",
+        "image_url": "",
         "administrative_tasks": [
             "Prendre rendez-vous chez votre médecin ou sage-femme",
             "Commencer à prendre de l'acide folique si ce n'est pas déjà fait"
@@ -64,7 +64,7 @@ WEEKLY_TIPS = {
         "embryo_weight": "1 g",
         "fruit_comparison": "une framboise",
         "development": "Les bras et jambes s'allongent. Les doigts et orteils commencent à se former. Le visage prend forme.",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/2ebe6726eca5ae89f73e47c900fddf41e57215bbd7dfcc80f563885e6f9b88bf.png",
+        "image_url": "",
         "administrative_tasks": [
             "Première échographie à programmer (entre 11-13 SA)",
             "Déclarer votre grossesse à la CAF et à l'Assurance Maladie avant la fin du 3ème mois"
@@ -78,7 +78,7 @@ WEEKLY_TIPS = {
         "embryo_weight": "14 g",
         "fruit_comparison": "un citron vert",
         "development": "Le fœtus peut bouger ses membres. Les organes génitaux commencent à se différencier.",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/81e3de1c1bbd57a95f7a3731457575f44a262cef18707df2b31c8b121bf36053.png",
+        "image_url": "",
         "administrative_tasks": [
             "Déclaration de grossesse obligatoire (avant 15 SA)",
             "Choisir votre maternité",
@@ -93,7 +93,7 @@ WEEKLY_TIPS = {
         "embryo_weight": "100 g",
         "fruit_comparison": "un avocat",
         "development": "Le fœtus peut sucer son pouce. Les cheveux et sourcils apparaissent. Il peut entendre les sons.",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/1953cb663936cb82327f44de3a15839d5628381b87aa2ca8de335310584aad34.png",
+        "image_url": "",
         "administrative_tasks": [
             "Deuxième échographie à programmer (entre 20-24 SA)",
             "S'inscrire aux cours de préparation à l'accouchement"
@@ -107,7 +107,7 @@ WEEKLY_TIPS = {
         "embryo_weight": "300 g",
         "fruit_comparison": "une banane",
         "development": "Le fœtus est recouvert de vernix (substance protectrice). Il alterne phases de sommeil et d'éveil.",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/546cd08fa4e015877a296c8f254eefd6f7306f72696c1b1c3ebe50601dba58ff.png",
+        "image_url": "",
         "administrative_tasks": [
             "Échographie morphologique (20-22 SA)",
             "Commencer à réfléchir à la liste de naissance"
@@ -121,7 +121,7 @@ WEEKLY_TIPS = {
         "embryo_weight": "600 g",
         "fruit_comparison": "un épi de maïs",
         "development": "Les poumons se développent. Le cerveau se complexifie. Bébé a des cycles de sommeil réguliers.",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/34ca89608e7ce73df682abf56a56d82f6082cc77f765d88adc92aaa453cda3f1.png",
+        "image_url": "",
         "administrative_tasks": [
             "Visite du 6ème mois chez le médecin/sage-femme",
             "Penser à l'inscription en crèche si nécessaire"
@@ -135,7 +135,7 @@ WEEKLY_TIPS = {
         "embryo_weight": "1 kg",
         "fruit_comparison": "une aubergine",
         "development": "Les yeux s'ouvrent. Le système nerveux se perfectionne. Bébé reconnaît votre voix.",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/bbdecf81361cbd68ce9c7b20e1946ac31fe64b2032641447b9f8918f3b179014.png",
+        "image_url": "",
         "administrative_tasks": [
             "Troisième échographie à programmer (30-32 SA)",
             "Commencer les cours de préparation à l'accouchement",
@@ -150,7 +150,7 @@ WEEKLY_TIPS = {
         "embryo_weight": "1.7 kg",
         "fruit_comparison": "un ananas",
         "development": "Les poumons arrivent à maturité. Bébé stocke du fer et du calcium. Il prend environ 200g par semaine.",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/43c7566ed592bdeccff3de88b4aff860fd55ac5c0e573d420a4f9d33d3eee4e8.png",
+        "image_url": "",
         "administrative_tasks": [
             "Troisième échographie (30-32 SA)",
             "Préparer la valise de maternité",
@@ -165,7 +165,7 @@ WEEKLY_TIPS = {
         "embryo_weight": "2.6 kg",
         "fruit_comparison": "un melon",
         "development": "La plupart des organes sont matures. Bébé descend dans le bassin. Il a moins de place pour bouger.",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/c730c5e43d0f2d462ae8ba8cfe5e326f9cb5b6e5d29cb2b8486355ea1de7e5cc.png",
+        "image_url": "",
         "administrative_tasks": [
             "Consultation anesthésiste si péridurale souhaitée",
             "Vérifier que la valise est prête",
@@ -180,7 +180,7 @@ WEEKLY_TIPS = {
         "embryo_weight": "3.3 kg",
         "fruit_comparison": "une pastèque",
         "development": "Bébé est prêt à naître. Il pèse en moyenne 3.3 kg. Ses réflexes sont au point.",
-        "image_url": "https://static.prod-images.emergentagent.com/jobs/5c433531-0d80-423b-a48b-b2f541e390ce/images/1f5a8ed2a29a00cbe202c075b6ab142f957f752509803b694ceaa28f3369f7a0.png",
+        "image_url": "",
         "administrative_tasks": [
             "Surveiller les signes de travail",
             "Rester sereine, bébé arrive quand il est prêt !",

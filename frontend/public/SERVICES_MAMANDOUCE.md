@@ -2,16 +2,16 @@
 
 **Document généré le : Mars 2025**
 **Application : MamanDouce - Votre compagnon de grossesse**
-**URL Production : https://mamandouce.cycafamily.com**
+**URL Production :** https://mamandouce.app (configurable)
 
 ---
 
 ## 🛠️ 1. DÉVELOPPEMENT & HÉBERGEMENT
 
-### Emergent (emergentagent.com)
-- **Utilisation** : Plateforme de développement IA pour la création de l'application
-- **Type** : Développement full-stack (React + FastAPI + MongoDB)
-- **Coût** : Selon votre plan Emergent
+### Repository autonome (GitHub / local)
+- **Utilisation** : Build & run 100 % indépendants (pas de plateforme Emergent)
+- **Frontend** : `npm install && npm run build` (Vite)
+- **Backend** : `pip install -r requirements.txt` puis `uvicorn server:app`
 
 ### Railway (railway.app)
 - **Utilisation** : Hébergement de l'application en production
@@ -30,10 +30,13 @@
 
 ## 🌐 2. DOMAINE
 
-### cycafamily.com
-- **Sous-domaine** : mamandouce.cycafamily.com
-- **Coût** : $10.46/an
-- **DNS géré par** : Cloudflare
+### mamandouce.app (écosystème NeriaCorp — zone B2C)
+- **Domaine produit** : mamandouce.app
+- **Zone portail** : **B2C** (consommatrices)
+- **Ex-domaine** : cycafamily.com (migré vers NeriaCorp)
+- **DNS géré par** : Cloudflare (recommandé)
+- **API** : via `VITE_BACKEND_URL` / Worker NeriaCorp (`api.neriacorp.com` si configuré)
+- **Catalogue portail** : `GET /api/neriacorp/catalog` · manifeste `/neriacorp-app.json`
 
 ---
 
@@ -87,13 +90,15 @@
 
 ## 🤖 6. INTELLIGENCE ARTIFICIELLE
 
-### OpenAI GPT-5.2 (via Emergent Universal Key)
+### OpenAI (API officielle)
 - **Utilisation** :
   - Chatbot IA disponible 24/7
+  - Scanner alimentaire vision
   - Traduction automatique du contenu dynamique
-- **Modèle** : GPT-5.2
-- **Accès** : Via Emergent Universal Key (emergentintegrations)
-- **Coût** : Selon utilisation (via Emergent)
+  - Expert comptable admin
+- **Modèles** : `gpt-4o-mini` (chat) / `gpt-4o` (vision) — configurables via env
+- **Accès** : `OPENAI_API_KEY` (SDK `openai` PyPI)
+- **Coût** : Selon utilisation OpenAI
 
 ---
 
@@ -124,7 +129,7 @@
 ### Coûts annuels
 | Service | Coût annuel |
 |---------|-------------|
-| Domaine cycafamily.com | $10.46 |
+| Domaine mamandouce.app (NeriaCorp) | Selon registrar |
 | Railway (Hobby x 12 mois) | ~$60 |
 | **TOTAL ANNUEL** | **~$70.46/an** |
 
@@ -138,7 +143,7 @@
 | Service | Coût |
 |---------|------|
 | Stripe | 2.9% + 0.30€ / transaction |
-| Emergent Universal Key | Selon utilisation |
+| OpenAI API | Selon utilisation |
 
 ---
 
@@ -154,7 +159,7 @@
 
 ## 📞 CONTACTS SUPPORT
 
-- **Emergent** : support@emergentagent.com
+- **OpenAI** : platform.openai.com
 - **Railway** : help.railway.app
 - **Stripe** : support.stripe.com
 - **Resend** : resend.com/docs

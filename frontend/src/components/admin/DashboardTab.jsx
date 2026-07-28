@@ -57,7 +57,7 @@ export function DashboardTab({ globalStats, codeStats, setActiveTab, messageStat
     try {
       // Create a link and trigger download
       const token = localStorage.getItem('token');
-      const API_URL = import.meta.env.VITE_BACKEND_URLL;
+      const API_URL = import.meta.env.VITE_BACKEND_URL;
       
       const response = await fetch(`${API_URL}/api/admin/export-stats-csv`, {
         headers: {

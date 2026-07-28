@@ -16,10 +16,10 @@ export function CollapsibleCard({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <Card className={`bg-white rounded-3xl shadow-sm overflow-hidden ${className}`}>
+    <Card variant="flat" className={`bg-white/80 rounded-3xl overflow-hidden ${className}`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-4 flex items-center gap-3 hover:bg-slate-50 transition-colors"
+        className="w-full p-4 flex items-center gap-3 card-glass-interactive rounded-none border-0 hover:brightness-105 transition-all"
         data-testid={`collapsible-${title?.toLowerCase().replace(/\s+/g, '-')}`}
       >
         {Icon && (

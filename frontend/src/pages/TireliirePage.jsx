@@ -7,6 +7,7 @@ import { Input } from '../components/ui/input';
 import PageHeader from '../components/PageHeader';
 import api from '../utils/api';
 import { toast } from 'sonner';
+import { N20Amount } from '../components/N20Icon';
 
 function TireliirePage() {
   const navigate = useNavigate();
@@ -128,9 +129,9 @@ function TireliirePage() {
             <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full flex items-center justify-center shadow-lg">
               <PiggyBank className="w-10 h-10 text-white" />
             </div>
-            <h2 className="text-lg text-rose-600 font-medium mb-1">Mon solde</h2>
-            <div className="text-5xl font-bold text-rose-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-              {data?.balance || 0}€
+            <h2 className="text-lg text-rose-600 font-medium mb-1">Mon solde N20</h2>
+            <div className="text-5xl font-bold text-rose-700 mb-2 flex justify-center" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              <N20Amount value={data?.balance || 0} size={36} valueClassName="text-5xl font-bold text-rose-700" />
             </div>
             {data?.balance > 0 && (
               <p className="text-rose-500 text-sm">
@@ -187,7 +188,9 @@ function TireliirePage() {
                   <p className="text-sm text-slate-500">Pour offrir à tes filleules</p>
                 </div>
               </div>
-              <div className="text-2xl font-bold text-purple-600">{data.gift_balance}€</div>
+              <div className="text-2xl font-bold text-purple-600">
+                <N20Amount value={data.gift_balance} size={22} valueClassName="text-2xl font-bold text-purple-600" />
+              </div>
             </div>
 
             {!showGiftForm ? (
@@ -221,7 +224,7 @@ function TireliirePage() {
                     }`}
                   >
                     <div className="font-medium">Post-partum</div>
-                    <div className="text-sm text-slate-500">10€</div>
+                    <div className="text-sm text-slate-500"><N20Amount value={10} size={12} /></div>
                   </button>
                   <button
                     type="button"
@@ -233,7 +236,7 @@ function TireliirePage() {
                     }`}
                   >
                     <div className="font-medium">Premium</div>
-                    <div className="text-sm text-slate-500">30€</div>
+                    <div className="text-sm text-slate-500"><N20Amount value={30} size={12} /></div>
                   </button>
                 </div>
                 <div className="flex gap-2">
@@ -273,7 +276,7 @@ function TireliirePage() {
               <div>
                 <h4 className="font-medium text-slate-700">Bonus de bienvenue</h4>
                 <p className="text-sm text-slate-500">
-                  Arrivée via un lien de parrainage = <span className="text-pink-600 font-bold">5€ offerts</span> dans ta tirelire
+                  Arrivée via un lien de parrainage = <span className="text-pink-600 font-bold inline-flex items-center gap-1"><N20Amount value={5} size={14} /> offerts</span> dans ta tirelire
                 </p>
               </div>
             </div>
@@ -327,7 +330,7 @@ function TireliirePage() {
                     </div>
                   </div>
                   <div className={`font-bold ${tx.amount > 0 ? 'text-green-600' : 'text-rose-600'}`}>
-                    {tx.amount > 0 ? '+' : ''}{tx.amount}€
+                    <N20Amount value={tx.amount} size={16} showSign={tx.amount > 0} valueClassName="font-bold" />
                   </div>
                 </div>
               ))}
@@ -337,7 +340,9 @@ function TireliirePage() {
 
         {/* CTA to referral */}
         <Card className="bg-gradient-to-r from-sky-100 to-pink-100 p-5 rounded-2xl text-center">
-          <p className="text-slate-600 mb-3">Invite tes amies et gagne 5€ par parrainage !</p>
+          <p className="text-slate-600 mb-3 inline-flex flex-wrap items-center gap-1">
+            Invite tes amies et gagne <N20Amount value={5} size={14} /> par parrainage !
+          </p>
           <Button
             onClick={() => navigate('/referral')}
             className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-6 py-2 rounded-full font-bold"

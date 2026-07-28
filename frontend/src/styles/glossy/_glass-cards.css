@@ -1,0 +1,173 @@
+/* ============================================
+   GLASSMORPHISM BOMBÉ 3D — interactif vs plat
+   ============================================ */
+
+:root {
+  --glass-text: var(--md-text-anthracite, #2C2C2C);
+  --glass-bg: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 255, 255, 0.14) 42%,
+    rgba(255, 255, 255, 0.08) 58%,
+    rgba(255, 255, 255, 0.28) 100%
+  );
+  --glass-border: 1px solid rgba(255, 255, 255, 0.45);
+  --glass-blur: blur(12px) saturate(180%);
+  --glass-shadow-interactive:
+    0 8px 32px 0 rgba(0, 0, 0, 0.14),
+    inset 1px 1px 2px 0 rgba(255, 255, 255, 0.55),
+    inset -1px -1px 2px 0 rgba(0, 0, 0, 0.08),
+    inset 0 18px 28px -10px rgba(255, 255, 255, 0.45);
+  --glass-shadow-interactive-hover:
+    0 12px 36px 0 rgba(0, 0, 0, 0.18),
+    inset 1px 1px 3px 0 rgba(255, 255, 255, 0.7),
+    inset -1px -1px 3px 0 rgba(0, 0, 0, 0.1),
+    inset 0 20px 32px -10px rgba(255, 255, 255, 0.55);
+}
+
+/* --- INTERACTIF : cliquable / collapsible --- */
+.card-glass-interactive,
+.nacre-bombe:not(.fixed):not(.card-flat),
+[data-testid*="section-card"]:not(.fixed):not(.card-flat),
+[data-testid*="item-card"]:not(.fixed):not(.card-flat),
+[data-testid*="category-"]:not(.fixed):not(.card-flat),
+[data-testid*="video-"]:not(.fixed):not(.card-flat),
+[class*="cursor-pointer"][class*="rounded-"][class*="shadow"]:not(.admin-drawer):not(.fertility-calendar):not(.fixed):not(.card-flat),
+button.card-glass-interactive,
+.PastelMosaicCard-glass,
+.PastelPillCard-glass {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  background-image: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: var(--glass-border) !important;
+  box-shadow: var(--glass-shadow-interactive) !important;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.22s ease, transform 0.22s ease, filter 0.22s ease;
+  /* Texte anthracite — le blanc est illisible sur glass clair */
+  color: var(--glass-text) !important;
+  -webkit-text-fill-color: var(--glass-text);
+}
+
+.card-glass-interactive:hover,
+.nacre-bombe:not(.fixed):not(.card-flat):hover,
+[data-testid*="section-card"]:not(.fixed):not(.card-flat):hover,
+[data-testid*="item-card"]:not(.fixed):not(.card-flat):hover,
+[class*="cursor-pointer"][class*="rounded-"][class*="shadow"]:not(.admin-drawer):not(.fertility-calendar):not(.fixed):not(.card-flat):hover {
+  box-shadow: var(--glass-shadow-interactive-hover) !important;
+  filter: brightness(1.03);
+}
+
+/* Reflet glossy bombé */
+.card-glass-interactive::before,
+.nacre-bombe:not(.fixed):not(.card-flat)::before,
+[data-testid*="section-card"]:not(.fixed):not(.card-flat)::before,
+[data-testid*="item-card"]:not(.fixed):not(.card-flat)::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  top: 3px !important;
+  left: 8% !important;
+  right: 8% !important;
+  height: 28% !important;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+/* Accents pastel soft (couleurs conservées, alpha réduit) */
+.card-glass-interactive[data-accent="pink"],
+.glass-accent-pink {
+  background-color: rgba(255, 182, 193, 0.18) !important;
+  border-color: rgba(255, 140, 159, 0.4) !important;
+}
+.card-glass-interactive[data-accent="sky"],
+.glass-accent-sky {
+  background-color: rgba(125, 214, 255, 0.18) !important;
+  border-color: rgba(125, 214, 255, 0.4) !important;
+}
+.card-glass-interactive[data-accent="green"],
+.glass-accent-green {
+  background-color: rgba(167, 243, 208, 0.2) !important;
+  border-color: rgba(110, 231, 183, 0.4) !important;
+}
+.card-glass-interactive[data-accent="purple"],
+.glass-accent-purple {
+  background-color: rgba(216, 180, 254, 0.18) !important;
+  border-color: rgba(196, 181, 253, 0.4) !important;
+}
+.card-glass-interactive[data-accent="amber"],
+.glass-accent-amber {
+  background-color: rgba(253, 224, 71, 0.16) !important;
+  border-color: rgba(234, 179, 8, 0.4) !important;
+}
+.card-glass-interactive[data-accent="violet"],
+.glass-accent-violet {
+  background-color: rgba(221, 214, 254, 0.18) !important;
+  border-color: rgba(167, 139, 250, 0.35) !important;
+}
+.card-glass-interactive[data-accent="red"],
+.glass-accent-red {
+  background-color: rgba(254, 202, 202, 0.18) !important;
+  border-color: rgba(252, 165, 165, 0.4) !important;
+}
+.card-glass-interactive[data-accent="slate"],
+.glass-accent-slate {
+  background-color: rgba(226, 232, 240, 0.22) !important;
+  border-color: rgba(148, 163, 184, 0.35) !important;
+}
+
+/* --- STATIQUE : plat, sans volume bombé --- */
+.card-flat {
+  background-image: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(226, 232, 240, 0.7) !important;
+  filter: none !important;
+  color: var(--glass-text) !important;
+  -webkit-text-fill-color: var(--glass-text);
+}
+
+.card-flat::before,
+.card-flat::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* === TEXTE ANTHRACITE DANS LES CARTES ===
+   Écrase text-white / blanc hérité (illisible sur fond clair).
+   Les accents couleur (pink, amber…) restent autorisés via leurs classes. */
+.card-glass-interactive :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, div, small, strong, em),
+.card-flat :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, div, small, strong, em),
+.nacre-bombe:not(.card-flat) :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, div),
+[data-testid*="section-card"] :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, div),
+[data-testid*="item-card"] :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, div) {
+  color: var(--glass-text);
+  -webkit-text-fill-color: var(--glass-text);
+}
+
+/* Blanc forcé → anthracite (sauf sur bandeaux gradient foncés marqués .allow-white-text) */
+.card-glass-interactive .text-white:not(.allow-white-text),
+.card-glass-interactive [class*="text-white"]:not(.allow-white-text),
+.card-flat .text-white:not(.allow-white-text),
+.card-flat [class*="text-white"]:not(.allow-white-text),
+.nacre-bombe .text-white:not(.allow-white-text),
+[data-testid*="section-card"] .text-white:not(.allow-white-text),
+[data-testid*="item-card"] .text-white:not(.allow-white-text) {
+  color: var(--glass-text) !important;
+  -webkit-text-fill-color: var(--glass-text) !important;
+}
+
+/* Accents pastel conservés (hiérarchie couleur) */
+.card-glass-interactive :where([class*="text-pink-"], [class*="text-rose-"], [class*="text-purple-"], [class*="text-violet-"], [class*="text-sky-"], [class*="text-blue-"], [class*="text-green-"], [class*="text-emerald-"], [class*="text-amber-"], [class*="text-yellow-"], [class*="text-red-"], [class*="text-orange-"], [class*="text-indigo-"], [class*="text-teal-"]),
+.card-flat :where([class*="text-pink-"], [class*="text-rose-"], [class*="text-purple-"], [class*="text-violet-"], [class*="text-sky-"], [class*="text-blue-"], [class*="text-green-"], [class*="text-emerald-"], [class*="text-amber-"], [class*="text-yellow-"], [class*="text-red-"], [class*="text-orange-"], [class*="text-indigo-"], [class*="text-teal-"]) {
+  -webkit-text-fill-color: currentColor;
+}
+

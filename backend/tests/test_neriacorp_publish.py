@@ -26,9 +26,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import pytest
 import requests
 
-BASE_URL = os.environ.get(
-    "REACT_APP_BACKEND_URL", "https://nacre-glossy-ui.preview.emergentagent.com"
-).rstrip("/")
+BASE_URL = (os.environ.get("BACKEND_URL") or os.environ.get("VITE_BACKEND_URL") or os.environ.get("REACT_APP_BACKEND_URL") or "http://localhost:8000").rstrip("/")
 ADMIN_EMAIL = "admin@mamandouce.com"
 ADMIN_PASSWORD = "AdminPremium2024!"
 NON_ADMIN_EMAIL = "testnonadmin58@test.com"

@@ -7,6 +7,7 @@ import PageHeader from '../components/PageHeader';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
+import { N20Amount } from '../components/N20Icon';
 
 // Animation des cœurs dorés pour Badge Or
 const GoldenHeartsAnimation = ({ onComplete }) => {
@@ -467,7 +468,9 @@ function TrophiesPage() {
                   className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-bold"
                   data-testid={`gift-${gift.type}-btn`}
                 >
-                  🎁 Offrir {gift.name} ({gift.value}€)
+                  🎁 Offrir {gift.name} (
+                  <N20Amount value={gift.value} size={14} className="inline-flex align-middle" />
+                  )
                 </Button>
               ))}
             </div>

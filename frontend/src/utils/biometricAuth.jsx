@@ -168,16 +168,10 @@ export const authenticateWithBiometric = async () => {
       }
       throw new Error('Échec de l\'authentification biométrique');
     }
-  } else {
-    // Fallback: No WebAuthn, just return credentials (for testing/unsupported browsers)
-    // In production, you might want to remove this fallback
-    const encoded = localStorage.getItem(CREDENTIALS_KEY);
-    if (encoded) {
-      return JSON.parse(atob(encoded));
-    }
   }
-  
-  throw new Error('Aucune donnée d\'authentification trouvée');
+
+  // Sans WebAuthn disponible, ne jamais restituer le mot de passe en clair depuis localStorage
+  throw new Error('Authentification biométrique non disponible sur cet appareil');
 };
 
 // Get saved credentials (without biometric check - for profile display)

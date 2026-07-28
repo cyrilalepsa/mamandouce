@@ -7,6 +7,7 @@
 import { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Heart } from 'lucide-react';
+import { N20Amount } from '../N20Icon';
 
 // =========================================================================
 // 1. WIDGET "SEMAINE DE GROSSESSE" — UNIQUEMENT CE BLOC TOUT EN HAUT
@@ -259,15 +260,15 @@ export function TirelireWidget({ navigate }) {
       <div className="relative flex items-center justify-between">
         <div>
           <p className="text-[10px] font-medium" style={{ color: '#4A4A4A' }}>
-            🐷 Ma Tirelire
+            🐷 Tirelire N20
           </p>
           <p className={`text-lg font-bold ${isUnlocked ? 'text-yellow-600' : 'text-pink-500'}`}>
-            {loading ? '...' : `${balance}€`}
+            {loading ? '...' : <N20Amount value={balance} size={18} valueClassName="text-lg font-bold" />}
           </p>
         </div>
         
         {/* Mini gauge */}
-        <div className="w-16">
+        <div className="w-20">
           <div className="h-2 rounded-full overflow-hidden bg-slate-200">
             <div 
               className={`h-full rounded-full transition-all duration-500 ${
@@ -278,8 +279,10 @@ export function TirelireWidget({ navigate }) {
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-[9px] text-center mt-0.5" style={{ color: '#6b7280' }}>
-            {balance}/{goal}€
+          <p className="text-[9px] text-center mt-0.5 inline-flex items-center justify-center gap-0.5 w-full" style={{ color: '#6b7280' }}>
+            <N20Amount value={balance} size={10} />
+            <span>/</span>
+            <N20Amount value={goal} size={10} />
           </p>
         </div>
       </div>

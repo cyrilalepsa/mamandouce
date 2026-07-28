@@ -29,11 +29,15 @@ app = FastAPI(
     redoc_url="/api/redoc",  # ReDoc accessible
 )
 
-# CORS
+# CORS — configurable via CORS_ORIGINS (défaut localhost Vite)
+from core.config import CORS_ORIGINS
+_cors_origins = CORS_ORIGINS if CORS_ORIGINS else ["http://localhost:5173"]
+# allow_credentials incompatible avec origins=["*"] en browsers modernes
+_allow_credentials = "*" not in _cors_origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=_cors_origins if _allow_credentials else ["*"],
+    allow_credentials=_allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -94,6 +98,8 @@ api_router.include_router(accounting_router)
 api_router.include_router(emotional_router)
 api_router.include_router(tirelire_router)
 api_router.include_router(babynames_router)
+from routes.neriacorp_portal import router as neriacorp_portal_router
+api_router.include_router(neriacorp_portal_router)
 
 # Include main router
 app.include_router(api_router)

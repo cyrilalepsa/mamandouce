@@ -11,7 +11,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = (os.environ.get("BACKEND_URL") or os.environ.get("VITE_BACKEND_URL") or os.environ.get("REACT_APP_BACKEND_URL") or "http://localhost:8000").rstrip("/")
 
 # Test credentials
 ADMIN_EMAIL = "admin@mamandouce.com"
@@ -88,7 +88,7 @@ class TestPricingConfiguration:
             f"{BASE_URL}/api/payments/checkout/session",
             json={
                 "package_id": "annual",
-                "origin_url": "https://nacre-glossy-ui.preview.emergentagent.com"
+                "origin_url": "http://localhost:5173"
             },
             headers={"Authorization": f"Bearer {token}"}
         )
@@ -111,7 +111,7 @@ class TestPricingConfiguration:
             f"{BASE_URL}/api/payments/checkout/session",
             json={
                 "package_id": "postpartum",
-                "origin_url": "https://nacre-glossy-ui.preview.emergentagent.com"
+                "origin_url": "http://localhost:5173"
             },
             headers={"Authorization": f"Bearer {token}"}
         )

@@ -40,9 +40,10 @@ class AIFoodScanner:
     """Scanner alimentaire IA utilisant GPT-4o Vision"""
     
     def __init__(self):
-        self.api_key = os.environ.get("EMERGENT_LLM_KEY")
+        from services.llm import get_llm_api_key
+        self.api_key = get_llm_api_key()
         if not self.api_key:
-            logger.warning("[FoodScanner] EMERGENT_LLM_KEY not configured")
+            logger.warning("[FoodScanner] OPENAI_API_KEY not configured")
     
     async def analyze_food_image(self, image_base64: str, user_context: Optional[str] = None) -> FoodScanResult:
         """
@@ -55,10 +56,10 @@ class AIFoodScanner:
         Returns:
             FoodScanResult avec verdict et explications
         """
-        from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
+        from services.llm import chat_vision
         
         if not self.api_key:
-            raise ValueError("EMERGENT_LLM_KEY non configurée")
+            raise ValueError("OPENAI_API_KEY non configurée")
         
         # Créer le contexte système
         system_message = """Tu es un expert en nutrition prénatale et sécurité alimentaire pour les femmes enceintes.
@@ -93,27 +94,15 @@ ALIMENTS À SURVEILLER:
 Sois bienveillante et rassurante dans tes explications. Utilise un ton maternel et encourageant."""
 
         try:
-            # Initialiser le chat avec GPT-4o
-            chat = LlmChat(
-                api_key=self.api_key,
-                session_id=f"food_scan_{datetime.now().timestamp()}",
-                system_message=system_message
-            ).with_model("openai", "gpt-4o")
-            
-            # Préparer le message avec l'image
             user_text = "Analyse cet aliment pour une femme enceinte. Réponds UNIQUEMENT en JSON valide."
             if user_context:
                 user_text += f"\nContexte: {user_context}"
             
-            image_content = ImageContent(image_base64=image_base64)
-            
-            user_message = UserMessage(
-                text=user_text,
-                file_contents=[image_content]
+            response = await chat_vision(
+                system_message=system_message,
+                user_text=user_text,
+                image_base64=image_base64,
             )
-            
-            # Envoyer et recevoir la réponse
-            response = await chat.send_message(user_message)
             
             # Parser la réponse JSON
             result = self._parse_response(response)

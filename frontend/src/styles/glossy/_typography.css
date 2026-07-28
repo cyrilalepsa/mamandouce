@@ -1,14 +1,15 @@
 /* ============================================
-   TYPOGRAPHIE - NOIR PUR #000000
+   TYPOGRAPHIE - GRIS ANTHRACITE #2C2C2C
+   (lisible sur glass clair ; blanc interdit par défaut)
    ============================================ */
 h1:not([data-testid="mamandouce-logo"]), 
 h2, h3, h4, h5, h6 {
-  color: #000000 !important;
+  color: var(--md-text-anthracite, #2C2C2C) !important;
 }
 
 p, span:not(.mamandouce-title):not([data-testid="user-name"]):not(.user-name-display), 
 label, a, li, td, th {
-  color: #000000;
+  color: var(--md-text-anthracite, #2C2C2C);
 }
 
 /* Exceptions pour les éléments qui doivent garder leur couleur */
@@ -50,13 +51,13 @@ span[data-testid="user-name"],
 
 [class*="text-slate-"],
 [class*="text-gray-"] {
-  color: #2D2A32 !important;  /* Plus foncé pour meilleur contraste */
+  color: var(--md-text-anthracite, #2C2C2C) !important;
 }
 
-/* Labels des formulaires - Contraste amélioré */
+/* Labels des formulaires - Contraste anthracite */
 label,
 .label,
 [class*="font-semibold"] {
-  color: #3D3847 !important;
+  color: var(--md-text-secondary, #3D3D3D) !important;
   font-weight: 600 !important;
 }

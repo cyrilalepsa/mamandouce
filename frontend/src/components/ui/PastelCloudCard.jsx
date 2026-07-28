@@ -45,17 +45,14 @@ export function PastelCloudCard({
     <button
       onClick={onClick}
       className={`
-        w-full bg-gradient-to-br ${gradient} ${sizeClasses[size]}
-        border border-white/50 shadow-[0_2px_12px_rgba(0,0,0,0.04)]
-        hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:scale-[1.01]
-        active:scale-[0.99] transition-all duration-200
-        text-left select-none backdrop-blur-sm
+        w-full card-glass-interactive bg-gradient-to-br ${gradient} ${sizeClasses[size]}
+        hover:scale-[1.01] active:scale-[0.99] transition-all duration-200
+        text-left select-none shadow
         ${className}
       `}
       style={{ 
         WebkitUserSelect: 'none', 
         WebkitTouchCallout: 'none',
-        backdropFilter: 'blur(8px)'
       }}
       data-testid={testId}
     >
@@ -99,10 +96,8 @@ export function PastelGridCard({
     <button
       onClick={onClick}
       className={`
-        bg-gradient-to-br ${gradient} p-3 rounded-xl
-        border border-white/50 shadow-[0_2px_10px_rgba(0,0,0,0.03)]
-        hover:shadow-[0_3px_12px_rgba(0,0,0,0.06)] hover:scale-[1.02]
-        active:scale-[0.98] transition-all duration-200
+        card-glass-interactive bg-gradient-to-br ${gradient} p-3 rounded-xl shadow
+        hover:scale-[1.02] active:scale-[0.98] transition-all duration-200
         text-center select-none
         ${className}
       `}

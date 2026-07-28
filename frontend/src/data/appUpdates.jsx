@@ -50,7 +50,7 @@ export const appUpdates = [
     title: "Déploiement Railway & Notifications",
     description: "Application disponible en ligne 24/7",
     features: [
-      { text: "Application accessible sur mamandouce.cycafamily.com", badge: null },
+      { text: "Application accessible sur mamandouce.app (écosystème NeriaCorp)", badge: null },
       { text: "Notifications push améliorées", badge: null },
       { text: "Super admin avec accès complet", badge: null },
     ],

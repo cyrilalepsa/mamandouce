@@ -6,13 +6,13 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://nacre-glossy-ui.preview.emergentagent.com')
+BASE_URL = (os.environ.get("BACKEND_URL") or os.environ.get("VITE_BACKEND_URL") or os.environ.get("REACT_APP_BACKEND_URL") or "http://localhost:8000").rstrip("/")
 API_URL = f"{BASE_URL}/api"
 
 # Admin credentials
 ADMIN_EMAIL = "cyrilalepsa@gmail.com"
 ADMIN_PASSWORD = "Cyc@dmin9630"
-ADMIN_SECRET = "Cyca-admin2026"
+ADMIN_SECRET = "NeriaCorp-admin-dev-only"
 
 
 class TestAuthentication:

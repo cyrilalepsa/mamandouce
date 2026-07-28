@@ -53,12 +53,29 @@ export function RemindersTab() {
     }
   };
 
-  const handleExportCSV = () => {
-    const token = localStorage.getItem('token');
-    const url = api.admin.exportRemindersCSV(true);
-    // Open in new tab with auth
-    window.open(`${url}&token=${token}`, '_blank');
-    toast.success('Export CSV en cours...');
+  const handleExportCSV = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const url = api.admin.exportRemindersCSV(true);
+      const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error('Erreur export');
+
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = `mamandouce_reminders_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(downloadUrl);
+      toast.success('Export CSV téléchargé !');
+    } catch (error) {
+      console.error('Erreur export rappels:', error);
+      toast.error('Erreur lors de l\'export CSV');
+    }
   };
 
   const handleDeleteReminder = async (reminderId) => {

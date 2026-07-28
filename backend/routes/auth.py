@@ -66,6 +66,8 @@ async def send_welcome_notification(user_name: str, user_email: str):
     # Envoyer l'email de bienvenue
     if resend and RESEND_API_KEY:
         try:
+            import os
+            frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
             resend.Emails.send({
                 "from": SENDER_EMAIL,
                 "to": user_email,
@@ -95,7 +97,7 @@ async def send_welcome_notification(user_name: str, user_email: str):
                     </div>
                     
                     <div style="text-align: center; margin: 30px 0;">
-                        <a href="https://nacre-glossy-ui.preview.emergentagent.com" 
+                        <a href="{frontend_url}" 
                            style="background: linear-gradient(135deg, #ec4899, #8b5cf6); 
                                   color: white; 
                                   text-decoration: none; 
@@ -496,13 +498,13 @@ async def forgot_password(request: ForgotPasswordRequest):
         try:
             # Get frontend URL from environment or use default
             import os
-            frontend_url = os.environ.get("FRONTEND_URL", "https://nacre-glossy-ui.preview.emergentagent.com")
+            frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
             reset_link = f"{frontend_url}/reset-password?token={reset_token}"
             
             resend.Emails.send({
                 "from": f"MamanDouce <{SENDER_EMAIL}>",
                 "to": [request.email],
-                "reply_to": "support@cycafamily.com",
+                "reply_to": "contact@mamandouce.app",
                 "subject": "Réinitialisation de votre mot de passe MamanDouce",
                 "headers": {
                     "X-Entity-Ref-ID": f"password-reset-{reset_token[:8]}",
@@ -571,7 +573,7 @@ async def forgot_password(request: ForgotPasswordRequest):
                             
                             <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
                             <p style="color: #9ca3af; font-size: 12px; text-align: center; margin: 0;">L'équipe MamanDouce 💕</p>
-                            <p style="color: #d1d5db; font-size: 10px; text-align: center; margin: 10px 0 0 0;">Cet email a été envoyé par MamanDouce • cycafamily.com</p>
+                            <p style="color: #d1d5db; font-size: 10px; text-align: center; margin: 10px 0 0 0;">Cet email a été envoyé par MamanDouce • NeriaCorp</p>
                         </td>
                     </tr>
                 </table>

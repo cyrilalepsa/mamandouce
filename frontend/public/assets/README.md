@@ -1,16 +1,31 @@
-# Modèle 3D du Bébé
+# Modèle 3D / images fœtus
 
-Placez votre fichier .glb de fœtus/bébé 3D ici et nommez-le `bebe.glb`.
+## Emplacements locaux (déjà dans le projet)
 
-## Sources recommandées pour les modèles gratuits :
-- Sketchfab: https://sketchfab.com/tags/fetus (cherchez "CC Attribution")
-- TurboSquid (modèles gratuits)
-- CGTrader (modèles gratuits)
+Dossier : `frontend/public/assets/fetus/`  
+Convention : `week-XX.png` (et variantes jpeg historiques)
 
-## Format requis :
-- Format: .glb ou .gltf
-- Nom: bebe.glb
-- Taille recommandée: < 5 MB pour un chargement rapide
+Consommés via `frontend/src/utils/fetusAssets.js` par :
+- `Baby3DContainer.jsx`
+- `BabyEvolutionWidget.jsx`
 
-## Si pas de modèle :
-Le composant affichera automatiquement un beau fallback SVG animé après 5 secondes.
+## Cloudinary (optionnel)
+
+1. Uploader les fichiers locaux :
+   ```bash
+   cd backend
+   # renseigner CLOUDINARY_* dans .env
+   python scripts/upload_fetus_cloudinary.py
+   ```
+2. Côté frontend `.env` :
+   ```
+   VITE_CLOUDINARY_CLOUD_NAME=votre_cloud
+   VITE_CLOUDINARY_FETUS_FOLDER=mamandouce/fetus
+   VITE_CLOUDINARY_TRANSFORMS=f_auto,q_auto
+   ```
+3. Rebuild frontend. Sans cloud name → fallback local automatique.
+
+## Format 3D (optionnel)
+
+Placez votre fichier `.glb` ici sous le nom `bebe.glb` (< 5 MB).  
+Sans modèle 3D, l’UI utilise les images semaine + fallback SVG/image.

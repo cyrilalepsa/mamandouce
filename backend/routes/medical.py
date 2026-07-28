@@ -365,6 +365,8 @@ async def send_due_reminders():
     }).to_list(100)
     
     sent_count = 0
+    import os
+    frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
     for reminder in due_reminders:
         try:
             reminder_type = reminder.get("reminder_type", "push")
@@ -397,7 +399,7 @@ async def send_due_reminders():
                                     Ceci est un rappel pour votre rendez-vous médical prévu prochainement.
                                 </p>
                                 <div style="text-align: center; margin: 30px 0;">
-                                    <a href="https://nacre-glossy-ui.preview.emergentagent.com/medical" 
+                                    <a href="{frontend_url}/medical" 
                                        style="background: linear-gradient(135deg, #ec4899, #8b5cf6); 
                                               color: white; 
                                               text-decoration: none; 

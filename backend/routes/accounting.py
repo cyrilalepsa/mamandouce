@@ -194,15 +194,14 @@ async def chat_with_expert(
     request: AccountingChatRequest,
     admin: User = Depends(get_admin_user)
 ):
-    """Chat with AI Expert Comptable (GPT-5.2)"""
-    from emergentintegrations.llm.chat import LlmChat, UserMessage
+    """Chat with AI Expert Comptable (OpenAI)"""
+    from services.llm import chat_text, get_llm_api_key
     from dotenv import load_dotenv
     
     load_dotenv()
     
-    api_key = os.environ.get("EMERGENT_LLM_KEY")
-    if not api_key:
-        raise HTTPException(status_code=500, detail="Clé API LLM non configurée")
+    if not get_llm_api_key():
+        raise HTTPException(status_code=500, detail="Clé API LLM non configurée (OPENAI_API_KEY)")
     
     # Get current financial context
     now = datetime.now(timezone.utc)
@@ -246,14 +245,11 @@ Réponds de manière professionnelle mais accessible, en français.
     session_id = request.session_id or f"admin-{admin.id}-{uuid.uuid4().hex[:8]}"
     
     try:
-        chat = LlmChat(
-            api_key=api_key,
-            session_id=session_id,
-            system_message=financial_context
-        ).with_model("openai", "gpt-5.2")
-        
-        user_message = UserMessage(text=request.message)
-        response = await chat.send_message(user_message)
+        response = await chat_text(
+            system_message=financial_context,
+            user_message=request.message,
+            complexity="complex",
+        )
         
         # Save chat history
         await db.accounting_chats.insert_one({

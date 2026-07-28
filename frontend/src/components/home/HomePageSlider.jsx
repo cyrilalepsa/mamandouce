@@ -7,11 +7,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from '../../contexts/ThemeContext';
-import NameOfTheDay from '../NameOfTheDay';
-import { SAPregnancyBadge } from './SAPregnancyBadge';
 import { DraggableItem, ItemGroup } from './DragDropComponents';
-import { WeekDisplayWidget, JourneyStepsCard } from './HomeWidgets';
+import { JourneyStepsCard } from './HomeWidgets';
 import PageSelectionPopup from './PageSelectionPopup';
 import { useHomeLayout } from '../../contexts/HomeLayoutContext';
 
@@ -41,7 +38,6 @@ export function HomePageSlider({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isDarkMode } = useTheme();
   const { duplicateItemToPage } = useHomeLayout();
   
   // État pour la popup de duplication/suppression
@@ -110,25 +106,8 @@ export function HomePageSlider({
           className="w-1/2 flex-shrink-0 px-0.5 no-layout-shift overflow-hidden"
           style={{ minHeight: '480px' }}
         >
-          {/* Semaine X et Fête du jour - layout adaptatif (cartes harmonisées 112px) */}
-          {hasPregnancyProfile ? (
-            <div className="grid grid-cols-2 gap-3 card-stable card-fade-in pb-4" style={{ minHeight: '112px' }}>
-              <WeekDisplayWidget pregnancyProfile={pregnancyProfile} t={t} compact navigate={navigate} />
-              <NameOfTheDay isDarkMode={isDarkMode} compact={true} />
-            </div>
-          ) : (
-            <div className="w-full px-2 card-stable card-fade-in" style={{ minHeight: '60px' }}>
-              <div className="flex items-center gap-2 w-full">
-                <div className="flex-1">
-                  <NameOfTheDay isDarkMode={isDarkMode} compact={false} fullWidth={true} />
-                </div>
-                <SAPregnancyBadge compact={false} />
-              </div>
-            </div>
-          )}
-          
-          {/* Les étapes - juste en dessous des cartes */}
-          <div className="mt-14 card-stable card-fade-in" style={{ animationDelay: '0.1s' }}>
+          {/* Cartes SA / Fête du jour gérées dans HomePage (évite le doublon) */}
+          <div className="mt-2 card-stable card-fade-in" style={{ animationDelay: '0.1s' }}>
             <JourneyStepsCard t={t} navigate={navigate} />
           </div>
         </div>

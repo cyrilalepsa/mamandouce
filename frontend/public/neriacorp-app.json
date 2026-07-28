@@ -1,0 +1,25 @@
+{
+  "id": "com.mamandouce.app",
+  "slug": "mamandouce",
+  "name": "MamanDouce",
+  "tagline": "Compagnon de grossesse",
+  "description": "Application B2C de suivi de grossesse — écosystème NeriaCorp.",
+  "zone": "B2C",
+  "ecosystem": "NeriaCorp",
+  "audience": "consumer",
+  "category": "health-family",
+  "theme_color": "#ec4899",
+  "urls": {
+    "app": "https://mamandouce.app",
+    "privacy": "https://mamandouce.app/privacy",
+    "pricing": "https://mamandouce.app/pricing"
+  },
+  "portal": {
+    "visible": true,
+    "zone": "B2C",
+    "featured": true,
+    "sort_order": 10
+  },
+  "status": "active",
+  "version": "2.1.0"
+}
