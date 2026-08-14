@@ -251,45 +251,103 @@ def test_n2_ocr_can_be_disabled(monkeypatch):
     assert n2_ocr_base_url() == ""
 
 
-def test_analyze_food_uses_n2_gateway(monkeypatch):
-    monkeypatch.setenv("N2_OCR_BASE_URL", "https://api.neriacorp.com")
-    monkeypatch.delenv("N2_OCR_API_STYLE", raising=False)
-    posted = {}
+def test_analyze_food_uses_gemini_then_local_engine(monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key")
+    monkeypatch.setenv("GEMINI_VISION_MODEL", "gemini-2.0-flash")
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("N2_OCR_API_KEY", raising=False)
+    monkeypatch.setenv("N2_OCR_BASE_URL", "off")
 
-    class FakeResp:
-        status_code = 200
-        content = b'{"text":"Pomme golden"}'
-
-        def raise_for_status(self):
-            return None
-
-        def json(self):
-            return {"text": "Pomme golden", "confidence": 0.9}
-
-    class FakeClient:
-        def __init__(self, *a, **k):
-            pass
-
-        async def __aenter__(self):
-            return self
-
-        async def __aexit__(self, *a):
-            return None
-
-        async def post(self, url, headers=None, json=None, files=None, data=None, params=None):
-            posted["url"] = url
-            posted["files"] = bool(files)
-            return FakeResp()
+    async def fake_extract(image_b64, extra_context=None):
+        assert extra_context == "S20"
+        return {
+            "product_name": "Pomme Golden",
+            "brand": "Verger",
+            "ingredients": "pomme",
+            "packaging_text": "Pomme golden 4 fruits",
+            "category": "Fruits",
+            "confidence": 0.91,
+            "model": "gemini-2.0-flash",
+        }
 
     import asyncio
     import base64 as b64
     from integrations.neriacorp.scanner_adapter import analyze_food
 
-    with patch("integrations.neriacorp.scanner_adapter.httpx.AsyncClient", FakeClient):
+    with patch(
+        "services.gemini_vision.extract_product",
+        new=fake_extract,
+    ), patch(
+        "integrations.neriacorp.scanner_adapter._scan_from_n2_text",
+        side_effect=AssertionError("N2 OCR ne doit pas être appelé"),
+    ):
         data = asyncio.run(
             analyze_food(image_base64=b64.b64encode(b"fakeimg").decode(), user_context="S20")
         )
-    assert posted["url"] == "https://api.neriacorp.com/api/n2/ocr/extract"
-    assert posted["files"] is True
-    assert data["food_name"] == "Pomme"
+    assert data["food_name"] == "Pomme Golden"
     assert data["verdict"] == "autorise"
+    assert data["engine"] == "gemini-vision+local-pregnancy"
+    assert data["ingredients"] == "pomme"
+    assert data["packaging_text"] == "Pomme golden 4 fruits"
+    assert data["product_name"] == "Pomme Golden"
+
+
+def test_analyze_food_source_requires_only_gemini():
+    import inspect
+    from integrations.neriacorp.scanner_adapter import analyze_food
+    from services.gemini_vision import PRODUCT_EXTRACT_PROMPT
+
+    src = inspect.getsource(analyze_food)
+    assert "extract_product" in src
+    assert "apply_pregnancy_engine" in src
+    assert "openai" not in src.lower()
+    assert "n2/ocr" not in src
+    assert "_n2_extract" not in src
+    for field in ("product_name", "ingredients", "packaging_text"):
+        assert field in PRODUCT_EXTRACT_PROMPT
+
+
+def test_pregnancy_engine_flags_raw_milk():
+    from integrations.neriacorp.scanner_adapter import apply_pregnancy_engine
+
+    data = apply_pregnancy_engine(
+        {
+            "product_name": "Camembert fermier",
+            "ingredients": "lait cru, sel, ferments",
+            "packaging_text": "Camembert",
+            "confidence": 0.8,
+        }
+    )
+    assert data["verdict"] == "deconseille"
+    assert "lait cru" in data["explanation"].lower()
+
+
+def test_gemini_vision_model_default(monkeypatch):
+    monkeypatch.delenv("GEMINI_VISION_MODEL", raising=False)
+    monkeypatch.delenv("AEVIS_GEMINI_VISION_MODEL", raising=False)
+    from services.gemini_vision import gemini_vision_model
+
+    assert gemini_vision_model() == "gemini-2.0-flash"
+
+
+def test_cloudinary_prod_env_names():
+    from pathlib import Path
+    from core import config as cfg
+
+    assert hasattr(cfg, "CLOUDINARY_CLOUD_NAME")
+    assert hasattr(cfg, "CLOUDINARY_API_KEY")
+    assert hasattr(cfg, "CLOUDINARY_API_SECRET")
+
+    backend = Path(__file__).resolve().parents[1]
+    upload_src = (backend / "scripts" / "upload_fetus_cloudinary.py").read_text(encoding="utf-8")
+    for name in ("CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"):
+        assert f'os.environ.get("{name}")' in upload_src
+        assert name in upload_src
+
+    portal_src = (backend / "routes" / "neriacorp_portal.py").read_text(encoding="utf-8")
+    assert "CLOUDINARY_CLOUD_NAME" in portal_src
+    # L'endpoint public n'expose jamais les secrets
+    media_fn = portal_src.split("async def neriacorp_media")[-1].split("async def ")[0]
+    assert "CLOUDINARY_API_KEY" not in media_fn
+    assert "CLOUDINARY_API_SECRET" not in media_fn
+

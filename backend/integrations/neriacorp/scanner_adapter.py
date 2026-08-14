@@ -1,20 +1,18 @@
 """
-Adaptateur OCR Noyau Neria (référence N2) pour MamanDouce.
+Adaptateur scanner MamanDouce — moteur Vision Aevis / N2 = Gemini.
 
-Option A — API centralisée : par défaut POST vers le Worker
-`https://api.neriacorp.com` (N2_OCR_BASE_URL). OPENAI_API_KEY n'est pas
-requise. Fallback OpenAI uniquement si N2_OCR_BASE_URL=off.
-Aucun import Emergent.
+Flux aliment :
+  1. Gemini Vision (GEMINI_API_KEY + GEMINI_VISION_MODEL) extrait nom / ingrédients / texte.
+  2. Le moteur local FOOD_SAFETY_DATABASE tranche la compatibilité grossesse.
+
+Aucun OpenAI ni OCR Worker n'est requis pour le scanner.
 """
 from __future__ import annotations
 
-import base64
 import json
 import logging
 import os
 from typing import Any, Dict, Optional
-
-import httpx
 
 logger = logging.getLogger(__name__)
 
@@ -158,20 +156,8 @@ def n2_ocr_base_url() -> str:
 
 
 def n2_ocr_api_key() -> str:
+    """Clé Worker N2 — optionnelle, jamais requise par le scanner aliment."""
     return os.environ.get("N2_OCR_API_KEY") or ""
-
-
-def n2_api_style() -> str:
-    """n2-core = Worker live api.neriacorp.com ; legacy = JSON /ocr/analyze*."""
-    explicit = (os.environ.get("N2_OCR_API_STYLE") or "").strip().lower()
-    if explicit in ("legacy", "json"):
-        return "legacy"
-    if explicit in ("n2", "n2-core", "core"):
-        return "n2-core"
-    base = n2_ocr_base_url() or ""
-    if "api.neriacorp.com" in base:
-        return "n2-core"
-    return "legacy"
 
 
 def parse_llm_json(raw: str) -> Dict[str, Any]:
@@ -189,66 +175,6 @@ def _strip_data_url(image_b64: Optional[str]) -> Optional[str]:
     if image_b64 and image_b64.startswith("data:") and "," in image_b64:
         return image_b64.split(",", 1)[1]
     return image_b64
-
-
-async def _n2_post_json(path: str, body: Dict[str, Any]) -> Dict[str, Any]:
-    base = n2_ocr_base_url()
-    headers = {"Content-Type": "application/json"}
-    key = n2_ocr_api_key()
-    if key:
-        headers["Authorization"] = f"Bearer {key}"
-    async with httpx.AsyncClient(
-        timeout=httpx.Timeout(connect=8.0, read=90.0, write=10.0, pool=10.0)
-    ) as client:
-        r = await client.post(f"{base}{path}", headers=headers, json=body)
-        r.raise_for_status()
-        return r.json()
-
-
-def _n2_auth_headers() -> Dict[str, str]:
-    headers: Dict[str, str] = {}
-    key = n2_ocr_api_key()
-    if key:
-        headers["Authorization"] = f"Bearer {key}"
-    return headers
-
-
-async def _n2_extract_image(image_b64: str) -> Dict[str, Any]:
-    """Contrat live n2-core : POST /api/n2/ocr/extract (multipart file)."""
-    raw = base64.b64decode(image_b64)
-    async with httpx.AsyncClient(
-        timeout=httpx.Timeout(connect=8.0, read=90.0, write=10.0, pool=10.0)
-    ) as client:
-        r = await client.post(
-            f"{n2_ocr_base_url()}/api/n2/ocr/extract",
-            headers=_n2_auth_headers(),
-            files={"file": ("scan.jpg", raw, "image/jpeg")},
-            params={"lang": "fra+eng"},
-        )
-        if r.status_code == 401:
-            raise RuntimeError(
-                "Worker N2 : authentification requise (N2_OCR_API_KEY Bearer)"
-            )
-        r.raise_for_status()
-        return r.json() if r.content else {}
-
-
-def _ocr_text_from_n2(data: Dict[str, Any]) -> str:
-    if not isinstance(data, dict):
-        return str(data or "")
-    for key in ("text", "raw_text", "content", "ocr_text"):
-        val = data.get(key)
-        if isinstance(val, str) and val.strip():
-            return val
-    nested = data.get("result") or data.get("data") or {}
-    if isinstance(nested, str):
-        return nested
-    if isinstance(nested, dict):
-        for key in ("text", "raw_text"):
-            val = nested.get(key)
-            if isinstance(val, str) and val.strip():
-                return val
-    return json.dumps(data, ensure_ascii=False)[:2000]
 
 
 def _scan_from_n2_text(
@@ -307,7 +233,7 @@ def _match_food_from_text(text: str) -> Dict[str, Any]:
         return {
             "food_name": label,
             "verdict": "limite",
-            "explanation": "OCR N2 effectué — à vérifier dans la base aliments.",
+            "explanation": "Produit lu par Gemini Vision — à vérifier dans la base aliments.",
             "confidence": 0.4,
         }
     safety = best_meta.get("safe_for_pregnancy") or "caution"
@@ -320,9 +246,38 @@ def _match_food_from_text(text: str) -> Dict[str, Any]:
     return {
         "food_name": best_meta.get("name") or "Aliment",
         "verdict": verdict,
-        "explanation": best_meta.get("reason") or "Analyse Noyau N2.",
+        "explanation": best_meta.get("reason") or "Vérification grossesse locale.",
         "confidence": 0.75,
     }
+
+
+def apply_pregnancy_engine(extracted: Dict[str, Any]) -> Dict[str, Any]:
+    """Injecte l'extraction Gemini dans le moteur local de compatibilité grossesse."""
+    haystack = " ".join(
+        str(extracted.get(k) or "")
+        for k in ("product_name", "brand", "ingredients", "packaging_text", "category")
+    )
+    match = _match_food_from_text(haystack)
+    ingredients = (extracted.get("ingredients") or "").lower()
+    if "lait cru" in ingredients or "raw milk" in ingredients:
+        match["verdict"] = "deconseille"
+        match["explanation"] = (
+            "Ingrédients : lait cru détecté — risque de listériose pendant la grossesse."
+        )
+    if any(token in ingredients for token in ("alcool", " wine", "vodka", "rhum")):
+        match["verdict"] = "deconseille"
+        match["explanation"] = "Ingrédients : alcool détecté — déconseillé pendant la grossesse."
+    product_name = extracted.get("product_name") or match["food_name"]
+    match["food_name"] = product_name
+    match["product_name"] = product_name
+    match["brand"] = extracted.get("brand")
+    match["ingredients"] = extracted.get("ingredients")
+    match["packaging_text"] = extracted.get("packaging_text")
+    match["category"] = extracted.get("category")
+    match["confidence"] = float(extracted.get("confidence") or match.get("confidence") or 0.7)
+    match["engine"] = "gemini-vision+local-pregnancy"
+    match["vision_model"] = extracted.get("model")
+    return match
 
 
 async def analyze_neriacorp(
@@ -331,56 +286,29 @@ async def analyze_neriacorp(
     text_input: Optional[str] = None,
     metadata: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
-    """Point d'entrée OCR Intelligence (image / texte)."""
+    """Point d'entrée OCR Intelligence (image / texte) — Vision Gemini Aevis."""
     image_b64 = _strip_data_url(image_base64)
-    if n2_ocr_base_url():
-        if n2_api_style() == "n2-core":
-            if not image_b64:
-                return _scan_from_n2_text(text_input or "", metadata=metadata)
-            extracted = await _n2_extract_image(image_b64)
+    if image_b64:
+        from services.gemini_vision import gemini_vision_json, gemini_api_key
+
+        if gemini_api_key():
+            parsed = await gemini_vision_json(
+                NERIACORP_SYSTEM_PROMPT
+                + "\n\nAnalyse l'image. JSON strict metadata/business/display_card/financial.",
+                image_b64,
+            )
+            if parsed.get("metadata") or parsed.get("business"):
+                return parsed
             return _scan_from_n2_text(
-                _ocr_text_from_n2(extracted),
-                n2_payload=extracted,
+                parsed.get("packaging_text") or parsed.get("product_name") or "",
+                n2_payload=parsed,
                 text_input=text_input,
                 metadata=metadata,
             )
-        return await _n2_post_json(
-            "/ocr/analyze",
-            {
-                "image_base64": image_b64,
-                "text_input": text_input,
-                "metadata": metadata,
-            },
+        raise RuntimeError(
+            "GEMINI_API_KEY requis pour le scanner Vision (moteur Aevis / N2)"
         )
-
-    from services.llm import chat_text, chat_vision, get_llm_api_key
-
-    if not get_llm_api_key():
-        raise RuntimeError("OPENAI_API_KEY (ou N2_OCR_BASE_URL) manquant pour l'OCR")
-
-    parts = []
-    if text_input:
-        parts.append(f"TEXTE FOURNI :\n{text_input}")
-    if metadata:
-        parts.append(f"MÉTADONNÉES :\n{json.dumps(metadata, ensure_ascii=False)}")
-    parts.append("Analyse selon les règles strictes. Retourne UNIQUEMENT le JSON conforme au schéma.")
-    user_text = "\n\n".join(parts)
-
-    if image_b64:
-        raw = await chat_vision(
-            system_message=NERIACORP_SYSTEM_PROMPT,
-            user_text=user_text,
-            image_base64=image_b64,
-            temperature=0.15,
-        )
-    else:
-        raw = await chat_text(
-            system_message=NERIACORP_SYSTEM_PROMPT,
-            user_message=user_text,
-            complexity="complex",
-            temperature=0.15,
-        )
-    return parse_llm_json(raw)
+    return _scan_from_n2_text(text_input or "", metadata=metadata)
 
 
 def document_system_prompt(category: str, custom_prompt: Optional[str] = None) -> str:
@@ -418,34 +346,12 @@ async def analyze_document(
         valid = ", ".join(CATEGORY_PROMPTS.keys())
         raise ValueError(f"Catégorie invalide. Valides: {valid}")
     image_b64 = _strip_data_url(image_base64)
-    if n2_ocr_base_url():
-        if n2_api_style() == "n2-core":
-            extracted = await _n2_extract_image(image_b64 or "")
-            text = _ocr_text_from_n2(extracted)
-            return {
-                "raw_text": text,
-                "confidence": extracted.get("confidence", 0.7) if isinstance(extracted, dict) else 0.7,
-                "n2": extracted,
-            }
-        return await _n2_post_json(
-            "/ocr/analyze-document",
-            {
-                "image_base64": image_b64,
-                "category": category,
-                "custom_prompt": custom_prompt,
-            },
-        )
-    from services.llm import chat_vision, get_llm_api_key
+    from services.gemini_vision import gemini_vision_json
 
-    if not get_llm_api_key():
-        raise RuntimeError("OPENAI_API_KEY (ou N2_OCR_BASE_URL) manquant pour l'OCR")
-    raw = await chat_vision(
-        system_message=document_system_prompt(category, custom_prompt),
-        user_text="Extrais les données de cette image. JSON uniquement.",
-        image_base64=image_b64 or "",
-        temperature=0.1,
+    return await gemini_vision_json(
+        document_system_prompt(category, custom_prompt),
+        image_b64 or "",
     )
-    return parse_llm_json(raw)
 
 
 async def analyze_video(
@@ -454,34 +360,11 @@ async def analyze_video(
     mime_type: str,
     text_input: Optional[str] = None,
 ) -> Dict[str, Any]:
-    if n2_ocr_base_url():
-        base = n2_ocr_base_url()
-        headers = {}
-        key = n2_ocr_api_key()
-        if key:
-            headers["Authorization"] = f"Bearer {key}"
-        with open(file_path, "rb") as fh:
-            files = {"file": (os.path.basename(file_path), fh, mime_type)}
-            data = {}
-            if text_input:
-                data["text_input"] = text_input
-            async with httpx.AsyncClient(timeout=180.0) as client:
-                r = await client.post(
-                    f"{base}/ocr/analyze-video",
-                    headers=headers,
-                    files=files,
-                    data=data,
-                )
-                r.raise_for_status()
-                return r.json()
+    from services.gemini_vision import gemini_api_key
 
-    gemini_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-    if gemini_key:
-        return await _analyze_video_gemini(file_path, mime_type, text_input, gemini_key)
-
-    raise RuntimeError(
-        "Analyse vidéo : définir N2_OCR_BASE_URL ou GEMINI_API_KEY / GOOGLE_API_KEY"
-    )
+    if gemini_api_key():
+        return await _analyze_video_gemini(file_path, mime_type, text_input, gemini_api_key())
+    raise RuntimeError("GEMINI_API_KEY requis pour l'analyse vidéo (moteur Aevis / N2)")
 
 
 async def _analyze_video_gemini(
@@ -493,7 +376,9 @@ async def _analyze_video_gemini(
         import google.generativeai as genai
 
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-2.0-flash")
+        from services.gemini_vision import gemini_vision_model
+
+        model = genai.GenerativeModel(gemini_vision_model())
         uploaded = genai.upload_file(path=file_path, mime_type=mime_type)
         prompt = text_input or (
             "Analyse cette vidéo et génère une annonce de vente. Retourne UNIQUEMENT le JSON."
@@ -549,58 +434,9 @@ async def analyze_food(
     image_base64: str,
     user_context: Optional[str] = None,
 ) -> Dict[str, Any]:
-    """Scanner aliment grossesse — passerelle N2 (Option A) puis fallback OpenAI."""
+    """Scanner aliment : Gemini Vision (Aevis) puis moteur grossesse local."""
+    from services.gemini_vision import extract_product
+
     image_b64 = _strip_data_url(image_base64)
-    if n2_ocr_base_url():
-        if n2_api_style() == "n2-core":
-            extracted = await _n2_extract_image(image_b64 or "")
-            text = _ocr_text_from_n2(extracted)
-            payload = _match_food_from_text(text)
-            payload["raw_text"] = text[:500]
-            payload.setdefault("confidence", 0.7)
-            return payload
-        try:
-            raw = await _n2_post_json(
-                "/ocr/analyze-food",
-                {
-                    "image_base64": image_b64,
-                    "context": user_context,
-                    "source_app": "mamandouce",
-                },
-            )
-            return normalize_food_payload(raw)
-        except httpx.HTTPStatusError as exc:
-            status = exc.response.status_code if exc.response is not None else 0
-            if status != 404:
-                raise
-            logger.info("[N2] /ocr/analyze-food absent — repli /ocr/analyze-document alimentation")
-            doc = await _n2_post_json(
-                "/ocr/analyze-document",
-                {
-                    "image_base64": image_b64,
-                    "category": "alimentation",
-                    "custom_prompt": user_context,
-                },
-            )
-            return normalize_food_payload(doc)
-
-    from services.llm import chat_vision, get_llm_api_key
-
-    if not get_llm_api_key():
-        raise RuntimeError(
-            "Worker N2 (N2_OCR_BASE_URL) ou OPENAI_API_KEY requis pour le scanner aliment"
-        )
-    system_message = """Tu es un expert en nutrition prénatale.
-Réponds UNIQUEMENT en JSON :
-{"food_name":"...","verdict":"autorise|limite|deconseille","explanation":"...","nutrients_info":null,"alternatives":null,"confidence":0.0}
-"""
-    user_text = "Analyse cet aliment pour une femme enceinte. JSON uniquement."
-    if user_context:
-        user_text += f"\nContexte: {user_context}"
-    raw = await chat_vision(
-        system_message=system_message,
-        user_text=user_text,
-        image_base64=image_b64 or "",
-        temperature=0.1,
-    )
-    return normalize_food_payload(parse_llm_json(raw))
+    extracted = await extract_product(image_b64 or "", extra_context=user_context)
+    return apply_pregnancy_engine(extracted)

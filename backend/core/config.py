@@ -45,10 +45,25 @@ STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "")
 # Frontend (liens emails, reset password, deep links)
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173").rstrip("/")
 
-# LLM (OpenAI officiel — optionnel en Option A : l'OCR passe par le Worker N2)
+# LLM (OpenAI — chatbot / traduction uniquement, PAS le scanner)
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "") or os.environ.get("EMERGENT_LLM_KEY", "")
 OPENAI_CHAT_MODEL = os.environ.get("OPENAI_CHAT_MODEL", "gpt-4o-mini")
 OPENAI_VISION_MODEL = os.environ.get("OPENAI_VISION_MODEL", "gpt-4o")
+
+# Gemini Vision — moteur scanner Aevis / N2 (seul provider requis pour le scan)
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY") or ""
+GEMINI_VISION_MODEL = (
+    os.environ.get("GEMINI_VISION_MODEL")
+    or os.environ.get("AEVIS_GEMINI_VISION_MODEL")
+    or "gemini-2.0-flash"
+)
+
+# Cloudinary — nomenclature prod (upload fœtus)
+CLOUDINARY_CLOUD_NAME = (os.environ.get("CLOUDINARY_CLOUD_NAME") or "").strip()
+CLOUDINARY_API_KEY = (os.environ.get("CLOUDINARY_API_KEY") or "").strip()
+CLOUDINARY_API_SECRET = (os.environ.get("CLOUDINARY_API_SECRET") or "").strip()
+CLOUDINARY_FETUS_FOLDER = (os.environ.get("CLOUDINARY_FETUS_FOLDER") or "mamandouce/fetus").strip()
+CLOUDINARY_TRANSFORMS = (os.environ.get("CLOUDINARY_TRANSFORMS") or "f_auto,q_auto").strip()
 
 # Noyau N2 — API centralisée (Option A)
 DEFAULT_N2_WORKER_URL = "https://api.neriacorp.com"
@@ -56,9 +71,9 @@ NERIACORP_PORTAL_URL = os.environ.get("NERIACORP_PORTAL_URL", "https://neriacorp
 
 
 def n2_ocr_base_url() -> str:
-    """Worker OCR NeriaCorp. Défaut prod = api.neriacorp.com.
+    """Worker OCR NeriaCorp (optionnel — le scanner aliment n'en a pas besoin).
 
-    Pour forcer le fallback OpenAI local : N2_OCR_BASE_URL=off
+    Défaut prod = api.neriacorp.com. N2_OCR_BASE_URL=off désactive l'URL.
     """
     if "N2_OCR_BASE_URL" not in os.environ:
         return DEFAULT_N2_WORKER_URL

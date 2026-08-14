@@ -6,7 +6,14 @@ import os
 
 from fastapi import APIRouter
 
-from core.config import FRONTEND_URL, NERIACORP_PORTAL_URL, n2_ocr_base_url
+from core.config import (
+    CLOUDINARY_CLOUD_NAME,
+    CLOUDINARY_FETUS_FOLDER,
+    CLOUDINARY_TRANSFORMS,
+    FRONTEND_URL,
+    NERIACORP_PORTAL_URL,
+    n2_ocr_base_url,
+)
 from integrations.neriacorp.catalog import get_portal_catalog_entry, get_portal_catalog_payload
 
 router = APIRouter(tags=["neriacorp-portal"])
@@ -30,9 +37,9 @@ async def neriacorp_app_identity():
 @router.get("/neriacorp/media")
 async def neriacorp_media():
     """Config CDN publique (aucun secret). Le front hydrate Cloudinary sans rebuild."""
-    cloud = (os.environ.get("CLOUDINARY_CLOUD_NAME") or "").strip()
-    folder = (os.environ.get("CLOUDINARY_FETUS_FOLDER") or "mamandouce/fetus").strip()
-    transforms = (os.environ.get("CLOUDINARY_TRANSFORMS") or "f_auto,q_auto").strip()
+    cloud = CLOUDINARY_CLOUD_NAME
+    folder = CLOUDINARY_FETUS_FOLDER or "mamandouce/fetus"
+    transforms = CLOUDINARY_TRANSFORMS or "f_auto,q_auto"
     cdn_host = "https://res.cloudinary.com"
     delivery_base = (
         f"{cdn_host}/{cloud}/image/upload/{transforms}" if cloud else None

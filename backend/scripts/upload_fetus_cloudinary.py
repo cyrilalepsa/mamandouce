@@ -30,6 +30,13 @@ from pathlib import Path
 import requests
 from dotenv import load_dotenv
 
+from core.config import (
+    CLOUDINARY_API_KEY,
+    CLOUDINARY_API_SECRET,
+    CLOUDINARY_CLOUD_NAME,
+    CLOUDINARY_FETUS_FOLDER,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT / ".env")
 
@@ -132,10 +139,11 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
-    cloud = os.environ.get("CLOUDINARY_CLOUD_NAME", "").strip()
-    api_key = os.environ.get("CLOUDINARY_API_KEY", "").strip()
-    api_secret = os.environ.get("CLOUDINARY_API_SECRET", "").strip()
-    folder = os.environ.get("CLOUDINARY_FETUS_FOLDER", DEFAULT_FOLDER).strip()
+    # Nomenclature prod — mêmes variables que core.config / Railway
+    cloud = os.environ.get("CLOUDINARY_CLOUD_NAME") or CLOUDINARY_CLOUD_NAME
+    api_key = os.environ.get("CLOUDINARY_API_KEY") or CLOUDINARY_API_KEY
+    api_secret = os.environ.get("CLOUDINARY_API_SECRET") or CLOUDINARY_API_SECRET
+    folder = (os.environ.get("CLOUDINARY_FETUS_FOLDER") or CLOUDINARY_FETUS_FOLDER or DEFAULT_FOLDER).strip()
 
     if not args.dry_run and not (cloud and api_key and api_secret):
         print(

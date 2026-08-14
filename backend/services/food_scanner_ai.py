@@ -1,8 +1,7 @@
 """
-AI Food Scanner Service - Analyse d'images alimentaires pour femmes enceintes.
+AI Food Scanner — Gemini Vision (Aevis) + moteur local de compatibilité grossesse.
 
-Option A : passerelle Noyau N2 (`N2_OCR_BASE_URL`, défaut api.neriacorp.com).
-OPENAI_API_KEY optionnelle — fallback uniquement si le Worker est désactivé.
+Seul secret requis : GEMINI_API_KEY (+ GEMINI_VISION_MODEL optionnel).
 """
 import gc
 import json
@@ -37,7 +36,7 @@ class FoodScanResult(BaseModel):
 
 
 class AIFoodScanner:
-    """Scanner alimentaire via Worker N2 (Option A) ou GPT-4o Vision en repli."""
+    """Scanner alimentaire : Gemini Vision puis base grossesse MamanDouce."""
 
     async def analyze_food_image(self, image_base64: str, user_context: Optional[str] = None) -> FoodScanResult:
         from integrations.neriacorp.scanner_adapter import analyze_food
