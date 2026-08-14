@@ -100,6 +100,8 @@ api_router.include_router(tirelire_router)
 api_router.include_router(babynames_router)
 from routes.neriacorp_portal import router as neriacorp_portal_router
 api_router.include_router(neriacorp_portal_router)
+from routes.scanner_ai import router as scanner_ai_router
+api_router.include_router(scanner_ai_router)
 
 # Include main router
 app.include_router(api_router)

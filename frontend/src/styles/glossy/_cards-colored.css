@@ -29,7 +29,7 @@
 
 /* Classes de carte glossy par couleur - NEUMORPHISM 3D BOMBÉ */
 .glossy-card-pink {
-  background: linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(252,231,243,0.9) 45%, rgba(251,207,232,0.75) 70%, rgba(249,168,212,0.55) 100%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(252,231,243,0.9) 45%, rgba(251,207,232,0.75) 70%, rgba(249,168,212,0.55) 100%);
   box-shadow: 
     -6px -6px 16px rgba(255, 255, 255, 1),
     6px 6px 20px rgba(209, 217, 230, 0.5),
@@ -55,7 +55,7 @@
 }
 
 .glossy-card-blue {
-  background: linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(224,242,254,0.9) 45%, rgba(186,230,253,0.75) 70%, rgba(125,211,252,0.55) 100%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(224,242,254,0.9) 45%, rgba(186,230,253,0.75) 70%, rgba(125,211,252,0.55) 100%);
   box-shadow: 
     -6px -6px 16px rgba(255, 255, 255, 1),
     6px 6px 20px rgba(209, 217, 230, 0.5),
@@ -81,7 +81,7 @@
 }
 
 .glossy-card-green {
-  background: linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(220,252,231,0.9) 45%, rgba(187,247,208,0.75) 70%, rgba(134,239,172,0.55) 100%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(220,252,231,0.9) 45%, rgba(187,247,208,0.75) 70%, rgba(134,239,172,0.55) 100%);
   box-shadow: 
     -6px -6px 16px rgba(255, 255, 255, 1),
     6px 6px 20px rgba(209, 217, 230, 0.5),
@@ -107,7 +107,7 @@
 }
 
 .glossy-card-purple {
-  background: linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(243,232,255,0.9) 45%, rgba(233,213,255,0.75) 70%, rgba(216,180,254,0.55) 100%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(243,232,255,0.9) 45%, rgba(233,213,255,0.75) 70%, rgba(216,180,254,0.55) 100%);
   box-shadow: 
     -6px -6px 16px rgba(255, 255, 255, 1),
     6px 6px 20px rgba(209, 217, 230, 0.5),
@@ -133,7 +133,7 @@
 }
 
 .glossy-card-amber {
-  background: linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(254,243,199,0.9) 45%, rgba(253,230,138,0.75) 70%, rgba(251,191,36,0.5) 100%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(254,243,199,0.9) 45%, rgba(253,230,138,0.75) 70%, rgba(251,191,36,0.5) 100%);
   box-shadow: 
     -6px -6px 16px rgba(255, 255, 255, 1),
     6px 6px 20px rgba(209, 217, 230, 0.5),
@@ -159,7 +159,7 @@
 }
 
 .glossy-card-orange {
-  background: linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(255,237,213,0.9) 45%, rgba(254,215,170,0.75) 70%, rgba(253,186,116,0.55) 100%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(255,237,213,0.9) 45%, rgba(254,215,170,0.75) 70%, rgba(253,186,116,0.55) 100%);
   box-shadow: 
     -6px -6px 16px rgba(255, 255, 255, 1),
     6px 6px 20px rgba(209, 217, 230, 0.5),
@@ -185,7 +185,7 @@
 }
 
 .glossy-card-red {
-  background: linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(254,226,226,0.9) 45%, rgba(254,202,202,0.75) 70%, rgba(252,165,165,0.55) 100%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(254,226,226,0.9) 45%, rgba(254,202,202,0.75) 70%, rgba(252,165,165,0.55) 100%);
   box-shadow: 
     -6px -6px 16px rgba(255, 255, 255, 1),
     6px 6px 20px rgba(209, 217, 230, 0.5),
@@ -211,7 +211,7 @@
 }
 
 .glossy-card-slate {
-  background: linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(241,245,249,0.9) 45%, rgba(226,232,240,0.75) 70%, rgba(203,213,225,0.55) 100%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(241,245,249,0.9) 45%, rgba(226,232,240,0.75) 70%, rgba(203,213,225,0.55) 100%);
   box-shadow: 
     -6px -6px 16px rgba(255, 255, 255, 1),
     6px 6px 20px rgba(209, 217, 230, 0.5),
@@ -237,7 +237,7 @@
 }
 
 .glossy-card-teal {
-  background: linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(204,251,241,0.9) 45%, rgba(153,246,228,0.75) 70%, rgba(94,234,212,0.55) 100%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(204,251,241,0.9) 45%, rgba(153,246,228,0.75) 70%, rgba(94,234,212,0.55) 100%);
   box-shadow: 
     -6px -6px 16px rgba(255, 255, 255, 1),
     6px 6px 20px rgba(209, 217, 230, 0.5),

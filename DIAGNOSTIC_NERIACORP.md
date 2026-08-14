@@ -1,9 +1,10 @@
 # Diagnostic MamanDouce — rattachement NeriaCorp
 
 **Date :** 14 août 2026  
-**Branche analysée :** `main` (`0627717` — *Repatriate MamanDouce to NeriaCorp with glass UI and N20 currency*)  
-**Périmètre :** codebase complète (`frontend/`, `backend/`) + exécution réelle de la suite de tests  
-**Objectif :** état des lieux en vue du rattachement définitif à l’écosystème NeriaCorp
+**Branche :** `cursor/diagnostic-neriacorp-009d`  
+**Périmètre :** codebase complète + rebranchement Noyau N2 **dans** MamanDouce (OCR, SSO, 135°)
+
+> **Mise à jour (même jour) :** le Noyau N2 n’est pas un dépôt externe — c’est le NoyauNeria historique de `mamandouce`. Les routes `/api/scanner/*`, les adapters publish, le SSO `GET /api/neriacorp/sso/status` et le tiroir admin Intelligence sont **restaurés** (sans Emergent). Voir `docs/OCR_N2_ASSEMBLAGE.md`.
 
 ---
 
@@ -13,9 +14,9 @@
 |-----|------------|-------------|
 | Cœur produit B2C (auth, grossesse, food, postpartum, admin, paiements) | **~90 %** | Large surface fonctionnelle, 63 pages, 233 routes API |
 | Thème UI (glassmorphism + dégradé 135°) | **~70 %** | Système CSS 135° en place ; nombreux inline 145°/160° |
-| Catalogue portail NeriaCorp (zone B2C) | **~65 %** | `GET /api/neriacorp/catalog` opérationnel ; pas de SSO ni Worker |
+| Catalogue portail NeriaCorp (zone B2C) | **~80 %** | Catalogue + capabilities `ocr-scanner`/`sso` ; SSO découverte (JWT local tant que issuer absent) |
 | Médias Cloudinary | **~40 %** | Pipeline code prêt, **non activé** (env absentes) |
-| NeriaCorp Intelligence (scanner / publish / 5 apps) | **~10 %** | Stubs client + tests orphelins ; **routes et UI absentes** |
+| NeriaCorp Intelligence (scanner / publish / 5 apps) | **~85 %** | Routes + adapters + UI admin restaurés ; Worker `N2_OCR_BASE_URL` optionnel |
 | Tests / CI / secrets | **~25 %** | 354 tests HTTP collectés ; pytest hors `requirements.txt` ; pas de `.env.example` versionné |
 | **Global — rattachement définitif NeriaCorp** | **~72 %** | Produit mature, accroches écosystème incomplètes |
 

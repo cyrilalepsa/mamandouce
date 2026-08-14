@@ -21,5 +21,18 @@
     "sort_order": 10
   },
   "status": "active",
-  "version": "2.1.0"
+  "version": "2.1.0",
+  "capabilities": [
+    "pregnancy-tracking",
+    "food-safety",
+    "medical-reminders",
+    "birth-list",
+    "postpartum",
+    "baby-names",
+    "chatbot-ai",
+    "ocr-scanner",
+    "sso",
+    "pwa",
+    "android-capacitor"
+  ]
 }

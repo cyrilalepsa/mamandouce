@@ -8,7 +8,7 @@
 .btn-rose-bonbon,
 .btn-rose-bonbon:hover,
 .btn-rose-bonbon:focus {
-  background: linear-gradient(145deg, #ffd1dc 0%, #fbb6ce 35%, #f9a8d4 70%, #f472b6 100%) !important;
+  background: linear-gradient(135deg, #ffd1dc 0%, #fbb6ce 35%, #f9a8d4 70%, #f472b6 100%) !important;
   color: #ffffff !important;
   box-shadow:
     0 6px 18px -4px rgba(244, 114, 182, 0.4),
@@ -107,7 +107,7 @@
    SA BADGE — Bulle Semaines d'Aménorrhée cliquable
    ============================================ */
 .badge-sa-pregnancy {
-  background: linear-gradient(145deg, #fce7f3 0%, #fbcfe8 50%, #f9a8d4 100%);
+  background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 50%, #f9a8d4 100%);
   border: 1.5px solid rgba(244, 114, 182, 0.4);
   box-shadow:
     0 6px 16px -4px rgba(244, 114, 182, 0.3),

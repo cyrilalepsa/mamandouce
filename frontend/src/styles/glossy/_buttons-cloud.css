@@ -5,7 +5,7 @@
 
 /* Bouton Cloud 3D Bleu - Principal (Validation, Inscription) */
 .btn-cloud-3d-blue {
-  background: linear-gradient(145deg, 
+  background: linear-gradient(135deg, 
     rgba(186, 230, 253, 0.95) 0%,    /* sky-200 */
     rgba(125, 211, 252, 0.9) 30%,    /* sky-300 */
     rgba(56, 189, 248, 0.85) 70%,    /* sky-400 */
@@ -80,7 +80,7 @@
 
 /* Bouton Cloud 3D Bleu/Corail - Suppression douce */
 .btn-cloud-3d-coral {
-  background: linear-gradient(145deg, 
+  background: linear-gradient(135deg, 
     rgba(254, 205, 211, 0.95) 0%,    /* rose-200 */
     rgba(253, 164, 175, 0.9) 30%,    /* rose-300 */
     rgba(251, 113, 133, 0.85) 70%,   /* rose-400 */
@@ -129,7 +129,7 @@
 
 /* Bouton Cloud 3D Relief - Pour actions importantes (Vider messagerie) */
 .btn-cloud-3d-relief {
-  background: linear-gradient(145deg, 
+  background: linear-gradient(135deg, 
     rgba(241, 245, 249, 0.98) 0%,    /* slate-100 */
     rgba(226, 232, 240, 0.95) 30%,   /* slate-200 */
     rgba(203, 213, 225, 0.9) 70%,    /* slate-300 */

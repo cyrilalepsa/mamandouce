@@ -18,7 +18,7 @@
 [class*="rounded-full"][class*="bg-gradient"],
 [class*="rounded-full"][class*="bg-pink"],
 [class*="rounded-full"][class*="bg-rose"] {
-  background: linear-gradient(145deg, 
+  background: linear-gradient(135deg, 
     rgba(255, 182, 193, 0.95) 0%, 
     rgba(255, 192, 203, 0.9) 30%,
     rgba(255, 174, 185, 0.85) 60%, 

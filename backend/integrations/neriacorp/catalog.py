@@ -54,6 +54,8 @@ def get_portal_catalog_entry() -> Dict[str, Any]:
             "postpartum",
             "baby-names",
             "chatbot-ai",
+            "ocr-scanner",
+            "sso",
             "pwa",
             "android-capacitor",
         ],
@@ -81,4 +83,5 @@ def get_portal_catalog_payload() -> Dict[str, Any]:
         "zone": PORTAL_ZONE,
         "apps": [entry],
         "count": 1,
+        "capabilities": entry["capabilities"],
     }

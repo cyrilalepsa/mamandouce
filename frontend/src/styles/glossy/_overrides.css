@@ -26,7 +26,7 @@ span.user-name-display,
 
 /* Badge Fête du jour - Jaune pastel vif avec dégradé nuage 3D glossy */
 .badge-fete-du-jour {
-  background: linear-gradient(145deg, 
+  background: linear-gradient(135deg, 
     rgba(255, 251, 235, 0.99) 0%, 
     rgba(254, 249, 195, 0.95) 20%, 
     rgba(253, 230, 138, 0.88) 50%, 
@@ -61,7 +61,7 @@ span.user-name-display,
 
 /* Badge Semaine X - Rose pastel vif avec dégradé nuage 3D glossy */
 .badge-semaine-x {
-  background: linear-gradient(145deg, 
+  background: linear-gradient(135deg, 
     rgba(255, 241, 246, 0.99) 0%, 
     rgba(252, 231, 243, 0.95) 20%, 
     rgba(251, 207, 232, 0.88) 50%, 

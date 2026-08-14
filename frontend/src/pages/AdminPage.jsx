@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, HandCoins, Eye, Crown, Baby, ChevronDown, Bell, Smartphone, Shield, HandHeart, Calculator, CheckCircle, Brain, Image } from 'lucide-react';
+import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, HandCoins, Eye, Crown, Baby, ChevronDown, Bell, Smartphone, Shield, HandHeart, Calculator, CheckCircle, Brain } from 'lucide-react';
 import api from '../utils/api';
 import PageHeader from '../components/PageHeader';
 import { toast } from 'sonner';
@@ -22,6 +22,7 @@ import {
 } from '../components/admin';
 import AccountingDashboard from '../components/admin/AccountingDashboard';
 import ContributionsManager from '../components/admin/ContributionsManager';
+import NeriaCorpScannerTab from '../components/admin/NeriaCorpScannerTab';
 
 function AdminPage() {
   const navigate = useNavigate();
@@ -289,6 +290,7 @@ function AdminPage() {
     messaging: '#FECDD3, #FDA4AF',   // rose
     finances:  '#A7F3D0, #6EE7B7',   // menthe
     tools:     '#BAE6FD, #7DD3FC',   // bleu
+    neriacorp: '#FEF3C7, #FCD34D',   // or (Noyau N2 / Intelligence)
   };
 
   const toggleSub = (id) => setOpenSubs(prev => ({ ...prev, [id]: !prev[id] }));
@@ -322,7 +324,7 @@ function AdminPage() {
     const colors = drawerColors[id] || drawerColors.community;
     return (
       <div className="admin-drawer rounded-3xl" data-testid={`drawer-${id}-wrap`} style={{
-        background: `linear-gradient(145deg, ${colors})`,
+        background: `linear-gradient(135deg, ${colors})`,
         border: '1px solid rgba(255,255,255,0.15)',
         boxShadow: openDrawers[id]
           ? '0 4px 10px rgba(0,0,0,0.1), inset 0 -3px 6px rgba(0,0,0,0.08), inset 0 3px 6px rgba(255,255,255,0.6)'
@@ -416,6 +418,13 @@ function AdminPage() {
           </SubDrawer>
           <SubDrawer id="foods" label="Aliments à valider" icon={Apple}>
             <FoodsTab pendingFoods={pendingFoods} foodStats={foodStats} loadPendingFoods={loadPendingFoods} />
+          </SubDrawer>
+        </DrawerTile>
+
+        {/* 5. OR — NeriaCorp Intelligence (Noyau N2, Admin-Only) */}
+        <DrawerTile id="neriacorp" icon={Brain} label="NeriaCorp Intelligence">
+          <SubDrawer id="neriacorp-scanner" label="Scanner IA Admin-Only" icon={Brain} defaultOpen={true}>
+            <NeriaCorpScannerTab />
           </SubDrawer>
         </DrawerTile>
 

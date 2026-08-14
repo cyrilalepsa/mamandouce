@@ -1,236 +1,80 @@
 # Assemblage OCR N2 → MamanDouce
 
 **Date :** 14 août 2026  
-**Statut N2 :** **non accessible dans cet environnement** — livrable basé sur le contrat historique MamanDouce + les dépôts GitHub visibles.
+**Statut :** **rebranché dans MamanDouce** — le Noyau N2 n’est pas un dépôt GitHub séparé ; c’est le NoyauNeria **historique de ce repo** (OCR, SSO, Design System 135°).
 
 ---
 
-## 1. Chemin exact du module OCR
+## 1. Référence source = ce repo
 
-### Ce qui a été scanné
+Le dépôt donné (`https://github.com/cyrilalepsa/mamandouce.git`) **est** N2. L’extraction `b028216` (*Extraction du NoyauNeria*) a retiré le scanner Intelligence ; les tests (`test_neriacorp_scanner.py`, `test_neriacorp_publish.py`, `test_scanner_ai.py`) et le client `api.scanner.*` sont restés.
 
-| Source | Résultat |
-|--------|----------|
-| Workspace `/workspace` | Uniquement `mamandouce` — **aucun dossier `N2/`, `Core/`, `Shared/`** |
-| GitHub token agent | `cyrilalepsa/mamandouce`, `heritia`, `mamandouce_propre` |
-| Repos `N2`, `n2`, `aevis`, `avis`, `neriacorp`, `noyau` | **404 / hors scope** (privés ou autre org) |
-| Heritia `ScanScreen.jsx` | Stub UI (« Scanner tickets et emballages ») — **pas de backend OCR** |
+Les corrections sont appliquées **ici**, pas dans un checkout externe :
 
-**Le noyau N2 n’est pas dans le workspace.** Un accès GitHub au dépôt Core/Shared (et idéalement Aevis) est requis pour confirmer le chemin vivant du type `N2/services/ocr_scanner`.
+| Module N2 | Fichiers MamanDouce |
+|-----------|---------------------|
+| OCR Intelligence (5 apps, dont Aevis `#2E8B57`) | `backend/integrations/neriacorp/scanner_adapter.py` + `backend/routes/scanner_ai.py` |
+| Publish plug-and-play | `backend/integrations/neriacorp/adapters.py` |
+| SSO découverte | `GET /api/neriacorp/sso/status` dans `backend/routes/neriacorp_portal.py` |
+| Design System 135° | `frontend/src/styles/glossy/*` + tiroir admin Intelligence |
 
-### Module OCR réellement identifié (historique MamanDouce)
+**Pas d’Emergent.** Vision locale = `services.llm.chat_vision` / `chat_text` (`OPENAI_API_KEY`). Worker HTTP optionnel = `N2_OCR_BASE_URL`.
 
-Le scanner « Product Recognition / NeriaCorp Intelligence » utilisé pour **Aevis (Avis)**, Heritia, VisaTrace, VeoVision, Vellumia était **embarqué dans MamanDouce**, puis **supprimé** :
+---
 
-| Fichier | Commit | État |
-|---------|--------|------|
-| `backend/routes/scanner_ai.py` (577 lignes) | supprimé `ac5c004` le **16 mai 2026** | **chemin historique exact** |
-| `backend/integrations/neriacorp/adapters.py` | supprimé `f8550c1` | publish plug-and-play, pas l’OCR |
+## 2. Contrat public `/api/scanner/*`
 
-Ce n’était **pas** un `import` depuis N2. C’était un router FastAPI auto-contenu qui appelait **Emergent LLM** :
-
-- Image / texte → `LlmChat.with_model("openai", "gpt-4o")` + `ImageContent`
-- Vidéo → `LlmChat.with_model("gemini", "gemini-3.1-pro-preview")` + `FileContentWithMimeType`
-
-**Interface publique (entrée) :**
+Monté dans `server.py` via `api_router.include_router(scanner_ai_router)`.
 
 ```text
-POST /api/scanner/analyze          → analyze_neriacorp(ScanRequest)
-POST /api/scanner/analyze-video    → analyze_video(UploadFile)
-GET  /api/scanner/apps
-GET  /api/scanner/audit
-POST /api/scanner/publish          → adapters.publish_to_app(...)
-GET  /api/scanner/publications[/{id}]
+POST /api/scanner/analyze            admin — image_base64 | text_input | metadata
+POST /api/scanner/analyze-video      admin — UploadFile (MIME vidéo, max 50 MB)
+GET  /api/scanner/apps               admin — 5 apps + operation_mode=Admin_Only
+GET  /api/scanner/audit              admin
+POST /api/scanner/publish            admin — target_app + payload → mock ou live
+GET  /api/scanner/publications[/{id}] admin
+GET  /api/scanner/categories         user authentifié
+POST /api/scanner/analyze-document   user — category ∈ menu|facture|alimentation|…
+GET  /api/scanner/history            user
 ```
 
-Fonction Python d’entrée du publish : `publish_to_app(target_app, payload, scan_id, publication_id, admin_email)`.
+`ScanRequest` : au moins un de `image_base64` / `text_input` / `metadata` sinon **400**. Non-admin → **403**.
 
-Aujourd’hui ces routes répondent **404** (fichier absent, router non monté dans `server.py`).
+`ScanResult` : `{ id, metadata, business, display_card, financial, created_at }`.
+
+Publish non configuré (pas de `{APP}_BASE_URL` + `{APP}_API_KEY`) → `published_mock`, `partial: true`, warning avec le nom des env.
 
 ---
 
-## 2. Analyse d’interface (module historique)
+## 3. Adaptateur OCR
 
-### Contrat d’entrée `ScanRequest`
+`analyze_neriacorp` / `analyze_document` / `analyze_video` :
 
-```python
-class ScanRequest(BaseModel):
-    image_base64: Optional[str] = None   # JPEG/PNG, prefix data: accepté
-    text_input: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
-# Au moins un des trois requis → sinon 400
-```
+1. Si `N2_OCR_BASE_URL` → HTTP `POST {base}/ocr/analyze`, `/ocr/analyze-document`, `/ocr/analyze-video`.
+2. Sinon image/texte → OpenAI vision/text.
+3. Sinon vidéo → Gemini (`GEMINI_API_KEY` / `GOOGLE_API_KEY`) ou **503**.
 
-### Contrat de sortie `ScanResult`
-
-```python
-{
-  "id": "uuid",
-  "metadata": {
-    "source_app": "Aevis",           # VisaTrace | Heritia | VeoVision | Vellumia | Aevis
-    "confidence_score": 0.92,        # 0.0–1.0
-    "operation_mode": "Admin_Only"
-  },
-  "business": { ... },               # ex. Aevis: pos_items[], pos_layout
-  "display_card": {
-    "title": "...",
-    "summary": "...",
-    "main_action": "Valider & Injecter",
-    "theme_color": "#2E8B57",
-    "visual_type": "LIST" | "GRID" | "REPORT"
-  },
-  "financial": { "estimated_revenue": 40.0, "currency": "EUR" },
-  "created_at": "ISO-8601"
-}
-```
-
-Gate : `Depends(get_admin_user)` — non-admin → 403.
-
-### Dépendances (historique)
-
-| Lib | Usage |
-|-----|--------|
-| `emergentintegrations.llm.chat` | **Retirée du projet** (autonomie hors Emergent) |
-| `openai` `gpt-4o` | Vision image (à remplacer par `services.llm.chat_vision`) |
-| `gemini-3.1-pro-preview` | Vidéo (google-genai déjà dans `requirements.txt`) |
-| `httpx` | Publish live vers `{APP}_BASE_URL/api/neriacorp/inject` |
-| Mongo `scanner_audit` / `scanner_publications` | Audit No-Log |
-
-### Variables d’environnement (historique)
-
-| Variable | Rôle |
-|----------|------|
-| `EMERGENT_LLM_KEY` | Ancienne clé unique (à ne plus utiliser) |
-| `OPENAI_API_KEY` | Remplaçant actuel (déjà dans `.env.example`) |
-| `AEVIS_BASE_URL` + `AEVIS_API_KEY` | Publish live vers Avis/Aevis |
-| idem `VISATRACE_*`, `HERITIA_*`, `VEOVISION_*`, `VELLUMIA_*` | 4 autres apps |
-| Si N2 est un **service HTTP** | `N2_OCR_BASE_URL` + `N2_OCR_API_KEY` (à poser quand le repo N2 sera lisible) |
+Mongo `scanner_audit` / `scanner_publications` : insert **fail-soft** (pas de 500 si Mongo down).
 
 ---
 
-## 3. Plan d’intégration — adaptateur, pas import direct
+## 4. SSO
 
-**Recommandation : adaptateur** `backend/integrations/neriacorp/scanner_adapter.py`.
+`GET /api/neriacorp/sso/status` (public) :
 
-Pourquoi **pas** un `import` direct N2 :
+- `sso_enabled` si `NERIACORP_SSO_LOGIN_URL` **et** `NERIACORP_SSO_ISSUER`
+- sinon provider `mamandouce-jwt` (login local `/auth`)
 
-1. N2 n’est **pas** dans le même workspace Git (dépôts séparés).
-2. Un import chemin (`sys.path.append("../N2")`) casse Railway / CI.
-3. L’ancien code Emergent ne doit pas revenir ; l’adaptateur isole N2 **ou** le LLM local.
-
-Quand N2 sera monté, l’adaptateur aura **une** de ces deux implémentations (sans changer les routes) :
-
-| Mode | Quand | Appel |
-|------|--------|--------|
-| **HTTP noyau** (préféré prod) | N2 exposé en Worker (`api.neriacorp.com/ocr`) | `httpx` POST |
-| **Package Python** | N2 publié (`pip install neriacorp-n2`) ou git submodule | `from n2.ocr import analyze` |
-
-Les routes MamanDouce restent le contrat `/api/scanner/*` attendu par `test_neriacorp_scanner.py`.
-
-### Les 3 modifications clés pour tuer les 404
-
-1. **Créer** `backend/integrations/neriacorp/scanner_adapter.py`  
-   Point d’entrée unique, ex. `async def analyze_image(image_base64, text_input=None) -> dict` qui délègue à N2 (HTTP) ou, en fallback transitoire, à `services.llm.chat_vision`.
-
-2. **Restaurer** `backend/routes/scanner_ai.py` **sans Emergent** : les handlers `POST /scanner/analyze`, `/scanner/analyze-video`, `GET /scanner/apps`, etc. appellent **uniquement** l’adaptateur + `get_admin_user`. Restaurer `adapters.py` (`publish_to_app`) depuis `f8550c1^`.
-
-3. **Monter le router** dans `backend/server.py` :
-
-```python
-from routes.scanner_ai import router as scanner_ai_router
-api_router.include_router(scanner_ai_router)
-```
-
-Sans le `include_router`, les chemins restent 404 même si le fichier existe.
+Pas de validation JWT OIDC encore — accroche de découverte pour le portail.
 
 ---
 
-## 4. Exemple d’appel depuis un endpoint FastAPI MamanDouce
+## 5. UI admin
 
-Cible une fois N2 exposé en HTTP (forme à caler sur le vrai module) :
-
-```python
-# backend/integrations/neriacorp/scanner_adapter.py
-import os
-import httpx
-
-N2_OCR_BASE_URL = os.environ.get("N2_OCR_BASE_URL", "").rstrip("/")
-N2_OCR_API_KEY = os.environ.get("N2_OCR_API_KEY", "")
-
-async def analyze_image(*, image_base64: str | None, text_input: str | None, metadata: dict | None):
-    if not N2_OCR_BASE_URL:
-        raise RuntimeError("N2_OCR_BASE_URL manquant — noyau OCR non branché")
-    async with httpx.AsyncClient(timeout=90.0) as client:
-        r = await client.post(
-            f"{N2_OCR_BASE_URL}/ocr/analyze",   # chemin N2 à confirmer
-            headers={"Authorization": f"Bearer {N2_OCR_API_KEY}"},
-            json={
-                "image_base64": image_base64,
-                "text_input": text_input,
-                "metadata": metadata or {"source": "mamandouce"},
-            },
-        )
-        r.raise_for_status()
-        return r.json()
-```
-
-Branchement route (contrat actuel des tests) :
-
-```python
-# backend/routes/scanner_ai.py (extrait)
-from integrations.neriacorp.scanner_adapter import analyze_image
-
-@router.post("/scanner/analyze")
-async def analyze_neriacorp(payload: ScanRequest, admin: User = Depends(get_admin_user)):
-    if not (payload.image_base64 or payload.text_input or payload.metadata):
-        raise HTTPException(400, "Aucune entrée")
-    parsed = await analyze_image(
-        image_base64=payload.image_base64,
-        text_input=payload.text_input,
-        metadata=payload.metadata,
-    )
-    # normaliser vers ScanResult (metadata / business / display_card / financial)
-    return ScanResult(...)
-```
-
-Appel HTTP équivalent (admin JWT) :
-
-```bash
-curl -sS -X POST "$API/api/scanner/analyze" \
-  -H "Authorization: Bearer $ADMIN_JWT" \
-  -H "Content-Type: application/json" \
-  -d '{"image_base64":"<jpeg-b64>","text_input":null}'
-```
+Tiroir `data-testid="drawer-neriacorp"` → `NeriaCorpScannerTab` (photo / import / vidéo 30s, publish, QR).
 
 ---
 
-## 5. Checklist pré-requis (requirements.txt / .env)
+## 6. Variables
 
-### `backend/requirements.txt`
-
-Déjà présents : `openai`, `httpx`, `pillow`, `google-genai`.  
-À **ne pas** réintroduire : `emergentintegrations`.
-
-Quand N2 sera un package : ajouter par ex. `neriacorp-n2 @ git+https://github.com/<org>/N2.git#subdirectory=...` (URL à confirmer).
-
-### `backend/.env` (en plus du `.env.example` actuel)
-
-```bash
-OPENAI_API_KEY=sk-...              # vision image (fallback ou N2 lui-même)
-# N2 noyau OCR (dès que l’URL est connue)
-N2_OCR_BASE_URL=https://api.neriacorp.com
-N2_OCR_API_KEY=
-
-# Publish live vers Avis / Aevis (adapters.py)
-AEVIS_BASE_URL=https://aevis.neriacorp.com
-AEVIS_API_KEY=
-# optionnel : VISATRACE_ / HERITIA_ / VEOVISION_ / VELLUMIA_  BASE_URL + API_KEY
-```
-
-### Frontend
-
-Aucun changement de contrat : `api.scanner.analyze` / `analyzeVideo` / `publish` dans `frontend/src/utils/api.jsx` pointent déjà sur `/api/scanner/*`. Restaurer l’UI admin `NeriaCorpScannerTab` (absente) si le tiroir Intelligence doit revenir.
-
-### Bloqueur immédiat
-
-Sans le **dépôt N2** dans l’environnement Cloud Agent, le chemin `N2/services/ocr_scanner` (ou équivalent) **ne peut pas être confirmé**. Relancer l’agent en multi-repo avec N2, ou coller l’URL GitHub du noyau.
+Voir `backend/.env.example` : `N2_OCR_*`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `AEVIS_*` (et sœurs), `NERIACORP_SSO_*`.
