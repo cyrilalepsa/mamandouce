@@ -30,6 +30,8 @@ class FoodScanResult(BaseModel):
     explanation: str
     nutrients_info: Optional[str] = None
     alternatives: Optional[str] = None
+    ingredients: Optional[str] = None
+    packaging_text: Optional[str] = None
     confidence: float = 0.0
     scanned_at: str
     is_unknown: bool = False
@@ -92,6 +94,8 @@ class AIFoodScanner:
             explanation=data.get("explanation", "Analyse effectuée."),
             nutrients_info=data.get("nutrients_info"),
             alternatives=data.get("alternatives"),
+            ingredients=data.get("ingredients"),
+            packaging_text=data.get("packaging_text"),
             confidence=confidence,
             scanned_at=datetime.now(timezone.utc).isoformat(),
             is_unknown=is_unknown,

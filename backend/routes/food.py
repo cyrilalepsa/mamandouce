@@ -2,9 +2,10 @@
 Food routes for MamanDouce
 Handles: Barcode scan, Food search, Food library, User-added foods, Favorites
 """
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, File, Form, HTTPException, Depends, UploadFile
 from typing import Optional
 from datetime import datetime, timezone
+import base64
 import httpx
 import logging
 
@@ -332,94 +333,178 @@ async def check_favorite(food_name: str, current_user: User = Depends(get_curren
 
 # ==================== AI FOOD SCANNER ====================
 
+MAX_FOOD_IMAGE_BYTES = 8 * 1024 * 1024
+ACCEPTED_IMAGE_MIMES = {
+    "image/jpeg",
+    "image/jpg",
+    "image/pjpeg",
+    "image/png",
+    "image/webp",
+}
+
+
 class FoodImageScanRequest(BaseModel):
     """Requête de scan d'image alimentaire"""
-    image_base64: str  # Image encodée en base64 (JPEG/PNG)
+    image_base64: str  # Image encodée en base64 (JPEG/PNG/WebP)
     context: Optional[str] = None  # Contexte optionnel
 
 
-@router.post("/scan/image")
-async def scan_food_image(
-    request: FoodImageScanRequest,
-    current_user: User = Depends(get_current_user)
-):
-    """
-    Scanner IA: Analyse une photo d'aliment pour évaluer sa sécurité pendant la grossesse.
-    
-    Retourne:
-    - food_name: Nom de l'aliment identifié
-    - verdict: autorise (vert), limite (orange), deconseille (rouge)
-    - explanation: Explication courte et bienveillante
-    - nutrients_info: Infos nutritionnelles (si autorisé)
-    - alternatives: Alternatives suggérées (si déconseillé)
-    """
+def _scan_http_error(status: int, code: str, message: str) -> None:
+    raise HTTPException(status_code=status, detail={"code": code, "message": message})
+
+
+def _looks_like_image(data: bytes) -> bool:
+    if len(data) >= 3 and data[:3] == b"\xff\xd8\xff":
+        return True
+    if len(data) >= 8 and data[:8] == b"\x89PNG\r\n\x1a\n":
+        return True
+    if len(data) >= 12 and data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return True
+    return False
+
+
+def decode_food_image(image_base64: str) -> bytes:
+    """Valide une image base64 (vide / MIME / corrompu / trop lourd)."""
+    raw = (image_base64 or "").strip()
+    if not raw:
+        _scan_http_error(400, "empty_image", "Image vide ou manquante")
+    payload = raw
+    if raw.startswith("data:") and "," in raw:
+        header, payload = raw.split(",", 1)
+        mime = header[5:].split(";")[0].strip().lower()
+        if mime and mime not in ACCEPTED_IMAGE_MIMES:
+            _scan_http_error(400, "bad_mime", f"Type MIME non supporté : {mime}")
+    try:
+        data = base64.b64decode(payload, validate=False)
+    except Exception:
+        _scan_http_error(400, "corrupt_image", "Image corrompue : base64 invalide")
+    if not data or len(data) < 24:
+        _scan_http_error(400, "corrupt_image", "Fichier image vide ou corrompu")
+    if len(data) > MAX_FOOD_IMAGE_BYTES:
+        _scan_http_error(413, "too_large", "Image trop volumineuse (max 8 MB)")
+    if not _looks_like_image(data):
+        _scan_http_error(400, "corrupt_image", "Fichier image corrompu ou format illisible")
+    return data
+
+
+def _food_scan_payload(result) -> dict:
+    data = {
+        "food_name": result.food_name,
+        "verdict": result.verdict,
+        "verdict_color": result.verdict_color,
+        "explanation": result.explanation,
+        "nutrients_info": result.nutrients_info,
+        "alternatives": result.alternatives,
+        "ingredients": result.ingredients,
+        "packaging_text": result.packaging_text,
+        "extracted_text": result.packaging_text or result.explanation,
+        "confidence": result.confidence,
+        "is_unknown": result.is_unknown,
+    }
+    return {
+        "success": True,
+        "status": "success",
+        "data": data,
+        "result": data,
+    }
+
+
+async def _execute_food_image_scan(
+    image_base64: str,
+    context: Optional[str],
+    current_user: User,
+) -> dict:
     from services.food_scanner_ai import food_scanner
-    
-    # Vérifier les limites pour utilisateurs gratuits
-    user_doc = await db.users.find_one({"id": current_user.id}, {"_id": 0, "subscription_status": 1})
-    is_premium = user_doc.get("subscription_status") == "premium"
-    
+
+    user_doc = await db.users.find_one(
+        {"id": current_user.id}, {"_id": 0, "subscription_status": 1}
+    )
+    is_premium = (user_doc or {}).get("subscription_status") == "premium"
+
     if not is_premium:
-        # Compter les scans IA de cette semaine
         from datetime import timedelta
+
         week_start = datetime.now(timezone.utc) - timedelta(days=7)
-        scans_this_week = await db.ai_food_scans.count_documents({
-            "user_id": current_user.id,
-            "scanned_at": {"$gte": week_start.isoformat()}
-        })
-        
+        scans_this_week = await db.ai_food_scans.count_documents(
+            {
+                "user_id": current_user.id,
+                "scanned_at": {"$gte": week_start.isoformat()},
+            }
+        )
         if scans_this_week >= 3:
             raise HTTPException(
-                status_code=403, 
-                detail="Limite de 3 scans IA par semaine atteinte. Passez à Premium pour des scans illimités !"
+                status_code=403,
+                detail="Limite de 3 scans IA par semaine atteinte. Passez à Premium pour des scans illimités !",
             )
-    
+
     try:
-        # Analyser l'image avec l'IA
         result = await food_scanner.analyze_food_image(
-            image_base64=request.image_base64,
-            user_context=request.context
+            image_base64=image_base64,
+            user_context=context,
         )
-        
-        # Enregistrer le scan
         scan_record = {
             "user_id": current_user.id,
             "food_name": result.food_name,
             "verdict": result.verdict,
             "confidence": result.confidence,
-            "scanned_at": result.scanned_at
+            "scanned_at": result.scanned_at,
         }
         await db.ai_food_scans.insert_one(scan_record)
-        
-        # Ajouter à l'historique de recherche
         history_item = SearchHistoryItem(
             user_id=current_user.id,
             query=f"[IA] {result.food_name}",
-            result_type="ai_scan"
+            result_type="ai_scan",
         )
         await db.search_history.insert_one(history_item.dict())
-        
-        logger.info(f"[FoodScanner] User {current_user.id} scanned: {result.food_name} -> {result.verdict}")
-        
-        return {
-            "success": True,
-            "result": {
-                "food_name": result.food_name,
-                "verdict": result.verdict,
-                "verdict_color": result.verdict_color,
-                "explanation": result.explanation,
-                "nutrients_info": result.nutrients_info,
-                "alternatives": result.alternatives,
-                "confidence": result.confidence,
-                "is_unknown": result.is_unknown
-            }
-        }
-        
+        logger.info(
+            "[FoodScanner] User %s scanned: %s -> %s",
+            current_user.id,
+            result.food_name,
+            result.verdict,
+        )
+        return _food_scan_payload(result)
+    except HTTPException:
+        raise
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(
+            status_code=400, detail={"code": "invalid_scan", "message": str(e)}
+        )
     except Exception as e:
-        logger.error(f"[FoodScanner] Error: {e}")
+        logger.error("[FoodScanner] Error: %s", e)
         raise HTTPException(status_code=500, detail="Erreur lors de l'analyse de l'image")
+
+
+@router.post("/scan/image")
+async def scan_food_image(
+    request: FoodImageScanRequest,
+    current_user: User = Depends(get_current_user),
+):
+    """Scanner IA JSON (image_base64 JPEG/PNG/WebP)."""
+    decode_food_image(request.image_base64)
+    return await _execute_food_image_scan(
+        request.image_base64, request.context, current_user
+    )
+
+
+@router.post("/scan/upload")
+async def scan_food_upload(
+    file: UploadFile = File(...),
+    context: Optional[str] = Form(None),
+    current_user: User = Depends(get_current_user),
+):
+    """Scanner IA multipart (ticket / étiquette JPG, PNG, WebP)."""
+    mime = (file.content_type or "").lower().split(";")[0].strip()
+    if mime not in ACCEPTED_IMAGE_MIMES:
+        _scan_http_error(400, "bad_mime", f"Type MIME non supporté : {mime or 'inconnu'}")
+    content = await file.read()
+    if not content:
+        _scan_http_error(400, "empty_image", "Fichier vide")
+    if len(content) > MAX_FOOD_IMAGE_BYTES:
+        _scan_http_error(413, "too_large", "Image trop volumineuse (max 8 MB)")
+    if not _looks_like_image(content):
+        _scan_http_error(400, "corrupt_image", "Fichier image corrompu ou format illisible")
+    image_b64 = base64.b64encode(content).decode("ascii")
+    return await _execute_food_image_scan(image_b64, context, current_user)
 
 
 @router.get("/scan/history")
