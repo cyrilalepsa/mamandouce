@@ -3,6 +3,12 @@ MamanDouce API Server
 Main FastAPI application with modular routes
 Optimized for Low Memory Profile (Railway)
 """
+from n2_vault_client import sync_secrets
+
+# Chargement prioritaire des secrets chiffrés en mémoire RAM (aucun écriture disque)
+# — avant MongoDB, Cloudinary, Gemini, SSO ou toute autre init.
+sync_secrets()
+
 from fastapi import FastAPI, APIRouter
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
@@ -11,9 +17,9 @@ import os
 import logging
 from pathlib import Path
 
-# Load environment
+# .env local : ne surcharge PAS les secrets déjà injectés par N2-Vault
 ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+load_dotenv(ROOT_DIR / '.env', override=False)
 
 # Configure logging - Reduce verbosity in production
 log_level = logging.DEBUG if os.environ.get('DEBUG') == 'true' else logging.INFO
