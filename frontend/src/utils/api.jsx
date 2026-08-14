@@ -316,6 +316,9 @@ export const api = {
     listPublications: (limit = 50) => axios.get(`${API}/scanner/publications?limit=${limit}`, getAuthHeaders()),
     getAudit: (limit = 50) => axios.get(`${API}/scanner/audit?limit=${limit}`, getAuthHeaders()),
     listApps: () => axios.get(`${API}/scanner/apps`, getAuthHeaders()),
+    categories: () => axios.get(`${API}/scanner/categories`, getAuthHeaders()),
+    analyzeDocument: (data) => axios.post(`${API}/scanner/analyze-document`, data, { ...getAuthHeaders(), timeout: 90000 }),
+    history: (limit = 20) => axios.get(`${API}/scanner/history?limit=${limit}`, getAuthHeaders()),
   },
   
   nameStats: {

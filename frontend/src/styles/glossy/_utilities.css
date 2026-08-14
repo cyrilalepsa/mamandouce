@@ -4,7 +4,7 @@
 
 /* Classe utilitaire pour cartes neumorphiques génériques */
 .neumorphic-card {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 252, 254, 0.92) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 252, 254, 0.92) 100%);
   box-shadow: 
     -6px -6px 16px rgba(255, 255, 255, 1),
     6px 6px 20px rgba(209, 217, 230, 0.5),
@@ -31,7 +31,7 @@
 /* Boutons circulaires neumorphiques */
 .neumorphic-btn-circle,
 [class*="rounded-full"][class*="shadow"][class*="bg-white"] {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.99) 0%, rgba(250, 248, 252, 0.95) 100%) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.99) 0%, rgba(250, 248, 252, 0.95) 100%) !important;
   box-shadow: 
     -4px -4px 10px rgba(255, 255, 255, 1),
     4px 4px 12px rgba(209, 217, 230, 0.45),
@@ -43,7 +43,7 @@
 [class*="bg-amber"][class*="rounded-full"],
 [class*="bg-yellow"][class*="rounded-full"],
 .premium-crown {
-  background: linear-gradient(145deg, rgba(254, 240, 138, 1) 0%, rgba(253, 224, 71, 1) 40%, rgba(250, 204, 21, 1) 100%) !important;
+  background: linear-gradient(135deg, rgba(254, 240, 138, 1) 0%, rgba(253, 224, 71, 1) 40%, rgba(250, 204, 21, 1) 100%) !important;
   box-shadow: 
     4px 4px 10px rgba(209, 180, 100, 0.5),
     -4px -4px 10px rgba(255, 255, 255, 0.9),

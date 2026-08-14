@@ -2076,3 +2076,7 @@ credentials.json
 *.pem
 *.key
 .credentials
+
+# Templates d'environnement versionnés (doit rester EN DERNIER : *.env.* ignore .env.example)
+!.env.example
+!**/.env.example

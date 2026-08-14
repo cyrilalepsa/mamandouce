@@ -62,14 +62,17 @@ div.admin-drawer[data-testid] {
   display: none !important;
 }
 div.admin-drawer[data-testid="drawer-community-wrap"] {
-  background: linear-gradient(145deg, #E9D5FF, #D8B4FE) !important;
+  background: linear-gradient(135deg, #E9D5FF, #D8B4FE) !important;
 }
 div.admin-drawer[data-testid="drawer-messaging-wrap"] {
-  background: linear-gradient(145deg, #FECDD3, #FDA4AF) !important;
+  background: linear-gradient(135deg, #FECDD3, #FDA4AF) !important;
 }
 div.admin-drawer[data-testid="drawer-finances-wrap"] {
-  background: linear-gradient(145deg, #A7F3D0, #6EE7B7) !important;
+  background: linear-gradient(135deg, #A7F3D0, #6EE7B7) !important;
 }
 div.admin-drawer[data-testid="drawer-tools-wrap"] {
-  background: linear-gradient(145deg, #BAE6FD, #7DD3FC) !important;
+  background: linear-gradient(135deg, #BAE6FD, #7DD3FC) !important;
+}
+div.admin-drawer[data-testid="drawer-neriacorp-wrap"] {
+  background: linear-gradient(135deg, #FEF3C7, #FCD34D) !important;
 }

@@ -67,7 +67,7 @@ button:not([data-testid^="drawer-"]):active {
 .btn-action-rose,
 button[data-testid*="video-btn"],
 button[data-testid*="action-rose"] {
-  background: linear-gradient(145deg, #fda4af 0%, #fb7185 40%, #f43f5e 100%) !important;
+  background: linear-gradient(135deg, #fda4af 0%, #fb7185 40%, #f43f5e 100%) !important;
   color: #FFFFFF !important;
   box-shadow: 
     -4px -4px 12px rgba(255, 255, 255, 0.9),
