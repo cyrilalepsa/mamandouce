@@ -28,6 +28,52 @@ NERIACORP_CORS_ORIGINS = [
     "https://api.neriacorp.com",
 ]
 
+# Frontends Railway (ex. https://mamandouce-frontend-production.up.railway.app)
+RAILWAY_CORS_ORIGIN_REGEX = r"https://[a-zA-Z0-9.-]+\.(up\.)?railway\.app"
+
+
+def _normalize_origin(value: str) -> str:
+    return (value or "").strip().strip("\"'").rstrip("/")
+
+
+def parse_cors_origins(raw: str | None = None) -> list[str]:
+    """CORS_ORIGINS / ALLOWED_ORIGINS : chaîne CSV (ou JSON) → liste.
+
+    Fusionne les origines NeriaCorp + FRONTEND_URL / PUBLIC_APP_URL (front prod).
+    """
+    if raw is None:
+        raw = os.environ.get("CORS_ORIGINS") or os.environ.get("ALLOWED_ORIGINS") or ""
+    text = (raw or "").strip()
+    extras: list[str] = []
+    if text.startswith("["):
+        try:
+            import json
+
+            parsed = json.loads(text)
+            if isinstance(parsed, list):
+                extras = [_normalize_origin(str(item)) for item in parsed if str(item).strip()]
+        except json.JSONDecodeError:
+            extras = []
+    if not extras and text:
+        extras = [_normalize_origin(part) for part in text.split(",") if part.strip()]
+
+    if extras == ["*"] or text == "*":
+        return ["*"]
+
+    origins: list[str] = []
+    for candidate in (
+        list(NERIACORP_CORS_ORIGINS)
+        + extras
+        + [
+            os.environ.get("FRONTEND_URL") or "",
+            os.environ.get("PUBLIC_APP_URL") or "",
+        ]
+    ):
+        origin = _normalize_origin(candidate)
+        if origin and origin not in origins:
+            origins.append(origin)
+    return origins
+
 
 def load_settings() -> None:
     """Relit os.environ (post N2-Vault) dans les constantes de module."""
@@ -88,16 +134,7 @@ def load_settings() -> None:
 
     NERIACORP_PORTAL_URL = os.environ.get("NERIACORP_PORTAL_URL", "https://neriacorp.com").rstrip("/")
 
-    _cors_raw = os.environ.get("CORS_ORIGINS", "")
-    _cors_extra = [o.strip() for o in _cors_raw.split(",") if o.strip()]
-    if _cors_extra == ["*"]:
-        CORS_ORIGINS = ["*"]
-    else:
-        _seen = []
-        for origin in NERIACORP_CORS_ORIGINS + _cors_extra:
-            if origin not in _seen:
-                _seen.append(origin)
-        CORS_ORIGINS = _seen
+    CORS_ORIGINS = parse_cors_origins()
 
 
 load_settings()

@@ -35,20 +35,22 @@ app = FastAPI(
     redoc_url="/api/redoc",  # ReDoc accessible
 )
 
-# CORS — origines NeriaCorp toujours fusionnées (voir core.config)
-# Portail neriacorp.com + Worker api.neriacorp.com + mamandouce.app + localhost
-from core.config import CORS_ORIGINS
+# CORS — CORS_ORIGINS / ALLOWED_ORIGINS (CSV) + origines NeriaCorp + front Railway
+from core.config import CORS_ORIGINS, RAILWAY_CORS_ORIGIN_REGEX
+
 _cors_origins = CORS_ORIGINS if CORS_ORIGINS else ["http://localhost:5173"]
 # allow_credentials incompatible avec origins=["*"] en browsers modernes
 _allow_credentials = "*" not in _cors_origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins if _allow_credentials else ["*"],
+    allow_origin_regex=RAILWAY_CORS_ORIGIN_REGEX if _allow_credentials else None,
     allow_credentials=_allow_credentials,
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type", "Accept", "X-Requested-With", "X-NeriaCorp-Admin"],
+    allow_methods=["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
     expose_headers=["X-NeriaCorp-Publication-Id"],
 )
+logger.info("CORS origins=%s railway_regex=%s", _cors_origins, bool(_allow_credentials))
 
 # Create main API router
 api_router = APIRouter(prefix="/api")

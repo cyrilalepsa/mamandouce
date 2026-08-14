@@ -237,6 +237,53 @@ def test_cors_allows_n2_worker(anon_client):
     assert r.headers.get("access-control-allow-origin") == "https://api.neriacorp.com"
 
 
+def test_cors_allows_railway_frontend(anon_client):
+    origin = "https://mamandouce-frontend-production.up.railway.app"
+    r = anon_client.options(
+        "/api/health",
+        headers={
+            "Origin": origin,
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "authorization,content-type",
+        },
+    )
+    assert r.status_code in (200, 204)
+    assert r.headers.get("access-control-allow-origin") == origin
+    allow_methods = (r.headers.get("access-control-allow-methods") or "").upper()
+    for method in ("GET", "POST", "PUT", "DELETE"):
+        assert method in allow_methods
+    allow_headers = (r.headers.get("access-control-allow-headers") or "").lower()
+    assert "authorization" in allow_headers
+    assert "content-type" in allow_headers
+
+
+def test_parse_cors_origins_csv_and_aliases(monkeypatch):
+    monkeypatch.setenv(
+        "CORS_ORIGINS",
+        "https://mamandouce-frontend-production.up.railway.app, https://mamandouce.app/",
+    )
+    monkeypatch.delenv("ALLOWED_ORIGINS", raising=False)
+    monkeypatch.setenv("FRONTEND_URL", "https://front.example")
+    monkeypatch.setenv("PUBLIC_APP_URL", "https://mamandouce.app")
+    from core.config import parse_cors_origins
+
+    origins = parse_cors_origins()
+    assert "https://mamandouce-frontend-production.up.railway.app" in origins
+    assert "https://mamandouce.app" in origins
+    assert "https://front.example" in origins
+    assert "https://neriacorp.com" in origins
+
+
+def test_parse_cors_origins_allowed_origins_alias(monkeypatch):
+    monkeypatch.delenv("CORS_ORIGINS", raising=False)
+    monkeypatch.setenv("ALLOWED_ORIGINS", "https://extra.example,http://localhost:5173")
+    from core.config import parse_cors_origins
+
+    origins = parse_cors_origins()
+    assert "https://extra.example" in origins
+    assert origins.count("http://localhost:5173") == 1
+
+
 def test_n2_ocr_defaults_to_central_worker(monkeypatch):
     monkeypatch.delenv("N2_OCR_BASE_URL", raising=False)
     from integrations.neriacorp.scanner_adapter import n2_ocr_base_url
