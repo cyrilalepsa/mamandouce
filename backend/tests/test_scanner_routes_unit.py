@@ -253,21 +253,18 @@ def test_n2_ocr_can_be_disabled(monkeypatch):
 
 def test_analyze_food_uses_n2_gateway(monkeypatch):
     monkeypatch.setenv("N2_OCR_BASE_URL", "https://api.neriacorp.com")
+    monkeypatch.delenv("N2_OCR_API_STYLE", raising=False)
     posted = {}
 
     class FakeResp:
         status_code = 200
+        content = b'{"text":"Pomme golden"}'
 
         def raise_for_status(self):
             return None
 
         def json(self):
-            return {
-                "food_name": "Pomme",
-                "verdict": "autorise",
-                "explanation": "Fruit sûr",
-                "confidence": 0.95,
-            }
+            return {"text": "Pomme golden", "confidence": 0.9}
 
     class FakeClient:
         def __init__(self, *a, **k):
@@ -279,17 +276,20 @@ def test_analyze_food_uses_n2_gateway(monkeypatch):
         async def __aexit__(self, *a):
             return None
 
-        async def post(self, url, headers=None, json=None):
+        async def post(self, url, headers=None, json=None, files=None, data=None, params=None):
             posted["url"] = url
-            posted["json"] = json
+            posted["files"] = bool(files)
             return FakeResp()
 
     import asyncio
+    import base64 as b64
     from integrations.neriacorp.scanner_adapter import analyze_food
 
     with patch("integrations.neriacorp.scanner_adapter.httpx.AsyncClient", FakeClient):
-        data = asyncio.run(analyze_food(image_base64="abc", user_context="S20"))
-    assert posted["url"] == "https://api.neriacorp.com/ocr/analyze-food"
-    assert posted["json"]["source_app"] == "mamandouce"
+        data = asyncio.run(
+            analyze_food(image_base64=b64.b64encode(b"fakeimg").decode(), user_context="S20")
+        )
+    assert posted["url"] == "https://api.neriacorp.com/api/n2/ocr/extract"
+    assert posted["files"] is True
     assert data["food_name"] == "Pomme"
     assert data["verdict"] == "autorise"

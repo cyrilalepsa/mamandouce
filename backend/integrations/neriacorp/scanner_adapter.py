@@ -8,6 +8,7 @@ Aucun import Emergent.
 """
 from __future__ import annotations
 
+import base64
 import json
 import logging
 import os
@@ -160,6 +161,19 @@ def n2_ocr_api_key() -> str:
     return os.environ.get("N2_OCR_API_KEY") or ""
 
 
+def n2_api_style() -> str:
+    """n2-core = Worker live api.neriacorp.com ; legacy = JSON /ocr/analyze*."""
+    explicit = (os.environ.get("N2_OCR_API_STYLE") or "").strip().lower()
+    if explicit in ("legacy", "json"):
+        return "legacy"
+    if explicit in ("n2", "n2-core", "core"):
+        return "n2-core"
+    base = n2_ocr_base_url() or ""
+    if "api.neriacorp.com" in base:
+        return "n2-core"
+    return "legacy"
+
+
 def parse_llm_json(raw: str) -> Dict[str, Any]:
     text = (raw or "").strip()
     if text.startswith("```"):
@@ -191,6 +205,126 @@ async def _n2_post_json(path: str, body: Dict[str, Any]) -> Dict[str, Any]:
         return r.json()
 
 
+def _n2_auth_headers() -> Dict[str, str]:
+    headers: Dict[str, str] = {}
+    key = n2_ocr_api_key()
+    if key:
+        headers["Authorization"] = f"Bearer {key}"
+    return headers
+
+
+async def _n2_extract_image(image_b64: str) -> Dict[str, Any]:
+    """Contrat live n2-core : POST /api/n2/ocr/extract (multipart file)."""
+    raw = base64.b64decode(image_b64)
+    async with httpx.AsyncClient(
+        timeout=httpx.Timeout(connect=8.0, read=90.0, write=10.0, pool=10.0)
+    ) as client:
+        r = await client.post(
+            f"{n2_ocr_base_url()}/api/n2/ocr/extract",
+            headers=_n2_auth_headers(),
+            files={"file": ("scan.jpg", raw, "image/jpeg")},
+            params={"lang": "fra+eng"},
+        )
+        if r.status_code == 401:
+            raise RuntimeError(
+                "Worker N2 : authentification requise (N2_OCR_API_KEY Bearer)"
+            )
+        r.raise_for_status()
+        return r.json() if r.content else {}
+
+
+def _ocr_text_from_n2(data: Dict[str, Any]) -> str:
+    if not isinstance(data, dict):
+        return str(data or "")
+    for key in ("text", "raw_text", "content", "ocr_text"):
+        val = data.get(key)
+        if isinstance(val, str) and val.strip():
+            return val
+    nested = data.get("result") or data.get("data") or {}
+    if isinstance(nested, str):
+        return nested
+    if isinstance(nested, dict):
+        for key in ("text", "raw_text"):
+            val = nested.get(key)
+            if isinstance(val, str) and val.strip():
+                return val
+    return json.dumps(data, ensure_ascii=False)[:2000]
+
+
+def _scan_from_n2_text(
+    text: str,
+    *,
+    n2_payload: Optional[Dict[str, Any]] = None,
+    text_input: Optional[str] = None,
+    metadata: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    summary = (text or text_input or "").strip()
+    source = (metadata or {}).get("source_app") or "Aevis"
+    confidence = 0.7
+    if isinstance(n2_payload, dict):
+        try:
+            confidence = float(n2_payload.get("confidence") or confidence)
+        except (TypeError, ValueError):
+            pass
+    return {
+        "metadata": {
+            "source_app": source,
+            "confidence_score": confidence,
+            "operation_mode": "Admin_Only",
+            "ocr_engine": "n2-core",
+        },
+        "business": {
+            "raw_text": summary,
+            "n2": n2_payload or {},
+        },
+        "display_card": {
+            "title": "Scan Noyau N2",
+            "summary": summary[:280] or "Extraction OCR Worker NeriaCorp",
+            "main_action": "Valider & Injecter",
+            "theme_color": "#2E8B57",
+            "visual_type": "REPORT",
+        },
+        "financial": {"estimated_revenue": 40.0, "currency": "EUR"},
+    }
+
+
+def _match_food_from_text(text: str) -> Dict[str, Any]:
+    blob = (text or "").lower()
+    try:
+        from data.food_database import FOOD_SAFETY_DATABASE
+    except Exception:
+        FOOD_SAFETY_DATABASE = {}
+    best_meta = None
+    best_len = 0
+    for key, meta in FOOD_SAFETY_DATABASE.items():
+        candidates = [key.replace("-", " "), str(meta.get("name") or "").lower()]
+        for name in candidates:
+            if name and name in blob and len(name) > best_len:
+                best_meta = meta
+                best_len = len(name)
+    if not best_meta:
+        label = (text or "Aliment").split("\n")[0].strip()[:80] or "Aliment"
+        return {
+            "food_name": label,
+            "verdict": "limite",
+            "explanation": "OCR N2 effectué — à vérifier dans la base aliments.",
+            "confidence": 0.4,
+        }
+    safety = best_meta.get("safe_for_pregnancy") or "caution"
+    verdict = {
+        "safe": "autorise",
+        "caution": "limite",
+        "unsafe": "deconseille",
+        "avoid": "deconseille",
+    }.get(safety, "limite")
+    return {
+        "food_name": best_meta.get("name") or "Aliment",
+        "verdict": verdict,
+        "explanation": best_meta.get("reason") or "Analyse Noyau N2.",
+        "confidence": 0.75,
+    }
+
+
 async def analyze_neriacorp(
     *,
     image_base64: Optional[str] = None,
@@ -200,6 +334,16 @@ async def analyze_neriacorp(
     """Point d'entrée OCR Intelligence (image / texte)."""
     image_b64 = _strip_data_url(image_base64)
     if n2_ocr_base_url():
+        if n2_api_style() == "n2-core":
+            if not image_b64:
+                return _scan_from_n2_text(text_input or "", metadata=metadata)
+            extracted = await _n2_extract_image(image_b64)
+            return _scan_from_n2_text(
+                _ocr_text_from_n2(extracted),
+                n2_payload=extracted,
+                text_input=text_input,
+                metadata=metadata,
+            )
         return await _n2_post_json(
             "/ocr/analyze",
             {
@@ -275,6 +419,14 @@ async def analyze_document(
         raise ValueError(f"Catégorie invalide. Valides: {valid}")
     image_b64 = _strip_data_url(image_base64)
     if n2_ocr_base_url():
+        if n2_api_style() == "n2-core":
+            extracted = await _n2_extract_image(image_b64 or "")
+            text = _ocr_text_from_n2(extracted)
+            return {
+                "raw_text": text,
+                "confidence": extracted.get("confidence", 0.7) if isinstance(extracted, dict) else 0.7,
+                "n2": extracted,
+            }
         return await _n2_post_json(
             "/ocr/analyze-document",
             {
@@ -400,6 +552,13 @@ async def analyze_food(
     """Scanner aliment grossesse — passerelle N2 (Option A) puis fallback OpenAI."""
     image_b64 = _strip_data_url(image_base64)
     if n2_ocr_base_url():
+        if n2_api_style() == "n2-core":
+            extracted = await _n2_extract_image(image_b64 or "")
+            text = _ocr_text_from_n2(extracted)
+            payload = _match_food_from_text(text)
+            payload["raw_text"] = text[:500]
+            payload.setdefault("confidence", 0.7)
+            return payload
         try:
             raw = await _n2_post_json(
                 "/ocr/analyze-food",

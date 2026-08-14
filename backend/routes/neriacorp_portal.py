@@ -66,7 +66,7 @@ async def neriacorp_sso_status():
     client_id = os.environ.get("NERIACORP_SSO_CLIENT_ID") or "mamandouce"
     enabled = bool(sso_login and sso_issuer)
     issuer = sso_issuer or worker
-    authorize_url = sso_login or f"{worker}/oauth/authorize"
+    authorize_url = sso_login or f"{worker}/api/auth/oauth/google/start"
     return {
         "provider": "neriacorp-oidc" if enabled else "mamandouce-jwt",
         "sso_enabled": enabled,
@@ -79,9 +79,10 @@ async def neriacorp_sso_status():
         "session": {
             "handoff": "authorization_code",
             "authorize_url": authorize_url,
-            "token_url": f"{issuer}/oauth/token",
+            "token_url": f"{issuer}/api/auth/refresh",
             "jwks_url": f"{issuer}/.well-known/jwks.json",
-            "userinfo_url": f"{issuer}/oauth/userinfo",
+            "userinfo_url": f"{issuer}/api/auth/me",
+            "n2_login_url": f"{worker}/api/auth/login",
             "scopes": ["openid", "profile", "email"],
             "response_type": "code",
             "client_id": client_id,
