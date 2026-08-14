@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Baby } from 'lucide-react';
-import { getFetusImageUrl, getDefaultFetusImageUrl } from '../../utils/fetusAssets';
+import { getFetusImageUrl, localFetusPath, FETUS_WEEK_FILES, subscribeCloudinary, DEFAULT_FETUS_IMAGE } from '../../utils/fetusAssets';
 
 // Données d'évolution du bébé par semaine
 const weeklyData = {
@@ -191,6 +191,9 @@ const getFetuImage = (week) => getFetusImageUrl(week);
 const BabyEvolutionWidget = () => {
   const [selectedWeek, setSelectedWeek] = useState(12);
   const [data, setData] = useState(weeklyData[12]);
+  const [, setCdnTick] = useState(0);
+
+  useEffect(() => subscribeCloudinary(() => setCdnTick((n) => n + 1)), []);
 
   useEffect(() => {
     // Charger la semaine actuelle de grossesse si disponible
@@ -308,12 +311,14 @@ const BabyEvolutionWidget = () => {
               filter: 'drop-shadow(0 8px 16px rgba(255, 183, 197, 0.3))'
             }}
             onError={(e) => {
-              if (e.target.dataset.fallbackApplied === '1') {
-                e.target.style.display = 'none';
+              const step = e.target.dataset.fallbackApplied || '0';
+              if (step === '0') {
+                e.target.dataset.fallbackApplied = '1';
+                e.target.src = localFetusPath(FETUS_WEEK_FILES[selectedWeek] || 'week-12.png');
                 return;
               }
-              e.target.dataset.fallbackApplied = '1';
-              e.target.src = getDefaultFetusImageUrl();
+              e.target.dataset.fallbackApplied = '2';
+              e.target.src = DEFAULT_FETUS_IMAGE;
             }}
           />
         </div>

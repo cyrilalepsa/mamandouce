@@ -4,14 +4,18 @@
  * Effet veilleuse (halos lumineux pastel) derrière l'image
  * Thème: Doux, Pastel et Lumineux
  *
- * Assets : emplacements existants /assets/fetus/* via fetusAssets
- * (+ Cloudinary f_auto,q_auto si VITE_CLOUDINARY_CLOUD_NAME est défini)
+ * Assets : CDN Cloudinary (res.cloudinary.com) via fetusAssets
+ * Fallback local /assets/fetus/* si le CDN n'est pas encore injecté.
  */
+import { useEffect, useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import {
   getFetusImageUrl,
   getDefaultFetusImageUrl,
   DEFAULT_FETUS_IMAGE,
+  FETUS_WEEK_FILES,
+  localFetusPath,
+  subscribeCloudinary,
 } from '../../utils/fetusAssets';
 
 export default function Baby3DContainer({ 
@@ -20,8 +24,11 @@ export default function Baby3DContainer({
   className = ''
 }) {
   const { isDarkMode } = useTheme();
+  const [, setCdnTick] = useState(0);
+  useEffect(() => subscribeCloudinary(() => setCdnTick((n) => n + 1)), []);
   
   const imageSrc = getFetusImageUrl(week);
+  const localWeek = localFetusPath(FETUS_WEEK_FILES[week] || 'week-22.png');
   const fallbackSrc = getDefaultFetusImageUrl() || DEFAULT_FETUS_IMAGE;
 
   // Couleurs des halos - PASTEL LUMINEUX
@@ -83,9 +90,16 @@ export default function Baby3DContainer({
         alt="Votre bébé"
         className="relative z-10"
         onError={(e) => {
-          if (e.target.dataset.fallbackApplied === '1') return;
-          e.target.dataset.fallbackApplied = '1';
-          e.target.src = fallbackSrc;
+          const step = e.target.dataset.fallbackApplied || '0';
+          if (step === '0') {
+            e.target.dataset.fallbackApplied = '1';
+            e.target.src = localWeek;
+            return;
+          }
+          if (step === '1') {
+            e.target.dataset.fallbackApplied = '2';
+            e.target.src = fallbackSrc === imageSrc ? DEFAULT_FETUS_IMAGE : fallbackSrc;
+          }
         }}
         style={{
           maxWidth: '260px',

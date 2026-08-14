@@ -1,14 +1,18 @@
 /**
- * Gestionnaire d'assets fœtus — centralise les emplacements déjà utilisés
- * par Baby3DContainer / BabyEvolutionWidget.
+ * Gestionnaire d'assets fœtus — CDN Cloudinary par défaut (NeriaCorp).
  *
- * Cloudinary (optionnel) via env publiques Vite uniquement :
- *   VITE_CLOUDINARY_CLOUD_NAME
- *   VITE_CLOUDINARY_FETUS_FOLDER  (défaut: mamandouce/fetus)
- *   VITE_CLOUDINARY_TRANSFORMS   (défaut: f_auto,q_auto)
+ * Domaine de livraison : https://res.cloudinary.com/{cloud}/image/upload/{transforms}/{folder}/{id}
  *
- * Sans cloud name → fallback local /assets/fetus/...
+ * Cloud name (sans secret) :
+ *   1. VITE_CLOUDINARY_CLOUD_NAME (build)
+ *   2. GET /api/neriacorp/media  (hydratation runtime dès injection serveur)
+ *   3. sinon fallback local /assets/fetus/...
+ *
+ * Les <img> gardent un onError → fichier local.
  */
+
+export const CLOUDINARY_CDN_HOST = 'https://res.cloudinary.com';
+export const DEFAULT_FETUS_IMAGE = '/assets/bebe-foetus.png';
 
 export const AVAILABLE_FETUS_WEEKS = [
   4, 5, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40,
@@ -60,16 +64,41 @@ export const FETUS_WEEK_FILES = {
   42: 'week-40.png',
 };
 
-export const DEFAULT_FETUS_IMAGE = '/assets/bebe-foetus.png';
-
-const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || '';
-const fetusFolder =
+let cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || '';
+let fetusFolder =
   import.meta.env.VITE_CLOUDINARY_FETUS_FOLDER || 'mamandouce/fetus';
-const transforms =
+let transforms =
   import.meta.env.VITE_CLOUDINARY_TRANSFORMS || 'f_auto,q_auto';
+
+const cloudinaryListeners = new Set();
+
+export function subscribeCloudinary(listener) {
+  cloudinaryListeners.add(listener);
+  return () => cloudinaryListeners.delete(listener);
+}
+
+function notifyCloudinary() {
+  cloudinaryListeners.forEach((fn) => {
+    try {
+      fn();
+    } catch {
+      /* ignore */
+    }
+  });
+}
 
 export function isCloudinaryEnabled() {
   return Boolean(cloudName && String(cloudName).trim());
+}
+
+export function getCloudinaryConfig() {
+  return {
+    cdnHost: CLOUDINARY_CDN_HOST,
+    cloudName: cloudName || null,
+    folder: fetusFolder,
+    transforms,
+    enabled: isCloudinaryEnabled(),
+  };
 }
 
 /** Public id Cloudinary sans extension (week-04) */
@@ -77,18 +106,27 @@ function toPublicId(filename) {
   return String(filename).replace(/\.(png|jpe?g|webp)$/i, '');
 }
 
+/** URL de livraison Cloudinary (domaine CDN par défaut). */
+export function cloudinaryDeliveryUrl(filename) {
+  if (!isCloudinaryEnabled()) return null;
+  const publicId = `${fetusFolder.replace(/\/$/, '')}/${toPublicId(filename)}`;
+  return `${CLOUDINARY_CDN_HOST}/${cloudName}/image/upload/${transforms}/${publicId}`;
+}
+
+export function localFetusPath(filename) {
+  if (filename === 'bebe-foetus.png') return DEFAULT_FETUS_IMAGE;
+  return `/assets/fetus/${filename}`;
+}
+
 /**
- * Construit une URL Cloudinary avec compression auto, ou chemin local.
+ * Construit une URL Cloudinary (res.cloudinary.com) ou chemin local.
  * @param {string} filename ex: week-04.png
  * @param {string} [localFallback]
  */
 export function resolveMediaUrl(filename, localFallback) {
-  const localPath = localFallback || `/assets/fetus/${filename}`;
-  if (!isCloudinaryEnabled()) {
-    return localPath;
-  }
-  const publicId = `${fetusFolder.replace(/\/$/, '')}/${toPublicId(filename)}`;
-  return `https://res.cloudinary.com/${cloudName}/image/upload/${transforms}/${publicId}`;
+  const localPath = localFallback || localFetusPath(filename);
+  const cdn = cloudinaryDeliveryUrl(filename);
+  return cdn || localPath;
 }
 
 export function closestAvailableWeek(week) {
@@ -102,16 +140,36 @@ export function closestAvailableWeek(week) {
 export function getFetusImageUrl(week) {
   const file = FETUS_WEEK_FILES[week];
   if (file) {
-    return resolveMediaUrl(file, `/assets/fetus/${file}`);
+    return resolveMediaUrl(file, localFetusPath(file));
   }
   const closest = closestAvailableWeek(week);
   const closestFile = `week-${String(closest).padStart(2, '0')}.png`;
-  return resolveMediaUrl(closestFile, `/assets/fetus/${closestFile}`);
+  return resolveMediaUrl(closestFile, localFetusPath(closestFile));
 }
 
 export function getDefaultFetusImageUrl() {
-  if (!isCloudinaryEnabled()) {
-    return DEFAULT_FETUS_IMAGE;
-  }
   return resolveMediaUrl('bebe-foetus.png', DEFAULT_FETUS_IMAGE);
+}
+
+/**
+ * Hydrate le cloud name depuis l'API (CLOUDINARY_CLOUD_NAME serveur).
+ * Appelé au boot — permet le CDN live sans rebuild frontend.
+ */
+export async function hydrateCloudinaryFromApi() {
+  const base = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/$/, '');
+  if (!base) return getCloudinaryConfig();
+  try {
+    const res = await fetch(`${base}/api/neriacorp/media`);
+    if (!res.ok) return getCloudinaryConfig();
+    const data = await res.json();
+    if (data.cloud_name) {
+      cloudName = String(data.cloud_name).trim();
+      if (data.folder) fetusFolder = data.folder;
+      if (data.transforms) transforms = data.transforms;
+      notifyCloudinary();
+    }
+  } catch {
+    /* offline / CORS : rester sur env Vite ou local */
+  }
+  return getCloudinaryConfig();
 }

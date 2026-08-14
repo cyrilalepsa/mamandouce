@@ -6,7 +6,14 @@ import os
 
 from fastapi import APIRouter
 
-from core.config import FRONTEND_URL
+from core.config import (
+    CLOUDINARY_CLOUD_NAME,
+    CLOUDINARY_FETUS_FOLDER,
+    CLOUDINARY_TRANSFORMS,
+    FRONTEND_URL,
+    NERIACORP_PORTAL_URL,
+    n2_ocr_base_url,
+)
 from integrations.neriacorp.catalog import get_portal_catalog_entry, get_portal_catalog_payload
 
 router = APIRouter(tags=["neriacorp-portal"])
@@ -27,23 +34,66 @@ async def neriacorp_app_identity():
     return get_portal_catalog_entry()
 
 
+@router.get("/neriacorp/media")
+async def neriacorp_media():
+    """Config CDN publique (aucun secret). Le front hydrate Cloudinary sans rebuild."""
+    cloud = CLOUDINARY_CLOUD_NAME
+    folder = CLOUDINARY_FETUS_FOLDER or "mamandouce/fetus"
+    transforms = CLOUDINARY_TRANSFORMS or "f_auto,q_auto"
+    cdn_host = "https://res.cloudinary.com"
+    delivery_base = (
+        f"{cdn_host}/{cloud}/image/upload/{transforms}" if cloud else None
+    )
+    return {
+        "provider": "cloudinary",
+        "cdn_host": cdn_host,
+        "cloud_name": cloud or None,
+        "folder": folder,
+        "transforms": transforms,
+        "enabled": bool(cloud),
+        "delivery_base": delivery_base,
+    }
+
+
 @router.get("/neriacorp/sso/status")
 async def neriacorp_sso_status():
-    """Découverte SSO pour le portail NeriaCorp (Noyau N2).
+    """Découverte SSO + handoff de session pour le portail NeriaCorp.
 
-    Tant que NERIACORP_SSO_LOGIN_URL n'est pas posé, l'app reste en JWT local
-    (`/auth`). Le portail peut quand même afficher le point d'entrée B2C.
+    Le portail appelle cet endpoint (CORS) pour savoir où rediriger
+    l'utilisatrice (authorize / token / callback). Tant que
+    NERIACORP_SSO_LOGIN_URL + NERIACORP_SSO_ISSUER ne sont pas posés,
+    `sso_enabled` reste false et MamanDouce authentifie en JWT local.
     """
+    worker = n2_ocr_base_url() or "https://api.neriacorp.com"
     sso_login = (os.environ.get("NERIACORP_SSO_LOGIN_URL") or "").rstrip("/")
     sso_issuer = (os.environ.get("NERIACORP_SSO_ISSUER") or "").rstrip("/")
+    callback = (
+        os.environ.get("NERIACORP_SSO_CALLBACK_URL") or f"{FRONTEND_URL}/auth"
+    ).rstrip("/")
+    client_id = os.environ.get("NERIACORP_SSO_CLIENT_ID") or "mamandouce"
     enabled = bool(sso_login and sso_issuer)
+    issuer = sso_issuer or worker
+    authorize_url = sso_login or f"{worker}/api/auth/oauth/google/start"
     return {
         "provider": "neriacorp-oidc" if enabled else "mamandouce-jwt",
         "sso_enabled": enabled,
-        "issuer": sso_issuer or FRONTEND_URL,
-        "login_url": sso_login or f"{FRONTEND_URL}/auth",
-        "callback_url": os.environ.get("NERIACORP_SSO_CALLBACK_URL")
-        or f"{FRONTEND_URL}/auth",
+        "issuer": issuer,
+        "login_url": authorize_url if enabled else f"{FRONTEND_URL}/auth",
+        "callback_url": callback,
+        "portal_url": NERIACORP_PORTAL_URL,
         "portal_zone": "B2C",
         "app_slug": "mamandouce",
+        "session": {
+            "handoff": "authorization_code",
+            "authorize_url": authorize_url,
+            "token_url": f"{issuer}/api/auth/refresh",
+            "jwks_url": f"{issuer}/.well-known/jwks.json",
+            "userinfo_url": f"{issuer}/api/auth/me",
+            "n2_login_url": f"{worker}/api/auth/login",
+            "scopes": ["openid", "profile", "email"],
+            "response_type": "code",
+            "client_id": client_id,
+            "redirect_uri": callback,
+            "local_login_url": f"{FRONTEND_URL}/auth",
+        },
     }

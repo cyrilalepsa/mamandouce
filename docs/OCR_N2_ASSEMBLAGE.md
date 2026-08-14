@@ -18,7 +18,7 @@ Les corrections sont appliquées **ici**, pas dans un checkout externe :
 | SSO découverte | `GET /api/neriacorp/sso/status` dans `backend/routes/neriacorp_portal.py` |
 | Design System 135° | `frontend/src/styles/glossy/*` + tiroir admin Intelligence |
 
-**Pas d’Emergent.** Vision locale = `services.llm.chat_vision` / `chat_text` (`OPENAI_API_KEY`). Worker HTTP optionnel = `N2_OCR_BASE_URL`.
+**Scanner aliment :** Gemini Vision (`GEMINI_API_KEY` + `GEMINI_VISION_MODEL`, défaut `gemini-2.0-flash`) extrait nom / ingrédients / texte d’emballage, puis le moteur local `FOOD_SAFETY_DATABASE` tranche la grossesse. **Aucun OpenAI ni OCR Worker n’est requis.**
 
 ---
 
@@ -46,13 +46,18 @@ Publish non configuré (pas de `{APP}_BASE_URL` + `{APP}_API_KEY`) → `publishe
 
 ---
 
-## 3. Adaptateur OCR
+## 3. Adaptateur scanner (Gemini Vision Aevis)
 
-`analyze_neriacorp` / `analyze_document` / `analyze_video` :
+Seul secret requis : `GEMINI_API_KEY` (+ `GEMINI_VISION_MODEL`, défaut `gemini-2.0-flash`).
+`OPENAI_API_KEY` et `N2_OCR_*` ne sont **pas** nécessaires.
 
-1. Si `N2_OCR_BASE_URL` → HTTP `POST {base}/ocr/analyze`, `/ocr/analyze-document`, `/ocr/analyze-video`.
-2. Sinon image/texte → OpenAI vision/text.
-3. Sinon vidéo → Gemini (`GEMINI_API_KEY` / `GOOGLE_API_KEY`) ou **503**.
+| Entrée | Flux |
+|--------|------|
+| Scanner aliment `analyze_food` | Gemini `extract_product` (nom, ingrédients, texte emballage) → moteur local `FOOD_SAFETY_DATABASE` |
+| Image admin `analyze_neriacorp` | Gemini Vision JSON (contrat Intelligence) |
+| Texte seul | wrapping local, sans LLM |
+| Document `analyze_document` | Gemini Vision + schéma de catégorie |
+| Vidéo `analyze_video` | Gemini Vision (`GEMINI_VISION_MODEL`) |
 
 Mongo `scanner_audit` / `scanner_publications` : insert **fail-soft** (pas de 500 si Mongo down).
 
@@ -77,4 +82,4 @@ Tiroir `data-testid="drawer-neriacorp"` → `NeriaCorpScannerTab` (photo / impor
 
 ## 6. Variables
 
-Voir `backend/.env.example` : `N2_OCR_*`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `AEVIS_*` (et sœurs), `NERIACORP_SSO_*`.
+Voir `backend/.env.example` : **scanner** = `GEMINI_API_KEY` + `GEMINI_VISION_MODEL` ; Cloudinary prod = `CLOUDINARY_CLOUD_NAME` / `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` ; `NERIACORP_SSO_*` ; CORS NeriaCorp fusionnés dans `core.config`. `N2_OCR_*` et `OPENAI_API_KEY` restent optionnels (portail / chatbot), jamais requis par le scanner.
