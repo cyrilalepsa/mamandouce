@@ -52,7 +52,9 @@ Publish non configuré (pas de `{APP}_BASE_URL` + `{APP}_API_KEY`) → `publishe
 
 `analyze_neriacorp` / `analyze_document` / `analyze_video` :
 
-1. Si `N2_OCR_BASE_URL` (défaut `https://api.neriacorp.com`) → HTTP `POST {base}/ocr/analyze`, `/ocr/analyze-document`, `/ocr/analyze-video`, `/ocr/analyze-food`.
+1. Si `N2_OCR_BASE_URL` (défaut `https://api.neriacorp.com`) :
+   - **n2-core** (Worker live) → `POST /api/n2/ocr/extract` (multipart `file`, Bearer `N2_OCR_API_KEY`)
+   - **legacy** (`N2_OCR_API_STYLE=legacy`) → `POST /ocr/analyze*` JSON
 2. Sinon (`N2_OCR_BASE_URL=off`) image/texte → OpenAI vision/text.
 3. Sinon vidéo → Gemini (`GEMINI_API_KEY` / `GOOGLE_API_KEY`) ou **503**.
 
