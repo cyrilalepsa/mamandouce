@@ -45,7 +45,9 @@ Elle doit figurer dans la **zone B2C** du portail NeriaCorp — distincte des ap
 | `NERIACORP_PORTAL_STATUS` | `active` / `beta` / `maintenance` |
 | `NERIACORP_PORTAL_SORT` | Ordre d’affichage zone B2C (défaut `10`) |
 | `NERIACORP_PORTAL_URL` | Origine portail (SSO + CORS) — défaut `https://neriacorp.com` |
-| `GEMINI_API_KEY` | **Requis** pour le scanner Vision (contrat Aevis / N2) |
+| `NERIACORP_MASTER_KEY` | **Requis en prod** — ouvre N2-Vault (`POST /api/v1/vault/sync`), secrets en RAM |
+| `N2_VAULT_SYNC=off` | Désactive le coffre (local / tests) |
+| `GEMINI_API_KEY` | Scanner Vision (contrat Aevis / N2) — injecté par le Vault |
 | `GEMINI_VISION_MODEL` | Modèle Vision (défaut `gemini-2.0-flash`) |
 | `N2_OCR_BASE_URL` / `N2_OCR_API_KEY` | Optionnel portail — **non requis** par le scanner aliment |
 | `NERIACORP_SSO_ISSUER` / `NERIACORP_SSO_LOGIN_URL` | Active `sso_enabled` ; le handoff session est toujours exposé |
