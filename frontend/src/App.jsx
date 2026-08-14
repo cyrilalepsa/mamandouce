@@ -76,7 +76,7 @@ import { EmotionalIntelligenceProvider } from './components/EmotionalIntelligenc
 import { NewBadgeProvider } from './components/NewBadge';
 import { PWAInstallBanner } from './components/PWAInstallBanner';
 import { Toaster } from './components/ui/sonner';
-import { HomeLayoutProvider } from './contexts/HomeLayoutContext';
+import { hydrateCloudinaryFromApi } from './utils/fetusAssets';
 import MaintenanceBanner from './components/MaintenanceBanner';
 
 function App() {
@@ -104,6 +104,7 @@ useEffect(() => {
     };
 
     bootstrapAuth();
+    hydrateCloudinaryFromApi();
     
     // Vérifier si c'est la première visite et afficher la langue détectée
     const detectedLang = checkFirstVisitLanguage();

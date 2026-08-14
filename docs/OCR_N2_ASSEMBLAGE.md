@@ -18,7 +18,9 @@ Les corrections sont appliquées **ici**, pas dans un checkout externe :
 | SSO découverte | `GET /api/neriacorp/sso/status` dans `backend/routes/neriacorp_portal.py` |
 | Design System 135° | `frontend/src/styles/glossy/*` + tiroir admin Intelligence |
 
-**Pas d’Emergent.** Vision locale = `services.llm.chat_vision` / `chat_text` (`OPENAI_API_KEY`). Worker HTTP optionnel = `N2_OCR_BASE_URL`.
+**Pas d’Emergent.** Option A : Worker `N2_OCR_BASE_URL` **défaut `https://api.neriacorp.com`**. `OPENAI_API_KEY` optionnelle. Fallback OpenAI seulement si `N2_OCR_BASE_URL=off`.
+
+Le scanner aliment (`POST /api/food/scan/image`) passe par la même passerelle (`/ocr/analyze-food`, repli `/ocr/analyze-document` catégorie `alimentation`).
 
 ---
 
@@ -50,8 +52,8 @@ Publish non configuré (pas de `{APP}_BASE_URL` + `{APP}_API_KEY`) → `publishe
 
 `analyze_neriacorp` / `analyze_document` / `analyze_video` :
 
-1. Si `N2_OCR_BASE_URL` → HTTP `POST {base}/ocr/analyze`, `/ocr/analyze-document`, `/ocr/analyze-video`.
-2. Sinon image/texte → OpenAI vision/text.
+1. Si `N2_OCR_BASE_URL` (défaut `https://api.neriacorp.com`) → HTTP `POST {base}/ocr/analyze`, `/ocr/analyze-document`, `/ocr/analyze-video`, `/ocr/analyze-food`.
+2. Sinon (`N2_OCR_BASE_URL=off`) image/texte → OpenAI vision/text.
 3. Sinon vidéo → Gemini (`GEMINI_API_KEY` / `GOOGLE_API_KEY`) ou **503**.
 
 Mongo `scanner_audit` / `scanner_publications` : insert **fail-soft** (pas de 500 si Mongo down).
@@ -77,4 +79,4 @@ Tiroir `data-testid="drawer-neriacorp"` → `NeriaCorpScannerTab` (photo / impor
 
 ## 6. Variables
 
-Voir `backend/.env.example` : `N2_OCR_*`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `AEVIS_*` (et sœurs), `NERIACORP_SSO_*`.
+Voir `backend/.env.example` : **Option A** `N2_OCR_BASE_URL=https://api.neriacorp.com`, `OPENAI_API_KEY` vide, `NERIACORP_SSO_*`, `CLOUDINARY_*`, CORS NeriaCorp fusionnés dans `core.config`.

@@ -320,6 +320,13 @@ export const api = {
     analyzeDocument: (data) => axios.post(`${API}/scanner/analyze-document`, data, { ...getAuthHeaders(), timeout: 90000 }),
     history: (limit = 20) => axios.get(`${API}/scanner/history?limit=${limit}`, getAuthHeaders()),
   },
+
+  neriacorp: {
+    catalog: () => axios.get(`${API}/neriacorp/catalog`),
+    app: () => axios.get(`${API}/neriacorp/app`),
+    ssoStatus: () => axios.get(`${API}/neriacorp/sso/status`),
+    media: () => axios.get(`${API}/neriacorp/media`),
+  },
   
   nameStats: {
     trackView: (name, country, gender) => axios.post(`${API}/babynames-stats/view`, { name, country, gender }),

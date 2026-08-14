@@ -45,11 +45,48 @@ STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "")
 # Frontend (liens emails, reset password, deep links)
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173").rstrip("/")
 
-# LLM (OpenAI officiel — autonomie hors Emergent)
+# LLM (OpenAI officiel — optionnel en Option A : l'OCR passe par le Worker N2)
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "") or os.environ.get("EMERGENT_LLM_KEY", "")
 OPENAI_CHAT_MODEL = os.environ.get("OPENAI_CHAT_MODEL", "gpt-4o-mini")
 OPENAI_VISION_MODEL = os.environ.get("OPENAI_VISION_MODEL", "gpt-4o")
 
-# CORS — liste séparée par virgules ; "*" autorisé en local uniquement
-_cors_raw = os.environ.get("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
-CORS_ORIGINS = [o.strip() for o in _cors_raw.split(",") if o.strip()]
+# Noyau N2 — API centralisée (Option A)
+DEFAULT_N2_WORKER_URL = "https://api.neriacorp.com"
+NERIACORP_PORTAL_URL = os.environ.get("NERIACORP_PORTAL_URL", "https://neriacorp.com").rstrip("/")
+
+
+def n2_ocr_base_url() -> str:
+    """Worker OCR NeriaCorp. Défaut prod = api.neriacorp.com.
+
+    Pour forcer le fallback OpenAI local : N2_OCR_BASE_URL=off
+    """
+    if "N2_OCR_BASE_URL" not in os.environ:
+        return DEFAULT_N2_WORKER_URL
+    stripped = os.environ.get("N2_OCR_BASE_URL", "").strip().rstrip("/")
+    if stripped.lower() in ("", "off", "none", "local", "-"):
+        return ""
+    return stripped
+
+
+# CORS — origines NeriaCorp toujours acceptées ; CORS_ORIGINS ajoute / surcharge
+NERIACORP_CORS_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://mamandouce.app",
+    "https://www.mamandouce.app",
+    "https://neriacorp.com",
+    "https://www.neriacorp.com",
+    "https://portal.neriacorp.com",
+    "https://app.neriacorp.com",
+    "https://api.neriacorp.com",
+]
+_cors_raw = os.environ.get("CORS_ORIGINS", "")
+_cors_extra = [o.strip() for o in _cors_raw.split(",") if o.strip()]
+if _cors_extra == ["*"]:
+    CORS_ORIGINS = ["*"]
+else:
+    _seen = []
+    for origin in NERIACORP_CORS_ORIGINS + _cors_extra:
+        if origin not in _seen:
+            _seen.append(origin)
+    CORS_ORIGINS = _seen

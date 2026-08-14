@@ -1,7 +1,9 @@
 """
 Adaptateur OCR Noyau Neria (référence N2) pour MamanDouce.
 
-Délègue à N2_OCR_BASE_URL si configuré, sinon au LLM local (OpenAI vision).
+Option A — API centralisée : par défaut POST vers le Worker
+`https://api.neriacorp.com` (N2_OCR_BASE_URL). OPENAI_API_KEY n'est pas
+requise. Fallback OpenAI uniquement si N2_OCR_BASE_URL=off.
 Aucun import Emergent.
 """
 from __future__ import annotations
@@ -149,7 +151,9 @@ CATEGORY_PROMPTS: Dict[str, Dict[str, Any]] = {
 
 
 def n2_ocr_base_url() -> str:
-    return (os.environ.get("N2_OCR_BASE_URL") or "").rstrip("/")
+    from core.config import n2_ocr_base_url as _configured
+
+    return _configured()
 
 
 def n2_ocr_api_key() -> str:
@@ -179,7 +183,9 @@ async def _n2_post_json(path: str, body: Dict[str, Any]) -> Dict[str, Any]:
     key = n2_ocr_api_key()
     if key:
         headers["Authorization"] = f"Bearer {key}"
-    async with httpx.AsyncClient(timeout=90.0) as client:
+    async with httpx.AsyncClient(
+        timeout=httpx.Timeout(connect=8.0, read=90.0, write=10.0, pool=10.0)
+    ) as client:
         r = await client.post(f"{base}{path}", headers=headers, json=body)
         r.raise_for_status()
         return r.json()
@@ -347,3 +353,95 @@ async def _analyze_video_gemini(
 
     raw = await asyncio.to_thread(_run)
     return parse_llm_json(raw)
+
+
+def normalize_food_payload(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Aligne une réponse N2 (food dédié ou document alimentation) sur le contrat food scanner."""
+    if not isinstance(data, dict):
+        return {
+            "food_name": "Aliment",
+            "verdict": "limite",
+            "explanation": "Réponse N2 inattendue.",
+            "confidence": 0.0,
+        }
+    if data.get("food_name") and data.get("verdict"):
+        return data
+    inner = data.get("data") if isinstance(data.get("data"), dict) else data
+    name = (
+        inner.get("nom_produit")
+        or inner.get("food_name")
+        or inner.get("name")
+        or "Aliment"
+    )
+    flag = str(inner.get("conformite_grossesse") or inner.get("verdict") or "").lower()
+    if flag in ("oui", "autorise", "autorisé", "safe", "ok"):
+        verdict = "autorise"
+    elif flag in ("non", "deconseille", "déconseillé", "danger", "avoid"):
+        verdict = "deconseille"
+    else:
+        verdict = "limite"
+    return {
+        "food_name": name,
+        "verdict": verdict,
+        "explanation": inner.get("explanation")
+        or inner.get("description_courte")
+        or "Analyse Noyau N2.",
+        "nutrients_info": inner.get("nutrients_info"),
+        "alternatives": inner.get("alternatives"),
+        "confidence": float(data.get("confidence") or inner.get("confidence") or 0.8),
+    }
+
+
+async def analyze_food(
+    *,
+    image_base64: str,
+    user_context: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Scanner aliment grossesse — passerelle N2 (Option A) puis fallback OpenAI."""
+    image_b64 = _strip_data_url(image_base64)
+    if n2_ocr_base_url():
+        try:
+            raw = await _n2_post_json(
+                "/ocr/analyze-food",
+                {
+                    "image_base64": image_b64,
+                    "context": user_context,
+                    "source_app": "mamandouce",
+                },
+            )
+            return normalize_food_payload(raw)
+        except httpx.HTTPStatusError as exc:
+            status = exc.response.status_code if exc.response is not None else 0
+            if status != 404:
+                raise
+            logger.info("[N2] /ocr/analyze-food absent — repli /ocr/analyze-document alimentation")
+            doc = await _n2_post_json(
+                "/ocr/analyze-document",
+                {
+                    "image_base64": image_b64,
+                    "category": "alimentation",
+                    "custom_prompt": user_context,
+                },
+            )
+            return normalize_food_payload(doc)
+
+    from services.llm import chat_vision, get_llm_api_key
+
+    if not get_llm_api_key():
+        raise RuntimeError(
+            "Worker N2 (N2_OCR_BASE_URL) ou OPENAI_API_KEY requis pour le scanner aliment"
+        )
+    system_message = """Tu es un expert en nutrition prénatale.
+Réponds UNIQUEMENT en JSON :
+{"food_name":"...","verdict":"autorise|limite|deconseille","explanation":"...","nutrients_info":null,"alternatives":null,"confidence":0.0}
+"""
+    user_text = "Analyse cet aliment pour une femme enceinte. JSON uniquement."
+    if user_context:
+        user_text += f"\nContexte: {user_context}"
+    raw = await chat_vision(
+        system_message=system_message,
+        user_text=user_text,
+        image_base64=image_b64 or "",
+        temperature=0.1,
+    )
+    return normalize_food_payload(parse_llm_json(raw))

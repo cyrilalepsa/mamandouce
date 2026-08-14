@@ -2,30 +2,24 @@
 
 ## Emplacements locaux (déjà dans le projet)
 
-Dossier : `frontend/public/assets/fetus/`  
-Convention : `week-XX.png` (et variantes jpeg historiques)
+Dossier : `frontend/public/assets/fetus/` (~48 fichiers)  
+Convention : `week-XX.png` (jpeg historiques dédupliqués à l’upload, png prioritaire)
 
 Consommés via `frontend/src/utils/fetusAssets.js` par :
 - `Baby3DContainer.jsx`
 - `BabyEvolutionWidget.jsx`
 
-## Cloudinary (optionnel)
+URL de livraison **par défaut** : `https://res.cloudinary.com/{cloud}/image/upload/f_auto,q_auto/mamandouce/fetus/{id}`  
+Sans cloud name (env ou `GET /api/neriacorp/media`) → fallback `/assets/fetus/…` + `onError`.
 
-1. Uploader les fichiers locaux :
+## Cloudinary (prod)
+
+1. Injecter `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` dans `backend/.env`.
+2. Uploader :
    ```bash
    cd backend
-   # renseigner CLOUDINARY_* dans .env
-   python scripts/upload_fetus_cloudinary.py
+   python scripts/upload_fetus_cloudinary.py --dry-run   # inventaire, sans secrets
+   python scripts/upload_fetus_cloudinary.py             # push CDN
    ```
-2. Côté frontend `.env` :
-   ```
-   VITE_CLOUDINARY_CLOUD_NAME=votre_cloud
-   VITE_CLOUDINARY_FETUS_FOLDER=mamandouce/fetus
-   VITE_CLOUDINARY_TRANSFORMS=f_auto,q_auto
-   ```
-3. Rebuild frontend. Sans cloud name → fallback local automatique.
-
-## Format 3D (optionnel)
-
-Placez votre fichier `.glb` ici sous le nom `bebe.glb` (< 5 MB).  
-Sans modèle 3D, l’UI utilise les images semaine + fallback SVG/image.
+3. Le front hydrate le cloud name via `GET /api/neriacorp/media` (pas de rebuild obligatoire).  
+   Option build : `VITE_CLOUDINARY_CLOUD_NAME` dans `frontend/.env`.

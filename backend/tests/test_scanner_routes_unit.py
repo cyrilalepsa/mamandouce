@@ -179,13 +179,22 @@ def test_categories_auth_user(user_client):
         assert expected in names
 
 
-def test_sso_status_public(anon_client):
+def test_sso_status_public(anon_client, monkeypatch):
+    monkeypatch.delenv("NERIACORP_SSO_LOGIN_URL", raising=False)
+    monkeypatch.delenv("NERIACORP_SSO_ISSUER", raising=False)
     r = anon_client.get("/api/neriacorp/sso/status")
     assert r.status_code == 200, r.text
     body = r.json()
-    assert "sso_enabled" in body
     assert body["sso_enabled"] is False
     assert body["provider"] == "mamandouce-jwt"
+    assert body["portal_url"]
+    session = body["session"]
+    assert session["handoff"] == "authorization_code"
+    assert session["authorize_url"].startswith("https://")
+    assert session["token_url"]
+    assert session["jwks_url"]
+    assert "openid" in session["scopes"]
+    assert session["client_id"] == "mamandouce"
 
 
 def test_catalog_capabilities(anon_client):
@@ -195,3 +204,92 @@ def test_catalog_capabilities(anon_client):
     assert "ocr-scanner" in body["capabilities"]
     assert "sso" in body["capabilities"]
     assert "ocr-scanner" in body["apps"][0]["capabilities"]
+
+
+def test_media_endpoint_public(anon_client):
+    r = anon_client.get("/api/neriacorp/media")
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["cdn_host"] == "https://res.cloudinary.com"
+    assert body["folder"] == "mamandouce/fetus"
+    assert "enabled" in body
+
+
+def test_cors_allows_neriacorp_portal(anon_client):
+    r = anon_client.options(
+        "/api/neriacorp/sso/status",
+        headers={
+            "Origin": "https://neriacorp.com",
+            "Access-Control-Request-Method": "GET",
+            "Access-Control-Request-Headers": "authorization",
+        },
+    )
+    assert r.status_code in (200, 204)
+    assert r.headers.get("access-control-allow-origin") == "https://neriacorp.com"
+
+
+def test_cors_allows_n2_worker(anon_client):
+    r = anon_client.get(
+        "/api/neriacorp/catalog",
+        headers={"Origin": "https://api.neriacorp.com"},
+    )
+    assert r.status_code == 200
+    assert r.headers.get("access-control-allow-origin") == "https://api.neriacorp.com"
+
+
+def test_n2_ocr_defaults_to_central_worker(monkeypatch):
+    monkeypatch.delenv("N2_OCR_BASE_URL", raising=False)
+    from integrations.neriacorp.scanner_adapter import n2_ocr_base_url
+
+    assert n2_ocr_base_url() == "https://api.neriacorp.com"
+
+
+def test_n2_ocr_can_be_disabled(monkeypatch):
+    monkeypatch.setenv("N2_OCR_BASE_URL", "off")
+    from integrations.neriacorp.scanner_adapter import n2_ocr_base_url
+
+    assert n2_ocr_base_url() == ""
+
+
+def test_analyze_food_uses_n2_gateway(monkeypatch):
+    monkeypatch.setenv("N2_OCR_BASE_URL", "https://api.neriacorp.com")
+    posted = {}
+
+    class FakeResp:
+        status_code = 200
+
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {
+                "food_name": "Pomme",
+                "verdict": "autorise",
+                "explanation": "Fruit sûr",
+                "confidence": 0.95,
+            }
+
+    class FakeClient:
+        def __init__(self, *a, **k):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *a):
+            return None
+
+        async def post(self, url, headers=None, json=None):
+            posted["url"] = url
+            posted["json"] = json
+            return FakeResp()
+
+    import asyncio
+    from integrations.neriacorp.scanner_adapter import analyze_food
+
+    with patch("integrations.neriacorp.scanner_adapter.httpx.AsyncClient", FakeClient):
+        data = asyncio.run(analyze_food(image_base64="abc", user_context="S20"))
+    assert posted["url"] == "https://api.neriacorp.com/ocr/analyze-food"
+    assert posted["json"]["source_app"] == "mamandouce"
+    assert data["food_name"] == "Pomme"
+    assert data["verdict"] == "autorise"
