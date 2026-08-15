@@ -34,7 +34,7 @@ MamanDouce est **~95 % production-ready** sur le cœur produit (auth JWT serveur
 | Client LLM | `backend/services/llm.py` (OpenAI Async) |
 | Script / badge Emergent | Retirés de `index.html` |
 | `@emergentbase/visual-edits` | Retiré de `package.json` |
-| URLs `*.emergentagent.com` runtime | Remplacées par `FRONTEND_URL` / localhost |
+| URLs runtime héritées d’un hébergeur tiers | Remplacées par `FRONTEND_URL` / localhost |
 | Images tips Emergent CDN | `image_url: ""` |
 | `.env.example` + README runbook | Ajoutés |
 
@@ -147,7 +147,7 @@ Sans `OPENAI_API_KEY`, le cœur métier démarre ; seules les routes IA dégrade
 | 2 | Peu d’`AbortController` sur fetchers navigables | Hors `PushNotificationsSection` |
 | 3 | Validation mot de passe faible (register / reset min 6) | `RegisterForm`, `schemas.py` |
 | 4 | Interceptor 401 n’exclut pas correctement la home | `api.jsx` — session half-broken sur `/` |
-| 5 | Domaines OG / SEO | ✅ Migrés vers `mamandouce.app` (NeriaCorp) — CycaFamily retiré |
+| 5 | Domaines OG / SEO | ✅ Migrés vers `https://mamandouce.neriacorp.com` |
 | 6 | Dual naming tests `REACT_APP_BACKEND_URL` vs Vite `VITE_*` | `backend/tests/*` |
 | 7 | `STRIPE_SECRET_KEY` vs `STRIPE_API_KEY` (Guardian health) | Incohérence naming |
 | 8 | `.env.example` | ✅ Ajoutés (`backend/` + `frontend/`) |
@@ -180,7 +180,7 @@ Sans `OPENAI_API_KEY`, le cœur métier démarre ; seules les routes IA dégrade
 - [x] Créer `.env.example` FE + BE aligné NeriaCorp
 - [x] Racorder assets fœtus → Cloudinary (`f_auto,q_auto`) + script upload + fallback local
 - [x] Routage OpenAI dynamique (fast / complex / vision + fallback modèle)
-- [x] Remplacer `FRONTEND_URL` / liens email / OG tags (Emergent + CycaFamily → mamandouce.app / NeriaCorp)
+- [x] Remplacer `FRONTEND_URL` / liens email / OG tags → `mamandouce.neriacorp.com` / NeriaCorp
 - [ ] Restaurer **ou** archiver proprement le module Intelligence Scanner (+ adapters publish)
 - [ ] Restreindre CORS ; exiger `SECRET_KEY` / `STRIPE_API_KEY` en prod
 - [ ] Éliminer stockage MDP local (biométrie)

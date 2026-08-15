@@ -143,6 +143,23 @@ def load_settings() -> None:
 load_settings()
 
 
+def app_public_url() -> str:
+    """URL front publique (sans slash final) — emails, reset-password, catalogue."""
+    return (
+        os.environ.get("FRONTEND_URL")
+        or os.environ.get("PUBLIC_APP_URL")
+        or "https://mamandouce.neriacorp.com"
+    ).strip().rstrip("/")
+
+
+def email_brand_footer() -> str:
+    """Pied de page Resend : MamanDouce • neriacorp.com."""
+    return (
+        '<p style="color:#94a3b8;font-size:12px;text-align:center;margin-top:24px;">'
+        "MamanDouce • neriacorp.com</p>"
+    )
+
+
 def n2_ocr_base_url() -> str:
     """Worker OCR NeriaCorp (optionnel — le scanner aliment n'en a pas besoin).
 

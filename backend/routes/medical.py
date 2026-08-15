@@ -346,7 +346,7 @@ async def delete_appointment_reminder(appointment_id: str, current_user: User = 
 async def send_due_reminders():
     """Send all reminders that are due (called by cron job or manually)"""
     from routes.push_notifications import send_push_notification
-    from core.config import RESEND_API_KEY, SENDER_EMAIL
+    from core.config import RESEND_API_KEY, SENDER_EMAIL, app_public_url, email_brand_footer
     
     # Import resend for email
     try:
@@ -365,8 +365,7 @@ async def send_due_reminders():
     }).to_list(100)
     
     sent_count = 0
-    import os
-    frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+    frontend_url = app_public_url()
     for reminder in due_reminders:
         try:
             reminder_type = reminder.get("reminder_type", "push")
@@ -413,6 +412,7 @@ async def send_due_reminders():
                                 <p style="color: #94a3b8; font-size: 12px; text-align: center;">
                                     L'équipe MamanDouce
                                 </p>
+                                {email_brand_footer()}
                             </div>
                         </div>
                         """

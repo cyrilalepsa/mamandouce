@@ -8,7 +8,7 @@ import logging
 import json
 
 from core.database import db
-from core.config import RESEND_API_KEY, SENDER_EMAIL, VAPID_PRIVATE_KEY, VAPID_CLAIMS_EMAIL, FRONTEND_URL
+from core.config import RESEND_API_KEY, SENDER_EMAIL, VAPID_PRIVATE_KEY, VAPID_CLAIMS_EMAIL, app_public_url, email_brand_footer
 from core.security import get_admin_user
 from models.schemas import (
     User, PromoCode, AdminMessage, ContactMessageRequest, AdminReplyRequest,
@@ -806,7 +806,7 @@ async def send_email_to_user(user_id: str, request: SendEmailRequest, admin: Use
                 </div>
                 <div class="footer">
                     <p>MamanDouce - Votre compagnon de grossesse</p>
-                    <p><a href="{FRONTEND_URL}" style="color: #ec4899;">mamandouce.app</a> · NeriaCorp</p>
+                    {email_brand_footer()}
                 </div>
             </div>
         </body>
@@ -1026,6 +1026,7 @@ async def reply_to_message(message_id: str, request: AdminReplyRequest, admin: U
                         </div>
                         <p style="color: #374151; margin-top: 30px;">À bientôt sur MamanDouce !</p>
                         <p style="color: #9ca3af; font-size: 12px;">L'équipe MamanDouce</p>
+                        {email_brand_footer()}
                     </div>
                 </div>
                 """
@@ -1107,6 +1108,7 @@ async def send_message_to_user(user_id: str, request: AdminReplyRequest, admin: 
                         </div>
                         <p style="color: #374151; margin-top: 30px;">Vous pouvez répondre à ce message directement depuis l'application MamanDouce, dans la section "Mon profil" → "Mes messages".</p>
                         <p style="color: #9ca3af; font-size: 12px; margin-top: 20px;">L'équipe MamanDouce 💕</p>
+                        {email_brand_footer()}
                     </div>
                 </div>
                 """
@@ -1762,6 +1764,7 @@ Généré automatiquement par MamanDouce
                 <p style="color: #6b7280; font-size: 12px; margin-top: 30px;">
                     Généré automatiquement par MamanDouce le {datetime.now().strftime('%d/%m/%Y à %H:%M')}
                 </p>
+                {email_brand_footer()}
             </div>
             """,
             "attachments": [
@@ -2010,6 +2013,7 @@ async def send_business_kit_email(admin: User = Depends(get_admin_user)):
             <h3 style="color: white; margin: 0;">🚀 Bonne chance pour le lancement !</h3>
             <p style="margin: 10px 0 0;">L'équipe MamanDouce</p>
         </div>
+        {email_brand_footer()}
     </body>
     </html>
     """
@@ -2146,7 +2150,7 @@ async def send_news_notification(data: NewsNotificationRequest, admin: User = De
                                         {data.message}
                                     </p>
                                     <div style="text-align: center; margin-top: 30px;">
-                                        <a href="https://mamandouce.app" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; padding: 15px 30px; border-radius: 30px; text-decoration: none; font-weight: bold;">
+                                        <a href="{app_public_url()}" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; padding: 15px 30px; border-radius: 30px; text-decoration: none; font-weight: bold;">
                                             Découvrir maintenant
                                         </a>
                                     </div>
@@ -2154,6 +2158,7 @@ async def send_news_notification(data: NewsNotificationRequest, admin: User = De
                                 
                                 <div style="text-align: center; padding: 20px; color: #94a3b8; font-size: 12px;">
                                     <p>MamanDouce - Votre compagnon de grossesse 🌸</p>
+                                    {email_brand_footer()}
                                 </div>
                             </div>
                             """

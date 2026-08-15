@@ -9,7 +9,15 @@ import logging
 import secrets
 
 from core.database import db
-from core.config import ACCESS_TOKEN_EXPIRE_MINUTES, ADMIN_EMAIL, CONTACT_EMAIL, RESEND_API_KEY, SENDER_EMAIL
+from core.config import (
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    ADMIN_EMAIL,
+    CONTACT_EMAIL,
+    RESEND_API_KEY,
+    SENDER_EMAIL,
+    app_public_url,
+    email_brand_footer,
+)
 from core.security import pwd_context, create_access_token, get_current_user
 from models.schemas import UserCreate, UserLogin, Token, User
 
@@ -66,8 +74,7 @@ async def send_welcome_notification(user_name: str, user_email: str):
     # Envoyer l'email de bienvenue
     if resend and RESEND_API_KEY:
         try:
-            import os
-            frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+            frontend_url = app_public_url()
             resend.Emails.send({
                 "from": SENDER_EMAIL,
                 "to": user_email,
@@ -113,6 +120,7 @@ async def send_welcome_notification(user_name: str, user_email: str):
                         Des questions ? Contactez-nous directement depuis l'application.<br>
                         À très bientôt ! 💕
                     </p>
+                    {email_brand_footer()}
                 </div>
                 """
             })
@@ -195,6 +203,7 @@ async def send_2fa_code(email: str, code: str):
                 </div>
                 <p style="color: #666;">Ce code expire dans 10 minutes.</p>
                 <p style="color: #999; font-size: 12px;">Si vous n'avez pas demandé ce code, ignorez cet email.</p>
+                {email_brand_footer()}
             </div>
             """
         })
@@ -497,8 +506,7 @@ async def forgot_password(request: ForgotPasswordRequest):
     if resend and RESEND_API_KEY:
         try:
             # Get frontend URL from environment or use default
-            import os
-            frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+            frontend_url = app_public_url()
             reset_link = f"{frontend_url}/reset-password?token={reset_token}"
             
             resend.Emails.send({
@@ -573,7 +581,7 @@ async def forgot_password(request: ForgotPasswordRequest):
                             
                             <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
                             <p style="color: #9ca3af; font-size: 12px; text-align: center; margin: 0;">L'équipe MamanDouce 💕</p>
-                            <p style="color: #d1d5db; font-size: 10px; text-align: center; margin: 10px 0 0 0;">Cet email a été envoyé par MamanDouce • NeriaCorp</p>
+                            {email_brand_footer()}
                         </td>
                     </tr>
                 </table>

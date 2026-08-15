@@ -31,10 +31,9 @@
 ## 🌐 2. DOMAINE
 
 ### mamandouce.neriacorp.com (écosystème NeriaCorp — zone B2C)
-- **Domaine produit** : mamandouce.neriacorp.com (alias historique : mamandouce.app)
+- **Domaine produit** : mamandouce.neriacorp.com
 - **Zone portail** : **B2C** (consommatrices)
-- **Ancien domaine** : cycafamily.com → **neriacorp.com**
-- **Emails** : `noreply@neriacorp.com` / `contact@neriacorp.com`
+- **Emails** : `noreply@neriacorp.com` / `contact@neriacorp.com` (ou `SENDER_EMAIL` / `CONTACT_EMAIL`)
 - **DNS géré par** : Cloudflare (recommandé)
 - **API** : via `VITE_BACKEND_URL` / Worker NeriaCorp (`api.neriacorp.com`)
 - **Catalogue portail** : `GET /api/neriacorp/catalog` · manifeste `/neriacorp-app.json`
@@ -130,7 +129,7 @@
 ### Coûts annuels
 | Service | Coût annuel |
 |---------|-------------|
-| Domaine mamandouce.app (NeriaCorp) | Selon registrar |
+| Domaine mamandouce.neriacorp.com (NeriaCorp) | Selon registrar |
 | Railway (Hobby x 12 mois) | ~$60 |
 | **TOTAL ANNUEL** | **~$70.46/an** |
 

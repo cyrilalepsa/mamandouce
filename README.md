@@ -87,8 +87,8 @@ Sans `OPENAI_API_KEY`, le cœur de l’app fonctionne ; seules les routes IA ren
 ## Autonomie
 
 - Aucun package `emergentintegrations`
-- Aucun script / badge / CDN `assets.emergent.sh`
-- Aucune URL runtime `*.emergentagent.com`
+- Aucun script / badge / CDN d’un hébergeur tiers
+- Aucune URL runtime hors `neriacorp.com` / `FRONTEND_URL` / localhost
 - `pip install -r requirements.txt` et `npm install` suffisent (PyPI + npm publics)
 
 ## Licence / marque

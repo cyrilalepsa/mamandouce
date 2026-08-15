@@ -304,8 +304,15 @@ def test_parse_cors_includes_mamandouce_neriacorp_by_default(monkeypatch):
     from core.config import parse_cors_origins
 
     origins = parse_cors_origins()
-    assert "https://mamandouce.neriacorp.com" in origins
-    assert "https://neriacorp.com" in origins
+    required = (
+        "https://mamandouce.neriacorp.com",
+        "https://www.mamandouce.neriacorp.com",
+        "https://neriacorp.com",
+    )
+    for origin in required:
+        assert origin in origins
+    assert len(origins) == len(set(origins))
+    assert all(not origin.endswith("/") for origin in origins)
 
 
 def test_email_defaults_use_neriacorp_domain(monkeypatch):
