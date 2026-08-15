@@ -52,12 +52,11 @@ def test_index_html_hides_loader_on_error():
     assert "unhandledrejection" in html
 
 
-def test_cors_defaults_include_tenant_alias():
+def test_cors_defaults_include_tenant_alias(monkeypatch):
+    monkeypatch.delenv("CORS_ORIGINS", raising=False)
+    monkeypatch.delenv("ALLOWED_ORIGINS", raising=False)
     from core.config import parse_cors_origins
-    import os
 
-    os.environ.pop("CORS_ORIGINS", None)
-    os.environ.pop("ALLOWED_ORIGINS", None)
     origins = parse_cors_origins()
     assert "https://mamandouce.neriacorp.com" in origins
     assert f"https://{ALIAS}" in origins
