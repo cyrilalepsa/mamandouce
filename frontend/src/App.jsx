@@ -80,6 +80,7 @@ import { hydrateCloudinaryFromApi } from './utils/fetusAssets';
 import MaintenanceBanner from './components/MaintenanceBanner';
 import { HomeLayoutProvider } from './contexts/HomeLayoutContext';
 import { hideBootLoader, withTimeout } from './utils/backendUrl';
+import { safeGet, safeRemove } from './utils/safeStorage';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -89,7 +90,7 @@ useEffect(() => {
     let cancelled = false;
 
     const bootstrapAuth = async () => {
-      const token = localStorage.getItem('token');
+      const token = safeGet('token');
       if (!token) {
         if (!cancelled) setLoading(false);
         hideBootLoader();
@@ -99,7 +100,7 @@ useEffect(() => {
         await withTimeout(api.auth.me(), 8000, 'auth.me');
         if (!cancelled) setIsAuthenticated(true);
       } catch {
-        localStorage.removeItem('token');
+        safeRemove('token');
         if (!cancelled) setIsAuthenticated(false);
       } finally {
         if (!cancelled) setLoading(false);

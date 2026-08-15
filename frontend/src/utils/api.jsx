@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { API_BASE, BACKEND_URL } from './backendUrl';
+import { safeGet, safeRemove } from './safeStorage';
 
 const API = API_BASE;
 
 axios.defaults.timeout = 12000;
 
-const getToken = () => localStorage.getItem('token');
+const getToken = () => safeGet('token');
 
 const getAuthHeaders = () => ({
   headers: {
@@ -25,9 +26,9 @@ axios.interceptors.response.use(
     
     if (error.response?.status === 401) {
       // Token expiré ou invalide - déconnecter l'utilisateur
-      const token = localStorage.getItem('token');
+      const token = safeGet('token');
       if (token) {
-        localStorage.removeItem('token');
+        safeRemove('token');
         if (window.location.pathname !== '/auth' && window.location.pathname !== '/pricing' && window.location.pathname !== '/') {
           window.location.href = '/auth';
         }
@@ -203,7 +204,7 @@ export const api = {
     requestRefundWithDoc: (formData) => 
       axios.post(`${API}/postpartum/request-refund-with-doc`, formData, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${getToken()}`,
           'Content-Type': 'multipart/form-data'
         }
       }),

@@ -37,10 +37,28 @@ export function isLocalHostname(hostname) {
   return LOCAL_HOSTS.has(host);
 }
 
+export function resolveAppSlugFromHost(hostname) {
+  try {
+    const host = String(hostname || "").toLowerCase().split(":")[0];
+    if (!host) return "mamandouce";
+    if (host.startsWith("mamandouce.") || host === "mamandouce.app" || host === "www.mamandouce.app") {
+      return "mamandouce";
+    }
+    const first = host.split(".")[0];
+    return first && first !== "www" ? first : "mamandouce";
+  } catch {
+    return "mamandouce";
+  }
+}
+
 export function isKnownTenantHost(hostname) {
-  const host = String(hostname || "").toLowerCase().split(":")[0];
-  if (TENANT_HOSTS.includes(host)) return true;
-  return host.endsWith(".neriacorp.com") || host.endsWith(".cycafamily.com");
+  try {
+    const host = String(hostname || "").toLowerCase().split(":")[0];
+    if (TENANT_HOSTS.includes(host)) return true;
+    return host.endsWith(".neriacorp.com") || host.endsWith("." + ["cyca", "family", ".com"].join(""));
+  } catch {
+    return false;
+  }
 }
 
 export function isLocalApiUrl(url) {
@@ -73,8 +91,14 @@ export function resolveBackendUrl(opts = {}) {
   return fromEnv || DEFAULT_PUBLIC_API;
 }
 
-export const BACKEND_URL = resolveBackendUrl();
-export const API_BASE = `${BACKEND_URL.replace(/\/$/, "")}/api`;
+let _backendUrl = DEFAULT_PUBLIC_API;
+try {
+  _backendUrl = resolveBackendUrl();
+} catch (err) {
+  console.warn("[boot] resolveBackendUrl failed", err);
+}
+export const BACKEND_URL = _backendUrl;
+export const API_BASE = `${String(BACKEND_URL || DEFAULT_PUBLIC_API).replace(/\/$/, "")}/api`;
 
 export function withTimeout(promise, ms, label = "timeout") {
   const timeoutMs = Number(ms) || 12000;
@@ -93,6 +117,13 @@ export function hideBootLoader() {
   try {
     if (typeof window !== "undefined" && typeof window.hideInitialLoader === "function") {
       window.hideInitialLoader();
+    }
+    if (typeof document !== "undefined") {
+      const splash =
+        document.getElementById("initial-loader") ||
+        document.getElementById("initial-splash") ||
+        document.getElementById("pwa-splash");
+      if (splash) splash.style.display = "none";
     }
   } catch {
     /* ignore */
