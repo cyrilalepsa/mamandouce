@@ -3,6 +3,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { API_BASE, withTimeout } from '../utils/backendUrl';
+import { safeGet } from '../utils/safeStorage';
 
 const API = API_BASE;
 
@@ -27,7 +28,7 @@ const getRandomPastelColor = () => {
 
 const getAuthHeaders = () => ({
   headers: {
-    Authorization: `Bearer ${localStorage.getItem('token')}`,
+    Authorization: `Bearer ${safeGet('token')}`,
   },
 });
 
@@ -104,7 +105,7 @@ export function HomeLayoutProvider({ children }) {
 
   // Charger le layout depuis la BDD (uniquement si un token est présent)
   useEffect(() => {
-    const token = typeof window !== 'undefined' && localStorage.getItem('token');
+    const token = typeof window !== 'undefined' && safeGet('token');
     if (token) {
       loadLayout();
     } else {

@@ -16,11 +16,12 @@ def test_app_imports_home_layout_provider():
 
 def test_main_wraps_app_with_error_boundary_and_i18n():
     main = (FRONTEND / "src" / "main.jsx").read_text(encoding="utf-8")
-    assert "import ErrorBoundary" in main
-    assert "import './i18n'" in main
+    assert "import('./i18n')" in main
+    assert "import('./App')" in main
+    assert "import('./components/ErrorBoundary')" in main
     assert "<ErrorBoundary>" in main
-    assert "<App />" in main
-    assert main.find("<ErrorBoundary>") < main.find("<App />")
+    assert "hideBootLoader()" in main
+    assert "showBootFailure" in main
 
 
 def test_error_boundary_exposes_details_on_tenant_hosts():
@@ -38,6 +39,7 @@ def test_backend_url_resolver_covers_tenant_hosts():
     assert "https://api.neriacorp.com" in src
     assert "VITE_API_URL" in src
     assert "withTimeout" in src
+    assert "resolveAppSlugFromHost" in src
 
 
 def test_api_client_uses_resolved_backend_and_timeout():
@@ -48,6 +50,14 @@ def test_api_client_uses_resolved_backend_and_timeout():
 
 def test_index_html_hides_loader_on_error():
     html = (FRONTEND / "index.html").read_text(encoding="utf-8")
+    head = html.split("<body>", 1)[0]
+    assert "<script>" in head
+    assert head.find("<script>") < head.find("<meta charset")
+    assert "initial-loader" in head
+    assert "initial-splash" in head
+    assert "pwa-splash" in head
+    assert "10000" in head
+    assert "Erreur au démarrage" in head
     assert "hideInitialLoader" in html
     assert "unhandledrejection" in html
 

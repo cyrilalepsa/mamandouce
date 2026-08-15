@@ -66,11 +66,18 @@ export const FETUS_WEEK_FILES = {
   42: 'week-40.png',
 };
 
-let cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || '';
-let fetusFolder =
-  import.meta.env.VITE_CLOUDINARY_FETUS_FOLDER || 'mamandouce/fetus';
-let transforms =
-  import.meta.env.VITE_CLOUDINARY_TRANSFORMS || 'f_auto,q_auto';
+function readVite(name, fallback = '') {
+  try {
+    const env = import.meta.env || {};
+    return env[name] || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+let cloudName = readVite('VITE_CLOUDINARY_CLOUD_NAME', '');
+let fetusFolder = readVite('VITE_CLOUDINARY_FETUS_FOLDER', 'mamandouce/fetus');
+let transforms = readVite('VITE_CLOUDINARY_TRANSFORMS', 'f_auto,q_auto');
 
 const cloudinaryListeners = new Set();
 

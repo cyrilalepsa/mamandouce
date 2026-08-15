@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import { safeGet, safeSet } from '../utils/safeStorage';
 
 import fr from './locales/fr.json';
 import en from './locales/en.json';
@@ -29,51 +30,49 @@ const resources = {
 
 // Récupérer la langue sauvegardée ou détecter automatiquement
 const getSavedLanguage = () => {
-  const saved = localStorage.getItem('mamandouce_language');
+  const saved = safeGet('mamandouce_language');
   if (saved && languages.some(l => l.code === saved)) {
     return saved;
   }
   return null;
 };
 
-// Vérifier si c'est la première visite
 const isFirstVisit = () => {
-  return !localStorage.getItem('mamandouce_language_detected');
+  return !safeGet('mamandouce_language_detected');
 };
 
-// Marquer la détection comme faite
 const markLanguageDetected = () => {
-  localStorage.setItem('mamandouce_language_detected', 'true');
+  safeSet('mamandouce_language_detected', 'true');
 };
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources,
-    lng: getSavedLanguage() || undefined, // Utiliser la langue sauvegardée ou laisser le détecteur choisir
-    fallbackLng: 'fr',
-    supportedLngs: languages.map(l => l.code),
-    
-    detection: {
-      order: ['localStorage', 'navigator', 'htmlTag'],
-      lookupLocalStorage: 'mamandouce_language',
-      caches: ['localStorage']
-    },
-
-    interpolation: {
-      escapeValue: false // React échappe déjà les valeurs
-    },
-
-    react: {
-      useSuspense: false // Éviter les problèmes avec Suspense
-    }
-  });
+try {
+  i18n
+    .use(LanguageDetector)
+    .use(initReactI18next)
+    .init({
+      resources,
+      lng: getSavedLanguage() || 'fr',
+      fallbackLng: 'fr',
+      supportedLngs: languages.map(l => l.code),
+      detection: {
+        order: ['navigator', 'htmlTag'],
+        caches: [],
+      },
+      interpolation: {
+        escapeValue: false,
+      },
+      react: {
+        useSuspense: false,
+      },
+    });
+} catch (err) {
+  console.warn('[i18n] init failed — fallback fr', err);
+}
 
 // Fonction pour changer la langue
 export const changeLanguage = (languageCode) => {
   i18n.changeLanguage(languageCode);
-  localStorage.setItem('mamandouce_language', languageCode);
+  safeSet('mamandouce_language', languageCode);
 };
 
 // Fonction pour obtenir la langue actuelle
