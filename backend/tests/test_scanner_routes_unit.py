@@ -228,6 +228,20 @@ def test_cors_allows_neriacorp_portal(anon_client):
     assert r.headers.get("access-control-allow-origin") == "https://neriacorp.com"
 
 
+def test_cors_allows_mamandouce_neriacorp_subdomain(anon_client):
+    origin = "https://mamandouce.neriacorp.com"
+    r = anon_client.options(
+        "/api/health",
+        headers={
+            "Origin": origin,
+            "Access-Control-Request-Method": "GET",
+            "Access-Control-Request-Headers": "authorization,content-type",
+        },
+    )
+    assert r.status_code in (200, 204)
+    assert r.headers.get("access-control-allow-origin") == origin
+
+
 def test_cors_allows_n2_worker(anon_client):
     r = anon_client.get(
         "/api/neriacorp/catalog",
@@ -282,6 +296,27 @@ def test_parse_cors_origins_allowed_origins_alias(monkeypatch):
     origins = parse_cors_origins()
     assert "https://extra.example" in origins
     assert origins.count("http://localhost:5173") == 1
+
+
+def test_parse_cors_includes_mamandouce_neriacorp_by_default(monkeypatch):
+    monkeypatch.delenv("CORS_ORIGINS", raising=False)
+    monkeypatch.delenv("ALLOWED_ORIGINS", raising=False)
+    from core.config import parse_cors_origins
+
+    origins = parse_cors_origins()
+    assert "https://mamandouce.neriacorp.com" in origins
+    assert "https://neriacorp.com" in origins
+
+
+def test_email_defaults_use_neriacorp_domain(monkeypatch):
+    monkeypatch.delenv("SENDER_EMAIL", raising=False)
+    monkeypatch.delenv("CONTACT_EMAIL", raising=False)
+    from core.config import load_settings
+    import core.config as cfg
+
+    load_settings()
+    assert cfg.SENDER_EMAIL == "noreply@neriacorp.com"
+    assert cfg.CONTACT_EMAIL == "contact@neriacorp.com"
 
 
 def test_n2_ocr_defaults_to_central_worker(monkeypatch):

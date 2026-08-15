@@ -20,7 +20,7 @@ THEME_COLOR = "#ec4899"
 
 def get_portal_catalog_entry() -> Dict[str, Any]:
     """Entrée unique destinée au portail NeriaCorp (zone B2C)."""
-    public_url = os.environ.get("PUBLIC_APP_URL", FRONTEND_URL).rstrip("/") or "https://mamandouce.app"
+    public_url = os.environ.get("PUBLIC_APP_URL", FRONTEND_URL).rstrip("/") or "https://mamandouce.neriacorp.com"
     api_base = os.environ.get("PUBLIC_API_URL", "").rstrip("/")
 
     return {

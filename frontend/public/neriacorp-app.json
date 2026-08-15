@@ -10,9 +10,9 @@
   "category": "health-family",
   "theme_color": "#ec4899",
   "urls": {
-    "app": "https://mamandouce.app",
-    "privacy": "https://mamandouce.app/privacy",
-    "pricing": "https://mamandouce.app/pricing"
+    "app": "https://mamandouce.neriacorp.com",
+    "privacy": "https://mamandouce.neriacorp.com/privacy",
+    "pricing": "https://mamandouce.neriacorp.com/pricing"
   },
   "portal": {
     "visible": true,

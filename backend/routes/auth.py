@@ -9,7 +9,7 @@ import logging
 import secrets
 
 from core.database import db
-from core.config import ACCESS_TOKEN_EXPIRE_MINUTES, ADMIN_EMAIL, RESEND_API_KEY, SENDER_EMAIL
+from core.config import ACCESS_TOKEN_EXPIRE_MINUTES, ADMIN_EMAIL, CONTACT_EMAIL, RESEND_API_KEY, SENDER_EMAIL
 from core.security import pwd_context, create_access_token, get_current_user
 from models.schemas import UserCreate, UserLogin, Token, User
 
@@ -504,7 +504,7 @@ async def forgot_password(request: ForgotPasswordRequest):
             resend.Emails.send({
                 "from": f"MamanDouce <{SENDER_EMAIL}>",
                 "to": [request.email],
-                "reply_to": "contact@mamandouce.app",
+                "reply_to": CONTACT_EMAIL,
                 "subject": "Réinitialisation de votre mot de passe MamanDouce",
                 "headers": {
                     "X-Entity-Ref-ID": f"password-reset-{reset_token[:8]}",

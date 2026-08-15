@@ -126,7 +126,7 @@ MamanDouce est conçue par des professionnels pour vous accompagner tout au long
 - Pas de violence, pas de contenu sexuel, pas de langage inapproprié
 
 ### Coordonnées
-- **Email** : contact@mamandouce.app
+- **Email** : contact@neriacorp.com
 - **Site web** : https://mamandouce.app
 - **Politique de confidentialité** : https://mamandouce.app/privacy
 

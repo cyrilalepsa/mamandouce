@@ -2,7 +2,7 @@
 
 **Document généré le : Mars 2025**
 **Application : MamanDouce - Votre compagnon de grossesse**
-**URL Production :** https://mamandouce.app (configurable)
+**URL Production :** https://mamandouce.neriacorp.com (écosystème NeriaCorp)
 
 ---
 
@@ -30,12 +30,13 @@
 
 ## 🌐 2. DOMAINE
 
-### mamandouce.app (écosystème NeriaCorp — zone B2C)
-- **Domaine produit** : mamandouce.app
+### mamandouce.neriacorp.com (écosystème NeriaCorp — zone B2C)
+- **Domaine produit** : mamandouce.neriacorp.com (alias historique : mamandouce.app)
 - **Zone portail** : **B2C** (consommatrices)
-- **Ex-domaine** : cycafamily.com (migré vers NeriaCorp)
+- **Ancien domaine** : cycafamily.com → **neriacorp.com**
+- **Emails** : `noreply@neriacorp.com` / `contact@neriacorp.com`
 - **DNS géré par** : Cloudflare (recommandé)
-- **API** : via `VITE_BACKEND_URL` / Worker NeriaCorp (`api.neriacorp.com` si configuré)
+- **API** : via `VITE_BACKEND_URL` / Worker NeriaCorp (`api.neriacorp.com`)
 - **Catalogue portail** : `GET /api/neriacorp/catalog` · manifeste `/neriacorp-app.json`
 
 ---

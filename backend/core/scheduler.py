@@ -215,7 +215,7 @@ async def send_trial_expiry_reminders_job():
     """Job to send reminders for trial expiring soon - runs every hour"""
     from core.database import db
     from routes.push_notifications import send_push_notification
-    from core.config import RESEND_API_KEY, SENDER_EMAIL
+    from core.config import CONTACT_EMAIL, RESEND_API_KEY, SENDER_EMAIL
     from datetime import timedelta
     
     try:
@@ -269,7 +269,7 @@ async def send_trial_expiry_reminders_job():
                     resend.Emails.send({
                         "from": f"MamanDouce <{SENDER_EMAIL}>",
                         "to": [user_email],
-                        "reply_to": "contact@mamandouce.app",
+                        "reply_to": CONTACT_EMAIL,
                         "subject": "⏰ Votre essai Premium expire demain !",
                         "tags": [
                             {"name": "category", "value": "trial-reminder"},
