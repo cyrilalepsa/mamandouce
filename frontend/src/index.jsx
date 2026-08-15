@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "@/index.css";
 import App from "@/App";
+import ErrorBoundary from './components/ErrorBoundary';
+import { hideBootLoader } from './utils/backendUrl';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import './i18n'; // Initialisation i18n pour multi-langues
 
@@ -44,11 +46,18 @@ document.addEventListener('contextmenu', (e) => {
 }, { passive: false });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
   <React.StrictMode>
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </React.StrictMode>,
 );
+
+hideBootLoader();
+window.addEventListener('error', hideBootLoader);
+window.addEventListener('unhandledrejection', hideBootLoader);
 
 // Enregistrer le Service Worker pour PWA et mode offline
 serviceWorkerRegistration.register();

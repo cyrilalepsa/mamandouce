@@ -1,7 +1,9 @@
 import axios from 'axios';
+import { API_BASE, BACKEND_URL } from './backendUrl';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = API_BASE;
+
+axios.defaults.timeout = 12000;
 
 const getToken = () => localStorage.getItem('token');
 

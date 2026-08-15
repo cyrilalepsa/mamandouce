@@ -78,6 +78,8 @@ import { PWAInstallBanner } from './components/PWAInstallBanner';
 import { Toaster } from './components/ui/sonner';
 import { hydrateCloudinaryFromApi } from './utils/fetusAssets';
 import MaintenanceBanner from './components/MaintenanceBanner';
+import { HomeLayoutProvider } from './contexts/HomeLayoutContext';
+import { hideBootLoader, withTimeout } from './utils/backendUrl';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -90,16 +92,18 @@ useEffect(() => {
       const token = localStorage.getItem('token');
       if (!token) {
         if (!cancelled) setLoading(false);
+        hideBootLoader();
         return;
       }
       try {
-        await api.auth.me();
+        await withTimeout(api.auth.me(), 8000, 'auth.me');
         if (!cancelled) setIsAuthenticated(true);
       } catch {
         localStorage.removeItem('token');
         if (!cancelled) setIsAuthenticated(false);
       } finally {
         if (!cancelled) setLoading(false);
+        hideBootLoader();
       }
     };
 
@@ -119,10 +123,7 @@ useEffect(() => {
       }, 1500);
     }
 
-    // Cacher le loader initial HTML quand React est prêt
-    if (window.hideInitialLoader) {
-      window.hideInitialLoader();
-    }
+    hideBootLoader();
 
     // Force Service Worker update check on app load
     const onSwMessage = (event) => {

@@ -2,9 +2,9 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { API_BASE, withTimeout } from '../utils/backendUrl';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = API_BASE;
 
 // Couleurs pastel pour les pages utilisateur
 const PASTEL_COLORS = [
@@ -116,7 +116,11 @@ export function HomeLayoutProvider({ children }) {
 
   const loadLayout = async () => {
     try {
-      const response = await axios.get(`${API}/user/layout`, getAuthHeaders());
+      const response = await withTimeout(
+        axios.get(`${API}/user/layout`, getAuthHeaders()),
+        12000,
+        'layout',
+      );
       if (response.data && response.data.layout) {
         setLayout(response.data.layout);
         setHasCustomLayout(true);

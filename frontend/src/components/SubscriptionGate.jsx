@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import api from '../utils/api';
+import { withTimeout } from '../utils/backendUrl';
 
 // Context pour partager le statut d'abonnement dans toute l'app
 const SubscriptionContext = createContext({
@@ -33,7 +34,7 @@ export function SubscriptionGate({ children }) {
   const checkSubscription = async () => {
     try {
       // Vérifier le statut de l'utilisateur
-      const userResponse = await api.auth.getMe();
+      const userResponse = await withTimeout(api.auth.getMe(), 8000, 'subscription.me');
       const user = userResponse.data;
       
       // Les admins ont accès à tout SAUF s'ils testent en mode gratuit
@@ -42,7 +43,7 @@ export function SubscriptionGate({ children }) {
       setIsAdmin(userIsAdmin);
 
       // Vérifier le statut d'abonnement
-      const subResponse = await api.subscription.getFullStatus();
+      const subResponse = await withTimeout(api.subscription.getFullStatus(), 8000, 'subscription.status');
       const status = subResponse.data;
       
       setSubscriptionStatus(status);

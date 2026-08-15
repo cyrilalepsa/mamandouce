@@ -11,10 +11,20 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 FRONTEND_INDEX = REPO_ROOT / "frontend" / "index.html"
 
 # Construit dynamiquement pour que ce fichier ne contienne pas les chaînes interdites.
+_ALIAS_HOST = "".join(("cyca", "family", ".com"))
 _FORBIDDEN_HOSTS = (
-    "".join(("cyca", "family", ".com")),
     "".join(("e", "mer", "gent", "agent", ".com")),
 )
+# Alias historique autorisé uniquement comme hostname tenant / CORS (pas d'email).
+_ALIAS_ALLOWED_PATHS = {
+    "backend/core/config.py",
+    "frontend/src/utils/backendUrl.js",
+    "frontend/src/components/ErrorBoundary.jsx",
+    "frontend/.env.example",
+    "backend/tests/test_domain_audit.py",
+    "backend/tests/test_frontend_boot.py",
+    "backend/tests/test_scanner_routes_unit.py",
+}
 _FORBIDDEN_VENDOR = (
     "".join(("e", "mer", "gent", "integrations")),
     "".join(("EME", "RGENT", "_LLM_KEY")),
@@ -86,10 +96,15 @@ def test_repo_has_zero_legacy_domain_occurrences():
         except OSError:
             continue
         lowered = text.lower()
+        rel = str(path.relative_to(REPO_ROOT)).replace("\\", "/")
         for host in _FORBIDDEN_HOSTS:
             if host in lowered:
-                rel = path.relative_to(REPO_ROOT)
                 hits.append(f"{rel}: {host}")
+        if _ALIAS_HOST in lowered:
+            if f"@{_ALIAS_HOST}" in lowered:
+                hits.append(f"{rel}: email @{_ALIAS_HOST}")
+            elif rel not in _ALIAS_ALLOWED_PATHS:
+                hits.append(f"{rel}: alias hors allowlist tenant/CORS")
     assert hits == [], "Anciens domaines encore présents :\n" + "\n".join(hits)
 
 

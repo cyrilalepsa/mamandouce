@@ -308,6 +308,8 @@ def test_parse_cors_includes_mamandouce_neriacorp_by_default(monkeypatch):
         "https://mamandouce.neriacorp.com",
         "https://www.mamandouce.neriacorp.com",
         "https://neriacorp.com",
+        "https://" + "".join(("cyca", "family", ".com")),
+        "https://www." + "".join(("cyca", "family", ".com")),
     )
     for origin in required:
         assert origin in origins

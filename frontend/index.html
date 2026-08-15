@@ -175,8 +175,10 @@
                     setTimeout(function() { loader.style.display = 'none'; }, 300);
                 }
             };
-            // Timeout de secours - cacher après 5 secondes max
-            setTimeout(window.hideInitialLoader, 5000);
+            // Timeout de secours + erreurs globales : ne jamais rester bloqué
+            setTimeout(window.hideInitialLoader, 4000);
+            window.addEventListener('error', window.hideInitialLoader);
+            window.addEventListener('unhandledrejection', window.hideInitialLoader);
         </script>
         
         <!--
