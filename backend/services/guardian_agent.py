@@ -21,6 +21,7 @@ from models.guardian import (
     IncidentLog, IncidentSeverity, IncidentStatus, ComponentType,
     HealthStatus, ComponentHealth, SystemHealthReport, GuardianStats, AlertConfig
 )
+from core.config import app_public_url, email_brand_footer
 
 logger = logging.getLogger(__name__)
 
@@ -33,8 +34,8 @@ DEFAULT_CONFIG = AlertConfig(
     alert_on_critical=True
 )
 
-# URL du dashboard admin
-ADMIN_DASHBOARD_URL = os.environ.get('ADMIN_DASHBOARD_URL', 'https://mamandouce-production.up.railway.app/admin')
+# URL du dashboard admin (FRONTEND_URL / PUBLIC_APP_URL, sinon mamandouce.neriacorp.com)
+ADMIN_DASHBOARD_URL = os.environ.get("ADMIN_DASHBOARD_URL") or f"{app_public_url()}/admin"
 
 # ============================================================================
 # STRATÉGIE "ZÉRO BRUIT" - CONFIGURATION
@@ -573,6 +574,7 @@ class GuardianAgent:
 🛡️ Gardien Maman Douce v3.0 - Stratégie Zéro Bruit<br>
 Cet email est envoyé uniquement pour les pannes critiques totales.
 </p>
+{email_brand_footer()}
 </td></tr>
 </table>
 </td></tr>

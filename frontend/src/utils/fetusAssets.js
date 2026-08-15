@@ -11,6 +11,8 @@
  * Les <img> gardent un onError → fichier local.
  */
 
+import { BACKEND_URL } from './backendUrl';
+
 export const CLOUDINARY_CDN_HOST = 'https://res.cloudinary.com';
 export const DEFAULT_FETUS_IMAGE = '/assets/bebe-foetus.png';
 
@@ -156,7 +158,7 @@ export function getDefaultFetusImageUrl() {
  * Appelé au boot — permet le CDN live sans rebuild frontend.
  */
 export async function hydrateCloudinaryFromApi() {
-  const base = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/$/, '');
+  const base = (BACKEND_URL || import.meta.env.VITE_BACKEND_URL || '').replace(/\/$/, '');
   if (!base) return getCloudinaryConfig();
   try {
     const res = await fetch(`${base}/api/neriacorp/media`);

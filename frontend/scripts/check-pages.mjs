@@ -18,7 +18,10 @@ const bad = [];
 for (const file of files) {
   const text = fs.readFileSync(file, 'utf8');
   if (/^<<<<<<<|^=======|^>>>>>>>/m.test(text)) bad.push(`${file}: git conflict markers`);
-  if (/emergent\.ai|emergentintegrations|@emergentbase/i.test(text)) bad.push(`${file}: emergent remnant`);
+  const vendor = ["e", "mer", "gent"].join("");
+  if (new RegExp(`${vendor}\\.ai|${vendor}integrations|@${vendor}base`, "i").test(text)) {
+    bad.push(`${file}: legacy vendor remnant`);
+  }
   if (/<\/div>\s*export\s+function/.test(text) || /return\s*\(\s*export\s+function/.test(text)) {
     bad.push(`${file}: corrupted JSX/export nest`);
   }

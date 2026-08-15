@@ -86,7 +86,7 @@ function PrivacyPolicyPage() {
             <h2 className="text-xl font-bold text-slate-700 mt-6 mb-3">9. Contact</h2>
             <p className="text-slate-600 mb-4">
               Pour toute question concernant cette politique de confidentialité ou vos données personnelles, 
-              veuillez nous contacter à : <a href="mailto:contact@mamandouce.app" className="text-sky-500">contact@mamandouce.app</a>
+              veuillez nous contacter à : <a href="mailto:contact@neriacorp.com" className="text-sky-500">contact@neriacorp.com</a>
             </p>
 
             <h2 className="text-xl font-bold text-slate-700 mt-6 mb-3">10. Modifications</h2>

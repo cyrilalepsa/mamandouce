@@ -121,7 +121,7 @@ export default function CarteVisitePage() {
                     <a href="https://www.qr-code-generator.com/" target="_blank" rel="noopener noreferrer" className="underline ml-1 text-amber-800 font-semibold">
                       qr-code-generator.com
                     </a>
-                    {' '}pointant vers mamandouce.app (NeriaCorp)
+                    {' '}pointant vers mamandouce.neriacorp.com
                   </span>
                 </div>
               ) : (
@@ -235,7 +235,7 @@ export default function CarteVisitePage() {
                         className="absolute bottom-3 text-[9px] font-semibold tracking-wide"
                         style={{ color: '#ec4899' }}
                       >
-                        mamandouce.app
+                        mamandouce.neriacorp.com
                       </div>
                     </div>
                   </div>

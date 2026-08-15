@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mamandouce.app/sitemap.xml
+Sitemap: https://mamandouce.neriacorp.com/sitemap.xml

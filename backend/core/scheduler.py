@@ -14,7 +14,7 @@ async def send_due_reminders_job():
     """Job to send all due reminders - runs every minute"""
     from core.database import db
     from routes.push_notifications import send_push_notification
-    from core.config import RESEND_API_KEY, SENDER_EMAIL
+    from core.config import RESEND_API_KEY, SENDER_EMAIL, app_public_url, email_brand_footer
     import uuid
     
     try:
@@ -37,8 +37,7 @@ async def send_due_reminders_job():
     
     print(f"[Scheduler] Found {len(due_reminders)} due reminders to send")
     
-    import os
-    frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+    frontend_url = app_public_url()
     
     for reminder in due_reminders:
         history_entry = {
@@ -113,6 +112,7 @@ async def send_due_reminders_job():
                                 <p style="color: #94a3b8; font-size: 12px; text-align: center;">
                                     L'équipe MamanDouce vous souhaite une belle grossesse !
                                 </p>
+                                {email_brand_footer()}
                             </div>
                         </div>
                         """
@@ -215,7 +215,7 @@ async def send_trial_expiry_reminders_job():
     """Job to send reminders for trial expiring soon - runs every hour"""
     from core.database import db
     from routes.push_notifications import send_push_notification
-    from core.config import RESEND_API_KEY, SENDER_EMAIL
+    from core.config import CONTACT_EMAIL, RESEND_API_KEY, SENDER_EMAIL, app_public_url, email_brand_footer
     from datetime import timedelta
     
     try:
@@ -227,8 +227,7 @@ async def send_trial_expiry_reminders_job():
     
     now = datetime.now(timezone.utc)
     
-    import os
-    frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+    frontend_url = app_public_url()
     
     # Find users whose trial expires in 1 day (23-25 hours from now)
     one_day_from_now_start = (now + timedelta(hours=23)).isoformat()
@@ -269,7 +268,7 @@ async def send_trial_expiry_reminders_job():
                     resend.Emails.send({
                         "from": f"MamanDouce <{SENDER_EMAIL}>",
                         "to": [user_email],
-                        "reply_to": "contact@mamandouce.app",
+                        "reply_to": CONTACT_EMAIL,
                         "subject": "⏰ Votre essai Premium expire demain !",
                         "tags": [
                             {"name": "category", "value": "trial-reminder"},
@@ -314,6 +313,7 @@ async def send_trial_expiry_reminders_job():
                             <p style="color: #94a3b8; font-size: 14px; text-align: center;">Soit seulement 3€/mois • Satisfait ou remboursé 30 jours</p>
                             <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
                             <p style="color: #9ca3af; font-size: 12px; text-align: center;">L'équipe MamanDouce 💕</p>
+                            {email_brand_footer()}
                         </td>
                     </tr>
                 </table>

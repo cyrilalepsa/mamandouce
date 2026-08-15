@@ -1,6 +1,6 @@
 """
 AI Chatbot for pregnancy-related questions
-Uses OpenAI GPT via official SDK (autonomous — no Emergent)
+Uses OpenAI GPT via official SDK (OPENAI_API_KEY)
 """
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel

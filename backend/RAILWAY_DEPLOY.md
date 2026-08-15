@@ -21,6 +21,9 @@ Railway surveille automatiquement le processus.
 ### Port
 Le serveur écoute sur `0.0.0.0:$PORT` où `$PORT` est fourni par Railway.
 
+### PYTHONPATH
+`PYTHONPATH=.` (répertoire `backend/`). Aucun chemin de package local hors arborescence applicative.
+
 ### Démarrage simplifié
 Les services optionnels (Guardian, Memory Optimizer, Scheduler) sont désactivés au démarrage
 pour garantir un lancement rapide et stable sur Railway.

@@ -669,7 +669,7 @@ async def admin_distribute_relais(
     expires_at = (datetime.now(timezone.utc) + timedelta(days=365)).isoformat()
     gift_card = GiftCard(
         sender_id="relais_maman",
-        sender_email="relais@mamandouce.com",
+        sender_email="relais@neriacorp.com",
         sender_name="Le Relais Maman",
         recipient_email=recipient_email,
         amount=amount,

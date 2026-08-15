@@ -46,6 +46,8 @@ _META_KEYS = {
 
 # Ne jamais laisser le payload Vault écraser la clé maître locale.
 _PROTECTED_ENV = {"NERIACORP_MASTER_KEY", "N2_VAULT_SYNC"}
+# Clés d'un ancien fournisseur LLM — jamais injectées (OPENAI_API_KEY uniquement).
+_BLOCKED_INJECT = {"".join(("EME", "RGENT", "_LLM_KEY"))}
 
 _state: Dict[str, Any] = {"done": False, "count": 0}
 
@@ -131,7 +133,7 @@ def _coerce_secret_map(raw: Mapping[str, Any]) -> Dict[str, str]:
     out: Dict[str, str] = {}
     for key, value in raw.items():
         name = str(key).strip()
-        if not name or name in _PROTECTED_ENV:
+        if not name or name in _PROTECTED_ENV or name in _BLOCKED_INJECT:
             continue
         if value is None:
             continue

@@ -4,7 +4,7 @@
 **Branche :** `cursor/diagnostic-neriacorp-009d`  
 **Périmètre :** codebase complète + rebranchement Noyau N2 **dans** MamanDouce (OCR, SSO, 135°)
 
-> **Mise à jour (même jour) :** le Noyau N2 n’est pas un dépôt externe — c’est le NoyauNeria historique de `mamandouce`. Les routes `/api/scanner/*`, les adapters publish, le SSO `GET /api/neriacorp/sso/status` et le tiroir admin Intelligence sont **restaurés** (sans Emergent). Voir `docs/OCR_N2_ASSEMBLAGE.md`.
+> **Mise à jour (même jour) :** le Noyau N2 n’est pas un dépôt externe — c’est le NoyauNeria historique de `mamandouce`. Les routes `/api/scanner/*`, les adapters publish, le SSO `GET /api/neriacorp/sso/status` et le tiroir admin Intelligence sont **restaurés** (OpenAI / Gemini / N2-Vault). Voir `docs/OCR_N2_ASSEMBLAGE.md`.
 
 ---
 
@@ -20,7 +20,7 @@
 | Tests / CI / secrets | **~25 %** | 354 tests HTTP collectés ; pytest hors `requirements.txt` ; pas de `.env.example` versionné |
 | **Global — rattachement définitif NeriaCorp** | **~72 %** | Produit mature, accroches écosystème incomplètes |
 
-**Verdict :** MamanDouce est **production-ready sur le métier grossesse**, autonome hors Emergent, déjà déclarée en **zone B2C**. Elle n’est **pas encore branchée** au noyau NeriaCorp (identité, Worker `api.neriacorp.com`, CDN Cloudinary live, Intelligence Scanner).
+**Verdict :** MamanDouce est **production-ready sur le métier grossesse**, autonome NeriaCorp, déjà déclarée en **zone B2C**. Elle n’est **pas encore branchée** au noyau NeriaCorp (identité, Worker `api.neriacorp.com`, CDN Cloudinary live, Intelligence Scanner).
 
 ---
 
@@ -32,7 +32,7 @@
 |--------|--------|-----------------|
 | Frontend | React 19 + Vite 8 + Tailwind 3 + Capacitor 5 | package `mamandouce` 0.1.0 — **pas de suite de tests FE** |
 | Backend | FastAPI 0.110 + Uvicorn + Motor/MongoDB | API `2.1.0`, 233 endpoints OpenAPI |
-| IA | OpenAI SDK (`gpt-4o-mini` / `gpt-4o`) | Fallback `EMERGENT_LLM_KEY` legacy |
+| IA | OpenAI SDK (`gpt-4o-mini` / `gpt-4o`) | `OPENAI_API_KEY` uniquement |
 | Paiements | Stripe | Clé `STRIPE_API_KEY` (Guardian lit aussi `STRIPE_SECRET_KEY`) |
 | Email | Resend | |
 | Push | VAPID / pywebpush | |
@@ -183,7 +183,7 @@ Cloudinary est un **raccord optionnel fœtus**, pas encore le CDN média NeriaCo
 **Synthèse thème :** le **socle 135° + glass** est posé et s’applique aux cartes testid `section-card` / `item-card`. Une passe de **normalisation des inline styles 145°/160°** reste nécessaire pour un look NeriaCorp homogène.
 
 Contrôles statiques FE (scripts du repo) :
-- `check-imports.mjs` : **60/60 OK**, 0 conflit, 0 remnant Emergent.
+- `check-imports.mjs` : **60/60 OK**, 0 conflit, 0 remnant d’hébergeur tiers.
 - Pages orphelines : `OnboardingPage.jsx`, `EmbryoTracker.jsx`.
 
 ---
@@ -204,7 +204,7 @@ Contrôles statiques FE (scripts du repo) :
 | Login / reste de la suite (354) | **ROUGE / non exécutable** — MongoDB `127.0.0.1:27017` **connection refused** ; chaque login part en timeout 30 s (`ServerSelectionTimeoutError`) |
 | Suite frontend | **Absente** |
 
-**Lecture :** historiquement, `test_reports/iteration_60.json` affichait 22/22 NeriaCorp **PASS** sur une stack Emergent avec scanner monté. **Ce code n’est plus dans le dépôt.** Relancer la suite complète aujourd’hui, même avec Mongo + seed admin, ferait **rougir** `test_neriacorp_scanner.py` (14), `test_neriacorp_publish.py` (8) et `test_scanner_ai.py` (7) = **29 tests garantis ROUGES**.
+**Lecture :** historiquement, `test_reports/iteration_60.json` affichait 22/22 NeriaCorp **PASS** sur une stack hébergée avec scanner monté. **Ce code n’est plus dans le dépôt.** Relancer la suite complète aujourd’hui, même avec Mongo + seed admin, ferait **rougir** `test_neriacorp_scanner.py` (14), `test_neriacorp_publish.py` (8) et `test_scanner_ai.py` (7) = **29 tests garantis ROUGES**.
 
 Les autres ~325 tests sont des **tests d’intégration HTTP** (pas unitaires) : ils exigent Mongo peuplé (`admin@mamandouce.com` / `AdminPremium2024!` — voir `memory/test_credentials.md`) et ne peuvent pas tourner en CI telle quelle.
 
@@ -237,7 +237,6 @@ Les autres ~325 tests sont des **tests d’intégration HTTP** (pas unitaires) :
 | `VAPID_PUBLIC_KEY` / `PRIVATE_KEY` / `CLAIMS_EMAIL` | Push | Non | Push |
 | `CLOUDINARY_CLOUD_NAME` / `API_KEY` / `API_SECRET` / `FETUS_FOLDER` | Upload fœtus | **Manquantes** | CDN |
 | `{APP}_BASE_URL` / `{APP}_API_KEY` | Publish 5 apps (docs) | N/A — **code absent** | Plus tard |
-| `EMERGENT_LLM_KEY` | Alias legacy | Non | À retirer |
 
 #### Frontend
 

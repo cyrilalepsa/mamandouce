@@ -1,6 +1,6 @@
 """
-Client LLM autonome (OpenAI officiel) — sans dépendance Emergent.
-Utilise OPENAI_API_KEY (recommandé) ou EMERGENT_LLM_KEY (compat legacy).
+Client LLM autonome (OpenAI officiel).
+Utilise uniquement OPENAI_API_KEY (injectée par N2-Vault ou l'environnement).
 
 Routage dynamique:
   - tâches simples  → OPENAI_CHAT_MODEL / OPENAI_FAST_MODEL (défaut gpt-4o-mini)
@@ -42,15 +42,13 @@ _COMPLEX_PATTERNS = re.compile(
 
 
 def get_llm_api_key() -> Optional[str]:
-    return os.environ.get("OPENAI_API_KEY") or os.environ.get("EMERGENT_LLM_KEY") or None
+    return os.environ.get("OPENAI_API_KEY") or None
 
 
 def require_llm_api_key() -> str:
     key = get_llm_api_key()
     if not key:
-        raise ValueError(
-            "Clé LLM manquante — définir OPENAI_API_KEY (ou EMERGENT_LLM_KEY legacy)"
-        )
+        raise ValueError("Clé LLM manquante — définir OPENAI_API_KEY")
     return key
 
 

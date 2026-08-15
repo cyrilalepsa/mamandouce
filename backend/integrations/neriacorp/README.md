@@ -14,7 +14,7 @@ Elle doit figurer dans la **zone B2C** du portail NeriaCorp — distincte des ap
 | CDN Cloudinary (public) | `GET {API}/api/neriacorp/media` |
 | Scanner OCR (admin, Gemini Vision) | `POST {API}/api/scanner/analyze` |
 | Scanner aliment (Gemini + moteur grossesse local) | `POST {API}/api/food/scan/image` |
-| Manifeste statique (CDN / FE) | `https://mamandouce.app/neriacorp-app.json` |
+| Manifeste statique (CDN / FE) | `https://mamandouce.neriacorp.com/neriacorp-app.json` |
 
 ### Exemple de réponse catalogue
 

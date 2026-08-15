@@ -97,7 +97,7 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
   const menuDropdownRef = useRef(null);
 
   // URL et message de partage
-  const appUrl = "https://mamandouce.app";
+  const appUrl = "https://mamandouce.neriacorp.com";
   const shareMessage = `Découvre MamanDouce, l'app qui m'accompagne pendant ma grossesse ! 🤰✨ ${appUrl}`;
 
   // Charger les messages non lus

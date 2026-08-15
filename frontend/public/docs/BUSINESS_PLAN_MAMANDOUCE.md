@@ -275,7 +275,7 @@ Découvrez l'application pensée pour les futures mamans françaises ! MamanDouc
 
 📱 Téléchargez MamanDouce et vivez sereinement votre grossesse !
 
-Des questions ? Contactez-nous : contact@mamandouce.fr
+Des questions ? Contactez-nous : contact@neriacorp.com
 ```
 
 ---
@@ -316,7 +316,7 @@ Des questions ? Contactez-nous : contact@mamandouce.fr
 │                                                         │
 │   📱 App Store & Google Play                            │
 │   🌐 www.mamandouce.fr                                  │
-│   📧 contact@mamandouce.fr                              │
+│   📧 contact@neriacorp.com                              │
 │   📷 @mamandouce_app                                    │
 │                                                         │
 │          CODE PROMO : BIENVENUE                         │

@@ -2,14 +2,14 @@
 
 **Document généré le : Mars 2025**
 **Application : MamanDouce - Votre compagnon de grossesse**
-**URL Production :** https://mamandouce.app (configurable)
+**URL Production :** https://mamandouce.neriacorp.com (écosystème NeriaCorp)
 
 ---
 
 ## 🛠️ 1. DÉVELOPPEMENT & HÉBERGEMENT
 
 ### Repository autonome (GitHub / local)
-- **Utilisation** : Build & run 100 % indépendants (pas de plateforme Emergent)
+- **Utilisation** : Build & run 100 % indépendants (NeriaCorp / Railway / local)
 - **Frontend** : `npm install && npm run build` (Vite)
 - **Backend** : `pip install -r requirements.txt` puis `uvicorn server:app`
 
@@ -30,12 +30,12 @@
 
 ## 🌐 2. DOMAINE
 
-### mamandouce.app (écosystème NeriaCorp — zone B2C)
-- **Domaine produit** : mamandouce.app
+### mamandouce.neriacorp.com (écosystème NeriaCorp — zone B2C)
+- **Domaine produit** : mamandouce.neriacorp.com
 - **Zone portail** : **B2C** (consommatrices)
-- **Ex-domaine** : cycafamily.com (migré vers NeriaCorp)
+- **Emails** : `noreply@neriacorp.com` / `contact@neriacorp.com` (ou `SENDER_EMAIL` / `CONTACT_EMAIL`)
 - **DNS géré par** : Cloudflare (recommandé)
-- **API** : via `VITE_BACKEND_URL` / Worker NeriaCorp (`api.neriacorp.com` si configuré)
+- **API** : via `VITE_BACKEND_URL` / Worker NeriaCorp (`api.neriacorp.com`)
 - **Catalogue portail** : `GET /api/neriacorp/catalog` · manifeste `/neriacorp-app.json`
 
 ---
@@ -129,7 +129,7 @@
 ### Coûts annuels
 | Service | Coût annuel |
 |---------|-------------|
-| Domaine mamandouce.app (NeriaCorp) | Selon registrar |
+| Domaine mamandouce.neriacorp.com (NeriaCorp) | Selon registrar |
 | Railway (Hobby x 12 mois) | ~$60 |
 | **TOTAL ANNUEL** | **~$70.46/an** |
 

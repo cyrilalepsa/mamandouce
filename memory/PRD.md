@@ -4,7 +4,7 @@
 
 ### v10.10.0 — Polissage UI + AutoRefresh (12 Fév 2026)
 **🔒 SÉCURITÉ SYSTÈME**
-- `.emergent/emergent.yml` **intact** (format JSON natif plateforme, non modifié)
+- Configuration plateforme historique **non utilisée** (runtime NeriaCorp / Railway)
 - Accès Admin **VÉRIFIÉ FONCTIONNEL** via 3-points → Admin → /admin (5 tiroirs visibles)
 
 **🐛 Bug 1 — Menu 3-points cliquable**
@@ -211,7 +211,7 @@ Restart backend → publish bascule auto en `published_live`. Aucune config code
 ### v10.6.0 — Scanner IA Vidéo + Refactor scalabilité (11 Fév 2026)
 **🎥 Scanner IA Vidéo → Annonce de vente 30s**
 - Backend `POST /api/scanner/analyze-video` — multipart upload chunked (1 MB), cap 50 MB
-- Modèle **Gemini 3.1 Pro Preview** via `FileContentWithMimeType` (Emergent LLM Key)
+- Modèle **Gemini 3.1 Pro Preview** via `FileContentWithMimeType` (`GEMINI_API_KEY`)
 - Prompt **NeriaCorp + suffix vidéo** : `display_card.visual_type='REPORT'`, `main_action='Publier l'annonce'`, `business.video_analysis = {duration_seconds, key_moments, detected_objects, suggested_keywords}`
 - **No-Log** : fichier temporaire dans `/tmp/neriacorp_video_*` supprimé en `finally`
 - Audit garde uniquement source_type='video' + video_size_kb (pas de contenu)

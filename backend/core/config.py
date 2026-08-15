@@ -23,6 +23,12 @@ NERIACORP_CORS_ORIGINS = [
     "https://www.mamandouce.app",
     "https://neriacorp.com",
     "https://www.neriacorp.com",
+    "https://mamandouce.neriacorp.com",
+    "https://www.mamandouce.neriacorp.com",
+    "https://cycafamily.com",
+    "https://www.cycafamily.com",
+    "https://mamandouce.cycafamily.com",
+    "https://www.mamandouce.cycafamily.com",
     "https://portal.neriacorp.com",
     "https://app.neriacorp.com",
     "https://api.neriacorp.com",
@@ -77,7 +83,7 @@ def parse_cors_origins(raw: str | None = None) -> list[str]:
 
 def load_settings() -> None:
     """Relit os.environ (post N2-Vault) dans les constantes de module."""
-    global SECRET_KEY, RESEND_API_KEY, SENDER_EMAIL, ADMIN_SECRET, ADMIN_EMAIL
+    global SECRET_KEY, RESEND_API_KEY, SENDER_EMAIL, CONTACT_EMAIL, ADMIN_SECRET, ADMIN_EMAIL
     global VAPID_PRIVATE_KEY, VAPID_PUBLIC_KEY, VAPID_CLAIMS_EMAIL
     global STRIPE_API_KEY, FRONTEND_URL
     global OPENAI_API_KEY, OPENAI_CHAT_MODEL, OPENAI_VISION_MODEL
@@ -96,7 +102,8 @@ def load_settings() -> None:
         SECRET_KEY = "votre-cle-secrete-changez-moi"
 
     RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
-    SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
+    SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "noreply@neriacorp.com")
+    CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL", "contact@neriacorp.com")
 
     ADMIN_SECRET = os.environ.get("ADMIN_SECRET")
     if not ADMIN_SECRET:
@@ -110,12 +117,12 @@ def load_settings() -> None:
 
     VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY", "").replace("\\n", "\n")
     VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "")
-    VAPID_CLAIMS_EMAIL = os.environ.get("VAPID_CLAIMS_EMAIL", "cyrilalepsa@gmail.com")
+    VAPID_CLAIMS_EMAIL = os.environ.get("VAPID_CLAIMS_EMAIL", "contact@neriacorp.com")
 
     STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "")
     FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173").rstrip("/")
 
-    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "") or os.environ.get("EMERGENT_LLM_KEY", "")
+    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
     OPENAI_CHAT_MODEL = os.environ.get("OPENAI_CHAT_MODEL", "gpt-4o-mini")
     OPENAI_VISION_MODEL = os.environ.get("OPENAI_VISION_MODEL", "gpt-4o")
 
@@ -138,6 +145,23 @@ def load_settings() -> None:
 
 
 load_settings()
+
+
+def app_public_url() -> str:
+    """URL front publique (sans slash final) — emails, reset-password, catalogue."""
+    return (
+        os.environ.get("FRONTEND_URL")
+        or os.environ.get("PUBLIC_APP_URL")
+        or "https://mamandouce.neriacorp.com"
+    ).strip().rstrip("/")
+
+
+def email_brand_footer() -> str:
+    """Pied de page Resend : MamanDouce • neriacorp.com."""
+    return (
+        '<p style="color:#94a3b8;font-size:12px;text-align:center;margin-top:24px;">'
+        "MamanDouce • neriacorp.com</p>"
+    )
 
 
 def n2_ocr_base_url() -> str:
