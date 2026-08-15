@@ -1,6 +1,6 @@
 # MamanDouce
 
-Application de suivi de grossesse — autonome, sans dépendance Emergent.
+Application de suivi de grossesse — autonome, écosystème NeriaCorp.
 
 ## Stack
 
@@ -86,7 +86,9 @@ Sans `OPENAI_API_KEY`, le cœur de l’app fonctionne ; seules les routes IA ren
 
 ## Autonomie
 
-- Aucun package `emergentintegrations`
+- LLM via OpenAI SDK officiel (`OPENAI_API_KEY`) uniquement
+- Secrets Empire via N2-Vault (`NERIACORP_MASTER_KEY`)
+- `PYTHONPATH=.` (répertoire backend)
 - Aucun script / badge / CDN d’un hébergeur tiers
 - Aucune URL runtime hors `neriacorp.com` / `FRONTEND_URL` / localhost
 - `pip install -r requirements.txt` et `npm install` suffisent (PyPI + npm publics)

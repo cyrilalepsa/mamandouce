@@ -103,6 +103,35 @@ def test_sync_injects_empire_secrets_into_environ(monkeypatch, tmp_path):
     assert not (tmp_path / ".env").exists()
 
 
+def test_vault_drops_legacy_llm_alias(monkeypatch, tmp_path):
+    legacy = "".join(("EME", "RGENT", "_LLM_KEY"))
+    monkeypatch.setenv("NERIACORP_MASTER_KEY", "master-test-key")
+    monkeypatch.setenv("N2_VAULT_SYNC", "on")
+    monkeypatch.delenv(legacy, raising=False)
+    monkeypatch.chdir(tmp_path)
+
+    payload = {"secrets": {legacy: "legacy-should-drop", "OPENAI_API_KEY": "openai-from-vault"}}
+
+    class _Resp:
+        status = 200
+
+        def read(self):
+            return json.dumps(payload).encode()
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+    with patch("n2_vault_client.urllib.request.urlopen", return_value=_Resp()):
+        count = sync_secrets(force=True)
+
+    assert count == 1
+    assert os.environ.get("OPENAI_API_KEY") == "openai-from-vault"
+    assert os.environ.get(legacy) is None
+
+
 def test_config_rereads_environ_after_vault(monkeypatch):
     monkeypatch.setenv("GEMINI_API_KEY", "after-vault")
     monkeypatch.setenv("CLOUDINARY_CLOUD_NAME", "vault-cloud")

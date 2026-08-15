@@ -118,7 +118,7 @@ def load_settings() -> None:
     STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "")
     FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173").rstrip("/")
 
-    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "") or os.environ.get("EMERGENT_LLM_KEY", "")
+    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
     OPENAI_CHAT_MODEL = os.environ.get("OPENAI_CHAT_MODEL", "gpt-4o-mini")
     OPENAI_VISION_MODEL = os.environ.get("OPENAI_VISION_MODEL", "gpt-4o")
 

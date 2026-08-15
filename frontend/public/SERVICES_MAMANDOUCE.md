@@ -9,7 +9,7 @@
 ## 🛠️ 1. DÉVELOPPEMENT & HÉBERGEMENT
 
 ### Repository autonome (GitHub / local)
-- **Utilisation** : Build & run 100 % indépendants (pas de plateforme Emergent)
+- **Utilisation** : Build & run 100 % indépendants (NeriaCorp / Railway / local)
 - **Frontend** : `npm install && npm run build` (Vite)
 - **Backend** : `pip install -r requirements.txt` puis `uvicorn server:app`
 

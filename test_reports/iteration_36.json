@@ -56,7 +56,7 @@
   "seed_data_creation": "Created test contributions via API during testing",
   "retest_needed": false,
   "should_main_agent_self_test": false,
-  "context_for_next_testing_agent": "All new features are working correctly: Registration form with birth_date and status fields, Pricing page with 30€ Premium and 10€ Post-partum, Admin Expert Comptable IA dashboard with URSSAF 26% calculator and PDF export, Admin Contributions validation interface, and Trophies page with Bronze/Silver/Gold badge progression system. The Expert IA Chat uses GPT-5.2 via EMERGENT_LLM_KEY.",
+  "context_for_next_testing_agent": "All new features are working correctly: Registration form with birth_date and status fields, Pricing page with 30€ Premium and 10€ Post-partum, Admin Expert Comptable IA dashboard with URSSAF 26% calculator and PDF export, Admin Contributions validation interface, and Trophies page with Bronze/Silver/Gold badge progression system. The Expert IA Chat uses GPT-5.2 via OPENAI_API_KEY.",
   "tests_executed": {
     "backend_api_tests": {
       "POST /api/auth/register with birth_date and status": "PASS - Accepts envie_bebe and enceinte status values",

@@ -13,7 +13,13 @@ FRONTEND_INDEX = REPO_ROOT / "frontend" / "index.html"
 # Construit dynamiquement pour que ce fichier ne contienne pas les chaînes interdites.
 _FORBIDDEN_HOSTS = (
     "".join(("cyca", "family", ".com")),
-    "".join(("emergent", "agent", ".com")),
+    "".join(("e", "mer", "gent", "agent", ".com")),
+)
+_FORBIDDEN_VENDOR = (
+    "".join(("e", "mer", "gent", "integrations")),
+    "".join(("EME", "RGENT", "_LLM_KEY")),
+    "".join(("e", "mer", "gent", ".sh")),
+    "".join(("@", "e", "mer", "gent", "base")),
 )
 
 _SKIP_DIRS = {
@@ -24,7 +30,6 @@ _SKIP_DIRS = {
     "venv",
     "dist",
     "build",
-    "test_reports",
     ".pytest_cache",
     ".cursor",
     "coverage",
@@ -86,6 +91,49 @@ def test_repo_has_zero_legacy_domain_occurrences():
                 rel = path.relative_to(REPO_ROOT)
                 hits.append(f"{rel}: {host}")
     assert hits == [], "Anciens domaines encore présents :\n" + "\n".join(hits)
+
+
+def test_repo_has_zero_legacy_vendor_tokens():
+    hits: list[str] = []
+    for path in _iter_repo_text_files():
+        try:
+            text = path.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        lowered = text.lower()
+        for token in _FORBIDDEN_VENDOR:
+            if token.lower() in lowered:
+                rel = path.relative_to(REPO_ROOT)
+                hits.append(f"{rel}: {token}")
+    assert hits == [], "Dépendances vendor legacy encore présentes :\n" + "\n".join(hits)
+
+
+def test_pythonpath_is_clean():
+    files = [
+        REPO_ROOT / "backend" / "Procfile",
+        REPO_ROOT / "backend" / "railway.json",
+        REPO_ROOT / "backend" / ".env.example",
+    ]
+    legacy_path = ":" + "".join(("e", "mer", "gent", "integrations"))
+    for path in files:
+        text = path.read_text(encoding="utf-8")
+        assert legacy_path not in text
+        assert "PYTHONPATH=." in text
+
+
+def test_llm_key_reads_only_openai(monkeypatch):
+    legacy = "".join(("EME", "RGENT", "_LLM_KEY"))
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.setenv(legacy, "should-never-be-used")
+    from core.config import load_settings
+    import core.config as cfg
+    from services.llm import get_llm_api_key
+
+    load_settings()
+    assert cfg.OPENAI_API_KEY == ""
+    assert get_llm_api_key() is None
+    assert legacy not in (REPO_ROOT / "backend" / "core" / "config.py").read_text(encoding="utf-8")
+    assert legacy not in (REPO_ROOT / "backend" / "services" / "llm.py").read_text(encoding="utf-8")
 
 
 def test_email_brand_footer_mentions_neriacorp():

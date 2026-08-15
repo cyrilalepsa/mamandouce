@@ -8,12 +8,12 @@
 
 ## Synthèse
 
-MamanDouce est **~95 % production-ready** sur le cœur produit (auth JWT serveur, grossesse, food, postpartum, admin, paiements). **Autonomie hors Emergent : atteinte**. Assets fœtus raccordés Cloudinary (optionnel) + routage OpenAI multi-modèles.
+MamanDouce est **~95 % production-ready** sur le cœur produit (auth JWT serveur, grossesse, food, postpartum, admin, paiements). **Autonomie NeriaCorp : atteinte**. Assets fœtus raccordés Cloudinary (optionnel) + routage OpenAI multi-modèles.
 
 | Axe | Verdict |
 |-----|---------|
 | Isolation package FE/BE | 🟢 OK (pas d’imports croisés) |
-| Autonomie Emergent | 🟢 OK — `emergentintegrations` / CDN / scripts retirés |
+| Autonomie runtime | 🟢 OK — OpenAI SDK + N2-Vault ; pas de package LLM tiers |
 | Client API centralisé | 🟢 OK (`VITE_BACKEND_URL`) |
 | CDN Cloudinary fœtus | 🟢 Raccordé (`fetusAssets.js` + upload script) — fallback local |
 | Routage OpenAI | 🟢 fast=`gpt-4o-mini` / complex+vision=`gpt-4o` + fallback |
@@ -24,18 +24,17 @@ MamanDouce est **~95 % production-ready** sur le cœur produit (auth JWT serveur
 
 ---
 
-## 0. Autonomie repository ( Emergent-free )
+## 0. Autonomie repository (NeriaCorp)
 
 **Statut : 🟢 Atteint pour build / run / deploy indépendants.**
 
 | Élément | Action |
 |---------|--------|
-| `emergentintegrations` + index CloudFront | Retirés de `requirements.txt` |
-| Client LLM | `backend/services/llm.py` (OpenAI Async) |
-| Script / badge Emergent | Retirés de `index.html` |
-| `@emergentbase/visual-edits` | Retiré de `package.json` |
+| Client LLM | `backend/services/llm.py` (OpenAI Async, `OPENAI_API_KEY` uniquement) |
+| Scripts / badges tiers | Absents de `index.html` |
+| Packages npm tiers non standards | Absents de `package.json` |
 | URLs runtime héritées d’un hébergeur tiers | Remplacées par `FRONTEND_URL` / localhost |
-| Images tips Emergent CDN | `image_url: ""` |
+| Images tips CDN tiers | `image_url: ""` |
 | `.env.example` + README runbook | Ajoutés |
 
 Sans `OPENAI_API_KEY`, le cœur métier démarre ; seules les routes IA dégradent proprement.
@@ -60,7 +59,7 @@ Sans `OPENAI_API_KEY`, le cœur métier démarre ; seules les routes IA dégrade
 | Domaines fragmentés | 🟡 Residual `.fr` / `.com` dans quelques liens métier |
 | Package name | Corrigé → `mamandouce` (était `ton-projet`) |
 | `.env.example` | 🟢 Présent (`backend/` + `frontend/`) |
-| LLM | 🟢 OpenAI SDK (`services/llm.py`) — plus d’Emergent |
+| LLM | 🟢 OpenAI SDK (`services/llm.py`) — `OPENAI_API_KEY` uniquement |
 
 ### Variables d’environnement clés
 | Variable | Rôle |
@@ -71,8 +70,7 @@ Sans `OPENAI_API_KEY`, le cœur métier démarre ; seules les routes IA dégrade
 | `ADMIN_SECRET`, `ADMIN_EMAIL` | Admin |
 | `STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET` | Paiements |
 | `RESEND_API_KEY`, `FRONTEND_URL` | Emails / liens |
-| `OPENAI_API_KEY` | Chatbot / scanner food / traduction / accounting AI |
-| `EMERGENT_LLM_KEY` | Legacy alias (optionnel, déprécié) |
+| `OPENAI_API_KEY` | Chatbot / traduction / accounting AI |
 | `{APP}_BASE_URL` / `{APP}_API_KEY` | Contrat publish NeriaCorp (docs/tests, code absent) |
 
 ---
@@ -109,7 +107,7 @@ Sans `OPENAI_API_KEY`, le cœur métier démarre ; seules les routes IA dégrade
 | Cleanup flux caméra au close/unmount | `FoodScannerAI.jsx` | Évite fuite média |
 | Bootstrap auth via `api.auth.me()` + cleanup SW listener | `App.jsx` | Token fantôme ne débloque plus les routes |
 | Polling paiement cancellable | `SubscriptionSuccess.jsx` | Plus de setState après unmount |
-| Suppression fallback Stripe `sk_test_emergent` | `postpartum.py` | 503 si clé absente |
+| Suppression fallback Stripe de test | `postpartum.py` | 503 si clé absente |
 | Warning si `SECRET_KEY` / `ADMIN_SECRET` absents ; `ADMIN_EMAIL` env | `config.py` | Visibilité config prod |
 | Blocage fallback biométrie sans WebAuthn | `biometricAuth.jsx` | Plus de restitution MDP sans challenge |
 | Rename package `mamandouce` | `package.json` | Alignement écosystème |
@@ -128,7 +126,7 @@ Sans `OPENAI_API_KEY`, le cœur métier démarre ; seules les routes IA dégrade
    Tests `test_neriacorp_*.py` + stubs `api.scanner.*` sans routes/UI/adapters.  
    **Action :** restaurer le slice depuis une branche/archive, ou retirer tests/stubs pour éviter la dette fantôme.
 
-3. ~~**Dépendance `emergentintegrations` + URLs Emergent**~~ ✅ **Résolu** — OpenAI natif + purge URLs/CDN/scripts.  
+3. ~~**Dépendance LLM tierce + URLs héritées**~~ ✅ **Résolu** — OpenAI natif + N2-Vault.  
    ~~**Action :**~~ N/A
 
 4. **Email admin hardcodé côté client**  
@@ -213,7 +211,7 @@ Sans `OPENAI_API_KEY`, le cœur métier démarre ; seules les routes IA dégrade
 
 ## 8. Conclusion
 
-Le cœur MamanDouce est **stable pour une mise en prod contrôlée** et **buildable hors Emergent**.  
+Le cœur MamanDouce est **stable pour une mise en prod contrôlée** et **buildable de façon autonome (NeriaCorp)**.  
 Cloudinary fœtus et routage OpenAI sont **branchés sur l’existant** ; le scanner Intelligence NeriaCorp reste absente.
 
 **Recommandation :** uploader les assets (`upload_fetus_cloudinary.py`), poser `VITE_CLOUDINARY_CLOUD_NAME` + `OPENAI_API_KEY`, puis traiter les P0 restants (biométrie, CORS prod).
