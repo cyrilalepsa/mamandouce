@@ -1,13 +1,11 @@
 // Version du cache - INCRÉMENTEZ À CHAQUE MISE À JOUR IMPORTANTE
-const CACHE_VERSION = 'v2.3.0';
+const CACHE_VERSION = 'v2.6.0-safeboot';
 const CACHE_NAME = `mamandouce-${CACHE_VERSION}`;
 const STATIC_CACHE = `mamandouce-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `mamandouce-dynamic-${CACHE_VERSION}`;
 
 // Assets à mettre en cache lors de l'installation
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
   '/manifest.json'
 ];
 
@@ -95,27 +93,33 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // NETWORK FIRST pour HTML et fichiers JS/CSS - Force la mise à jour !
-  if (request.destination === 'document' || 
-      url.pathname.endsWith('.html') ||
-      url.pathname.includes('/static/js/') ||
-      url.pathname.includes('/static/css/')) {
+  // HTML / navigation : réseau uniquement, JAMAIS de cache index.html
+  if (request.destination === 'document' ||
+      request.mode === 'navigate' ||
+      url.pathname === '/' ||
+      url.pathname === '/index.html' ||
+      url.pathname.endsWith('.html')) {
+    event.respondWith(
+      fetch(request, { cache: 'no-store' }).catch(() => caches.match('/offline.html'))
+    );
+    return;
+  }
+
+  // NETWORK FIRST pour JS/CSS
+  if (url.pathname.includes('/static/js/') ||
+      url.pathname.includes('/static/css/') ||
+      url.pathname.endsWith('.js') ||
+      url.pathname.endsWith('.css')) {
     event.respondWith(
       fetch(request, { cache: 'no-cache' })
         .then(response => {
-          // Mettre à jour le cache avec la nouvelle version
           const responseClone = response.clone();
           caches.open(DYNAMIC_CACHE).then(cache => {
             cache.put(request, responseClone);
           });
           return response;
         })
-        .catch(() => {
-          // Fallback au cache seulement si hors ligne
-          return caches.match(request).then(response => {
-            return response || caches.match('/index.html');
-          });
-        })
+        .catch(() => caches.match(request))
     );
     return;
   }
@@ -141,7 +145,7 @@ self.addEventListener('fetch', (event) => {
         });
       }).catch(() => {
         if (request.destination === 'document') {
-          return caches.match('/index.html');
+          return caches.match('/offline.html');
         }
       });
     })

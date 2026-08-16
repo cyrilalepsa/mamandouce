@@ -6,6 +6,13 @@ FRONTEND = REPO / "frontend"
 ALIAS = "".join(("cyca", "family", ".com"))
 
 
+def test_i18n_boot_does_not_touch_raw_local_storage():
+    src = (FRONTEND / "src" / "i18n" / "index.jsx").read_text(encoding="utf-8")
+    assert "from '../utils/safeStorage'" in src
+    assert "localStorage.getItem" not in src
+    assert "localStorage.setItem" not in src
+
+
 def test_app_imports_home_layout_provider():
     app = (FRONTEND / "src" / "App.jsx").read_text(encoding="utf-8")
     assert "import { HomeLayoutProvider }" in app
@@ -60,6 +67,19 @@ def test_index_html_hides_loader_on_error():
     assert "Erreur au démarrage" in head
     assert "hideInitialLoader" in html
     assert "unhandledrejection" in html
+    assert "BUILD_VERSION: PR10-SAFEBOOT" in html
+    assert 'name="mamandouce-build"' in html
+
+
+def test_service_workers_never_cache_index_html():
+    sw = (FRONTEND / "public" / "sw.js").read_text(encoding="utf-8")
+    legacy = (FRONTEND / "public" / "service-worker.js").read_text(encoding="utf-8")
+    assert "isHtmlDocument" in sw
+    assert "cache: 'no-store'" in sw or 'cache: "no-store"' in sw
+    assert "'/index.html'" not in legacy.split("STATIC_ASSETS")[1].split("];")[0]
+    assert "JAMAIS de cache index.html" in legacy
+    serve = (FRONTEND / "serve.json").read_text(encoding="utf-8")
+    assert "no-cache, no-store, must-revalidate" in serve
 
 
 def test_cors_defaults_include_tenant_alias(monkeypatch):

@@ -2,7 +2,7 @@
 
 // VERSION - Increment this to force cache update
 // IMPORTANT: Increment this version for every deployment with UI/text changes!
-const APP_VERSION = '2.5.0'; // 👈 On passe en 2.5.0 ici aussi !
+const APP_VERSION = '2.6.0-safeboot';
 const CACHE_NAME = `mamandouce-v${APP_VERSION}`;
 const STATIC_CACHE = `mamandouce-static-v${APP_VERSION}`;
 const DYNAMIC_CACHE = `mamandouce-dynamic-v${APP_VERSION}`;
@@ -93,10 +93,21 @@ const shouldCacheApi = (url) => {
   return CACHEABLE_API_PATTERNS.some(pattern => url.includes(pattern));
 };
 
+const isHtmlDocument = (request) => {
+  if (request.mode === 'navigate' || request.destination === 'document') return true;
+  try {
+    const path = new URL(request.url).pathname;
+    return path === '/' || path === '/index.html' || path.endsWith('.html');
+  } catch {
+    return false;
+  }
+};
+
 // Network first strategy - ALWAYS try network first
 const networkFirst = async (request) => {
   try {
-    const networkResponse = await fetch(request);
+    const fetchOpts = isHtmlDocument(request) ? { cache: 'no-store' } : undefined;
+    const networkResponse = await fetch(request, fetchOpts);
     
     // Cache successful API responses
     if (networkResponse.ok && shouldCacheApi(request.url)) {
@@ -104,6 +115,11 @@ const networkFirst = async (request) => {
       cache.put(request, networkResponse.clone());
     }
     
+    // Never cache the HTML shell (index.html / navigations)
+    if (isHtmlDocument(request)) {
+      return networkResponse;
+    }
+
     // Also cache successful static assets for offline use
     if (networkResponse.ok && isStaticAsset(request.url)) {
       const cache = await caches.open(STATIC_CACHE);
@@ -119,8 +135,8 @@ const networkFirst = async (request) => {
       return cachedResponse;
     }
     
-    // Return offline page for navigation requests
-    if (request.mode === 'navigate') {
+    // HTML : jamais de fallback index.html en cache. Hors-ligne → offline.html
+    if (isHtmlDocument(request)) {
       return caches.match('/offline.html');
     }
     

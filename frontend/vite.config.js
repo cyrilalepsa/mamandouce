@@ -28,6 +28,12 @@ export default defineConfig(({ mode }) => {
         fs.writeFileSync(swPath, content, 'utf8');
         console.log(`\n✨ [PWA] Version du Service Worker automatisée pour la prod : v${timestampVersion}\n`);
       }
+
+      const serveSrc = path.resolve(__dirname, 'serve.json');
+      const serveDest = path.resolve(__dirname, 'dist/serve.json');
+      if (fs.existsSync(serveSrc)) {
+        fs.copyFileSync(serveSrc, serveDest);
+      }
     }
   });
 
@@ -52,6 +58,14 @@ export default defineConfig(({ mode }) => {
     
     server: {
       port: 5173,
-    }
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+      },
+    },
+    preview: {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+      },
+    },
   };
 });
