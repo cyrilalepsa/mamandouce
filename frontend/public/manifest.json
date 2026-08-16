@@ -2,13 +2,13 @@
   "name": "MamanDouce - Compagnon de Grossesse",
   "short_name": "MamanDouce",
   "description": "Votre application complète pour accompagner votre grossesse",
-  "start_url": ".",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#F8FAFC",
   "theme_color": "#87CEEB",
   "orientation": "portrait-primary",
-  "id": "/",
+  "id": "https://mamandouce.neriacorp.com/",
   "gcm_sender_id": "103953800507",
   "icons": [
     {

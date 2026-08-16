@@ -9,9 +9,11 @@ import {
   apiUrl,
   getApiBase,
   getBackendUrl,
+  isReservedNeriaHost,
   isStandaloneMamandouceHost,
   resolveAppSlugFromHost,
   resolveBackendUrl,
+  resolveBoutiqueSlugFromHost,
 } from "./backendUrl.js";
 
 const failures = [];
@@ -53,16 +55,43 @@ for (const host of standaloneHosts) {
     DEFAULT_PUBLIC_API,
     `api N2 on ${host}`,
   );
-  assertEqual(
-    resolveBackendUrl({ hostname: host, envUrl: "https://mamandouce-prod.up.railway.app/" }),
-    "https://mamandouce-prod.up.railway.app",
-    `api dedicated backend on ${host}`,
-  );
 }
 
 assertEqual(isStandaloneMamandouceHost("neriacorp.com"), false, "core host is not standalone");
 assertEqual(isStandaloneMamandouceHost("localhost"), false, "localhost is not standalone");
-assertEqual(resolveAppSlugFromHost("boutique.neriacorp.com"), "boutique", "other n2 tenant slug");
+assertEqual(isReservedNeriaHost("hub.neriacorp.com"), true, "hub is reserved");
+assertEqual(isReservedNeriaHost("api.neriacorp.com"), true, "api is reserved");
+assertEqual(isReservedNeriaHost("cockpit.neriacorp.com"), true, "cockpit is reserved");
+assertEqual(isReservedNeriaHost("mamandouce.neriacorp.com"), true, "mamandouce label is reserved");
+assertEqual(resolveBoutiqueSlugFromHost("hub.neriacorp.com"), null, "hub is not a B2B tenant");
+assertEqual(resolveBoutiqueSlugFromHost("api.neriacorp.com"), null, "api is not a B2B tenant");
+assertEqual(resolveBoutiqueSlugFromHost("cockpit.neriacorp.com"), null, "cockpit is not a B2B tenant");
+assertEqual(resolveBoutiqueSlugFromHost("mamandouce.neriacorp.com"), null, "MD is standalone not B2B");
+assertEqual(resolveAppSlugFromHost("hub.neriacorp.com"), null, "hub slug is null");
+assertEqual(resolveAppSlugFromHost("mamandouce.neriacorp.com"), APP_SLUG_MAMANDOUCE, "MD slug");
+assertEqual(
+  resolveBoutiqueSlugFromHost("odelicesenfamille.neriacorp.com"),
+  "odelicesenfamille",
+  "B2B slug from first-level neriacorp host",
+);
+assertEqual(
+  resolveAppSlugFromHost("odelicesenfamille.neriacorp.com"),
+  "odelicesenfamille",
+  "B2B app slug",
+);
+assertEqual(
+  resolveBackendUrl({
+    hostname: "mamandouce.neriacorp.com",
+    envUrl: `https://legacy.${["up", "railway", "app"].join(".")}/`,
+  }),
+  DEFAULT_PUBLIC_API,
+  "legacy platform host is ignored on standalone",
+);
+assertEqual(
+  resolveBackendUrl({ hostname: "odelicesenfamille.neriacorp.com", envUrl: "" }),
+  DEFAULT_PUBLIC_API,
+  "B2B host uses N2 api",
+);
 assertEqual(
   resolveBackendUrl({ hostname: "localhost", envUrl: "" }),
   DEFAULT_LOCAL_API,

@@ -5,7 +5,7 @@
 ### Variables d'environnement requises :
 - `MONGO_URL` : URL de connexion MongoDB
 - `DB_NAME` : Nom de la base de données
-- `CORS_ORIGINS` / `ALLOWED_ORIGINS` : origines CSV (ex. URL du frontend Railway). Les domaines NeriaCorp, `FRONTEND_URL` et `PUBLIC_APP_URL` sont fusionnés ; `*.up.railway.app` est autorisé par regex.
+- `CORS_ORIGINS` / `ALLOWED_ORIGINS` : origines CSV. Les domaines NeriaCorp, `FRONTEND_URL` et `PUBLIC_APP_URL` sont fusionnés ; `https://{slug}.neriacorp.com` est autorisé par regex.
 - `PORT` : Port d'écoute (automatique sur Railway)
 
 ### Déploiement

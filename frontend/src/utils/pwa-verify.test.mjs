@@ -31,6 +31,25 @@ test("service workers never intercept api.neriacorp.com", () => {
   }
 });
 
+test("PWA manifest is scoped to mamandouce.neriacorp.com", () => {
+  const manifest = JSON.parse(read("public/manifest.json"));
+  assert.equal(manifest.scope, "/");
+  assert.equal(manifest.start_url, "/");
+  assert.equal(manifest.id, "https://mamandouce.neriacorp.com/");
+});
+
+test("no legacy boutique wildcard in frontend sources", () => {
+  const needle = "." + "app" + ".neriacorp.com";
+  for (const rel of [
+    "src/utils/backendUrl.js",
+    "public/sw.js",
+    "public/service-worker.js",
+    "public/manifest.json",
+  ]) {
+    assert.doesNotMatch(read(rel), new RegExp(needle.replace(/\./g, "\\.")));
+  }
+});
+
 test("src modules resolve API via apiUrl / getApiBase (no localhost fallback)", () => {
   const files = [
     "src/utils/api.jsx",

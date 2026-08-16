@@ -25,6 +25,9 @@ NERIACORP_CORS_ORIGINS = [
     "https://www.neriacorp.com",
     "https://mamandouce.neriacorp.com",
     "https://www.mamandouce.neriacorp.com",
+    "https://hub.neriacorp.com",
+    "https://www.hub.neriacorp.com",
+    "https://cockpit.neriacorp.com",
     "https://cycafamily.com",
     "https://www.cycafamily.com",
     "https://mamandouce.cycafamily.com",
@@ -34,8 +37,9 @@ NERIACORP_CORS_ORIGINS = [
     "https://api.neriacorp.com",
 ]
 
-# Frontends Railway (ex. https://mamandouce-frontend-production.up.railway.app)
-RAILWAY_CORS_ORIGIN_REGEX = r"https://[a-zA-Z0-9.-]+\.(up\.)?railway\.app"
+# Boutiques B2B : https://{slug}.neriacorp.com (et www.{slug}.neriacorp.com).
+# Pas un wildcard CORS global "*" — uniquement le suffixe neriacorp.com.
+NERIACORP_ORIGIN_REGEX = r"https://(?:www\.)?[a-z0-9-]+\.neriacorp\.com"
 
 
 def _normalize_origin(value: str) -> str:
