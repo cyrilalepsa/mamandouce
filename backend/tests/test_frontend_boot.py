@@ -101,6 +101,25 @@ def test_standalone_host_resolution_executable():
     assert "backendUrl standalone: ok" in result.stdout
 
 
+def test_pwa_verify_node_suite():
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if not node:
+        raise AssertionError("node is required to execute PWA verify tests")
+    script = FRONTEND / "src" / "utils" / "pwa-verify.test.mjs"
+    result = subprocess.run(
+        [node, "--test", str(script)],
+        cwd=str(FRONTEND),
+        capture_output=True,
+        text=True,
+        timeout=20,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 def test_api_client_uses_resolved_backend_and_timeout():
     src = (FRONTEND / "src" / "utils" / "api.jsx").read_text(encoding="utf-8")
     assert "from './backendUrl'" in src
