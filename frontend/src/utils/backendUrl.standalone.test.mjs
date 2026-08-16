@@ -6,6 +6,9 @@ import {
   APP_SLUG_MAMANDOUCE,
   DEFAULT_LOCAL_API,
   DEFAULT_PUBLIC_API,
+  apiUrl,
+  getApiBase,
+  getBackendUrl,
   isStandaloneMamandouceHost,
   resolveAppSlugFromHost,
   resolveBackendUrl,
@@ -69,6 +72,36 @@ assertEqual(
   resolveBackendUrl({ hostname: "127.0.0.1", envUrl: "http://localhost:8000" }),
   "http://localhost:8000",
   "loopback keeps env local api",
+);
+assertEqual(
+  getBackendUrl({ hostname: "mamandouce.neriacorp.com", envUrl: "http://localhost:8000" }),
+  DEFAULT_PUBLIC_API,
+  "getBackendUrl ignores baked localhost on standalone",
+);
+assertEqual(
+  getApiBase({ hostname: "mamandouce.neriacorp.com", envUrl: "" }),
+  `${DEFAULT_PUBLIC_API}/api`,
+  "getApiBase uses N2 on standalone",
+);
+assertEqual(
+  apiUrl("/api/neriacorp/media", { hostname: "mamandouce.neriacorp.com", envUrl: "" }),
+  `${DEFAULT_PUBLIC_API}/api/neriacorp/media`,
+  "apiUrl Cloudinary media",
+);
+assertEqual(
+  apiUrl("/api/notifications/vapid-public-key", { hostname: "mamandouce.neriacorp.com" }),
+  `${DEFAULT_PUBLIC_API}/api/notifications/vapid-public-key`,
+  "apiUrl VAPID",
+);
+assertEqual(
+  apiUrl("/api/scanner/publications/abc", { hostname: "mamandouce.neriacorp.com" }),
+  `${DEFAULT_PUBLIC_API}/api/scanner/publications/abc`,
+  "apiUrl QR publication",
+);
+assertEqual(
+  apiUrl("http://localhost:8000/api/x", { hostname: "mamandouce.neriacorp.com" }),
+  DEFAULT_PUBLIC_API,
+  "apiUrl drops localhost fallback on standalone",
 );
 
 if (failures.length) {

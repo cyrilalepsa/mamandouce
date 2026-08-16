@@ -51,6 +51,9 @@ def test_backend_url_resolver_covers_tenant_hosts():
     assert "withTimeout" in src
     assert "resolveAppSlugFromHost" in src
     assert "isPublicHttpsApiUrl" in src
+    assert "getBackendUrl" in src
+    assert "getApiBase" in src
+    assert "export function apiUrl" in src
 
 
 def test_standalone_host_components_use_resolved_backend():
@@ -64,7 +67,18 @@ def test_standalone_host_components_use_resolved_backend():
     for path in leftovers:
         src = path.read_text(encoding="utf-8")
         assert "from " in src and "backendUrl" in src
+        assert "apiUrl(" in src
         assert "import.meta.env.VITE_BACKEND_URL" not in src
+        assert "localhost:8000" not in src
+
+
+def test_api_client_resolves_urls_dynamically():
+    src = (FRONTEND / "src" / "utils" / "api.jsx").read_text(encoding="utf-8")
+    assert "from './backendUrl'" in src
+    assert "getApiBase" in src
+    assert "apiUrl(" in src
+    assert "localhost:8000" not in src
+    assert "import.meta.env.VITE_BACKEND_URL" not in src
 
 
 def test_standalone_host_resolution_executable():
@@ -114,8 +128,13 @@ def test_service_workers_never_cache_index_html():
     legacy = (FRONTEND / "public" / "service-worker.js").read_text(encoding="utf-8")
     assert "isHtmlDocument" in sw
     assert "cache: 'no-store'" in sw or 'cache: "no-store"' in sw
+    assert "api.neriacorp.com" in sw
+    assert "url.origin !== self.location.origin" in sw
+    assert "isN2ApiRequest" in sw
     assert "'/index.html'" not in legacy.split("STATIC_ASSETS")[1].split("];")[0]
     assert "JAMAIS de cache index.html" in legacy
+    assert "api.neriacorp.com" in legacy
+    assert "url.origin !== self.location.origin" in legacy
     serve = (FRONTEND / "serve.json").read_text(encoding="utf-8")
     assert "no-cache, no-store, must-revalidate" in serve
 

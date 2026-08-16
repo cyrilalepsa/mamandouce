@@ -1,6 +1,6 @@
 /**
  * PublicationQRCode — Génère un QR scannable depuis publication_id.
- * Payload encodé : `{REACT_APP_BACKEND_URL}/api/scanner/publications/{id}`
+ * Payload encodé : `{resolveBackendUrl()}/api/scanner/publications/{id}`
  * (admin-only une fois résolu — sécurise le No-Log).
  *
  * Actions :
@@ -13,14 +13,14 @@ import QRCode from 'qrcode';
 import { Download, Share2, QrCode } from 'lucide-react';
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
-import { BACKEND_URL } from '../../utils/backendUrl';
+import { apiUrl } from '../../utils/backendUrl';
 
 export default function PublicationQRCode({ publicationId, themeColor, targetApp }) {
   const canvasRef = useRef(null);
   const [dataUrl, setDataUrl] = useState(null);
   const [open, setOpen] = useState(false);
 
-  const payloadUrl = `${BACKEND_URL}/api/scanner/publications/${publicationId}`;
+  const payloadUrl = apiUrl(`/api/scanner/publications/${publicationId}`);
 
   useEffect(() => {
     if (!open || !canvasRef.current) return;

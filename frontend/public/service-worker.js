@@ -1,5 +1,6 @@
 // Version du cache - INCRÉMENTEZ À CHAQUE MISE À JOUR IMPORTANTE
-const CACHE_VERSION = 'v2.6.0-safeboot';
+const CACHE_VERSION = 'v2.6.1-apiscope';
+const N2_API_HOST = 'api.neriacorp.com';
 const CACHE_NAME = `mamandouce-${CACHE_VERSION}`;
 const STATIC_CACHE = `mamandouce-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `mamandouce-dynamic-${CACHE_VERSION}`;
@@ -57,39 +58,15 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Ne pas intercepter les requêtes vers d'autres domaines
-  if (!url.origin.includes(self.location.origin) && !url.pathname.startsWith('/api/')) {
+  // Scope PWA = origine courante (mamandouce.neriacorp.com).
+  // Ne jamais intercepter https://api.neriacorp.com ni les autres origines.
+  if (url.origin !== self.location.origin || url.hostname === N2_API_HOST) {
     return;
   }
 
-  // Ne pas mettre en cache les requêtes API - toujours aller au réseau
+  // Same-origin /api/ : réseau uniquement, aucun cache
   if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(request)
-        .then(response => {
-          // Clone et cache la réponse pour le mode offline
-          const responseClone = response.clone();
-          caches.open(DYNAMIC_CACHE).then(cache => {
-            cache.put(request, responseClone);
-          });
-          return response;
-        })
-        .catch(() => {
-          // Retourner depuis le cache si hors ligne
-          return caches.match(request).then(response => {
-            if (response) {
-              return response;
-            }
-            return new Response(JSON.stringify({
-              error: 'offline',
-              message: 'Vous êtes hors ligne. Les données seront synchronisées lors de la reconnexion.'
-            }), {
-              status: 503,
-              headers: { 'Content-Type': 'application/json' }
-            });
-          });
-        })
-    );
+    event.respondWith(fetch(request));
     return;
   }
 
