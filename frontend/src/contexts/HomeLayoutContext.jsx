@@ -2,10 +2,10 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import { API_BASE, withTimeout } from '../utils/backendUrl';
+import { getApiBase, withTimeout } from '../utils/backendUrl';
 import { safeGet } from '../utils/safeStorage';
 
-const API = API_BASE;
+const API = () => getApiBase();
 
 // Couleurs pastel pour les pages utilisateur
 const PASTEL_COLORS = [
@@ -118,7 +118,7 @@ export function HomeLayoutProvider({ children }) {
   const loadLayout = async () => {
     try {
       const response = await withTimeout(
-        axios.get(`${API}/user/layout`, getAuthHeaders()),
+        axios.get(`${API()}/user/layout`, getAuthHeaders()),
         12000,
         'layout',
       );
@@ -147,7 +147,7 @@ export function HomeLayoutProvider({ children }) {
   // Sauvegarder le layout dans la BDD
   const saveLayout = useCallback(async (newLayout) => {
     try {
-      await axios.put(`${API}/user/layout`, { layout: newLayout }, getAuthHeaders());
+      await axios.put(`${API()}/user/layout`, { layout: newLayout }, getAuthHeaders());
       setLayout(newLayout);
       setHasCustomLayout(true);
       return true;
@@ -161,7 +161,7 @@ export function HomeLayoutProvider({ children }) {
   // Réinitialiser au layout par défaut
   const resetToDefault = useCallback(async () => {
     try {
-      await axios.delete(`${API}/user/layout`, getAuthHeaders());
+      await axios.delete(`${API()}/user/layout`, getAuthHeaders());
       setLayout(DEFAULT_LAYOUT);
       setHasCustomLayout(false);
       toast.success(t('home.layoutReset', 'Disposition réinitialisée'));

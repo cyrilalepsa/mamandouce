@@ -2,7 +2,8 @@
 
 // VERSION - Increment this to force cache update
 // IMPORTANT: Increment this version for every deployment with UI/text changes!
-const APP_VERSION = '2.6.0-safeboot';
+const APP_VERSION = '2.6.1-apiscope';
+const N2_API_HOST = 'api.neriacorp.com';
 const CACHE_NAME = `mamandouce-v${APP_VERSION}`;
 const STATIC_CACHE = `mamandouce-static-v${APP_VERSION}`;
 const DYNAMIC_CACHE = `mamandouce-dynamic-v${APP_VERSION}`;
@@ -88,8 +89,26 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Check if request should be cached (API data)
+const isN2ApiRequest = (url) => {
+  try {
+    const parsed = new URL(url, self.location.origin);
+    return parsed.hostname === N2_API_HOST || parsed.hostname.endsWith(`.${N2_API_HOST}`);
+  } catch {
+    return false;
+  }
+};
+
+const isSameOrigin = (url) => {
+  try {
+    return new URL(url, self.location.origin).origin === self.location.origin;
+  } catch {
+    return false;
+  }
+};
+
+// Check if request should be cached (API data) — same-origin only, jamais api.neriacorp.com
 const shouldCacheApi = (url) => {
+  if (!isSameOrigin(url) || isN2ApiRequest(url)) return false;
   return CACHEABLE_API_PATTERNS.some(pattern => url.includes(pattern));
 };
 
@@ -239,6 +258,18 @@ const processOfflineQueue = async () => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
+
+  // Scope PWA = mamandouce.neriacorp.com uniquement.
+  // Ne jamais intercepter l'API N2 (https://api.neriacorp.com) ni les autres origines.
+  if (url.origin !== self.location.origin || isN2ApiRequest(request.url)) {
+    return;
+  }
+
+  // Same-origin /api/ (si un proxy local existe) : réseau seul, pas de cache SW
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(fetch(request));
+    return;
+  }
   
   // Skip non-GET requests for caching, but handle offline queue
   if (request.method !== 'GET') {

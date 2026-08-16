@@ -1,5 +1,5 @@
 {
-      "name": "mamandouce",
+  "name": "mamandouce",
   "version": "0.1.0",
   "engines": {
     "node": ">=22.12.0"
@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "serve -s dist"
+    "start": "serve -s dist",
+    "test": "node src/utils/backendUrl.standalone.test.mjs && node --test src/utils/pwa-verify.test.mjs"
   },
   "dependencies": {
     "serve": "^14.2.4",

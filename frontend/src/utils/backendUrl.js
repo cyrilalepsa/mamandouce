@@ -141,14 +141,39 @@ export function resolveBackendUrl(opts = {}) {
   return fromEnv || DEFAULT_PUBLIC_API;
 }
 
-let _backendUrl = DEFAULT_PUBLIC_API;
-try {
-  _backendUrl = resolveBackendUrl();
-} catch (err) {
-  console.warn("[boot] resolveBackendUrl failed", err);
+/** Toujours passer par resolveBackendUrl() — jamais une URL figée au boot. */
+export function getBackendUrl(opts) {
+  try {
+    return resolveBackendUrl(opts);
+  } catch (err) {
+    console.warn("[boot] resolveBackendUrl failed", err);
+    return DEFAULT_PUBLIC_API;
+  }
 }
-export const BACKEND_URL = _backendUrl;
-export const API_BASE = `${String(BACKEND_URL || DEFAULT_PUBLIC_API).replace(/\/$/, "")}/api`;
+
+export function getApiBase(opts) {
+  return `${String(getBackendUrl(opts)).replace(/\/$/, "")}/api`;
+}
+
+/**
+ * Construit une URL API absolue (Vault, OCR, Cloudinary, VAPID, QR, …).
+ * Refuse les relatives non résolues et les fallback localhost en prod.
+ */
+export function apiUrl(path = "", opts) {
+  const suffix = String(path || "");
+  if (/^https?:\/\//i.test(suffix)) {
+    if (isLocalApiUrl(suffix) && !isLocalHostname(opts?.hostname)) {
+      return getBackendUrl(opts);
+    }
+    return suffix.replace(/\/$/, "");
+  }
+  const base = String(getBackendUrl(opts)).replace(/\/$/, "");
+  if (!suffix) return base;
+  return `${base}${suffix.startsWith("/") ? suffix : `/${suffix}`}`;
+}
+
+export const BACKEND_URL = getBackendUrl();
+export const API_BASE = getApiBase();
 
 export function withTimeout(promise, ms, label = "timeout") {
   const timeoutMs = Number(ms) || 12000;

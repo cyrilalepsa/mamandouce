@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Heart } from 'lucide-react';
 import { N20Amount } from '../N20Icon';
+import { api } from '../../utils/api';
 
 // =========================================================================
 // 1. WIDGET "SEMAINE DE GROSSESSE" — UNIQUEMENT CE BLOC TOUT EN HAUT
@@ -223,7 +224,6 @@ export function TirelireWidget({ navigate }) {
   
   const loadWallet = async () => {
     try {
-      const api = (await import('../../utils/api')).default;
       const response = await api.get('/api/solidarity/wallet');
       setBalance(response.data?.balance || 0);
     } catch (error) {
