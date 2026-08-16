@@ -50,6 +50,10 @@ def test_backend_url_resolver_covers_tenant_hosts():
     assert "VITE_API_URL" in src
     assert "withTimeout" in src
     assert "resolveAppSlugFromHost" in src
+    assert "RESERVED_HOST_LABELS" in src
+    assert "resolveBoutiqueSlugFromHost" in src
+    assert "hub.neriacorp.com" in src
+    assert "cockpit.neriacorp.com" in src
     assert "isPublicHttpsApiUrl" in src
     assert "getBackendUrl" in src
     assert "getApiBase" in src

@@ -11,7 +11,18 @@ export const DEFAULT_PUBLIC_API = "https://api.neriacorp.com";
 export const DEFAULT_LOCAL_API = "http://localhost:8000";
 export const APP_SLUG_MAMANDOUCE = "mamandouce";
 
-/** Hôtes où le front MamanDouce tourne en standalone (sans wildcard N2). */
+/** Labels de premier niveau qui ne sont pas des boutiques B2B. */
+export const RESERVED_HOST_LABELS = [
+  "hub",
+  "api",
+  "cockpit",
+  "mamandouce",
+  "www",
+  "portal",
+  "app",
+];
+
+/** Hôtes où le front MamanDouce tourne en standalone. */
 export const STANDALONE_MAMANDOUCE_HOSTS = [
   "mamandouce.neriacorp.com",
   "www.mamandouce.neriacorp.com",
@@ -25,6 +36,10 @@ export const TENANT_HOSTS = [
   "www.mamandouce.neriacorp.com",
   "neriacorp.com",
   "www.neriacorp.com",
+  "hub.neriacorp.com",
+  "www.hub.neriacorp.com",
+  "cockpit.neriacorp.com",
+  "api.neriacorp.com",
   "cycafamily.com",
   "www.cycafamily.com",
   "mamandouce.cycafamily.com",
@@ -70,13 +85,47 @@ export function isStandaloneMamandouceHost(hostname) {
   }
 }
 
+function firstLabel(host) {
+  const labels = host.split(".").filter(Boolean);
+  if (!labels.length) return "";
+  return labels[0] === "www" && labels.length >= 2 ? labels[1] : labels[0];
+}
+
+export function isReservedNeriaHost(hostname) {
+  const host = normalizeHost(hostname);
+  if (!host) return false;
+  if (host === "neriacorp.com" || host === "www.neriacorp.com") return true;
+  if (!host.endsWith(".neriacorp.com")) return false;
+  return RESERVED_HOST_LABELS.includes(firstLabel(host));
+}
+
+/**
+ * Slug boutique B2B depuis {slug}.neriacorp.com.
+ * hub / api / cockpit / mamandouce → null (pas un tenant B2B).
+ */
+export function resolveBoutiqueSlugFromHost(hostname) {
+  try {
+    const host = normalizeHost(hostname);
+    if (!host || isReservedNeriaHost(host) || isStandaloneMamandouceHost(host)) {
+      return null;
+    }
+    if (host.endsWith(".neriacorp.com")) {
+      const slug = firstLabel(host);
+      if (slug && !RESERVED_HOST_LABELS.includes(slug)) return slug;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export function resolveAppSlugFromHost(hostname) {
   try {
     const host = normalizeHost(hostname);
     if (!host) return APP_SLUG_MAMANDOUCE;
     if (isStandaloneMamandouceHost(host)) return APP_SLUG_MAMANDOUCE;
-    const first = host.split(".")[0];
-    return first && first !== "www" ? first : APP_SLUG_MAMANDOUCE;
+    if (isReservedNeriaHost(host)) return null;
+    return resolveBoutiqueSlugFromHost(host) || APP_SLUG_MAMANDOUCE;
   } catch {
     return APP_SLUG_MAMANDOUCE;
   }
@@ -87,7 +136,8 @@ export function isKnownTenantHost(hostname) {
     const host = normalizeHost(hostname);
     if (TENANT_HOSTS.includes(host)) return true;
     if (isStandaloneMamandouceHost(host)) return true;
-    return host.endsWith(".neriacorp.com") || host.endsWith("." + ["cyca", "family", ".com"].join(""));
+    if (host.endsWith(".neriacorp.com")) return true;
+    return host.endsWith("." + ["cyca", "family", ".com"].join(""));
   } catch {
     return false;
   }
@@ -104,7 +154,10 @@ export function isPublicHttpsApiUrl(url) {
   if (!value || isLocalApiUrl(value)) return false;
   try {
     const parsed = new URL(value);
-    return parsed.protocol === "https:";
+    if (parsed.protocol !== "https:") return false;
+    const host = parsed.hostname.toLowerCase();
+    if (host === "railway.app" || host.endsWith(".railway.app")) return false;
+    return true;
   } catch {
     return false;
   }

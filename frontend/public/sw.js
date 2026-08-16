@@ -2,7 +2,7 @@
 
 // VERSION - Increment this to force cache update
 // IMPORTANT: Increment this version for every deployment with UI/text changes!
-const APP_VERSION = '2.6.1-apiscope';
+const APP_VERSION = '2.6.2-neria-dns';
 const N2_API_HOST = 'api.neriacorp.com';
 const CACHE_NAME = `mamandouce-v${APP_VERSION}`;
 const STATIC_CACHE = `mamandouce-static-v${APP_VERSION}`;

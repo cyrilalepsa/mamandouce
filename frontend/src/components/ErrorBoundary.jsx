@@ -18,8 +18,7 @@ function shouldShowErrorDetails() {
     host.includes('staging') ||
     host.includes('preview') ||
     host.includes('neriacorp.com') ||
-    host.includes('cycafamily.com') ||
-    host.includes('railway.app')
+    host.includes('cycafamily.com')
   );
 }
 

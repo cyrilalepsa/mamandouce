@@ -251,8 +251,8 @@ def test_cors_allows_n2_worker(anon_client):
     assert r.headers.get("access-control-allow-origin") == "https://api.neriacorp.com"
 
 
-def test_cors_allows_railway_frontend(anon_client):
-    origin = "https://mamandouce-frontend-production.up.railway.app"
+def test_cors_allows_b2b_neriacorp_subdomain(anon_client):
+    origin = "https://odelicesenfamille.neriacorp.com"
     r = anon_client.options(
         "/api/health",
         headers={
@@ -274,7 +274,7 @@ def test_cors_allows_railway_frontend(anon_client):
 def test_parse_cors_origins_csv_and_aliases(monkeypatch):
     monkeypatch.setenv(
         "CORS_ORIGINS",
-        "https://mamandouce-frontend-production.up.railway.app, https://mamandouce.app/",
+        "https://odelicesenfamille.neriacorp.com, https://mamandouce.app/",
     )
     monkeypatch.delenv("ALLOWED_ORIGINS", raising=False)
     monkeypatch.setenv("FRONTEND_URL", "https://front.example")
@@ -282,7 +282,7 @@ def test_parse_cors_origins_csv_and_aliases(monkeypatch):
     from core.config import parse_cors_origins
 
     origins = parse_cors_origins()
-    assert "https://mamandouce-frontend-production.up.railway.app" in origins
+    assert "https://odelicesenfamille.neriacorp.com" in origins
     assert "https://mamandouce.app" in origins
     assert "https://front.example" in origins
     assert "https://neriacorp.com" in origins
