@@ -165,7 +165,7 @@ export function getDefaultFetusImageUrl() {
  * Appelé au boot — permet le CDN live sans rebuild frontend.
  */
 export async function hydrateCloudinaryFromApi() {
-  const base = (BACKEND_URL || import.meta.env.VITE_BACKEND_URL || '').replace(/\/$/, '');
+  const base = String(BACKEND_URL || '').replace(/\/$/, '');
   if (!base) return getCloudinaryConfig();
   try {
     const res = await fetch(`${base}/api/neriacorp/media`);

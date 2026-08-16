@@ -17,6 +17,7 @@ import {
   CreditCard
 } from 'lucide-react';
 import api from '../../utils/api';
+import { BACKEND_URL } from '../../utils/backendUrl';
 import { toast } from 'sonner';
 
 export function AndroidExportTab() {
@@ -68,7 +69,7 @@ export function AndroidExportTab() {
     try {
       // Create a link to trigger download
       const token = localStorage.getItem('token');
-      const downloadUrl = `${import.meta.env.VITE_BACKEND_URL}/api/admin/android/download`;
+      const downloadUrl = `${BACKEND_URL}/api/admin/android/download`;
       
       const response = await fetch(downloadUrl, {
         headers: {

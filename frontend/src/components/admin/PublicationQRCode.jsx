@@ -13,8 +13,7 @@ import QRCode from 'qrcode';
 import { Download, Share2, QrCode } from 'lucide-react';
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
+import { BACKEND_URL } from '../../utils/backendUrl';
 
 export default function PublicationQRCode({ publicationId, themeColor, targetApp }) {
   const canvasRef = useRef(null);

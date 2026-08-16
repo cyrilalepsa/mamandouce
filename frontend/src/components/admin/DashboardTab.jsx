@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Users, MessageSquare, Apple, TrendingUp, BarChart3, Euro, RefreshCw, Download, ChevronDown, AlertTriangle } from 'lucide-react';
 import api from '../../utils/api';
+import { BACKEND_URL } from '../../utils/backendUrl';
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
 import { StatsCharts } from './StatsCharts';
@@ -57,7 +58,7 @@ export function DashboardTab({ globalStats, codeStats, setActiveTab, messageStat
     try {
       // Create a link and trigger download
       const token = localStorage.getItem('token');
-      const API_URL = import.meta.env.VITE_BACKEND_URL;
+      const API_URL = BACKEND_URL;
       
       const response = await fetch(`${API_URL}/api/admin/export-stats-csv`, {
         headers: {
