@@ -35,22 +35,35 @@ app = FastAPI(
     redoc_url="/api/redoc",  # ReDoc accessible
 )
 
-# CORS — CORS_ORIGINS / ALLOWED_ORIGINS (CSV) + origines NeriaCorp + front Railway
-from core.config import CORS_ORIGINS, RAILWAY_CORS_ORIGIN_REGEX
+# CORS — allowlist explicite + regex {slug}.app.neriacorp.com / Railway (jamais "*")
+from core.config import CORS_ORIGIN_REGEX, CORS_ORIGINS
+from core.session import ForwardedHttpsRedirectMiddleware, SessionCookieMiddleware
+from core.tenant import TenantMiddleware
 
-_cors_origins = CORS_ORIGINS if CORS_ORIGINS else ["http://localhost:5173"]
-# allow_credentials incompatible avec origins=["*"] en browsers modernes
-_allow_credentials = "*" not in _cors_origins
+_cors_origins = [origin for origin in (CORS_ORIGINS or []) if origin and origin != "*"]
+if not _cors_origins:
+    _cors_origins = ["http://localhost:5173"]
+app.add_middleware(TenantMiddleware)
+app.add_middleware(SessionCookieMiddleware)
+app.add_middleware(ForwardedHttpsRedirectMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_cors_origins if _allow_credentials else ["*"],
-    allow_origin_regex=RAILWAY_CORS_ORIGIN_REGEX if _allow_credentials else None,
-    allow_credentials=_allow_credentials,
+    allow_origins=_cors_origins,
+    allow_origin_regex=CORS_ORIGIN_REGEX,
+    allow_credentials=True,
     allow_methods=["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-    expose_headers=["X-NeriaCorp-Publication-Id"],
+    allow_headers=[
+        "Authorization",
+        "Content-Type",
+        "Accept",
+        "Origin",
+        "X-Requested-With",
+        "X-Tenant",
+        "X-NeriaCorp-Publication-Id",
+    ],
+    expose_headers=["X-NeriaCorp-Publication-Id", "X-Tenant", "X-Tenant-Kind"],
 )
-logger.info("CORS origins=%s railway_regex=%s", _cors_origins, bool(_allow_credentials))
+logger.info("CORS origins=%s origin_regex=%s", _cors_origins, CORS_ORIGIN_REGEX)
 
 # Create main API router
 api_router = APIRouter(prefix="/api")

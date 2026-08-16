@@ -6,9 +6,12 @@ import {
   APP_SLUG_MAMANDOUCE,
   DEFAULT_LOCAL_API,
   DEFAULT_PUBLIC_API,
+  isNeriaAppHost,
+  isPlatformHost,
   isStandaloneMamandouceHost,
   resolveAppSlugFromHost,
   resolveBackendUrl,
+  resolveBoutiqueSlugFromHost,
 } from "./backendUrl.js";
 
 const failures = [];
@@ -59,7 +62,17 @@ for (const host of standaloneHosts) {
 
 assertEqual(isStandaloneMamandouceHost("neriacorp.com"), false, "core host is not standalone");
 assertEqual(isStandaloneMamandouceHost("localhost"), false, "localhost is not standalone");
-assertEqual(resolveAppSlugFromHost("boutique.neriacorp.com"), "boutique", "other n2 tenant slug");
+assertEqual(isPlatformHost("hub.neriacorp.com"), true, "hub is platform");
+assertEqual(isPlatformHost("www.hub.neriacorp.com"), true, "www.hub is platform");
+assertEqual(resolveBoutiqueSlugFromHost("hub.neriacorp.com"), null, "hub has no boutique slug");
+assertEqual(resolveBoutiqueSlugFromHost("mamandouce.neriacorp.com"), APP_SLUG_MAMANDOUCE, "standalone slug");
+assertEqual(isNeriaAppHost("boutique.app.neriacorp.com"), true, "boutique.app is neria app host");
+assertEqual(isNeriaAppHost("boutique.neriacorp.com"), false, "legacy wildcard is not an app host");
+assertEqual(resolveBoutiqueSlugFromHost("boutique.app.neriacorp.com"), "boutique", "app-host boutique slug");
+assertEqual(resolveBoutiqueSlugFromHost("boutique.neriacorp.com"), null, "no implicit *.neriacorp.com slug");
+assertEqual(resolveAppSlugFromHost("hub.neriacorp.com"), APP_SLUG_MAMANDOUCE, "hub does not crash");
+assertEqual(resolveAppSlugFromHost("boutique.app.neriacorp.com"), "boutique", "app slug from .app host");
+assertEqual(resolveBoutiqueSlugFromHost("heritia.neriacorp.com"), "heritia", "explicit B2B short alias");
 assertEqual(
   resolveBackendUrl({ hostname: "localhost", envUrl: "" }),
   DEFAULT_LOCAL_API,

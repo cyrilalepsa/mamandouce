@@ -23,6 +23,7 @@ _ALIAS_ALLOWED_PATHS = {
     "frontend/.env.example",
     "backend/tests/test_domain_audit.py",
     "backend/tests/test_frontend_boot.py",
+    "backend/tests/test_security_routing_audit.py",
     "backend/tests/test_scanner_routes_unit.py",
 }
 _FORBIDDEN_VENDOR = (

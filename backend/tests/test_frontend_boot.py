@@ -43,8 +43,12 @@ def test_backend_url_resolver_covers_tenant_hosts():
     src = (FRONTEND / "src" / "utils" / "backendUrl.js").read_text(encoding="utf-8")
     assert "mamandouce.neriacorp.com" in src
     assert "www.mamandouce.neriacorp.com" in src
+    assert "hub.neriacorp.com" in src
+    assert ".app.neriacorp.com" in src
     assert "STANDALONE_MAMANDOUCE_HOSTS" in src
     assert "isStandaloneMamandouceHost" in src
+    assert "isNeriaAppHost" in src
+    assert "resolveBoutiqueSlugFromHost" in src
     assert ALIAS in src
     assert "https://api.neriacorp.com" in src
     assert "VITE_API_URL" in src
@@ -127,5 +131,7 @@ def test_cors_defaults_include_tenant_alias(monkeypatch):
 
     origins = parse_cors_origins()
     assert "https://mamandouce.neriacorp.com" in origins
+    assert "https://hub.neriacorp.com" in origins
+    assert "*" not in origins
     assert f"https://{ALIAS}" in origins
     assert f"https://www.{ALIAS}" in origins

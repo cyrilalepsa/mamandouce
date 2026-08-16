@@ -19,12 +19,37 @@ export const STANDALONE_MAMANDOUCE_HOSTS = [
   "www.mamandouce.app",
 ];
 
+/** Plateformes N2 (pas un slug boutique). */
+export const PLATFORM_HOSTS = [
+  "hub.neriacorp.com",
+  "www.hub.neriacorp.com",
+  "neriacorp.com",
+  "www.neriacorp.com",
+  "api.neriacorp.com",
+  "portal.neriacorp.com",
+  "app.neriacorp.com",
+  "www.app.neriacorp.com",
+];
+
+/** Alias courts B2B explicites ({slug}.neriacorp.com) — pas un wildcard. */
+export const B2B_SHORT_ALIAS_SLUGS = [
+  "heritia",
+  "visatrace",
+  "aevis",
+  "veovision",
+  "vellumia",
+];
+
+const APP_HOST_SUFFIX = ".app.neriacorp.com";
+
 /** Hôtes front connus (alias historique inclus). */
 export const TENANT_HOSTS = [
   "mamandouce.neriacorp.com",
   "www.mamandouce.neriacorp.com",
   "neriacorp.com",
   "www.neriacorp.com",
+  "hub.neriacorp.com",
+  "www.hub.neriacorp.com",
   "cycafamily.com",
   "www.cycafamily.com",
   "mamandouce.cycafamily.com",
@@ -70,13 +95,40 @@ export function isStandaloneMamandouceHost(hostname) {
   }
 }
 
-export function resolveAppSlugFromHost(hostname) {
+export function isPlatformHost(hostname) {
+  return PLATFORM_HOSTS.includes(normalizeHost(hostname));
+}
+
+/** Boutique multi-tenant : {slug}.app.neriacorp.com (pas *.neriacorp.com). */
+export function isNeriaAppHost(hostname) {
+  const host = normalizeHost(hostname);
+  if (!host.endsWith(APP_HOST_SUFFIX)) return false;
+  const slug = host.slice(0, -APP_HOST_SUFFIX.length);
+  return Boolean(slug) && slug !== "www" && !slug.includes(".");
+}
+
+export function resolveBoutiqueSlugFromHost(hostname) {
   try {
     const host = normalizeHost(hostname);
-    if (!host) return APP_SLUG_MAMANDOUCE;
+    if (!host || isPlatformHost(host)) return null;
     if (isStandaloneMamandouceHost(host)) return APP_SLUG_MAMANDOUCE;
-    const first = host.split(".")[0];
-    return first && first !== "www" ? first : APP_SLUG_MAMANDOUCE;
+    if (isNeriaAppHost(host)) {
+      return host.slice(0, -APP_HOST_SUFFIX.length);
+    }
+    if (host.endsWith(".neriacorp.com")) {
+      const labels = host.split(".").filter(Boolean);
+      const candidate = labels[0] === "www" ? labels[1] : labels[0];
+      if (B2B_SHORT_ALIAS_SLUGS.includes(candidate)) return candidate;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export function resolveAppSlugFromHost(hostname) {
+  try {
+    return resolveBoutiqueSlugFromHost(hostname) || APP_SLUG_MAMANDOUCE;
   } catch {
     return APP_SLUG_MAMANDOUCE;
   }
@@ -85,9 +137,11 @@ export function resolveAppSlugFromHost(hostname) {
 export function isKnownTenantHost(hostname) {
   try {
     const host = normalizeHost(hostname);
-    if (TENANT_HOSTS.includes(host)) return true;
+    if (TENANT_HOSTS.includes(host) || isPlatformHost(host)) return true;
     if (isStandaloneMamandouceHost(host)) return true;
-    return host.endsWith(".neriacorp.com") || host.endsWith("." + ["cyca", "family", ".com"].join(""));
+    if (isNeriaAppHost(host)) return true;
+    if (resolveBoutiqueSlugFromHost(host)) return true;
+    return host.endsWith("." + ["cyca", "family", ".com"].join(""));
   } catch {
     return false;
   }

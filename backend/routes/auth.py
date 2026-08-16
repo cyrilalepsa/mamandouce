@@ -2,7 +2,7 @@
 Authentication routes for MamanDouce
 Handles: Register, Login, Get current user, Password Reset
 """
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, Request, Response
 from pydantic import BaseModel, EmailStr
 from datetime import datetime, timezone, timedelta
 import logging
@@ -19,6 +19,7 @@ from core.config import (
     email_brand_footer,
 )
 from core.security import pwd_context, create_access_token, get_current_user
+from core.session import set_session_cookie
 from models.schemas import UserCreate, UserLogin, Token, User
 
 # Optional import for email
@@ -129,7 +130,7 @@ async def send_welcome_notification(user_name: str, user_email: str):
             logger.error(f"Error sending welcome email: {e}")
 
 @router.post("/auth/register", response_model=Token)
-async def register(user_data: UserCreate):
+async def register(user_data: UserCreate, request: Request, response: Response):
     """Register a new user"""
     existing = await db.users.find_one({"email": user_data.email})
     if existing:
@@ -166,6 +167,7 @@ async def register(user_data: UserCreate):
         data={"sub": user.email},
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
+    set_session_cookie(response, access_token, host=request.headers.get("host"))
     return Token(access_token=access_token, token_type="bearer")
 
 # Configuration blocage de compte
@@ -266,7 +268,7 @@ async def request_2fa_code(email: str = Query(..., description="User email addre
     return {"success": True, "two_factor_required": True, "message": "Code envoyé par email"}
 
 @router.post("/auth/2fa/verify", response_model=Token)
-async def verify_2fa_code(request: Verify2FARequest):
+async def verify_2fa_code(request: Verify2FARequest, http_request: Request, response: Response):
     """Verify 2FA code and complete login (step 2 of 2FA login)"""
     user = await db.users.find_one({"email": request.email})
     
@@ -316,12 +318,13 @@ async def verify_2fa_code(request: Verify2FARequest):
         data={"sub": request.email},
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
+    set_session_cookie(response, access_token, host=http_request.headers.get("host"))
     return Token(access_token=access_token, token_type="bearer")
 
 # ==================== LOGIN ====================
 
 @router.post("/auth/login", response_model=Token)
-async def login(user_data: UserLogin):
+async def login(user_data: UserLogin, request: Request, response: Response):
     """Login user and return JWT token"""
     user = await db.users.find_one({"email": user_data.email})
     if not user:
@@ -410,6 +413,7 @@ async def login(user_data: UserLogin):
         data={"sub": user["email"]},
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
+    set_session_cookie(response, access_token, host=request.headers.get("host"))
     return Token(access_token=access_token, token_type="bearer")
 
 @router.get("/auth/me", response_model=User)

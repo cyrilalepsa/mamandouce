@@ -307,6 +307,7 @@ def test_parse_cors_includes_mamandouce_neriacorp_by_default(monkeypatch):
     required = (
         "https://mamandouce.neriacorp.com",
         "https://www.mamandouce.neriacorp.com",
+        "https://hub.neriacorp.com",
         "https://neriacorp.com",
         "https://" + "".join(("cyca", "family", ".com")),
         "https://www." + "".join(("cyca", "family", ".com")),

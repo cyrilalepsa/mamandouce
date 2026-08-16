@@ -25,17 +25,33 @@ NERIACORP_CORS_ORIGINS = [
     "https://www.neriacorp.com",
     "https://mamandouce.neriacorp.com",
     "https://www.mamandouce.neriacorp.com",
+    "https://hub.neriacorp.com",
+    "https://www.hub.neriacorp.com",
     "https://cycafamily.com",
     "https://www.cycafamily.com",
     "https://mamandouce.cycafamily.com",
     "https://www.mamandouce.cycafamily.com",
     "https://portal.neriacorp.com",
     "https://app.neriacorp.com",
+    "https://www.app.neriacorp.com",
     "https://api.neriacorp.com",
+    # Alias courts B2B (liste explicite — jamais un wildcard *.neriacorp.com)
+    "https://heritia.neriacorp.com",
+    "https://www.heritia.neriacorp.com",
+    "https://visatrace.neriacorp.com",
+    "https://aevis.neriacorp.com",
+    "https://veovision.neriacorp.com",
+    "https://vellumia.neriacorp.com",
 ]
 
 # Frontends Railway (ex. https://mamandouce-frontend-production.up.railway.app)
 RAILWAY_CORS_ORIGIN_REGEX = r"https://[a-zA-Z0-9.-]+\.(up\.)?railway\.app"
+
+# Boutiques multi-tenant : https://{slug}.app.neriacorp.com uniquement (pas *.neriacorp.com).
+NERIACORP_APP_ORIGIN_REGEX = r"https://(?!www\.)[a-z0-9-]+\.app\.neriacorp\.com"
+
+# Un seul allow_origin_regex Starlette : boutiques .app + fronts Railway.
+CORS_ORIGIN_REGEX = rf"(?:{NERIACORP_APP_ORIGIN_REGEX}|{RAILWAY_CORS_ORIGIN_REGEX})"
 
 
 def _normalize_origin(value: str) -> str:
@@ -64,20 +80,37 @@ def parse_cors_origins(raw: str | None = None) -> list[str]:
         extras = [_normalize_origin(part) for part in text.split(",") if part.strip()]
 
     if extras == ["*"] or text == "*":
-        return ["*"]
+        extras = []
+
+    extras = [origin for origin in extras if origin and origin != "*"]
 
     origins: list[str] = []
     for candidate in (
         list(NERIACORP_CORS_ORIGINS)
         + extras
+        + _parse_b2b_alias_origins()
         + [
             os.environ.get("FRONTEND_URL") or "",
             os.environ.get("PUBLIC_APP_URL") or "",
         ]
     ):
         origin = _normalize_origin(candidate)
-        if origin and origin not in origins:
+        if origin and origin != "*" and origin not in origins:
             origins.append(origin)
+    return origins
+
+
+def _parse_b2b_alias_origins() -> list[str]:
+    """N2_B2B_ALIASES / B2B_ALIASES : CSV d'origines ou d'hôtes courts explicites."""
+    raw = os.environ.get("N2_B2B_ALIASES") or os.environ.get("B2B_ALIASES") or ""
+    origins: list[str] = []
+    for part in raw.split(","):
+        value = _normalize_origin(part)
+        if not value or value == "*":
+            continue
+        if "://" not in value:
+            value = f"https://{value}"
+        origins.append(value)
     return origins
 
 
