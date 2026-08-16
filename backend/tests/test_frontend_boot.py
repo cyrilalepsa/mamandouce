@@ -42,11 +42,49 @@ def test_error_boundary_exposes_details_on_tenant_hosts():
 def test_backend_url_resolver_covers_tenant_hosts():
     src = (FRONTEND / "src" / "utils" / "backendUrl.js").read_text(encoding="utf-8")
     assert "mamandouce.neriacorp.com" in src
+    assert "www.mamandouce.neriacorp.com" in src
+    assert "STANDALONE_MAMANDOUCE_HOSTS" in src
+    assert "isStandaloneMamandouceHost" in src
     assert ALIAS in src
     assert "https://api.neriacorp.com" in src
     assert "VITE_API_URL" in src
     assert "withTimeout" in src
     assert "resolveAppSlugFromHost" in src
+    assert "isPublicHttpsApiUrl" in src
+
+
+def test_standalone_host_components_use_resolved_backend():
+    leftovers = [
+        FRONTEND / "src" / "components" / "admin" / "PublicationQRCode.jsx",
+        FRONTEND / "src" / "components" / "admin" / "DashboardTab.jsx",
+        FRONTEND / "src" / "components" / "admin" / "AndroidExportTab.jsx",
+        FRONTEND / "src" / "components" / "settings" / "PushNotificationsSection.jsx",
+        FRONTEND / "src" / "utils" / "fetusAssets.js",
+    ]
+    for path in leftovers:
+        src = path.read_text(encoding="utf-8")
+        assert "from " in src and "backendUrl" in src
+        assert "import.meta.env.VITE_BACKEND_URL" not in src
+
+
+def test_standalone_host_resolution_executable():
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if not node:
+        raise AssertionError("node is required to execute backendUrl standalone tests")
+    script = FRONTEND / "src" / "utils" / "backendUrl.standalone.test.mjs"
+    result = subprocess.run(
+        [node, script],
+        cwd=str(REPO),
+        capture_output=True,
+        text=True,
+        timeout=20,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "backendUrl standalone: ok" in result.stdout
 
 
 def test_api_client_uses_resolved_backend_and_timeout():

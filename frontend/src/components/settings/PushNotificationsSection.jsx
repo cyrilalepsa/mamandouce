@@ -4,6 +4,7 @@ import { Card } from '../ui/card';
 import { Bell, BellRing, Calendar, BookOpen, Clock, Smartphone, CheckCircle2, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../../utils/api';
+import { BACKEND_URL } from '../../utils/backendUrl';
 
 export function PushNotificationsSection({ preferences, setPreferences, onSave }) {
   const [pushSupported, setPushSupported] = useState(false);
@@ -58,7 +59,7 @@ export function PushNotificationsSection({ preferences, setPreferences, onSave }
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
         
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/notifications/vapid-public-key`, {
+        const response = await fetch(`${BACKEND_URL}/api/notifications/vapid-public-key`, {
           signal: controller.signal
         });
         clearTimeout(timeoutId);

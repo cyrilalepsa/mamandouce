@@ -1,11 +1,23 @@
 /**
  * Résolution de l'URL API selon l'hôte (tenant) et les variables Vite.
- * Évite un splash bloqué quand le build a été fait avec localhost
- * puis servi sur mamandouce.neriacorp.com / cycafamily.com.
+ *
+ * mamandouce.neriacorp.com est un hôte standalone (conteneur Railway dédié,
+ * sans wildcard du Noyau N2). Les requêtes API vont vers le backend
+ * MamanDouce ou l'API centrale N2 (api.neriacorp.com) — jamais vers
+ * localhost une fois servi sur cet hôte.
  */
 
 export const DEFAULT_PUBLIC_API = "https://api.neriacorp.com";
 export const DEFAULT_LOCAL_API = "http://localhost:8000";
+export const APP_SLUG_MAMANDOUCE = "mamandouce";
+
+/** Hôtes où le front MamanDouce tourne en standalone (sans wildcard N2). */
+export const STANDALONE_MAMANDOUCE_HOSTS = [
+  "mamandouce.neriacorp.com",
+  "www.mamandouce.neriacorp.com",
+  "mamandouce.app",
+  "www.mamandouce.app",
+];
 
 /** Hôtes front connus (alias historique inclus). */
 export const TENANT_HOSTS = [
@@ -32,29 +44,49 @@ function readViteBackendUrl() {
   }
 }
 
+function normalizeHost(hostname) {
+  return String(hostname || "").toLowerCase().split(":")[0];
+}
+
 export function isLocalHostname(hostname) {
-  const host = String(hostname || "").toLowerCase().split(":")[0];
-  return LOCAL_HOSTS.has(host);
+  return LOCAL_HOSTS.has(normalizeHost(hostname));
+}
+
+/**
+ * Détecte nativement l'application MamanDouce en standalone
+ * (sous-domaine dédié Railway, pas un tenant wildcard N2).
+ */
+export function isStandaloneMamandouceHost(hostname) {
+  try {
+    const host = normalizeHost(hostname);
+    if (!host) return false;
+    if (STANDALONE_MAMANDOUCE_HOSTS.includes(host)) return true;
+    if (host === "mamandouce.app" || host === "www.mamandouce.app") return true;
+    if (host.startsWith("mamandouce.")) return true;
+    if (host.startsWith("www.mamandouce.")) return true;
+    return false;
+  } catch {
+    return false;
+  }
 }
 
 export function resolveAppSlugFromHost(hostname) {
   try {
-    const host = String(hostname || "").toLowerCase().split(":")[0];
-    if (!host) return "mamandouce";
-    if (host.startsWith("mamandouce.") || host === "mamandouce.app" || host === "www.mamandouce.app") {
-      return "mamandouce";
-    }
+    const host = normalizeHost(hostname);
+    if (!host) return APP_SLUG_MAMANDOUCE;
+    if (isStandaloneMamandouceHost(host)) return APP_SLUG_MAMANDOUCE;
     const first = host.split(".")[0];
-    return first && first !== "www" ? first : "mamandouce";
+    return first && first !== "www" ? first : APP_SLUG_MAMANDOUCE;
   } catch {
-    return "mamandouce";
+    return APP_SLUG_MAMANDOUCE;
   }
 }
 
 export function isKnownTenantHost(hostname) {
   try {
-    const host = String(hostname || "").toLowerCase().split(":")[0];
+    const host = normalizeHost(hostname);
     if (TENANT_HOSTS.includes(host)) return true;
+    if (isStandaloneMamandouceHost(host)) return true;
     return host.endsWith(".neriacorp.com") || host.endsWith("." + ["cyca", "family", ".com"].join(""));
   } catch {
     return false;
@@ -63,7 +95,19 @@ export function isKnownTenantHost(hostname) {
 
 export function isLocalApiUrl(url) {
   const value = String(url || "").toLowerCase();
-  return !value || /localhost|127\.0\.0\.1/.test(value);
+  return !value || /localhost|127\.0\.0\.1|0\.0\.0\.0/.test(value);
+}
+
+/** URL API publique HTTPS (backend MamanDouce dédié ou API N2). */
+export function isPublicHttpsApiUrl(url) {
+  const value = String(url || "").trim();
+  if (!value || isLocalApiUrl(value)) return false;
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -74,14 +118,20 @@ export function resolveBackendUrl(opts = {}) {
   const fromEnv = String(opts.envUrl ?? readViteBackendUrl())
     .trim()
     .replace(/\/$/, "");
-  const host = String(
+  const host = normalizeHost(
     opts.hostname ?? (typeof window !== "undefined" ? window.location.hostname : ""),
-  )
-    .toLowerCase()
-    .split(":")[0];
+  );
 
   if (isLocalHostname(host)) {
     return fromEnv || DEFAULT_LOCAL_API;
+  }
+
+  // Conteneur Railway standalone : jamais un backend local cuit dans le build.
+  // VITE_BACKEND_URL / VITE_API_URL uniquement s'il s'agit d'un HTTPS public
+  // (backend MamanDouce dédié). Sinon API centrale N2.
+  if (isStandaloneMamandouceHost(host)) {
+    if (isPublicHttpsApiUrl(fromEnv)) return fromEnv;
+    return DEFAULT_PUBLIC_API;
   }
 
   if (isKnownTenantHost(host) && isLocalApiUrl(fromEnv)) {
