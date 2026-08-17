@@ -180,7 +180,7 @@ export function EmotionalIntelligenceProvider({ children }) {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const res = await api.get('/emotional/pending-notifications');
+      const res = await api.get('/api/emotional/pending-notifications');
       if (res.data.notifications?.length > 0) {
         setNotifications(res.data.notifications);
         setCurrentNotification(res.data.notifications[0]);
@@ -199,7 +199,7 @@ export function EmotionalIntelligenceProvider({ children }) {
   const handleCloseNotification = async () => {
     if (currentNotification) {
       try {
-        await api.post('/emotional/mark-celebrated', null, {
+        await api.post('/api/emotional/mark-celebrated', null, {
           params: { event_type: currentNotification.type }
         });
       } catch (e) {}
@@ -233,7 +233,7 @@ export function EmotionalIntelligenceProvider({ children }) {
 export function useEmotionalIntelligence() {
   const announcePregnancy = async () => {
     try {
-      const res = await api.post('/emotional/pregnancy-announced');
+      const res = await api.post('/api/emotional/pregnancy-announced');
       return res.data;
     } catch (error) {
       console.error('Error:', error);
@@ -243,7 +243,7 @@ export function useEmotionalIntelligence() {
 
   const checkCycleStatus = async () => {
     try {
-      const res = await api.get('/emotional/cycle-status');
+      const res = await api.cycle.status();
       return res.data;
     } catch (error) {
       return null;
@@ -252,7 +252,7 @@ export function useEmotionalIntelligence() {
 
   const checkSpecialDates = async () => {
     try {
-      const res = await api.get('/emotional/special-dates');
+      const res = await api.get('/api/emotional/special-dates');
       return res.data;
     } catch (error) {
       return null;

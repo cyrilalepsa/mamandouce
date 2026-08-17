@@ -86,6 +86,8 @@ useEffect(() => {
 
     // Toujours charger les données cycle (sinon calendrier sans couleurs/légende utile)
     loadCycleData();
+    loadCycleAnalysis();
+    checkBannerStatus();
     loadRapportDates();
   }, []);
 
@@ -93,15 +95,16 @@ useEffect(() => {
   const loadCycleData = async () => {
     try {
       const profileRes = await api.pregnancy.getProfile();
-      if (profileRes.data && profileRes.data.last_period_date) {
-        const ymd = toYearMonthDay(profileRes.data.last_period_date);
-        const length = parseHabitualLength(profileRes.data.cycle_length, 28);
+      const profile = profileRes.data;
+      if (profile && profile.last_period_date) {
+        const ymd = toYearMonthDay(profile.last_period_date);
+        const length = parseHabitualLength(profile.cycle_length, 28);
         setLastPeriodDate(ymd);
         setCycleLength(length);
         calculateAgendaDates(ymd, length);
       }
     } catch (error) {
-      console.error('Erreur chargement données:', error);
+      console.warn('Profil cycle indisponible (utilisateur sans paramètres) :', error?.response?.status || error.message);
     } finally {
       setInitialLoading(false);
     }
@@ -110,7 +113,7 @@ useEffect(() => {
   // Charger l'analyse IA des cycles
   const loadCycleAnalysis = async () => {
     try {
-      const response = await api.get('/api/cycle/intelligence');
+      const response = await api.cycle.intelligence();
       if (response.data && response.data.analysis) {
         setCycleAnalysis(response.data.analysis);
         
@@ -126,24 +129,24 @@ useEffect(() => {
         }
       }
     } catch (error) {
-      console.error('Erreur chargement analyse IA:', error);
+      console.warn('Analyse cycle indisponible :', error?.response?.status || error.message);
     }
   };
   
   // Vérifier si la bannière doit être affichée
   const checkBannerStatus = async () => {
     try {
-      const response = await api.get('/api/cycle/banner-status');
+      const response = await api.cycle.bannerStatus();
       setShowIrregularBanner(response.data?.show_banner !== false);
     } catch (error) {
-      console.error('Erreur statut bannière:', error);
+      setShowIrregularBanner(false);
     }
   };
   
   // Masquer la bannière d'irrégularité
   const dismissBanner = async () => {
     try {
-      await api.post('/api/cycle/dismiss-banner');
+      await api.cycle.dismissBanner();
       setShowIrregularBanner(false);
       toast.success('Bannière masquée');
     } catch (error) {
@@ -161,9 +164,7 @@ useEffect(() => {
     
     setLoading(true);
     try {
-      const response = await api.post('/api/cycle/history/initial', {
-        period_dates: validDates
-      });
+      const response = await api.cycle.saveInitialHistory(validDates);
       
       if (response.data?.success) {
         toast.success('Historique enregistré ! L\'IA analyse vos cycles...');
@@ -186,7 +187,7 @@ useEffect(() => {
   // Charger le rapport de cycle
   const loadCycleReport = async () => {
     try {
-      const response = await api.get(`/api/cycle/report?current_cycle_length=${cycleLength}`);
+      const response = await api.cycle.report(cycleLength);
       if (response.data) {
         setCycleReport(response.data);
         setShowCycleReport(true);

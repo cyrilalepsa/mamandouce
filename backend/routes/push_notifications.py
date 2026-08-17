@@ -27,8 +27,9 @@ except ImportError:
 async def get_vapid_public_key():
     """Get the VAPID public key for client-side subscription"""
     if not VAPID_PUBLIC_KEY:
-        raise HTTPException(status_code=500, detail="VAPID key not configured")
-    return {"publicKey": VAPID_PUBLIC_KEY}
+        logger.warning("VAPID public key not configured — push disabled")
+        return {"publicKey": "", "configured": False}
+    return {"publicKey": VAPID_PUBLIC_KEY, "configured": True}
 
 @router.post("/notifications/subscribe")
 async def subscribe_to_push(request: SubscribeRequest, current_user: User = Depends(get_current_user)):

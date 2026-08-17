@@ -72,6 +72,14 @@ export const api = {
     getFertilityRemindersStatus: () => axios.get(`${API()}/pregnancy/fertility-reminders`, getAuthHeaders()),
     checkFertilityWindow: () => axios.get(`${API()}/pregnancy/check-fertility-window`, getAuthHeaders()),
   },
+  cycle: {
+    intelligence: () => axios.get(`${API()}/cycle/intelligence`, getAuthHeaders()),
+    bannerStatus: () => axios.get(`${API()}/cycle/banner-status`, getAuthHeaders()),
+    dismissBanner: () => axios.post(`${API()}/cycle/dismiss-banner`, {}, getAuthHeaders()),
+    saveInitialHistory: (period_dates) => axios.post(`${API()}/cycle/history/initial`, { period_dates }, getAuthHeaders()),
+    report: (currentCycleLength) => axios.get(`${API()}/cycle/report?current_cycle_length=${currentCycleLength}`, getAuthHeaders()),
+    status: () => axios.get(`${API()}/emotional/cycle-status`, getAuthHeaders()),
+  },
   scan: {
     barcode: (barcode) => axios.post(`${API()}/food/scan/barcode?barcode=${barcode}`, {}, getAuthHeaders()),
     search: (query) => axios.post(`${API()}/food/scan/search?query=${query}`, {}, getAuthHeaders()),

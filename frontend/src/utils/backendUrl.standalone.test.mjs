@@ -9,11 +9,13 @@ import {
   apiUrl,
   getApiBase,
   getBackendUrl,
+  isN2CoreApiUrl,
   isReservedNeriaHost,
   isStandaloneMamandouceHost,
   resolveAppSlugFromHost,
   resolveBackendUrl,
   resolveBoutiqueSlugFromHost,
+  withApiPrefix,
 } from "./backendUrl.js";
 
 const failures = [];
@@ -32,28 +34,31 @@ const standaloneHosts = [
   "mamandouce.neriacorp.com:443",
 ];
 
+const mdOrigin = "https://mamandouce.neriacorp.com";
+
 for (const host of standaloneHosts) {
+  const expectedOrigin = `https://${host.split(":")[0]}`;
   assertEqual(isStandaloneMamandouceHost(host), true, `isStandalone(${host})`);
   assertEqual(resolveAppSlugFromHost(host), APP_SLUG_MAMANDOUCE, `slug(${host})`);
   assertEqual(
     resolveBackendUrl({ hostname: host, envUrl: "" }),
-    DEFAULT_PUBLIC_API,
-    `api empty env on ${host}`,
+    expectedOrigin,
+    `api empty env on ${host} is same-origin MD`,
   );
   assertEqual(
     resolveBackendUrl({ hostname: host, envUrl: "http://localhost:8000" }),
-    DEFAULT_PUBLIC_API,
+    expectedOrigin,
     `api baked localhost on ${host}`,
   );
   assertEqual(
     resolveBackendUrl({ hostname: host, envUrl: "http://127.0.0.1:8000/" }),
-    DEFAULT_PUBLIC_API,
+    expectedOrigin,
     `api 127.0.0.1 on ${host}`,
   );
   assertEqual(
     resolveBackendUrl({ hostname: host, envUrl: DEFAULT_PUBLIC_API }),
-    DEFAULT_PUBLIC_API,
-    `api N2 on ${host}`,
+    expectedOrigin,
+    `N2 core is ignored on ${host}`,
   );
 }
 
@@ -84,7 +89,7 @@ assertEqual(
     hostname: "mamandouce.neriacorp.com",
     envUrl: `https://legacy.${["up", "railway", "app"].join(".")}/`,
   }),
-  DEFAULT_PUBLIC_API,
+  mdOrigin,
   "legacy platform host is ignored on standalone",
 );
 assertEqual(
@@ -104,32 +109,46 @@ assertEqual(
 );
 assertEqual(
   getBackendUrl({ hostname: "mamandouce.neriacorp.com", envUrl: "http://localhost:8000" }),
-  DEFAULT_PUBLIC_API,
+  mdOrigin,
   "getBackendUrl ignores baked localhost on standalone",
 );
 assertEqual(
   getApiBase({ hostname: "mamandouce.neriacorp.com", envUrl: "" }),
-  `${DEFAULT_PUBLIC_API}/api`,
-  "getApiBase uses N2 on standalone",
+  `${mdOrigin}/api`,
+  "getApiBase is same-origin /api on standalone",
 );
+assertEqual(withApiPrefix("/emotional/cycle-status"), "/api/emotional/cycle-status", "prefix cycle-status");
+assertEqual(withApiPrefix("/api/cycle/intelligence"), "/api/cycle/intelligence", "keep /api cycle path");
+assertEqual(withApiPrefix("notifications/subscribe"), "/api/notifications/subscribe", "prefix subscribe");
+assertEqual(isN2CoreApiUrl(DEFAULT_PUBLIC_API), true, "N2 core detection");
 assertEqual(
   apiUrl("/api/neriacorp/media", { hostname: "mamandouce.neriacorp.com", envUrl: "" }),
-  `${DEFAULT_PUBLIC_API}/api/neriacorp/media`,
+  `${mdOrigin}/api/neriacorp/media`,
   "apiUrl Cloudinary media",
 );
 assertEqual(
   apiUrl("/api/notifications/vapid-public-key", { hostname: "mamandouce.neriacorp.com" }),
-  `${DEFAULT_PUBLIC_API}/api/notifications/vapid-public-key`,
+  `${mdOrigin}/api/notifications/vapid-public-key`,
   "apiUrl VAPID",
 );
 assertEqual(
+  apiUrl("/emotional/cycle-status", { hostname: "mamandouce.neriacorp.com" }),
+  `${mdOrigin}/api/emotional/cycle-status`,
+  "apiUrl cycle-status gets /api prefix",
+);
+assertEqual(
+  apiUrl("/api/cycle/intelligence", { hostname: "mamandouce.neriacorp.com" }),
+  `${mdOrigin}/api/cycle/intelligence`,
+  "apiUrl cycle intelligence",
+);
+assertEqual(
   apiUrl("/api/scanner/publications/abc", { hostname: "mamandouce.neriacorp.com" }),
-  `${DEFAULT_PUBLIC_API}/api/scanner/publications/abc`,
+  `${mdOrigin}/api/scanner/publications/abc`,
   "apiUrl QR publication",
 );
 assertEqual(
   apiUrl("http://localhost:8000/api/x", { hostname: "mamandouce.neriacorp.com" }),
-  DEFAULT_PUBLIC_API,
+  mdOrigin,
   "apiUrl drops localhost fallback on standalone",
 );
 
