@@ -55,6 +55,8 @@ def test_backend_url_resolver_covers_tenant_hosts():
     assert "hub.neriacorp.com" in src
     assert "cockpit.neriacorp.com" in src
     assert "isPublicHttpsApiUrl" in src
+    assert "isN2CoreApiUrl" in src
+    assert "withApiPrefix" in src
     assert "getBackendUrl" in src
     assert "getApiBase" in src
     assert "export function apiUrl" in src
@@ -83,6 +85,9 @@ def test_api_client_resolves_urls_dynamically():
     assert "apiUrl(" in src
     assert "localhost:8000" not in src
     assert "import.meta.env.VITE_BACKEND_URL" not in src
+    assert "cycle: {" in src
+    assert "${API()}/cycle/intelligence" in src
+    assert "${API()}/emotional/cycle-status" in src
 
 
 def test_standalone_host_resolution_executable():

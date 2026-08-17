@@ -1,5 +1,5 @@
 // Version du cache - INCRÉMENTEZ À CHAQUE MISE À JOUR IMPORTANTE
-const CACHE_VERSION = 'v2.6.2-neria-dns';
+const CACHE_VERSION = 'v2.6.3-md-same-origin';
 const N2_API_HOST = 'api.neriacorp.com';
 const CACHE_NAME = `mamandouce-${CACHE_VERSION}`;
 const STATIC_CACHE = `mamandouce-static-${CACHE_VERSION}`;

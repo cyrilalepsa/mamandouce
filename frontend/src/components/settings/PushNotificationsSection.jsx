@@ -70,8 +70,10 @@ export function PushNotificationsSection({ preferences, setPreferences, onSave }
         const vapidData = await response.json();
         publicKey = vapidData.publicKey;
         
-        if (!publicKey) {
-          throw new Error('Clé VAPID vide');
+        if (!publicKey || vapidData.configured === false) {
+          toast.error('Notifications push non configurées sur ce serveur.');
+          setSubscribing(false);
+          return;
         }
       } catch (vapidError) {
         console.error('VAPID key error:', vapidError);
@@ -120,7 +122,7 @@ export function PushNotificationsSection({ preferences, setPreferences, onSave }
 
       // Send subscription to server
       try {
-        await api.post('/notifications/subscribe', {
+        await api.post('/api/notifications/subscribe', {
           subscription: {
             endpoint: sub.endpoint,
             keys: {
@@ -170,7 +172,7 @@ export function PushNotificationsSection({ preferences, setPreferences, onSave }
     try {
       await subscription.unsubscribe();
       
-      await api.post('/notifications/unsubscribe', {
+      await api.post('/api/notifications/unsubscribe', {
         subscription: {
           endpoint: subscription.endpoint,
           keys: { p256dh: '', auth: '' }

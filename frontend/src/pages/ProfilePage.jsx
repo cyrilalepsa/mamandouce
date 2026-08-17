@@ -84,7 +84,7 @@ function ProfilePage() {
 
   const loadCycleStatus = async () => {
     try {
-      const res = await api.get('/emotional/cycle-status');
+      const res = await api.cycle.status();
       setCycleStatus(res.data);
     } catch (error) {
       // Silent fail - not critical

@@ -21,9 +21,9 @@ router = APIRouter(tags=["emotional"])
 async def get_cycle_status(current_user: User = Depends(get_current_user)):
     """Check cycle status and return alerts for J+15 (potential pregnancy)"""
     
-    user_doc = await db.users.find_one({"id": current_user.id}, {"_id": 0})
+    user_doc = await db.users.find_one({"id": current_user.id}, {"_id": 0}) or {}
     
-    # Get last period date from user's cycle data
+    # Get last period date from user's cycle data (colonnes optionnelles)
     last_period = user_doc.get("last_period_date")
     cycle_length = user_doc.get("cycle_length", 28)
     

@@ -29,14 +29,19 @@ class CycleIntelligenceAgent:
         """Charger l'historique des cycles depuis la base de données (6 derniers mois)"""
         six_months_ago = datetime.now(timezone.utc) - timedelta(days=180)
         
-        # Chercher dans la collection des cycles
-        cycles = await db.cycle_history.find({
-            "user_id": self.user_id,
-            "start_date": {"$gte": six_months_ago.isoformat()}
-        }).sort("start_date", -1).to_list(12)
-        
-        self.cycle_history = cycles
-        return cycles
+        try:
+            cycles = await db.cycle_history.find({
+                "user_id": self.user_id,
+                "start_date": {"$gte": six_months_ago.isoformat()}
+            }).sort("start_date", -1).to_list(12)
+            self.cycle_history = cycles or []
+        except Exception:
+            import logging
+            logging.getLogger("mamandouce.cycle").exception(
+                "cycle_history read failed user_id=%s", self.user_id
+            )
+            self.cycle_history = []
+        return self.cycle_history
     
     async def save_cycle(self, start_date: str, cycle_length: int, end_date: str = None) -> Dict:
         """Enregistrer un nouveau cycle dans l'historique"""

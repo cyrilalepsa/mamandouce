@@ -9,6 +9,7 @@
 
 export const DEFAULT_PUBLIC_API = "https://api.neriacorp.com";
 export const DEFAULT_LOCAL_API = "http://localhost:8000";
+export const N2_CORE_API_HOST = "api.neriacorp.com";
 export const APP_SLUG_MAMANDOUCE = "mamandouce";
 
 /** Labels de premier niveau qui ne sont pas des boutiques B2B. */
@@ -163,6 +164,37 @@ export function isPublicHttpsApiUrl(url) {
   }
 }
 
+export function isN2CoreApiUrl(url) {
+  try {
+    return new URL(String(url || "").trim()).hostname.toLowerCase() === N2_CORE_API_HOST;
+  } catch {
+    return false;
+  }
+}
+
+/** FastAPI MamanDouce est monté sous /api — jamais l'origine nue (404 N2). */
+export function withApiPrefix(pathname) {
+  const raw = String(pathname || "").trim();
+  if (!raw) return "/api";
+  const path = raw.startsWith("/") ? raw : `/${raw}`;
+  if (path === "/api" || path.startsWith("/api/")) return path;
+  return `/api${path}`;
+}
+
+function standaloneSameOrigin(host, opts = {}) {
+  const fromOpts = String(opts.origin || "").replace(/\/$/, "");
+  if (fromOpts && /^https?:\/\//i.test(fromOpts) && !isN2CoreApiUrl(fromOpts)) {
+    return fromOpts;
+  }
+  if (typeof window !== "undefined" && window.location?.origin) {
+    const locHost = normalizeHost(window.location.hostname);
+    if (!host || locHost === normalizeHost(host)) {
+      return String(window.location.origin).replace(/\/$/, "");
+    }
+  }
+  return `https://${normalizeHost(host)}`;
+}
+
 /**
  * @param {{ envUrl?: string, hostname?: string }} [opts]
  * @returns {string} URL API sans slash final
@@ -179,12 +211,11 @@ export function resolveBackendUrl(opts = {}) {
     return fromEnv || DEFAULT_LOCAL_API;
   }
 
-  // Conteneur Railway standalone : jamais un backend local cuit dans le build.
-  // VITE_BACKEND_URL / VITE_API_URL uniquement s'il s'agit d'un HTTPS public
-  // (backend MamanDouce dédié). Sinon API centrale N2.
+  // Conteneur Railway standalone : FastAPI sert le SPA et /api sur le même hôte.
+  // Ne jamais envoyer cycle / pregnancy / VAPID vers le Noyau N2.
   if (isStandaloneMamandouceHost(host)) {
-    if (isPublicHttpsApiUrl(fromEnv)) return fromEnv;
-    return DEFAULT_PUBLIC_API;
+    if (isPublicHttpsApiUrl(fromEnv) && !isN2CoreApiUrl(fromEnv)) return fromEnv;
+    return standaloneSameOrigin(host, opts);
   }
 
   if (isKnownTenantHost(host) && isLocalApiUrl(fromEnv)) {
@@ -221,8 +252,8 @@ export function apiUrl(path = "", opts) {
     return suffix.replace(/\/$/, "");
   }
   const base = String(getBackendUrl(opts)).replace(/\/$/, "");
-  if (!suffix) return base;
-  return `${base}${suffix.startsWith("/") ? suffix : `/${suffix}`}`;
+  if (!suffix) return `${base}/api`;
+  return `${base}${withApiPrefix(suffix)}`;
 }
 
 export const BACKEND_URL = getBackendUrl();

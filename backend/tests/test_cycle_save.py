@@ -97,3 +97,35 @@ def test_sqlite_fallback_when_mongo_fails(tmp_path, monkeypatch):
     loaded = cycle_store.sqlite_get("user-cycle-1")
     assert loaded["last_period_date"] == "2026-08-17"
     assert loaded["cycle_length"] == 29
+
+
+def test_cycle_intelligence_ok_without_history(user_client):
+    empty_cursor = AsyncMock()
+    empty_cursor.sort = lambda *a, **k: empty_cursor
+    empty_cursor.to_list = AsyncMock(return_value=[])
+    with patch("services.cycle_intelligence.db") as mock_db:
+        mock_db.cycle_history.find.return_value = empty_cursor
+        response = user_client.get("/api/cycle/intelligence")
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["analysis"]["has_enough_data"] is False
+    assert body["analysis"]["recommended_cycle_length"] == 28
+
+
+def test_cycle_status_ok_when_user_has_no_cycle_fields(user_client):
+    with patch("routes.emotional.db") as mock_db:
+        mock_db.users.find_one = AsyncMock(return_value=None)
+        response = user_client.get("/api/emotional/cycle-status")
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["status"] == "no_data"
+    assert body["show_alert"] is False
+
+
+def test_vapid_key_returns_unconfigured_instead_of_500(user_client, monkeypatch):
+    monkeypatch.setattr("routes.push_notifications.VAPID_PUBLIC_KEY", "")
+    response = user_client.get("/api/notifications/vapid-public-key")
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["configured"] is False
+    assert body["publicKey"] == ""

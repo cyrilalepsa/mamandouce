@@ -422,11 +422,15 @@ async def get_cycle_analysis(current_user: User = Depends(get_current_user)):
     Obtenir l'analyse intelligente des cycles de l'utilisateur
     Retourne les statistiques, la détection d'irrégularité et les recommandations
     """
-    from services.cycle_intelligence import get_cycle_intelligence
-    
-    agent = await get_cycle_intelligence(current_user.id)
-    analysis = agent.analyze_cycles()
-    
+    from services.cycle_intelligence import CycleIntelligenceAgent, get_cycle_intelligence
+
+    try:
+        agent = await get_cycle_intelligence(current_user.id)
+        analysis = agent.analyze_cycles()
+    except Exception:
+        logger.exception("cycle intelligence failed user_id=%s", current_user.id)
+        analysis = CycleIntelligenceAgent(current_user.id).analyze_cycles()
+
     return {
         "user_id": current_user.id,
         "analysis": analysis
