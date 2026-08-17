@@ -5,6 +5,7 @@ import { Card } from '../components/ui/card';
 import { ArrowLeft, RotateCw } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../utils/api';
+import { extractApiErrorDetail, toYearMonthDay } from '../utils/cycleForm';
 
 function PregnancyWheel() {
   const navigate = useNavigate();
@@ -13,15 +14,15 @@ function PregnancyWheel() {
   const [results, setResults] = useState(null);
 
   const calculateFromWheel = () => {
-    const lastPeriodDate = selectedDate.toISOString().split('T')[0];
-    
-    api.pregnancy.calculate({ last_period_date: lastPeriodDate })
+    const lastPeriodDate = toYearMonthDay(selectedDate);
+
+    api.pregnancy.calculate({ last_period_date: lastPeriodDate, cycle_length: 28 })
       .then(response => {
         setResults(response.data);
         toast.success('Dates calculées avec le disque de grossesse!');
       })
-      .catch(() => {
-        toast.error('Erreur lors du calcul');
+      .catch((error) => {
+        toast.error(extractApiErrorDetail(error) || 'Erreur lors du calcul');
       });
   };
 

@@ -3,12 +3,17 @@ Pregnancy routes for MamanDouce
 Handles: Pregnancy calculation, Profile management
 With precise medical calculations based on cycle duration
 """
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from datetime import datetime, timedelta, timezone
+import logging
 
 from core.database import db
 from core.security import get_current_user
+from core.cycle_dates import as_naive_utc, coerce_cycle_length, parse_last_period_datetime
+from core.cycle_store import load_cycle_profile, persist_cycle_settings
 from models.schemas import User, PregnancyCalculation, PregnancyProfile
+
+logger = logging.getLogger("mamandouce.cycle")
 
 router = APIRouter(tags=["pregnancy"])
 
@@ -25,8 +30,9 @@ def calculate_pregnancy_dates(last_period: datetime, cycle_duration: int):
     - Next period: If not pregnant, cycle_duration days after last period
     """
     
+    last_period = as_naive_utc(last_period)
     # Validate cycle duration (normal range: 21-35 days)
-    cycle_duration = max(21, min(35, cycle_duration))
+    cycle_duration = max(21, min(35, int(cycle_duration)))
     
     # === OVULATION ===
     # The luteal phase (after ovulation) is relatively constant at 14 days
@@ -139,56 +145,82 @@ def calculate_pregnancy_dates(last_period: datetime, cycle_duration: int):
 @router.post("/pregnancy/calculate")
 async def calculate_pregnancy(data: PregnancyCalculation, current_user: User = Depends(get_current_user)):
     """Calculate pregnancy dates based on last period with medical precision"""
-    last_period = datetime.fromisoformat(data.last_period_date)
-    
-    # Get cycle duration from data
-    cycle_duration = data.cycle_length
-    if hasattr(data, 'cycle_duration') and data.cycle_duration:
-        cycle_duration = data.cycle_duration
-    
-    # Calculate all dates
+    try:
+        last_period = parse_last_period_datetime(data.last_period_date)
+        cycle_duration = coerce_cycle_length(data.cycle_length)
+    except ValueError as exc:
+        logger.warning(
+            "cycle save validation failed user_id=%s last_period_date=%r cycle_length=%r error=%s",
+            current_user.id,
+            data.last_period_date,
+            data.cycle_length,
+            exc,
+        )
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
     result = calculate_pregnancy_dates(last_period, cycle_duration)
-    
-    # Save profile to database
+    ymd = last_period.strftime("%Y-%m-%d")
+
     profile = PregnancyProfile(
         user_id=current_user.id,
-        last_period_date=last_period.isoformat(),
+        last_period_date=ymd,
         cycle_length=result["cycle_duration"],
         estimated_conception_date=result["conception_date"],
         estimated_due_date=result["due_date"],
         current_week=result["weeks_pregnant"]
     )
-    
-    existing = await db.pregnancy_profiles.find_one({"user_id": current_user.id})
+
     profile_dict = profile.model_dump()
-    profile_dict["created_at"] = datetime.now(timezone.utc).isoformat()
     profile_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
     profile_dict["cycle_duration"] = result["cycle_duration"]
     profile_dict["ovulation_date"] = result["ovulation_date"]
     profile_dict["implantation_date"] = result["implantation_date"]
     profile_dict["trimester"] = result["trimester"]
-    
-    if existing:
-        await db.pregnancy_profiles.update_one(
-            {"user_id": current_user.id},
-            {"$set": profile_dict}
+
+    try:
+        stored = await persist_cycle_settings(current_user.id, profile_dict)
+        logger.info(
+            "cycle settings saved user_id=%s last_period_date=%s cycle_length=%s store=%s",
+            current_user.id,
+            ymd,
+            result["cycle_duration"],
+            stored,
         )
-    else:
-        await db.pregnancy_profiles.insert_one(profile_dict)
-    
+        if stored == "none":
+            logger.error(
+                "cycle settings calculation ok but persist failed user_id=%s last_period_date=%s",
+                current_user.id,
+                ymd,
+            )
+    except Exception:
+        logger.exception(
+            "cycle settings persist unexpected error user_id=%s last_period_date=%s cycle_length=%s",
+            current_user.id,
+            ymd,
+            result["cycle_duration"],
+        )
+
     return result
 
 
 @router.get("/pregnancy/profile")
 async def get_pregnancy_profile(current_user: User = Depends(get_current_user)):
     """Get user's pregnancy profile with updated calculations"""
-    profile = await db.pregnancy_profiles.find_one({"user_id": current_user.id}, {"_id": 0})
+    profile = await load_cycle_profile(current_user.id)
     if not profile:
         return None
     
     # Recalculate current week and days
     if profile.get("last_period_date"):
-        last_period = datetime.fromisoformat(profile["last_period_date"])
+        try:
+            last_period = parse_last_period_datetime(profile["last_period_date"])
+        except ValueError:
+            logger.warning(
+                "stored last_period_date invalid user_id=%s value=%r",
+                current_user.id,
+                profile.get("last_period_date"),
+            )
+            return profile
         today = datetime.now(timezone.utc).replace(tzinfo=None)
         days_pregnant = (today - last_period).days
         profile["current_week"] = days_pregnant // 7
@@ -203,8 +235,16 @@ async def get_pregnancy_profile(current_user: User = Depends(get_current_user)):
             profile["trimester"] = 3
         
         if profile.get("estimated_due_date"):
-            due_date = datetime.fromisoformat(profile["estimated_due_date"])
-            profile["days_until_due"] = (due_date - today).days
+            try:
+                due_raw = str(profile["estimated_due_date"]).replace("Z", "+00:00")
+                due_date = as_naive_utc(datetime.fromisoformat(due_raw))
+                profile["days_until_due"] = (due_date - today).days
+            except ValueError:
+                logger.warning(
+                    "stored estimated_due_date invalid user_id=%s value=%r",
+                    current_user.id,
+                    profile.get("estimated_due_date"),
+                )
     
     return profile
 
@@ -215,8 +255,8 @@ async def calculate_cycle_dates(data: PregnancyCalculation, current_user: User =
     Calculate cycle dates for women trying to conceive.
     Returns ovulation, fertile window, and next period predictions.
     """
-    last_period = datetime.fromisoformat(data.last_period_date)
-    cycle_duration = data.cycle_length
+    last_period = parse_last_period_datetime(data.last_period_date)
+    cycle_duration = coerce_cycle_length(data.cycle_length)
     
     # Calculate dates
     result = calculate_pregnancy_dates(last_period, cycle_duration)
@@ -292,7 +332,7 @@ async def check_fertility_window(current_user: User = Depends(get_current_user))
     from routes.push_notifications import send_push_notification
     
     # Get user's pregnancy profile
-    profile = await db.pregnancy_profiles.find_one({"user_id": current_user.id})
+    profile = await load_cycle_profile(current_user.id)
     if not profile or not profile.get("last_period_date"):
         return {"in_fertile_window": False, "message": "Profil de cycle non configuré"}
     
@@ -301,8 +341,8 @@ async def check_fertility_window(current_user: User = Depends(get_current_user))
     reminders_enabled = pref.get("enabled", False) if pref else False
     
     # Calculate current cycle dates
-    last_period = datetime.fromisoformat(profile["last_period_date"])
-    cycle_length = profile.get("cycle_length", 28)
+    last_period = parse_last_period_datetime(profile["last_period_date"])
+    cycle_length = coerce_cycle_length(profile.get("cycle_length", 28))
     
     # Calculate next cycle's dates
     today = datetime.now(timezone.utc).replace(tzinfo=None)

@@ -9,6 +9,7 @@ import logging
 
 from core.database import db
 from core.security import get_current_user
+from core.cycle_dates import as_naive_utc, parse_last_period_datetime
 from models.schemas import User
 
 logger = logging.getLogger(__name__)
@@ -34,8 +35,11 @@ async def get_cycle_status(current_user: User = Depends(get_current_user)):
         }
     
     try:
-        last_period_date = datetime.fromisoformat(last_period.replace('Z', '+00:00'))
+        last_period_date = as_naive_utc(parse_last_period_datetime(last_period)).replace(
+            tzinfo=timezone.utc
+        )
     except (ValueError, AttributeError):
+        logger.warning("cycle-status invalid last_period_date user_id=%s value=%r", current_user.id, last_period)
         return {"status": "error", "message": "Format de date invalide", "show_alert": False}
     
     now = datetime.now(timezone.utc)

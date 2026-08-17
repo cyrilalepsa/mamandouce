@@ -1,7 +1,7 @@
 """
 Pydantic models/schemas for MamanDouce
 """
-from pydantic import BaseModel, Field, ConfigDict, EmailStr
+from pydantic import BaseModel, Field, ConfigDict, EmailStr, field_validator
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
 import uuid
@@ -55,6 +55,20 @@ class ProfileUpdate(BaseModel):
 class PregnancyCalculation(BaseModel):
     last_period_date: str
     cycle_length: int = 28
+
+    @field_validator("last_period_date")
+    @classmethod
+    def normalize_last_period_date(cls, value: str) -> str:
+        from core.cycle_dates import normalize_iso_date
+
+        return normalize_iso_date(value)
+
+    @field_validator("cycle_length", mode="before")
+    @classmethod
+    def coerce_cycle_length(cls, value):
+        from core.cycle_dates import coerce_cycle_length
+
+        return coerce_cycle_length(value)
 
 class PregnancyProfile(BaseModel):
     model_config = ConfigDict(extra="ignore")

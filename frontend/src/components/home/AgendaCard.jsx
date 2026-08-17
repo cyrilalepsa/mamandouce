@@ -5,6 +5,7 @@ import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { CalendarDays, Settings, Save, CalendarRange, Egg, Heart, Droplets, Baby, Info } from 'lucide-react';
 import { getCurrentLanguage } from '../../i18n';
+import { toYearMonthDay } from '../../utils/cycleForm';
 
 export function AgendaCard({ 
   agendaData,
@@ -102,7 +103,7 @@ export function AgendaCard({
             <Input
               type="date"
               value={lastPeriodDate}
-              onChange={(e) => setLastPeriodDate(e.target.value)}
+              onChange={(e) => setLastPeriodDate(toYearMonthDay(e.target.value))}
               className="rounded-xl border-slate-200"
               data-testid="agenda-period-input"
             />
@@ -113,7 +114,7 @@ export function AgendaCard({
             </label>
             <select
               value={cycleLength}
-              onChange={(e) => setCycleLength(parseInt(e.target.value))}
+              onChange={(e) => setCycleLength(parseInt(e.target.value, 10))}
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-slate-600"
               data-testid="agenda-cycle-select"
             >

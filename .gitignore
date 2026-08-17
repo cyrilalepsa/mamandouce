@@ -2077,6 +2077,9 @@ credentials.json
 *.key
 .credentials
 
+*.sqlite
+backend/data/*.sqlite
+
 # Templates d'environnement versionnés (doit rester EN DERNIER : *.env.* ignore .env.example)
 !.env.example
 !**/.env.example
