@@ -12,22 +12,12 @@ from core.database import db
 from core.config import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     ADMIN_EMAIL,
-    CONTACT_EMAIL,
-    RESEND_API_KEY,
-    SENDER_EMAIL,
     app_public_url,
     email_brand_footer,
 )
 from core.security import pwd_context, create_access_token, get_current_user
 from models.schemas import UserCreate, UserLogin, Token, User
-
-# Optional import for email
-try:
-    import resend
-    if RESEND_API_KEY:
-        resend.api_key = RESEND_API_KEY
-except ImportError:
-    resend = None
+from services.email import reload_email_settings, send_resend_email
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["auth"])
@@ -71,15 +61,13 @@ async def send_welcome_notification(user_name: str, user_email: str):
     except Exception as e:
         logger.error(f"Error sending welcome push: {e}")
     
-    # Envoyer l'email de bienvenue
-    if resend and RESEND_API_KEY:
-        try:
-            frontend_url = app_public_url()
-            resend.Emails.send({
-                "from": SENDER_EMAIL,
-                "to": user_email,
-                "subject": f"Bienvenue sur MamanDouce, {user_name} ! 💕",
-                "html": f"""
+    # Envoyer l'email de bienvenue (erreurs loguées dans send_resend_email)
+    frontend_url = app_public_url()
+    send_resend_email(
+        to=user_email,
+        subject=f"Bienvenue sur MamanDouce, {user_name} ! 💕",
+        purpose="welcome",
+        html=f"""
                 <div style="font-family: 'Nunito', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                     <div style="text-align: center; margin-bottom: 30px;">
                         <h1 style="color: #ec4899; font-size: 32px; margin: 0;">MamanDouce</h1>
@@ -122,11 +110,8 @@ async def send_welcome_notification(user_name: str, user_email: str):
                     </p>
                     {email_brand_footer()}
                 </div>
-                """
-            })
-            logger.info(f"Welcome email sent to {user_email}")
-        except Exception as e:
-            logger.error(f"Error sending welcome email: {e}")
+                """,
+    )
 
 @router.post("/auth/register", response_model=Token)
 async def register(user_data: UserCreate):
@@ -184,16 +169,11 @@ class Verify2FARequest(BaseModel):
 
 async def send_2fa_code(email: str, code: str):
     """Send 2FA code by email"""
-    if not resend or not RESEND_API_KEY:
-        logger.warning("Resend not configured, cannot send 2FA code")
-        return False
-    
-    try:
-        resend.Emails.send({
-            "from": SENDER_EMAIL,
-            "to": email,
-            "subject": "Votre code de connexion MamanDouce",
-            "html": f"""
+    result = send_resend_email(
+        to=email,
+        subject="Votre code de connexion MamanDouce",
+        purpose="2fa",
+        html=f"""
             <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
                 <h2 style="color: #ec4899;">Code de connexion MamanDouce</h2>
                 <p>Bonjour,</p>
@@ -205,12 +185,9 @@ async def send_2fa_code(email: str, code: str):
                 <p style="color: #999; font-size: 12px;">Si vous n'avez pas demandé ce code, ignorez cet email.</p>
                 {email_brand_footer()}
             </div>
-            """
-        })
-        return True
-    except Exception as e:
-        logger.error(f"Error sending 2FA code: {e}")
-        return False
+            """,
+    )
+    return bool(result.get("ok"))
 
 @router.post("/auth/2fa/toggle")
 async def toggle_2fa(request: Enable2FARequest, current_user: User = Depends(get_current_user)):
@@ -486,6 +463,11 @@ async def forgot_password(request: ForgotPasswordRequest):
     
     # Always return success to prevent email enumeration
     if not user:
+        print(
+            f"[EMAIL] forgot-password user_found=False to={request.email} — e-mail non envoyé",
+            flush=True,
+        )
+        logger.info("forgot-password: no account for %s — skip send", request.email)
         return {"success": True, "message": "Si cet email existe, un lien de réinitialisation a été envoyé."}
     
     # Generate reset token
@@ -501,27 +483,31 @@ async def forgot_password(request: ForgotPasswordRequest):
         "created_at": datetime.now(timezone.utc).isoformat()
     })
     
-    # Send email with reset link
-    email_sent = False
-    if resend and RESEND_API_KEY:
-        try:
-            # Get frontend URL from environment or use default
-            frontend_url = app_public_url()
-            reset_link = f"{frontend_url}/reset-password?token={reset_token}"
-            
-            resend.Emails.send({
-                "from": f"MamanDouce <{SENDER_EMAIL}>",
-                "to": [request.email],
-                "reply_to": CONTACT_EMAIL,
-                "subject": "Réinitialisation de votre mot de passe MamanDouce",
-                "headers": {
-                    "X-Entity-Ref-ID": f"password-reset-{reset_token[:8]}",
-                },
-                "tags": [
-                    {"name": "category", "value": "password-reset"},
-                    {"name": "app", "value": "mamandouce"}
-                ],
-                "html": f"""
+    # Send email with reset link — logs détaillés (clé, from, to, retour Resend)
+    frontend_url = app_public_url()
+    reset_link = f"{frontend_url}/reset-password?token={reset_token}"
+    email_cfg = reload_email_settings()
+    print(
+        f"[EMAIL] forgot-password user_found=True to={request.email} "
+        f"frontend_url={frontend_url} (token non logué)",
+        flush=True,
+    )
+
+    send_result = send_resend_email(
+        to=request.email,
+        subject="Réinitialisation de votre mot de passe MamanDouce",
+        purpose="reset-password",
+        extra={
+            "reply_to": email_cfg["CONTACT_EMAIL"],
+            "headers": {
+                "X-Entity-Ref-ID": f"password-reset-{reset_token[:8]}",
+            },
+            "tags": [
+                {"name": "category", "value": "password-reset"},
+                {"name": "app", "value": "mamandouce"},
+            ],
+        },
+        html=f"""
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -590,28 +576,32 @@ async def forgot_password(request: ForgotPasswordRequest):
     </table>
 </body>
 </html>
-                """
-            })
-            email_sent = True
-            logger.info(f"Password reset email sent to {request.email}")
-        except Exception as e:
-            logger.error(f"Error sending reset email to {request.email}: {e}")
-            # Check if it's a Resend domain verification error
-            error_str = str(e)
-            if "only send testing emails" in error_str.lower() or "verify a domain" in error_str.lower():
-                logger.error("RESEND DOMAIN NOT VERIFIED - Emails can only be sent to the account owner's email")
-    
-    # Return appropriate message
-    if email_sent:
+                """,
+    )
+
+    if not send_result.get("ok"):
+        err = send_result.get("error") or "envoi Resend échoué"
+        print(f"[EMAIL] forgot-password FAILED to={request.email}: {err}", flush=True)
+        logger.error("forgot-password email failed to=%s: %s", request.email, err)
+        error_str = str(err)
+        if "only send testing emails" in error_str.lower() or "verify a domain" in error_str.lower():
+            print(
+                "[EMAIL] RESEND DOMAIN NOT VERIFIED — "
+                "Resend n'envoie qu'à l'e-mail du compte propriétaire",
+                flush=True,
+            )
+            logger.error(
+                "RESEND DOMAIN NOT VERIFIED - Emails can only be sent to the account owner's email"
+            )
+
+    # HTTP 200 volontaire (anti-énumération) — l'échec est dans les logs Railway
+    if send_result.get("ok"):
         return {"success": True, "message": "Un email de réinitialisation a été envoyé à votre adresse."}
-    else:
-        # Return the token directly for testing/development or when email fails
-        # In production with verified domain, this should only return success message
-        return {
-            "success": True, 
-            "message": "Si cet email existe, un lien de réinitialisation a été envoyé.",
-            "note": "Si vous ne recevez pas l'email, vérifiez vos spams ou contactez le support."
-        }
+    return {
+        "success": True,
+        "message": "Si cet email existe, un lien de réinitialisation a été envoyé.",
+        "note": "Si vous ne recevez pas l'email, vérifiez vos spams ou contactez le support.",
+    }
 
 
 @router.post("/auth/verify-reset-token")
