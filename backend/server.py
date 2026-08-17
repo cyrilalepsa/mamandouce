@@ -10,8 +10,8 @@ from n2_vault_client import sync_secrets
 sync_secrets()
 
 from fastapi import FastAPI, APIRouter, Request
+from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -67,7 +67,7 @@ async def log_request_validation_error(request: Request, exc: RequestValidationE
             path,
             exc.errors(),
         )
-    return JSONResponse(status_code=422, content={"detail": exc.errors()})
+    return await request_validation_exception_handler(request, exc)
 
 # Create main API router
 api_router = APIRouter(prefix="/api")
