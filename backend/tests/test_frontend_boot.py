@@ -146,6 +146,35 @@ def test_index_html_hides_loader_on_error():
     assert 'name="mamandouce-build"' in html
 
 
+def test_cycle_save_form_normalizes_ymd_and_parseint():
+    page = (FRONTEND / "src" / "pages" / "CycleTrackingPage.jsx").read_text(encoding="utf-8")
+    helper = (FRONTEND / "src" / "utils" / "cycleForm.js").read_text(encoding="utf-8")
+    assert "buildCycleSavePayload" in page
+    assert "parseInt(habitualLength, 10)" in page
+    assert "parseInt(habitualLength, 10)" in helper
+    assert "last_period_date: payload.last_period_date" in page
+    assert "cycle_length: payload.cycle_length" in page
+
+
+def test_cycle_form_node_suite():
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if not node:
+        raise AssertionError("node is required to execute cycleForm tests")
+    script = FRONTEND / "src" / "utils" / "cycleForm.test.mjs"
+    result = subprocess.run(
+        [node, "--test", str(script)],
+        cwd=str(FRONTEND),
+        capture_output=True,
+        text=True,
+        timeout=20,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 def test_service_workers_never_cache_index_html():
     sw = (FRONTEND / "public" / "sw.js").read_text(encoding="utf-8")
     legacy = (FRONTEND / "public" / "service-worker.js").read_text(encoding="utf-8")

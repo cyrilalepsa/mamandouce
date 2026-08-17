@@ -10,6 +10,11 @@ import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
 import { getCurrentLanguage } from '../i18n';
+import {
+  buildCycleSavePayload,
+  extractApiErrorDetail,
+  toYearMonthDay,
+} from '../utils/cycleForm';
 
 // Conseils médicaux par trimestre/semaine
 const getMedicalAdvice = (week, t) => {
@@ -120,14 +125,24 @@ function PregnancyCalculator() {
     setLoading(true);
 
     try {
-      const response = await api.pregnancy.calculate({ 
-        last_period_date: lastPeriodDate,
-        cycle_length: cycleDuration
+      const habitualLength = cycleDuration;
+      const payload = buildCycleSavePayload(lastPeriodDate, parseInt(habitualLength, 10));
+      if (!payload.valid) {
+        toast.error(
+          payload.errors.includes('date')
+            ? t('fertility.enterPeriodDate')
+            : t('fertility.invalidCycleLength', 'Durée du cycle invalide (21 à 45 jours)'),
+        );
+        return;
+      }
+      const response = await api.pregnancy.calculate({
+        last_period_date: payload.last_period_date,
+        cycle_length: payload.cycle_length,
       });
       setResults(response.data);
       toast.success(t('calculator.calculationSuccess'));
     } catch (error) {
-      toast.error(t('calculator.calculationError'));
+      toast.error(extractApiErrorDetail(error) || t('calculator.calculationError'));
     } finally {
       setLoading(false);
     }
@@ -168,7 +183,7 @@ function PregnancyCalculator() {
                 data-testid="last-period-input"
                 type="date"
                 value={lastPeriodDate}
-                onChange={(e) => setLastPeriodDate(e.target.value)}
+                onChange={(e) => setLastPeriodDate(toYearMonthDay(e.target.value))}
                 className="w-full rounded-2xl border-slate-200 bg-white px-4 py-3 text-slate-600 focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
                 required
               />
@@ -181,7 +196,7 @@ function PregnancyCalculator() {
                   id="cycleDuration"
                   data-testid="cycle-duration-select"
                   value={cycleDuration}
-                  onChange={(e) => setCycleDuration(parseInt(e.target.value))}
+                  onChange={(e) => setCycleDuration(parseInt(e.target.value, 10))}
                   className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-600 focus:border-sky-300 focus:ring-4 focus:ring-sky-100 appearance-none cursor-pointer"
                 >
                   {cycleDurations.map(days => (

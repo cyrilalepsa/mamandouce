@@ -16,6 +16,12 @@ import { CycleHistoryModal } from '../components/cycle/CycleHistoryModal';
 import { InitialSetupModal } from '../components/cycle/InitialSetupModal';
 import { CycleReportModal } from '../components/cycle/CycleReportModal';
 import { PregnancyToggle } from '../components/cycle/PregnancyToggle';
+import {
+  buildCycleSavePayload,
+  extractApiErrorDetail,
+  parseHabitualLength,
+  toYearMonthDay,
+} from '../utils/cycleForm';
 import confetti from 'canvas-confetti';
 
 function CycleTrackingPage() {
@@ -88,9 +94,11 @@ useEffect(() => {
     try {
       const profileRes = await api.pregnancy.getProfile();
       if (profileRes.data && profileRes.data.last_period_date) {
-        setLastPeriodDate(profileRes.data.last_period_date.split('T')[0]);
-        setCycleLength(profileRes.data.cycle_length || 28);
-        calculateAgendaDates(profileRes.data.last_period_date, profileRes.data.cycle_length || 28);
+        const ymd = toYearMonthDay(profileRes.data.last_period_date);
+        const length = parseHabitualLength(profileRes.data.cycle_length, 28);
+        setLastPeriodDate(ymd);
+        setCycleLength(length);
+        calculateAgendaDates(ymd, length);
       }
     } catch (error) {
       console.error('Erreur chargement données:', error);
@@ -281,26 +289,36 @@ useEffect(() => {
   };
 
   const handleSave = async () => {
-    if (!lastPeriodDate) {
-      toast.error(t('fertility.enterPeriodDate'));
+    const habitualLength = cycleLength;
+    const payload = buildCycleSavePayload(lastPeriodDate, parseInt(habitualLength, 10));
+
+    if (!payload.valid) {
+      if (payload.errors.includes('date')) {
+        toast.error(t('fertility.enterPeriodDate'));
+      } else {
+        toast.error(t('fertility.invalidCycleLength', 'Durée du cycle invalide (21 à 45 jours)'));
+      }
       return;
     }
-    
+
     setLoading(true);
     try {
       await api.pregnancy.calculate({
-        last_period_date: lastPeriodDate,
-        cycle_length: cycleLength
+        last_period_date: payload.last_period_date,
+        cycle_length: payload.cycle_length,
       });
-      
-      // Sauvegarder dans l'historique des cycles
-      saveCycleToHistory(lastPeriodDate, cycleLength);
-      
-      calculateAgendaDates(lastPeriodDate, cycleLength);
+
+      setLastPeriodDate(payload.last_period_date);
+      setCycleLength(payload.cycle_length);
+      saveCycleToHistory(payload.last_period_date, payload.cycle_length);
+      calculateAgendaDates(payload.last_period_date, payload.cycle_length);
       toast.success(t('common.saved', 'Enregistré !'));
       setShowForm(false);
     } catch (error) {
-      toast.error(t('common.error', 'Erreur'));
+      console.error('Erreur enregistrement cycle:', error);
+      toast.error(
+        extractApiErrorDetail(error) || t('common.error', 'Erreur'),
+      );
     } finally {
       setLoading(false);
     }
@@ -534,11 +552,25 @@ return (
           <Card className={`rounded-2xl p-4 mb-4 space-y-4 border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-br from-purple-50 to-pink-50 border-0'}`}>
             <div className={`flex flex-col gap-2`}>
               <label className={`text-sm font-medium ${textSecondary}`}>Date des dernières règles :</label>
-              <Input type="date" value={lastPeriodDate} onChange={(e) => setLastPeriodDate(e.target.value)} className={inputBg} />
+              <Input
+                type="date"
+                value={lastPeriodDate}
+                onChange={(e) => setLastPeriodDate(toYearMonthDay(e.target.value))}
+                className={inputBg}
+                data-testid="cycle-period-input"
+              />
             </div>
             <div className={`flex flex-col gap-2`}>
               <label className={`text-sm font-medium ${textSecondary}`}>Durée habituelle du cycle (jours) :</label>
-              <Input type="number" value={cycleLength} onChange={(e) => setCycleLength(parseInt(e.target.value) || 28)} className={inputBg} />
+              <Input
+                type="number"
+                min={21}
+                max={45}
+                value={cycleLength}
+                onChange={(e) => setCycleLength(parseInt(e.target.value, 10) || 28)}
+                className={inputBg}
+                data-testid="cycle-length-input"
+              />
             </div>
             <Button onClick={handleSave} disabled={loading} className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full py-2" data-testid="save-button">
               <Save className="w-4 h-4 mr-2" />

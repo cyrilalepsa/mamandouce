@@ -5,6 +5,7 @@ import { ArrowLeft, Calculator, CalendarDays, Droplets, Egg } from 'lucide-react
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
+import { parseHabitualLength, toYearMonthDay } from '../utils/cycleForm';
 
 function FertilityCalculatorPage() {
   const navigate = useNavigate();
@@ -17,8 +18,12 @@ function FertilityCalculatorPage() {
   const calculate = () => {
     if (!lastPeriodDate) return;
     
-    const lastPeriod = new Date(lastPeriodDate);
-    const cycleLen = parseInt(cycleLength) || 28;
+    const lastPeriodYmd = toYearMonthDay(lastPeriodDate);
+    if (!lastPeriodYmd) return;
+
+    const lastPeriod = new Date(`${lastPeriodYmd}T00:00:00`);
+    const habitualLength = cycleLength;
+    const cycleLen = parseHabitualLength(parseInt(habitualLength, 10), 28);
     
     // Prochaine ovulation (14 jours avant les prochaines règles)
     const nextOvulation = new Date(lastPeriod);
@@ -88,7 +93,7 @@ function FertilityCalculatorPage() {
               <Input
                 type="date"
                 value={lastPeriodDate}
-                onChange={(e) => setLastPeriodDate(e.target.value)}
+                onChange={(e) => setLastPeriodDate(toYearMonthDay(e.target.value))}
                 className="rounded-xl nacre-bombe"
                 style={{
                   background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 30%, #fafafa 100%)',
@@ -105,7 +110,7 @@ function FertilityCalculatorPage() {
               </label>
               <select
                 value={cycleLength}
-                onChange={(e) => setCycleLength(parseInt(e.target.value))}
+                onChange={(e) => setCycleLength(parseInt(e.target.value, 10))}
                 className="w-full rounded-xl px-4 py-2.5 nacre-bombe"
                 style={{
                   background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 30%, #fafafa 100%)',

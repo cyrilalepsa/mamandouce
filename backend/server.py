@@ -9,7 +9,9 @@ from n2_vault_client import sync_secrets
 # — avant MongoDB, Cloudinary, Gemini, SSO ou toute autre init.
 sync_secrets()
 
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -54,6 +56,18 @@ app.add_middleware(
     expose_headers=["X-NeriaCorp-Publication-Id", "X-Tenant", "X-Tenant-Kind"],
 )
 logger.info("CORS origins=%s origin_regex=%s", _cors_origins, NERIACORP_ORIGIN_REGEX)
+
+@app.exception_handler(RequestValidationError)
+async def log_request_validation_error(request: Request, exc: RequestValidationError):
+    path = request.url.path
+    if "/pregnancy/" in path or "/cycle/" in path:
+        logger.warning(
+            "cycle/pregnancy validation failed method=%s path=%s errors=%s",
+            request.method,
+            path,
+            exc.errors(),
+        )
+    return JSONResponse(status_code=422, content={"detail": exc.errors()})
 
 # Create main API router
 api_router = APIRouter(prefix="/api")
