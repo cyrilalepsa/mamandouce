@@ -58,6 +58,68 @@ def reload_email_settings() -> dict[str, str]:
     }
 
 
+def _jsonable(value: Any) -> Any:
+    """Sérialise le retour Resend (dict / ResponseDict) pour une réponse HTTP JSON."""
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, dict):
+        out: dict[str, Any] = {}
+        for key, item in value.items():
+            name = str(key)
+            if name.lower() == "authorization":
+                continue
+            out[name] = _jsonable(item)
+        return out
+    if isinstance(value, (list, tuple)):
+        return [_jsonable(item) for item in value]
+    if hasattr(value, "items"):
+        try:
+            return _jsonable(dict(value))
+        except Exception:
+            pass
+    return repr(value)
+
+
+def extract_email_id(result: Any) -> str | None:
+    if result is None:
+        return None
+    if isinstance(result, dict):
+        raw = result.get("id")
+        return str(raw) if raw else None
+    raw = getattr(result, "id", None)
+    return str(raw) if raw else None
+
+
+def serialize_resend_error(exc: BaseException) -> dict[str, Any]:
+    detail: dict[str, Any] = {
+        "exception": type(exc).__name__,
+        "message": str(exc),
+    }
+    for attr in ("code", "error_type", "suggested_action"):
+        if hasattr(exc, attr):
+            detail[attr] = getattr(exc, attr)
+    headers = getattr(exc, "headers", None)
+    if isinstance(headers, dict) and headers:
+        detail["headers"] = _jsonable(headers)
+    return detail
+
+
+def public_email_config() -> dict[str, Any]:
+    """Variables e-mail en vigueur — clé masquée, SENDER_EMAIL en clair."""
+    cfg = reload_email_settings()
+    key = cfg["RESEND_API_KEY"]
+    sender = cfg["SENDER_EMAIL"]
+    from_addr = f"MamanDouce <{sender}>"
+    return {
+        "RESEND_API_KEY_present": bool(key),
+        "RESEND_API_KEY_masked": mask_api_key(key),
+        "SENDER_EMAIL": sender,
+        "from": from_addr,
+        "SENDER_EMAIL_neriacorp_ok": sender.lower().endswith(EXPECTED_FROM_SUFFIX),
+        "CONTACT_EMAIL": cfg["CONTACT_EMAIL"],
+    }
+
+
 def log_email_config(*, purpose: str) -> dict[str, str]:
     cfg = reload_email_settings()
     key = cfg["RESEND_API_KEY"]
@@ -115,13 +177,27 @@ def send_resend_email(
         msg = "destinataire (to) vide"
         _print(f"[EMAIL] ✗ SKIP: {msg}")
         logger.error("email skipped: %s", msg)
-        return {"ok": False, "error": msg, "skipped": True}
+        return {
+            "ok": False,
+            "error": msg,
+            "resend": None,
+            "email_id": None,
+            "http_status": None,
+            "skipped": True,
+        }
 
     if not api_key:
         msg = "RESEND_API_KEY manquante ou vide — e-mail non envoyé"
         _print(f"[EMAIL] ✗ SKIP: {msg}")
         logger.error("email skipped purpose=%s to=%s: %s", purpose, to_addr, msg)
-        return {"ok": False, "error": msg, "skipped": True}
+        return {
+            "ok": False,
+            "error": msg,
+            "resend": None,
+            "email_id": None,
+            "http_status": None,
+            "skipped": True,
+        }
 
     try:
         import resend
@@ -130,7 +206,14 @@ def send_resend_email(
         _print(f"[EMAIL] ✗ IMPORT ERROR: {msg}")
         logger.exception("email: import resend failed")
         traceback.print_exc()
-        return {"ok": False, "error": msg, "skipped": False}
+        return {
+            "ok": False,
+            "error": msg,
+            "resend": None,
+            "email_id": None,
+            "http_status": None,
+            "skipped": False,
+        }
 
     resend.api_key = api_key
     payload: dict[str, Any] = {
@@ -145,12 +228,25 @@ def send_resend_email(
 
     try:
         result = resend.Emails.send(payload)
-        _print(f"[EMAIL] ✓ Resend API returned: {result!r}")
-        logger.info("email sent purpose=%s to=%s result=%s", purpose, to_addr, result)
+        raw = _jsonable(result)
+        email_id = extract_email_id(result)
+        _print(f"[EMAIL] ✓ Resend API returned: {raw!r}")
+        _print(f"[EMAIL] email_id={email_id}")
+        logger.info("email sent purpose=%s to=%s result=%s", purpose, to_addr, raw)
         _print("=" * 72)
-        return {"ok": True, "result": result, "skipped": False}
+        return {
+            "ok": True,
+            "result": result,
+            "resend": raw,
+            "email_id": email_id,
+            "http_status": 200,
+            "skipped": False,
+        }
     except Exception as exc:
+        detail = serialize_resend_error(exc)
+        http_status = detail.get("code")
         _print(f"[EMAIL] ✗ Resend exception ({type(exc).__name__}): {exc}")
+        _print(f"[EMAIL] Resend error detail: {detail!r}")
         _print("[EMAIL] traceback:")
         traceback.print_exc()
         logger.exception(
@@ -161,4 +257,11 @@ def send_resend_email(
             exc,
         )
         _print("=" * 72)
-        return {"ok": False, "error": f"{type(exc).__name__}: {exc}", "skipped": False}
+        return {
+            "ok": False,
+            "error": f"{type(exc).__name__}: {exc}",
+            "resend": detail,
+            "email_id": None,
+            "http_status": http_status,
+            "skipped": False,
+        }

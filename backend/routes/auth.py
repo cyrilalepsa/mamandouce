@@ -2,9 +2,11 @@
 Authentication routes for MamanDouce
 Handles: Register, Login, Get current user, Password Reset
 """
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Header, Query
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, EmailStr
 from datetime import datetime, timezone, timedelta
+from typing import Optional
 import logging
 import secrets
 
@@ -17,10 +19,48 @@ from core.config import (
 )
 from core.security import pwd_context, create_access_token, get_current_user
 from models.schemas import UserCreate, UserLogin, Token, User
-from services.email import reload_email_settings, send_resend_email
+from services.email import public_email_config, reload_email_settings, send_resend_email
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["auth"])
+_diag_bearer = HTTPBearer(auto_error=False)
+
+DIAG_TEST_EMAIL_TO = "cyrilalepsa@gmail.com"
+
+
+def _admin_secret_matches(provided: str | None) -> bool:
+    from core import config as cfg
+
+    cfg.load_settings()
+    expected = (cfg.ADMIN_SECRET or "").strip()
+    got = (provided or "").strip()
+    if not expected or not got or len(expected) != len(got):
+        return False
+    return secrets.compare_digest(expected, got)
+
+
+async def require_email_diag_access(
+    admin_secret: Optional[str] = Query(
+        None, description="ADMIN_SECRET — diagnostic temporaire"
+    ),
+    x_admin_secret: Optional[str] = Header(None, alias="X-Admin-Secret"),
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(_diag_bearer),
+) -> str:
+    """Admin JWT ou ADMIN_SECRET (header / query) — pas d'accès public."""
+    if _admin_secret_matches(admin_secret) or _admin_secret_matches(x_admin_secret):
+        return "admin_secret"
+    if credentials is not None:
+        user = await get_current_user(credentials)
+        if user.role == "admin" or user.email == ADMIN_EMAIL:
+            return f"jwt:{user.email}"
+    raise HTTPException(
+        status_code=401,
+        detail=(
+            "Diagnostic Resend réservé aux admins. "
+            "Utilisez un Bearer JWT admin, le header X-Admin-Secret, "
+            "ou ?admin_secret="
+        ),
+    )
 
 # Pydantic models for password reset
 class ForgotPasswordRequest(BaseModel):
@@ -747,4 +787,70 @@ async def end_premium(current_user: User = Depends(get_current_user)):
         print(f"Erreur notification admin: {e}")
     
     return {"success": True, "message": "Votre abonnement premium a été terminé. Vous avez maintenant accès au suivi post-partum."}
+
+
+def _run_resend_diagnostic(*, requested_by: str) -> dict:
+    """Envoi isolé vers la boîte admin — hors flux forgot-password."""
+    cfg = public_email_config()
+    print(
+        f"[EMAIL] diagnostic-test-email requested_by={requested_by} to={DIAG_TEST_EMAIL_TO}",
+        flush=True,
+    )
+    send_result = send_resend_email(
+        to=DIAG_TEST_EMAIL_TO,
+        subject="[MamanDouce] Diagnostic Resend — test isolé",
+        purpose="diagnostic-test-email",
+        html=f"""
+        <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #ec4899;">Diagnostic Resend</h2>
+            <p>Cet e-mail a été envoyé par <code>GET /api/auth/test-email</code>
+            (hors flux de réinitialisation de mot de passe).</p>
+            <p>Expéditeur en vigueur : <strong>{cfg['SENDER_EMAIL']}</strong></p>
+            <p>Horodatage UTC : {datetime.now(timezone.utc).isoformat()}</p>
+            {email_brand_footer()}
+        </div>
+        """,
+    )
+    payload = {
+        "ok": bool(send_result.get("ok")),
+        "purpose": "diagnostic-test-email",
+        "to": DIAG_TEST_EMAIL_TO,
+        "from": cfg["from"],
+        "SENDER_EMAIL": cfg["SENDER_EMAIL"],
+        "SENDER_EMAIL_neriacorp_ok": cfg["SENDER_EMAIL_neriacorp_ok"],
+        "RESEND_API_KEY_present": cfg["RESEND_API_KEY_present"],
+        "RESEND_API_KEY_masked": cfg["RESEND_API_KEY_masked"],
+        "email_id": send_result.get("email_id"),
+        "http_status": send_result.get("http_status"),
+        "skipped": bool(send_result.get("skipped")),
+        "error": send_result.get("error"),
+        "resend": send_result.get("resend"),
+        "requested_by": requested_by,
+        "note": (
+            "Réponse brute Resend dans 'resend' (id e-mail ou erreur HTTP). "
+            "Hors flux /auth/forgot-password."
+        ),
+    }
+    print(f"[EMAIL] diagnostic-test-email JSON ok={payload['ok']} email_id={payload['email_id']}", flush=True)
+    return payload
+
+
+@router.get("/auth/test-email", tags=["auth", "diagnostic"])
+async def test_resend_email(requested_by: str = Depends(require_email_diag_access)):
+    """
+    Diagnostic temporaire : envoie un e-mail Resend isolé à cyrilalepsa@gmail.com.
+
+    Protégé par JWT admin ou ADMIN_SECRET (`X-Admin-Secret` / `?admin_secret=`).
+    Retourne la config en vigueur (clé masquée, SENDER_EMAIL exact) et la
+    réponse brute Resend (id ou erreur HTTP) — visible dans Swagger / le navigateur.
+    """
+    return _run_resend_diagnostic(requested_by=requested_by)
+
+
+router.add_api_route(
+    "/v1/auth/test-email",
+    test_resend_email,
+    methods=["GET"],
+    tags=["auth", "diagnostic"],
+)
 
