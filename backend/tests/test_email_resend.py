@@ -5,7 +5,13 @@ from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from services.email import mask_api_key, reload_email_settings, send_resend_email
+from services.email import (
+    mask_api_key,
+    public_email_config,
+    reload_email_settings,
+    send_resend_email,
+    serialize_resend_error,
+)
 
 
 def test_mask_api_key_empty():
@@ -129,3 +135,26 @@ def test_warns_when_from_not_neriacorp(monkeypatch, capsys):
     out = capsys.readouterr().out
     assert "neriacorp_ok=False" in out
     assert "does not end with @neriacorp.com" in out
+
+
+def test_public_email_config_masks_key(monkeypatch):
+    monkeypatch.setenv("RESEND_API_KEY", "re_abcdefghijklmnopqrstuvwxyz")
+    monkeypatch.setenv("SENDER_EMAIL", "noreply@neriacorp.com")
+    pub = public_email_config()
+    assert pub["RESEND_API_KEY_present"] is True
+    assert pub["SENDER_EMAIL"] == "noreply@neriacorp.com"
+    assert "re_abcdefghijklmnopqrstuvwxyz" not in pub["RESEND_API_KEY_masked"]
+
+
+def test_serialize_resend_error_includes_http_code():
+    class FakeResendError(Exception):
+        def __init__(self):
+            super().__init__("API key is invalid")
+            self.code = 401
+            self.error_type = "invalid_api_key"
+            self.suggested_action = "Generate a new API key"
+
+    detail = serialize_resend_error(FakeResendError())
+    assert detail["code"] == 401
+    assert detail["exception"] == "FakeResendError"
+    assert "invalid" in detail["message"]
