@@ -16,6 +16,7 @@ import { CycleHistoryModal } from '../components/cycle/CycleHistoryModal';
 import { InitialSetupModal } from '../components/cycle/InitialSetupModal';
 import { CycleReportModal } from '../components/cycle/CycleReportModal';
 import { PregnancyToggle } from '../components/cycle/PregnancyToggle';
+import { AgendaCard } from '../components/home/AgendaCard';
 import {
   buildCycleSavePayload,
   extractApiErrorDetail,
@@ -268,6 +269,13 @@ useEffect(() => {
       nextPeriodRange = { start: periodStart, end: periodEnd };
     }
     
+    const implantationStart = new Date(adjustedOvulation);
+    implantationStart.setDate(implantationStart.getDate() + 6);
+    const implantationEnd = new Date(adjustedOvulation);
+    implantationEnd.setDate(implantationEnd.getDate() + 12);
+    const implantationLikely = new Date(adjustedOvulation);
+    implantationLikely.setDate(implantationLikely.getDate() + 9);
+
     setAgendaData({
       ovulationDate: adjustedOvulation,
       ovulationRange,
@@ -285,7 +293,10 @@ useEffect(() => {
       testDate,
       lastPeriodAdjusted: adjustedLastPeriod,
       isIrregular,
-      safetyMargin
+      safetyMargin,
+      implantationStart,
+      implantationEnd,
+      implantationLikely,
     });
   };
 
@@ -611,6 +622,20 @@ return (
                 <span className="text-xs font-semibold text-slate-700">Historique</span>
               </Card>
             </div>
+
+            <AgendaCard
+              variant="embedded"
+              agendaData={agendaData}
+              lastPeriodDate={lastPeriodDate}
+              setLastPeriodDate={setLastPeriodDate}
+              cycleLength={cycleLength}
+              setCycleLength={setCycleLength}
+              onSave={handleSave}
+              loading={loading}
+              onOpenCalendar={() => setShowCalendar(true)}
+              rapportDates={rapportDates}
+              getNextImplantation={getNextImplantation}
+            />
 
             {/* Info cycle & Bouton "Je suis enceinte" */}
             <div className="text-center pt-2">

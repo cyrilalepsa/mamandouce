@@ -9,7 +9,7 @@ import { AvatarPreview } from '../components/profile/AvatarBuilder';
 import PremiumSunAvatar from '../components/profile/PremiumSunAvatar';
 import { isNameCelebratedToday, getSaintOfTheDay } from '../data/saintsCalendar';
 import CustomizableHome from '../components/home/CustomizableHome';
-import { PregnancyToggle } from '../components/cycle/PregnancyToggle';
+import { PREGNANT_EVENT, PregnancyToggle } from '../components/cycle/PregnancyToggle';
 import {
   TopBar,
   TutorialPopup,
@@ -32,7 +32,6 @@ function HomePage() {
   const [userRole, setUserRole] = useState('user');
   const [isPremium, setIsPremium] = useState(false);
   const [currentPageType, setCurrentPageType] = useState('default');
-  const [hasRapportInFertileWindow, setHasRapportInFertileWindow] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [earnedTrophy, setEarnedTrophy] = useState(null);
   const [isPregnantHome, setIsPregnantHome] = useState(
@@ -90,57 +89,13 @@ function HomePage() {
     syncPregnant();
     window.addEventListener('focus', syncPregnant);
     window.addEventListener('storage', syncPregnant);
+    window.addEventListener(PREGNANT_EVENT, syncPregnant);
     return () => {
       window.removeEventListener('focus', syncPregnant);
       window.removeEventListener('storage', syncPregnant);
+      window.removeEventListener(PREGNANT_EVENT, syncPregnant);
     };
   }, []);
-
-  const checkRapportInFertileWindow = (profile) => {
-    if (!profile || !profile.last_period_date) return false;
-    
-    const savedRapports = localStorage.getItem('mamandouce_rapports');
-    if (!savedRapports) return false;
-    
-    const rapportDates = JSON.parse(savedRapports);
-    if (rapportDates.length === 0) return false;
-    
-    const lastPeriod = new Date(profile.last_period_date);
-    const cycleLength = profile.cycle_length || 28;
-    const lutealPhase = 14;
-    const ovulationDay = cycleLength - lutealPhase;
-    
-    const ovulationDate = new Date(lastPeriod);
-    ovulationDate.setDate(ovulationDate.getDate() + ovulationDay);
-    
-    const fertileStart = new Date(ovulationDate);
-    fertileStart.setDate(fertileStart.getDate() - 5);
-    const fertileEnd = new Date(ovulationDate);
-    fertileEnd.setDate(fertileEnd.getDate() + 1);
-    
-    const today = new Date();
-    while (fertileEnd < today) {
-      const daysToAdd = cycleLength;
-      fertileStart.setDate(fertileStart.setDate() + daysToAdd);
-      fertileEnd.setDate(fertileEnd.getDate() + daysToAdd);
-    }
-    
-    for (const rapportDateStr of rapportDates) {
-      const rapportDate = new Date(rapportDateStr);
-      if (rapportDate >= fertileStart && rapportDate <= fertileEnd) {
-        return true;
-      }
-      const prevFertileStart = new Date(fertileStart);
-      prevFertileStart.setDate(prevFertileStart.getDate() - cycleLength);
-      const prevFertileEnd = new Date(fertileEnd);
-      prevFertileEnd.setDate(prevFertileEnd.getDate() - cycleLength);
-      
-      if (rapportDate >= prevFertileStart && rapportDate <= prevFertileEnd) {
-        return true;
-      }
-    }
-    return false;
-  };
 
   const loadUserData = async () => {
     try {
@@ -155,9 +110,6 @@ function HomePage() {
       
       const profileRes = await api.pregnancy.getProfile();
       setPregnancyProfile(profileRes.data);
-      
-      const hasRapport = checkRapportInFertileWindow(profileRes.data);
-      setHasRapportInFertileWindow(hasRapport);
     } catch (error) {
       console.error('Erreur chargement données:', error);
     } finally {
@@ -214,7 +166,9 @@ function HomePage() {
   };
 
   const isAdmin = isSuperAdmin(userEmail, userRole);
-  const hasPregnancyProfile = pregnancyProfile && pregnancyProfile.current_week && hasRapportInFertileWindow;
+  const hasPregnancyProfile = Boolean(
+    isPregnantHome || (pregnancyProfile && pregnancyProfile.current_week)
+  );
 
   return (
     <div 
@@ -319,7 +273,7 @@ function HomePage() {
               </div>
             </div>
 
-            <div className="pt-4 [&_#celebrate-section]:hidden [&_div[class*='celebrate']]:hidden">
+            <div className="pt-4">
               <CustomizableHome 
                 pregnancyProfile={pregnancyProfile}
                 hasPregnancyProfile={hasPregnancyProfile}

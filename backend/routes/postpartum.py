@@ -1568,8 +1568,8 @@ async def request_refund_with_document(
     total_days = 270  # 9 mois
     days_remaining = max(0, total_days - days_used)
     
-    # Calcul du remboursement (27€ pour 9 mois)
-    daily_rate = 27.0 / total_days
+    # Calcul du remboursement (30€ pour 9 mois)
+    daily_rate = 30.0 / total_days
     refund_amount = round(days_remaining * daily_rate, 2)
     
     # Créer la demande de remboursement avec le document
@@ -1657,8 +1657,8 @@ async def request_refund(data: RefundRequest, current_user: User = Depends(get_c
     total_days = 270  # 9 mois
     days_remaining = max(0, total_days - days_used)
     
-    # Calcul du remboursement (27€ pour 9 mois)
-    daily_rate = 27.0 / total_days
+    # Calcul du remboursement (30€ pour 9 mois)
+    daily_rate = 30.0 / total_days
     refund_amount = round(days_remaining * daily_rate, 2)
     
     # Créer la demande de remboursement

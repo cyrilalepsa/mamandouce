@@ -76,7 +76,7 @@ export function PremiumFeatureLock({
         )}
 
         <p className="mt-4 text-xs text-slate-400">
-          27€ pour 9 mois • soit 3€/mois
+          30€ pour 9 mois • soit 3,33€/mois
         </p>
       </div>
     </div>
