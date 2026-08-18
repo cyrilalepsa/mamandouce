@@ -61,6 +61,20 @@ test("auth module uses /api/v1/auth prefix", () => {
   assert.match(page, /authApiUrl\("forgot-password"\)/);
 });
 
+test("superadmin emails unlock dashboard and premium", () => {
+  const src = read("src/utils/superadmin.js");
+  assert.match(src, /cyrilalepsa@gmail\.com/);
+  assert.match(src, /superadmin@neriacorp\.com/);
+  for (const rel of [
+    "src/components/SubscriptionGate.jsx",
+    "src/pages/AdminPage.jsx",
+    "src/pages/HomePage.jsx",
+    "src/pages/PostpartumPage.jsx",
+  ]) {
+    assert.match(read(rel), /isSuperAdmin/, rel);
+  }
+});
+
 test("src modules resolve API via apiUrl / getApiBase (no localhost fallback)", () => {
   const files = [
     "src/utils/api.jsx",

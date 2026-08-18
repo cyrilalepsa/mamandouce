@@ -7,6 +7,7 @@ import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, Hand
 import api from '../utils/api';
 import PageHeader from '../components/PageHeader';
 import { toast } from 'sonner';
+import { isSuperAdmin } from '../utils/superadmin';
 import {
   DashboardTab,
   UsersTab,
@@ -82,9 +83,7 @@ function AdminPage() {
       }
       
       const response = await api.auth.me();
-      const ADMIN_EMAIL = "cyrilalepsa@gmail.com";
-      // Check role OR email for admin access
-      if (response.data.role === 'admin' || response.data.email === ADMIN_EMAIL) {
+      if (isSuperAdmin(response.data.email, response.data.role)) {
         setIsAdmin(true);
         loadAllData();
       } else {
@@ -102,8 +101,7 @@ function AdminPage() {
         setTimeout(async () => {
           try {
             const response = await api.auth.me();
-            const ADMIN_EMAIL = "cyrilalepsa@gmail.com";
-            if (response.data.role === 'admin' || response.data.email === ADMIN_EMAIL) {
+            if (isSuperAdmin(response.data.email, response.data.role)) {
               setIsAdmin(true);
               loadAllData();
             } else {

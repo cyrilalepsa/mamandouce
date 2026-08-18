@@ -3,6 +3,7 @@ import { PartyPopper, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import { isSuperAdmin } from '../utils/superadmin';
 import AppTitle from '../components/AppTitle';
 import { AvatarPreview } from '../components/profile/AvatarBuilder';
 import PremiumSunAvatar from '../components/profile/PremiumSunAvatar';
@@ -18,8 +19,6 @@ import {
 } from '../components/home';
 
 import { NewsBubble, NewsPopup, useNews } from '../components/home/NewsBubble';
-
-const ADMIN_EMAIL = 'cyrilalepsa@gmail.com';
 
 function HomePage() {
   const { t } = useTranslation();
@@ -214,7 +213,7 @@ function HomePage() {
     navigate('/profile?tab=avatar');
   };
 
-  const isAdmin = userRole === 'admin' || userEmail === ADMIN_EMAIL;
+  const isAdmin = isSuperAdmin(userEmail, userRole);
   const hasPregnancyProfile = pregnancyProfile && pregnancyProfile.current_week && hasRapportInFertileWindow;
 
   return (

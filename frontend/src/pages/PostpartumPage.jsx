@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
+import { isSuperAdmin } from '../utils/superadmin';
 import { ToggleAllSections } from '../components/ToggleAllSections';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useHomeLayout } from '../contexts/HomeLayoutContext';
@@ -100,8 +101,7 @@ export default function PostpartumPage() {
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
   
   // Super admin check
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-  const ADMIN_EMAIL = "cyrilalepsa@gmail.com";
+  const [isSuperAdminUser, setIsSuperAdminUser] = useState(false);
 
   useEffect(() => {
     checkSuperAdmin();
@@ -115,8 +115,8 @@ export default function PostpartumPage() {
   const checkSuperAdmin = async () => {
     try {
       const response = await api.auth.me();
-      if (response.data.email === ADMIN_EMAIL || response.data.role === 'admin') {
-        setIsSuperAdmin(true);
+      if (isSuperAdmin(response.data.email, response.data.role)) {
+        setIsSuperAdminUser(true);
       }
     } catch (error) {
       // Silently fail
@@ -194,8 +194,8 @@ export default function PostpartumPage() {
   };
 
   // Déterminer l'accès - Super admin a accès à tout
-  const hasPostpartumAccess = postpartumStatus?.postpartum_unlocked || isSuperAdmin;
-  const hasGivenBirth = postpartumStatus?.actual_birth_date || isSuperAdmin;
+  const hasPostpartumAccess = postpartumStatus?.postpartum_unlocked || isSuperAdminUser;
+  const hasGivenBirth = postpartumStatus?.actual_birth_date || isSuperAdminUser;
   const canViewFullContent = hasPostpartumAccess && hasGivenBirth;
   
   // Section actuellement ouverte (une seule à la fois, en plein écran)
