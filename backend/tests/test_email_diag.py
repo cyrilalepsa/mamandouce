@@ -9,6 +9,7 @@ from fastapi.testclient import TestClient
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from models.schemas import User
+from routes import auth as auth_routes
 from routes.auth import DIAG_TEST_EMAIL_TO
 from server import app
 
@@ -28,9 +29,11 @@ FAKE_SEND = {
 
 @pytest.fixture
 def client():
+    auth_routes._last_direct_send_monotonic = 0.0
     with TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()
+    auth_routes._last_direct_send_monotonic = 0.0
 
 
 def test_test_email_requires_auth(client):
@@ -195,19 +198,23 @@ def test_test_resend_direct_returns_raw_json(client, monkeypatch):
         "traceback": None,
     }
     with patch("routes.auth.send_resend_direct", return_value=direct):
-        r = client.get(
-            "/api/v1/auth/test-resend-direct",
-            headers={"X-Admin-Secret": "diag-secret-unit-test"},
-        )
+        r = client.get("/api/v1/auth/test-resend-direct")
     assert r.status_code == 200
     data = r.json()
     assert data["status"] == "ok"
     assert data["resend_response"] == {"id": "msg_direct"}
     assert data["to"] == "cyrilalepsa@gmail.com"
     assert data["from"].endswith("@neriacorp.com>")
-    assert data["requested_by"] == "admin_secret"
+    assert data["requested_by"] == "public-diagnostic"
 
 
-def test_test_resend_direct_requires_auth(client):
-    r = client.get("/api/v1/auth/test-resend-direct")
-    assert r.status_code == 401
+def test_test_resend_direct_is_public(client):
+    with patch("routes.auth.send_resend_direct", return_value={
+        "status": "ok",
+        "resend_response": {"id": "x"},
+        "to": "cyrilalepsa@gmail.com",
+        "from": "MamanDouce <noreply@neriacorp.com>",
+    }):
+        r = client.get("/api/auth/test-resend-direct")
+    assert r.status_code == 200
+    assert r.json()["status"] == "ok"

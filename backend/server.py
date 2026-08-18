@@ -205,6 +205,29 @@ async def startup_db_client():
         logger.warning(f"⚠️ MongoDB: {e}")
     
     logger.info("🚀 MamanDouce API startup complete - Railway ready")
+    try:
+        from core.database import resolve_db_name, mongo_url
+
+        host = (mongo_url or "").split("@")[-1] if "@" in (mongo_url or "") else "local"
+        logger.info("Mongo DB_NAME=%s host=%s", resolve_db_name(), host)
+        print(f"[EMAIL] startup DB_NAME={resolve_db_name()} mongo_host={host}", flush=True)
+    except Exception as exc:
+        logger.warning("startup DB_NAME log failed: %s", exc)
+    for route in app.routes:
+        path = getattr(route, "path", "") or ""
+        methods = getattr(route, "methods", None) or set()
+        if any(
+            token in path
+            for token in (
+                "forgot-password",
+                "reset-password",
+                "test-resend",
+                "debug-send",
+                "test-email",
+            )
+        ):
+            logger.info("email-route %s %s", ",".join(sorted(methods)) or "GET", path)
+            print(f"[EMAIL] route {sorted(methods) or ['GET']} {path}", flush=True)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
@@ -223,7 +246,7 @@ if __name__ == "__main__":
 # 🌐 SERVICE FRONTEND FINAL (Fix 404)
 # =====================================================================
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 import os
 
 # Liste des dossiers possibles générés par Vite ou Webpack
@@ -240,11 +263,25 @@ if FRONTEND_DIR:
     # 2. La "Route Joker" : tout ce qui n'est pas /api est envoyé vers index.html
     @app.get("/{catchall:path}", include_in_schema=False)
     async def serve_react_app(catchall: str):
+        # Ne jamais masquer un 404 API par index.html (sinon /api/v1/... « disparaît »).
+        if catchall == "api" or catchall.startswith("api/"):
+            return JSONResponse(
+                status_code=404,
+                content={
+                    "detail": "Not Found",
+                    "path": f"/{catchall}",
+                    "hint": (
+                        "Préfixe global=/api. Reset: POST /api/auth/forgot-password "
+                        "(alias POST /api/v1/auth/forgot-password). "
+                        "Diag: GET /api/v1/auth/test-resend-direct"
+                    ),
+                },
+            )
         # Si c'est un fichier réel (ex: logo.png), on le sert
         file_path = FRONTEND_DIR / catchall
         if file_path.is_file():
             return FileResponse(file_path)
-            
+
         # Sinon, on renvoie index.html (pour React Router)
         return FileResponse(FRONTEND_DIR / "index.html")
 else:
