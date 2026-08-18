@@ -5,11 +5,10 @@ Handles: Register, Login, Get current user, Password Reset
 from fastapi import APIRouter, HTTPException, Depends, Header, Query
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, model_validator
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 import logging
-import re
 import secrets
 import time
 import traceback
@@ -23,7 +22,20 @@ from core.config import (
 )
 from core.security import pwd_context, create_access_token, get_current_user
 from models.schemas import UserCreate, UserLogin, Token, User
-from services.email import public_email_config, send_resend_direct, send_resend_email
+from services.email import (
+    public_email_config,
+    send_resend_direct,
+    send_resend_email,
+    send_reset_password_email,
+)
+from services.user_lookup import (
+    EMAIL_LOOKUP_FIELDS,
+    collect_lookup_miss_diagnostics,
+    find_user_by_email,
+    inspect_reset_user,
+    normalize_email,
+    user_email_query,
+)
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["auth"])
@@ -32,40 +44,6 @@ _diag_bearer = HTTPBearer(auto_error=False)
 DIAG_TEST_EMAIL_TO = "cyrilalepsa@gmail.com"
 _DIRECT_SEND_MIN_INTERVAL_SEC = 15.0
 _last_direct_send_monotonic = 0.0
-
-
-def normalize_email(email: str | None) -> str:
-    return (email or "").strip().lower()
-
-
-def user_email_query(email: str) -> dict:
-    """Filtre Mongo insensible à la casse (exact + regex)."""
-    raw = (email or "").strip()
-    lowered = raw.lower()
-    clauses = [{"email": lowered}]
-    if raw and raw != lowered:
-        clauses.append({"email": raw})
-    if lowered:
-        clauses.append(
-            {"email": {"$regex": f"^{re.escape(lowered)}$", "$options": "i"}}
-        )
-    return {"$or": clauses} if len(clauses) > 1 else clauses[0]
-
-
-async def find_user_by_email(email: str):
-    """Recherche un utilisateur par e-mail sans tenir compte de la casse."""
-    needle = normalize_email(email)
-    if not needle:
-        return None
-    database = get_db()
-    query = user_email_query(email)
-    logger.info(
-        "find_user_by_email db=%s collection=users email=%r query=%s",
-        database.name,
-        needle,
-        query,
-    )
-    return await database.users.find_one(query, {"_id": 0})
 
 
 def _admin_secret_matches(provided: str | None) -> bool:
@@ -104,7 +82,17 @@ async def require_email_diag_access(
 
 # Pydantic models for password reset
 class ForgotPasswordRequest(BaseModel):
-    email: EmailStr
+    email: Optional[EmailStr] = None
+    user_email: Optional[EmailStr] = None
+
+    @model_validator(mode="after")
+    def require_email(self):
+        if not (self.email or self.user_email):
+            raise ValueError("email requis (clé JSON: email)")
+        return self
+
+    def resolved_email(self) -> str:
+        return str(self.email or self.user_email or "")
 
 class ResetPasswordRequest(BaseModel):
     token: str
@@ -196,13 +184,14 @@ async def send_welcome_notification(user_name: str, user_email: str):
 @router.post("/auth/register", response_model=Token)
 async def register(user_data: UserCreate):
     """Register a new user"""
-    existing = await db.users.find_one({"email": user_data.email})
+    database = get_db()
+    existing = await find_user_by_email(str(user_data.email), database=database)
     if existing:
         raise HTTPException(status_code=400, detail="Email déjà utilisé")
     
     hashed_password = pwd_context.hash(user_data.password)
     user = User(
-        email=user_data.email, 
+        email=normalize_email(str(user_data.email)),
         name=user_data.name, 
         city=user_data.city,
         birth_date=user_data.birth_date,
@@ -212,7 +201,7 @@ async def register(user_data: UserCreate):
     user_dict["hashed_password"] = hashed_password
     user_dict["created_at"] = user_dict["created_at"].isoformat()
     
-    await db.users.insert_one(user_dict)
+    await database.users.insert_one(user_dict)
     
     # Track visitor/registration
     await db.site_stats.update_one(
@@ -380,7 +369,7 @@ async def verify_2fa_code(request: Verify2FARequest):
 @router.post("/auth/login", response_model=Token)
 async def login(user_data: UserLogin):
     """Login user and return JWT token"""
-    user = await db.users.find_one({"email": user_data.email})
+    user = await find_user_by_email(str(user_data.email))
     if not user:
         raise HTTPException(status_code=400, detail="Email ou mot de passe incorrect")
     
@@ -540,167 +529,235 @@ async def update_profile(profile_data: ProfileUpdate, current_user: User = Depen
 @router.post("/v1/auth/forgot-password")
 async def forgot_password(request: ForgotPasswordRequest):
     """Send password reset email"""
-    requested_email = normalize_email(str(request.email))
-    database = get_db()
-    db_used = database.name or resolve_db_name()
-    print(
-        f"[EMAIL] forgot-password start db={db_used} email={requested_email}",
-        flush=True,
-    )
-    logger.info(
-        "forgot-password start db=%s collection=users email=%s",
-        db_used,
-        requested_email,
-    )
-    user = await find_user_by_email(requested_email)
-
-    # Always return success to prevent email enumeration
-    if not user:
+    try:
+        raw_email = request.resolved_email()
+        requested_email = normalize_email(raw_email)
+        database = get_db()
+        db_used = database.name or resolve_db_name()
         print(
-            f"[EMAIL] forgot-password user_found=False db={db_used} "
-            f"to={requested_email} — e-mail non envoyé",
+            f"[EMAIL] forgot-password payload raw={raw_email!r} normalized={requested_email!r} "
+            f"db={db_used} collection=users",
             flush=True,
         )
-        logger.warning("User not found in DB for email: %s", requested_email)
-        logger.error(
-            "forgot-password user_found=False db=%s email=%s — Resend NON appelé",
-            db_used,
+        logger.info(
+            "forgot-password payload raw_email=%r normalized=%r db=%s collection=users",
+            raw_email,
             requested_email,
+            db_used,
         )
-        return {"success": True, "message": "Si cet email existe, un lien de réinitialisation a été envoyé."}
+        user = await find_user_by_email(requested_email, database=database)
 
-    stored_email = normalize_email(user.get("email") or requested_email)
-    logger.info(
-        "forgot-password user_found=True db=%s stored_email=%r requested=%r",
-        db_used,
-        user.get("email"),
-        requested_email,
-    )
-
-    # Generate reset token
-    reset_token = secrets.token_urlsafe(32)
-    expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
-
-    # Store reset token in database (e-mail canonique stocké)
-    await database.password_resets.delete_many(user_email_query(stored_email))
-    await database.password_resets.insert_one({
-        "email": stored_email,
-        "token": reset_token,
-        "expires_at": expires_at.isoformat(),
-        "created_at": datetime.now(timezone.utc).isoformat()
-    })
-    
-    # Send email with reset link — logs détaillés (clé, from, to, retour Resend)
-    frontend_url = app_public_url()
-    reset_link = f"{frontend_url}/reset-password?token={reset_token}"
-    print(
-        f"[EMAIL] forgot-password user_found=True db={db_used} to={stored_email} "
-        f"requested={requested_email} frontend_url={frontend_url} (token non logué)",
-        flush=True,
-    )
-
-    send_result = send_resend_email(
-        to=stored_email,
-        subject="Réinitialisation de votre mot de passe MamanDouce",
-        purpose="reset-password",
-        html=f"""
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="x-apple-disable-message-reformatting">
-    <title>Réinitialisation de mot de passe</title>
-</head>
-<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f8f9fa;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f8f9fa;">
-        <tr>
-            <td align="center" style="padding: 40px 20px;">
-                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; width: 100%;">
-                    <!-- Header -->
-                    <tr>
-                        <td align="center" style="background-color: #ec4899; padding: 30px 20px; border-radius: 20px 20px 0 0;">
-                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">MamanDouce</h1>
-                            <p style="color: #fce7f3; margin: 10px 0 0 0; font-size: 14px;">Réinitialisation de mot de passe</p>
-                        </td>
-                    </tr>
-                    <!-- Content -->
-                    <tr>
-                        <td style="background-color: #ffffff; padding: 40px 30px; border-radius: 0 0 20px 20px;">
-                            <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">Bonjour,</p>
-                            <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">Vous avez demandé la réinitialisation de votre mot de passe sur MamanDouce.</p>
-                            <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe :</p>
-                            
-                            <!-- Button -->
-                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
-                                <tr>
-                                    <td align="center" style="padding: 10px 0 30px 0;">
-                                        <!--[if mso]>
-                                        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{reset_link}" style="height:50px;v-text-anchor:middle;width:280px;" arcsize="50%" strokecolor="#ec4899" fillcolor="#ec4899">
-                                        <w:anchorlock/>
-                                        <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:16px;font-weight:bold;">Réinitialiser mon mot de passe</center>
-                                        </v:roundrect>
-                                        <![endif]-->
-                                        <!--[if !mso]><!-->
-                                        <a href="{reset_link}" target="_blank" style="background-color: #ec4899; border: 2px solid #ec4899; border-radius: 30px; color: #ffffff; display: inline-block; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; line-height: 50px; text-align: center; text-decoration: none; width: 280px; -webkit-text-size-adjust: none;">Réinitialiser mon mot de passe</a>
-                                        <!--<![endif]-->
-                                    </td>
-                                </tr>
-                            </table>
-                            
-                            <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 0 0 10px 0;">⏰ Ce lien expire dans <strong>1 heure</strong>.</p>
-                            <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 0 0 30px 0;">Si vous n'avez pas demandé cette réinitialisation, ignorez simplement cet email.</p>
-                            
-                            <!-- Fallback link -->
-                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f9fafb; border-radius: 10px;">
-                                <tr>
-                                    <td style="padding: 15px;">
-                                        <p style="color: #9ca3af; font-size: 12px; margin: 0 0 5px 0;">Si le bouton ne fonctionne pas, copiez ce lien :</p>
-                                        <p style="color: #ec4899; font-size: 11px; word-break: break-all; margin: 0;"><a href="{reset_link}" style="color: #ec4899;">{reset_link}</a></p>
-                                    </td>
-                                </tr>
-                            </table>
-                            
-                            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-                            <p style="color: #9ca3af; font-size: 12px; text-align: center; margin: 0;">L'équipe MamanDouce 💕</p>
-                            {email_brand_footer()}
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
-</html>
-                """,
-    )
-
-    if not send_result.get("ok"):
-        err = send_result.get("error") or "envoi Resend échoué"
-        tb = send_result.get("traceback") or ""
-        print(f"[EMAIL] forgot-password FAILED to={stored_email}: {err}", flush=True)
-        if tb:
-            print(tb, flush=True)
-        logger.error("forgot-password email failed to=%s: %s", stored_email, err)
-        error_str = str(err)
-        if "only send testing emails" in error_str.lower() or "verify a domain" in error_str.lower():
+        # Always return success to prevent email enumeration
+        if not user:
+            miss = await collect_lookup_miss_diagnostics(database, requested_email)
             print(
-                "[EMAIL] RESEND DOMAIN NOT VERIFIED — "
-                "Resend n'envoie qu'à l'e-mail du compte propriétaire",
+                f"[EMAIL] forgot-password user_found=False db={db_used} "
+                f"users_count={miss.get('users_count')} to={requested_email!r} "
+                f"— Resend NON appelé",
                 flush=True,
             )
+            logger.warning("User not found in DB for email: %s", requested_email)
             logger.error(
-                "RESEND DOMAIN NOT VERIFIED - Emails can only be sent to the account owner's email"
+                "forgot-password user_found=False db=%s email=%s users_count=%s "
+                "indexes=%s similar=%s — Resend NON appelé",
+                db_used,
+                requested_email,
+                miss.get("users_count"),
+                miss.get("indexes"),
+                miss.get("similar"),
             )
+            return {"success": True, "message": "Si cet email existe, un lien de réinitialisation a été envoyé."}
 
-    # HTTP 200 volontaire (anti-énumération) — l'échec est dans les logs Railway
-    if send_result.get("ok"):
-        return {"success": True, "message": "Un email de réinitialisation a été envoyé à votre adresse."}
-    return {
-        "success": True,
-        "message": "Si cet email existe, un lien de réinitialisation a été envoyé.",
-        "note": "Si vous ne recevez pas l'email, vérifiez vos spams ou contactez le support.",
-    }
+        stored_raw = None
+        for field in EMAIL_LOOKUP_FIELDS:
+            if user.get(field):
+                stored_raw = user.get(field)
+                break
+        stored_email = normalize_email(stored_raw or requested_email)
+        logger.info(
+            "forgot-password user_found=True db=%s stored_email=%r requested=%r",
+            db_used,
+            stored_raw,
+            requested_email,
+        )
+
+        # Generate reset token
+        reset_token = secrets.token_urlsafe(32)
+        expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
+
+        # Store reset token in database (e-mail canonique stocké)
+        await database.password_resets.delete_many(user_email_query(stored_email))
+        await database.password_resets.insert_one({
+            "email": stored_email,
+            "token": reset_token,
+            "expires_at": expires_at.isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+    
+        # Send email with reset link — logs détaillés (clé, from, to, retour Resend)
+        frontend_url = app_public_url()
+        reset_link = f"{frontend_url}/reset-password?token={reset_token}"
+        print(
+            f"[EMAIL] forgot-password user_found=True db={db_used} to={stored_email} "
+            f"requested={requested_email} frontend_url={frontend_url} (token non logué)",
+            flush=True,
+        )
+
+        logger.info("send_reset_password_email() calling to=%s db=%s", stored_email, db_used)
+        print(f"[EMAIL] send_reset_password_email() to={stored_email} db={db_used}", flush=True)
+        send_result = send_reset_password_email(
+            to=stored_email,
+            reset_link=reset_link,
+            html=f"""
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="x-apple-disable-message-reformatting">
+        <title>Réinitialisation de mot de passe</title>
+    </head>
+    <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f8f9fa;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f8f9fa;">
+            <tr>
+                <td align="center" style="padding: 40px 20px;">
+                    <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; width: 100%;">
+                        <!-- Header -->
+                        <tr>
+                            <td align="center" style="background-color: #ec4899; padding: 30px 20px; border-radius: 20px 20px 0 0;">
+                                <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">MamanDouce</h1>
+                                <p style="color: #fce7f3; margin: 10px 0 0 0; font-size: 14px;">Réinitialisation de mot de passe</p>
+                            </td>
+                        </tr>
+                        <!-- Content -->
+                        <tr>
+                            <td style="background-color: #ffffff; padding: 40px 30px; border-radius: 0 0 20px 20px;">
+                                <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">Bonjour,</p>
+                                <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">Vous avez demandé la réinitialisation de votre mot de passe sur MamanDouce.</p>
+                                <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe :</p>
+                            
+                                <!-- Button -->
+                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                    <tr>
+                                        <td align="center" style="padding: 10px 0 30px 0;">
+                                            <!--[if mso]>
+                                            <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{reset_link}" style="height:50px;v-text-anchor:middle;width:280px;" arcsize="50%" strokecolor="#ec4899" fillcolor="#ec4899">
+                                            <w:anchorlock/>
+                                            <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:16px;font-weight:bold;">Réinitialiser mon mot de passe</center>
+                                            </v:roundrect>
+                                            <![endif]-->
+                                            <!--[if !mso]><!-->
+                                            <a href="{reset_link}" target="_blank" style="background-color: #ec4899; border: 2px solid #ec4899; border-radius: 30px; color: #ffffff; display: inline-block; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; line-height: 50px; text-align: center; text-decoration: none; width: 280px; -webkit-text-size-adjust: none;">Réinitialiser mon mot de passe</a>
+                                            <!--<![endif]-->
+                                        </td>
+                                    </tr>
+                                </table>
+                            
+                                <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 0 0 10px 0;">⏰ Ce lien expire dans <strong>1 heure</strong>.</p>
+                                <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 0 0 30px 0;">Si vous n'avez pas demandé cette réinitialisation, ignorez simplement cet email.</p>
+                            
+                                <!-- Fallback link -->
+                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f9fafb; border-radius: 10px;">
+                                    <tr>
+                                        <td style="padding: 15px;">
+                                            <p style="color: #9ca3af; font-size: 12px; margin: 0 0 5px 0;">Si le bouton ne fonctionne pas, copiez ce lien :</p>
+                                            <p style="color: #ec4899; font-size: 11px; word-break: break-all; margin: 0;"><a href="{reset_link}" style="color: #ec4899;">{reset_link}</a></p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            
+                                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+                                <p style="color: #9ca3af; font-size: 12px; text-align: center; margin: 0;">L'équipe MamanDouce 💕</p>
+                                {email_brand_footer()}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
+                    """,
+        )
+
+        if not send_result.get("ok"):
+            err = send_result.get("error") or "envoi Resend échoué"
+            tb = send_result.get("traceback") or ""
+            print(f"[EMAIL] forgot-password FAILED to={stored_email}: {err}", flush=True)
+            if tb:
+                print(tb, flush=True)
+            logger.error("forgot-password email failed to=%s: %s", stored_email, err)
+            error_str = str(err)
+            if "only send testing emails" in error_str.lower() or "verify a domain" in error_str.lower():
+                print(
+                    "[EMAIL] RESEND DOMAIN NOT VERIFIED — "
+                    "Resend n'envoie qu'à l'e-mail du compte propriétaire",
+                    flush=True,
+                )
+                logger.error(
+                    "RESEND DOMAIN NOT VERIFIED - Emails can only be sent to the account owner's email"
+                )
+
+        # HTTP 200 volontaire (anti-énumération) — l'échec est dans les logs Railway
+        if send_result.get("ok"):
+            return {"success": True, "message": "Un email de réinitialisation a été envoyé à votre adresse."}
+        return {
+            "success": True,
+            "message": "Si cet email existe, un lien de réinitialisation a été envoyé.",
+            "note": "Si vous ne recevez pas l'email, vérifiez vos spams ou contactez le support.",
+        }
+
+
+    except Exception as e:
+        tb = traceback.format_exc()
+        logger.exception(e)
+        print("[EMAIL] forgot_password EXCEPTION:", flush=True)
+        print(tb, flush=True)
+        return {
+            "success": True,
+            "message": "Si cet email existe, un lien de réinitialisation a été envoyé.",
+            "note": "Erreur interne loguée — Resend peut ne pas avoir été appelé.",
+        }
+
+
+def _probe_email_allowed(email: str, admin_secret: str | None, x_admin_secret: str | None) -> bool:
+    if normalize_email(email) == DIAG_TEST_EMAIL_TO:
+        return True
+    return _admin_secret_matches(admin_secret) or _admin_secret_matches(x_admin_secret)
+
+
+@router.get("/v1/auth/forgot-password-probe", tags=["auth", "diagnostic"])
+@router.get("/auth/forgot-password-probe", tags=["auth", "diagnostic"])
+async def forgot_password_probe(
+    email: str = DIAG_TEST_EMAIL_TO,
+    admin_secret: Optional[str] = Query(None),
+    x_admin_secret: Optional[str] = Header(None, alias="X-Admin-Secret"),
+):
+    """
+    Diagnostic Mongo (sans envoi Resend) : le compte existe-t-il dans `users` ?
+
+    Public uniquement pour cyrilalepsa@gmail.com. Les autres e-mails
+    exigent ADMIN_SECRET.
+    """
+    if not _probe_email_allowed(email, admin_secret, x_admin_secret):
+        raise HTTPException(
+            status_code=401,
+            detail="Probe limité à cyrilalepsa@gmail.com (ou ADMIN_SECRET).",
+        )
+    report = await inspect_reset_user(email)
+    print(
+        f"[EMAIL] forgot-password-probe db={report.get('db_name')} "
+        f"user_found={report.get('user_found')} users_count={report.get('users_count')}",
+        flush=True,
+    )
+    logger.info(
+        "forgot-password-probe db=%s user_found=%s users_count=%s email=%r",
+        report.get("db_name"),
+        report.get("user_found"),
+        report.get("users_count"),
+        normalize_email(email),
+    )
+    return report
 
 
 @router.post("/auth/verify-reset-token")

@@ -273,7 +273,8 @@ if FRONTEND_DIR:
                     "hint": (
                         "Préfixe global=/api. Reset: POST /api/auth/forgot-password "
                         "(alias POST /api/v1/auth/forgot-password). "
-                        "Diag: GET /api/v1/auth/test-resend-direct"
+                        "Diag: GET /api/v1/auth/test-resend-direct "
+                        "Probe Mongo: GET /api/v1/auth/forgot-password-probe"
                     ),
                 },
             )
