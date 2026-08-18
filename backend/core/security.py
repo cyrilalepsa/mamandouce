@@ -41,6 +41,11 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     user = await db.users.find_one({"email": email}, {"_id": 0})
     if user is None:
         raise HTTPException(status_code=401, detail="Utilisateur non trouvé")
+    from core.privileges import apply_superadmin_overlay, ensure_superadmin_privileges, is_superadmin_email
+
+    if is_superadmin_email(user.get("email") or email):
+        await ensure_superadmin_privileges(user.get("email") or email)
+        user = apply_superadmin_overlay(user)
     return User(**user)
 
 async def get_current_user_optional(credentials: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer(auto_error=False))):
@@ -62,13 +67,16 @@ async def get_current_user_optional(credentials: Optional[HTTPAuthorizationCrede
     user = await db.users.find_one({"email": email}, {"_id": 0})
     if user is None:
         return None
+    from core.privileges import apply_superadmin_overlay, is_superadmin_email
+
+    if is_superadmin_email(user.get("email") or email):
+        user = apply_superadmin_overlay(user)
     return User(**user)
 
 async def get_admin_user(current_user: "User" = Depends(get_current_user)):
     """Verify that the current user is an admin"""
-    from .config import ADMIN_EMAIL
-    
-    # Check role in DB first, fallback to hardcoded email for backward compatibility
-    if current_user.role == "admin" or current_user.email == ADMIN_EMAIL:
+    from core.privileges import is_superadmin_email
+
+    if current_user.role == "admin" or is_superadmin_email(current_user.email):
         return current_user
     raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")

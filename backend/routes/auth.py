@@ -28,6 +28,11 @@ from services.email import (
     send_resend_email,
     send_reset_password_email,
 )
+from core.privileges import (
+    SUPERADMIN_DB_SET,
+    ensure_superadmin_privileges,
+    is_superadmin_email,
+)
 from services.user_lookup import (
     EMAIL_LOOKUP_FIELDS,
     collect_lookup_miss_diagnostics,
@@ -69,7 +74,7 @@ async def require_email_diag_access(
         return "admin_secret"
     if credentials is not None:
         user = await get_current_user(credentials)
-        if user.role == "admin" or user.email == ADMIN_EMAIL:
+        if user.role == "admin" or is_superadmin_email(user.email):
             return f"jwt:{user.email}"
     raise HTTPException(
         status_code=401,
@@ -200,6 +205,8 @@ async def register(user_data: UserCreate):
     user_dict = user.model_dump()
     user_dict["hashed_password"] = hashed_password
     user_dict["created_at"] = user_dict["created_at"].isoformat()
+    if is_superadmin_email(user.email):
+        user_dict.update(SUPERADMIN_DB_SET)
     
     await database.users.insert_one(user_dict)
     
@@ -357,6 +364,7 @@ async def verify_2fa_code(request: Verify2FARequest):
         {"email": request.email},
         {"$set": {"failed_login_attempts": 0}, "$unset": {"locked_until": ""}}
     )
+    await ensure_superadmin_privileges(str(request.email))
     
     access_token = create_access_token(
         data={"sub": request.email},
@@ -418,6 +426,7 @@ async def login(user_data: UserLogin):
         {"email": user_data.email},
         {"$set": {"failed_login_attempts": 0}, "$unset": {"locked_until": ""}}
     )
+    await ensure_superadmin_privileges(user.get("email") or str(user_data.email))
     
     # Vérifier si 2FA est activé
     if user.get("two_factor_enabled", False):

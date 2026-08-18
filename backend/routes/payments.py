@@ -10,6 +10,7 @@ import asyncio
 
 from core.database import db
 from core.config import ADMIN_EMAIL
+from core.privileges import is_superadmin_email
 from core.security import get_current_user
 from models.schemas import User
 
@@ -178,7 +179,7 @@ async def stripe_webhook(request: Request):
 @router.post("/refund/{refund_request_id}")
 async def process_refund(refund_request_id: str, current_user: User = Depends(get_current_user)):
     """Route d'administration sécurisée pour traiter un remboursement unique"""
-    if current_user.email != ADMIN_EMAIL:
+    if not is_superadmin_email(current_user.email):
         raise HTTPException(status_code=403, detail="Action non autorisée")
         
     refund_request = await db.refund_requests.find_one({"id": refund_request_id, "status": "pending"})

@@ -395,6 +395,8 @@ async def get_full_subscription_status(current_user: User = Depends(get_current_
     
     if not user_doc:
         raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+
+    from core.privileges import is_superadmin_email
     
     subscription_status = user_doc.get("subscription_status", "free")
     subscription_start = user_doc.get("subscription_start_date")
@@ -421,8 +423,11 @@ async def get_full_subscription_status(current_user: User = Depends(get_current_
             except Exception:
                 pass
     
-    # Premium si abonnement actif OU essai actif
+    # Premium si abonnement actif OU essai actif OU superadmin
     is_premium = subscription_status == "premium" or is_trial_active
+    if is_superadmin_email(user_doc.get("email") or current_user.email):
+        is_premium = True
+        subscription_status = "premium"
     
     # Calculer si éligible au post-partum (6 mois d'abonnement)
     postpartum_eligible = False
@@ -442,6 +447,10 @@ async def get_full_subscription_status(current_user: User = Depends(get_current_
     postpartum_purchased = user_doc.get("postpartum_purchased", False)
     postpartum_free = user_doc.get("postpartum_free_via_referral", False)
     postpartum_unlocked = postpartum_purchased or postpartum_free
+    if is_superadmin_email(user_doc.get("email") or current_user.email):
+        postpartum_unlocked = True
+        postpartum_eligible = True
+        postpartum_purchased = True
     
     # Compter les parrainages complétés
     completed_referrals = await db.referrals.count_documents({

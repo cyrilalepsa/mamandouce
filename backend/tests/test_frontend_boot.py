@@ -154,6 +154,16 @@ def test_forgot_password_form_logs_api_errors():
     assert "formatApiError" in page
 
 
+def test_superadmin_helper_lists_both_accounts():
+    src = (FRONTEND / "src" / "utils" / "superadmin.js").read_text(encoding="utf-8")
+    assert "cyrilalepsa@gmail.com" in src
+    assert "superadmin@neriacorp.com" in src
+    gate = (FRONTEND / "src" / "components" / "SubscriptionGate.jsx").read_text(encoding="utf-8")
+    assert "isSuperAdmin" in gate
+    admin = (FRONTEND / "src" / "pages" / "AdminPage.jsx").read_text(encoding="utf-8")
+    assert "isSuperAdmin" in admin
+
+
 def test_index_html_hides_loader_on_error():
     html = (FRONTEND / "index.html").read_text(encoding="utf-8")
     head = html.split("<body>", 1)[0]

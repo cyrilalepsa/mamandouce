@@ -142,6 +142,18 @@ async def get_subscription_status(current_user: User = Depends(get_current_user)
     
     if not user:
         return {"subscription_status": "free"}
+
+    from core.privileges import is_superadmin_email
+
+    if is_superadmin_email(user.get("email") or current_user.email):
+        return {
+            "subscription_status": "premium",
+            "premium_source": "superadmin",
+            "subscription_start_date": user.get("subscription_start_date"),
+            "subscription_end_date": user.get("subscription_end_date"),
+            "postpartum_purchased": True,
+            "postpartum_free_via_referral": True,
+        }
     
     return {
         "subscription_status": user.get("subscription_status", "free"),
