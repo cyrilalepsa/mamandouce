@@ -142,9 +142,9 @@ assertEqual(
   "apiUrl cycle intelligence",
 );
 assertEqual(
-  apiUrl("/api/scanner/publications/abc", { hostname: "mamandouce.neriacorp.com" }),
-  `${mdOrigin}/api/scanner/publications/abc`,
-  "apiUrl QR publication",
+  apiUrl("/auth/forgot-password", { hostname: "mamandouce.neriacorp.com", envUrl: "" }),
+  `${mdOrigin}/api/auth/forgot-password`,
+  "forgot-password URL is /api/auth/forgot-password (not /api/v1)",
 );
 assertEqual(
   apiUrl("http://localhost:8000/api/x", { hostname: "mamandouce.neriacorp.com" }),

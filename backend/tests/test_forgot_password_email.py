@@ -63,7 +63,7 @@ def test_forgot_password_sends_when_db_email_has_different_case(caplog):
         patch("routes.auth.find_user_by_email", fake_find_user),
         patch("routes.auth.get_db", lambda: fake_db),
         patch("routes.auth.db", fake_db),
-        patch("routes.auth.send_resend_email", return_value=FAKE_SEND) as send,
+        patch("routes.auth.send_reset_password_email", return_value=FAKE_SEND) as send,
         TestClient(app) as client,
     ):
         r = client.post(
@@ -76,14 +76,14 @@ def test_forgot_password_sends_when_db_email_has_different_case(caplog):
     assert captured["lookup_email"] == "cyrilalepsa@gmail.com"
     send.assert_called_once()
     assert send.call_args.kwargs["to"] == "cyrilalepsa@gmail.com"
-    assert send.call_args.kwargs["purpose"] == "reset-password"
+    assert "html" in send.call_args.kwargs
     assert "extra" not in send.call_args.kwargs
     assert captured["reset"]["email"] == "cyrilalepsa@gmail.com"
 
     with (
         patch("routes.auth.find_user_by_email", fake_find_user),
         patch("routes.auth.get_db", lambda: fake_db),
-        patch("routes.auth.send_resend_email", return_value=FAKE_SEND),
+        patch("routes.auth.send_reset_password_email", return_value=FAKE_SEND),
         TestClient(app) as client,
     ):
         r_v1 = client.post(
@@ -99,7 +99,7 @@ def test_forgot_password_logs_user_not_found(caplog):
 
     with (
         patch("routes.auth.find_user_by_email", fake_find_user),
-        patch("routes.auth.send_resend_email") as send,
+        patch("routes.auth.send_reset_password_email") as send,
         TestClient(app) as client,
         caplog.at_level("WARNING", logger="routes.auth"),
     ):
@@ -121,3 +121,36 @@ def test_resolve_db_name_defaults_to_mamandouce(monkeypatch):
     from core.database import resolve_db_name
 
     assert resolve_db_name() == "mamandouce"
+
+
+def test_forgot_password_accepts_user_email_alias():
+    async def fake_find_user(email):
+        return {"id": "u1", "email": email, "name": "Cyril"}
+
+    async def fake_delete_many(*_a, **_k):
+        return None
+
+    async def fake_insert_one(_doc):
+        return None
+
+    fake_db = SimpleNamespace(
+        name="mamandouce",
+        password_resets=SimpleNamespace(
+            delete_many=fake_delete_many,
+            insert_one=fake_insert_one,
+        ),
+    )
+
+    with (
+        patch("routes.auth.find_user_by_email", fake_find_user),
+        patch("routes.auth.get_db", lambda: fake_db),
+        patch("routes.auth.send_reset_password_email", return_value=FAKE_SEND) as send,
+        TestClient(app) as client,
+    ):
+        r = client.post(
+            "/api/auth/forgot-password",
+            json={"user_email": "cyrilalepsa@gmail.com"},
+        )
+    assert r.status_code == 200
+    send.assert_called_once()
+    assert send.call_args.kwargs["to"] == "cyrilalepsa@gmail.com"
