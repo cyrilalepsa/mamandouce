@@ -6,6 +6,18 @@ const API = () => getApiBase();
 
 axios.defaults.timeout = 12000;
 
+export function formatApiError(error) {
+  const detail = error?.response?.data?.detail;
+  if (typeof detail === "string" && detail.trim()) return detail;
+  if (Array.isArray(detail)) {
+    const msgs = detail.map((item) => item?.msg || item?.message || "").filter(Boolean);
+    if (msgs.length) return msgs.join("; ");
+  }
+  if (error?.response?.data?.message) return String(error.response.data.message);
+  if (error?.message) return error.message;
+  return "Une erreur est survenue";
+}
+
 const getToken = () => safeGet('token');
 
 const getAuthHeaders = () => ({
@@ -25,6 +37,10 @@ axios.interceptors.response.use(
     }
     
     if (error.response?.status === 401) {
+      const reqUrl = String(error.config?.url || "");
+      if (reqUrl.includes("forgot-password")) {
+        return Promise.reject(error);
+      }
       // Token expiré ou invalide - déconnecter l'utilisateur
       const token = safeGet('token');
       if (token) {
@@ -52,7 +68,11 @@ export const api = {
     getMe: () => axios.get(`${API()}/auth/me`, getAuthHeaders()),
     me: () => axios.get(`${API()}/auth/me`, getAuthHeaders()), // Alias for compatibility
     updateProfile: (data) => axios.put(`${API()}/auth/profile`, data, getAuthHeaders()),
-    forgotPassword: (email) => axios.post(`${API()}/auth/forgot-password`, { email }),
+    forgotPassword: (email) => {
+      const payload = { email: String(email || "").trim().toLowerCase() };
+      const url = apiUrl("/auth/forgot-password");
+      return axios.post(url, payload);
+    },
     verifyResetToken: (token) => axios.post(`${API()}/auth/verify-reset-token`, { token }),
     resetPassword: (token, new_password) => axios.post(`${API()}/auth/reset-password`, { token, new_password }),
     updateEmail: (newEmail) => axios.post(`${API()}/auth/update-email`, { new_email: newEmail }, getAuthHeaders()),

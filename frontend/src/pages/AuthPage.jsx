@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/card';
 import { toast } from 'sonner';
-import api from '../utils/api';
+import api, { formatApiError } from '../utils/api';
+import { apiUrl } from '../utils/backendUrl';
 import AppTitle from '../components/AppTitle';
 import { useTranslation } from 'react-i18next';
 import LanguageBubble from '../components/LanguageBubble';
@@ -279,13 +280,21 @@ function AuthPage({ setIsAuthenticated }) {
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
+    const email = String(formData.email || "").trim().toLowerCase();
+    const url = apiUrl("/auth/forgot-password");
+    console.info("[forgot-password] POST", url, { email });
 
     try {
-      await api.auth.forgotPassword(formData.email);
+      const response = await api.auth.forgotPassword(email);
+      console.info("[forgot-password] response", response.status, response.data);
+      if (response.data?.note) {
+        console.warn("[forgot-password] note", response.data.note);
+      }
       setEmailSent(true);
-      toast.success('Email de réinitialisation envoyé !');
+      toast.success(response.data?.message || "Email de réinitialisation envoyé !");
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Une erreur est survenue');
+      console.error("[forgot-password] error", error.response?.status, error.response?.data || error);
+      toast.error(formatApiError(error));
     } finally {
       setLoading(false);
     }

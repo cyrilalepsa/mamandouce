@@ -11,6 +11,7 @@ from services.email import (
     reload_email_settings,
     send_resend_direct,
     send_resend_email,
+    send_reset_password_email,
     serialize_resend_error,
 )
 
@@ -204,3 +205,20 @@ def test_send_resend_direct_returns_traceback_on_sdk_error(monkeypatch):
     assert payload["status"] == "error"
     assert "invalid from address" in payload["error"]
     assert "Traceback" in (payload["traceback"] or "")
+
+
+def test_send_reset_password_email_uses_resend_wrapper(monkeypatch, capsys):
+    monkeypatch.setenv("RESEND_API_KEY", "re_abcdefghijklmnopqrstuvwxyz")
+    monkeypatch.setenv("SENDER_EMAIL", "noreply@neriacorp.com")
+    fake_resend = MagicMock()
+    fake_resend.Emails.send.return_value = {"id": "msg_reset"}
+
+    with patch.dict("sys.modules", {"resend": fake_resend}):
+        result = send_reset_password_email(to="cyrilalepsa@gmail.com", html="<p>reset</p>")
+
+    assert result["ok"] is True
+    out = capsys.readouterr().out
+    assert "send_reset_password_email()" in out
+    params = fake_resend.Emails.send.call_args[0][0]
+    assert params["to"] == ["cyrilalepsa@gmail.com"]
+    assert params["from"].endswith("@neriacorp.com>")

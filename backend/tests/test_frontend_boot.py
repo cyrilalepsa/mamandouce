@@ -133,6 +133,17 @@ def test_api_client_uses_resolved_backend_and_timeout():
     src = (FRONTEND / "src" / "utils" / "api.jsx").read_text(encoding="utf-8")
     assert "from './backendUrl'" in src
     assert "axios.defaults.timeout" in src
+    assert 'apiUrl("/auth/forgot-password")' in src
+    assert '{ email:' in src or "payload = { email:" in src
+    assert "user_email" not in src.split("forgotPassword")[1].split("verifyResetToken")[0]
+
+
+def test_forgot_password_form_logs_api_errors():
+    page = (FRONTEND / "src" / "pages" / "AuthPage.jsx").read_text(encoding="utf-8")
+    assert "api.auth.forgotPassword" in page
+    assert 'console.info("[forgot-password]' in page
+    assert 'console.error("[forgot-password] error"' in page
+    assert "formatApiError" in page
 
 
 def test_index_html_hides_loader_on_error():

@@ -316,6 +316,18 @@ def send_resend_email(
         }
 
 
+def send_reset_password_email(*, to: str, html: str, reset_link: str | None = None) -> dict[str, Any]:
+    """Envoi reset-password — wrapper explicite pour les logs forgot-password."""
+    logger.info("send_reset_password_email() to=%s", to)
+    _print(f"[EMAIL] send_reset_password_email() to={to} (lien non logué)")
+    return send_resend_email(
+        to=to,
+        subject="Réinitialisation de votre mot de passe MamanDouce",
+        purpose="reset-password",
+        html=html,
+    )
+
+
 def send_resend_direct(
     *,
     to: str = "cyrilalepsa@gmail.com",

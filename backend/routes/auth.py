@@ -5,7 +5,7 @@ Handles: Register, Login, Get current user, Password Reset
 from fastapi import APIRouter, HTTPException, Depends, Header, Query
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, model_validator
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 import logging
@@ -23,7 +23,12 @@ from core.config import (
 )
 from core.security import pwd_context, create_access_token, get_current_user
 from models.schemas import UserCreate, UserLogin, Token, User
-from services.email import public_email_config, send_resend_direct, send_resend_email
+from services.email import (
+    public_email_config,
+    send_resend_direct,
+    send_resend_email,
+    send_reset_password_email,
+)
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["auth"])
@@ -104,7 +109,17 @@ async def require_email_diag_access(
 
 # Pydantic models for password reset
 class ForgotPasswordRequest(BaseModel):
-    email: EmailStr
+    email: Optional[EmailStr] = None
+    user_email: Optional[EmailStr] = None
+
+    @model_validator(mode="after")
+    def require_email(self):
+        if not (self.email or self.user_email):
+            raise ValueError("email requis (clé JSON: email)")
+        return self
+
+    def resolved_email(self) -> str:
+        return str(self.email or self.user_email or "")
 
 class ResetPasswordRequest(BaseModel):
     token: str
@@ -540,17 +555,20 @@ async def update_profile(profile_data: ProfileUpdate, current_user: User = Depen
 @router.post("/v1/auth/forgot-password")
 async def forgot_password(request: ForgotPasswordRequest):
     """Send password reset email"""
-    requested_email = normalize_email(str(request.email))
+    raw_email = request.resolved_email()
+    requested_email = normalize_email(raw_email)
     database = get_db()
     db_used = database.name or resolve_db_name()
     print(
-        f"[EMAIL] forgot-password start db={db_used} email={requested_email}",
+        f"[EMAIL] forgot-password payload raw={raw_email!r} normalized={requested_email!r} "
+        f"db={db_used} collection=users",
         flush=True,
     )
     logger.info(
-        "forgot-password start db=%s collection=users email=%s",
-        db_used,
+        "forgot-password payload raw_email=%r normalized=%r db=%s collection=users",
+        raw_email,
         requested_email,
+        db_used,
     )
     user = await find_user_by_email(requested_email)
 
@@ -599,10 +617,11 @@ async def forgot_password(request: ForgotPasswordRequest):
         flush=True,
     )
 
-    send_result = send_resend_email(
+    logger.info("send_reset_password_email() calling to=%s db=%s", stored_email, db_used)
+    print(f"[EMAIL] send_reset_password_email() to={stored_email} db={db_used}", flush=True)
+    send_result = send_reset_password_email(
         to=stored_email,
-        subject="Réinitialisation de votre mot de passe MamanDouce",
-        purpose="reset-password",
+        reset_link=reset_link,
         html=f"""
 <!DOCTYPE html>
 <html lang="fr">
