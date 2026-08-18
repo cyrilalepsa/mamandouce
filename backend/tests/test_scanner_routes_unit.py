@@ -328,6 +328,23 @@ def test_email_defaults_use_neriacorp_domain(monkeypatch):
     assert cfg.CONTACT_EMAIL == "contact@neriacorp.com"
 
 
+def test_email_sender_rejects_resend_dev_and_gmail(monkeypatch):
+    from core.config import load_settings
+    import core.config as cfg
+
+    monkeypatch.setenv("SENDER_EMAIL", "onboarding@resend.dev")
+    load_settings()
+    assert cfg.SENDER_EMAIL == "noreply@neriacorp.com"
+
+    monkeypatch.setenv("SENDER_EMAIL", "MamanDouce <cyrilalepsa@gmail.com>")
+    load_settings()
+    assert cfg.SENDER_EMAIL == "noreply@neriacorp.com"
+
+    monkeypatch.setenv("SENDER_EMAIL", "hello@neriacorp.com")
+    load_settings()
+    assert cfg.SENDER_EMAIL == "hello@neriacorp.com"
+
+
 def test_n2_ocr_defaults_to_central_worker(monkeypatch):
     monkeypatch.delenv("N2_OCR_BASE_URL", raising=False)
     from integrations.neriacorp.scanner_adapter import n2_ocr_base_url

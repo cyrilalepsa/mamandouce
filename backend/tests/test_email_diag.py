@@ -134,3 +134,47 @@ def test_wrong_admin_secret_rejected(client, monkeypatch):
     monkeypatch.setenv("ADMIN_SECRET", "diag-secret-unit-test")
     r = client.get("/api/auth/test-email", params={"admin_secret": "nope"})
     assert r.status_code == 401
+
+
+def test_debug_send_test_returns_resend_json(client, monkeypatch):
+    monkeypatch.setenv("ADMIN_SECRET", "diag-secret-unit-test")
+    monkeypatch.setenv("SENDER_EMAIL", "noreply@neriacorp.com")
+    with patch("routes.auth.send_resend_email", return_value=FAKE_SEND):
+        r = client.get(
+            "/api/v1/auth/debug-send-test",
+            headers={"X-Admin-Secret": "diag-secret-unit-test"},
+        )
+    assert r.status_code == 200
+    data = r.json()
+    assert data["status"] == "ok"
+    assert data["resend_response"] == {"id": "msg_diag_1"}
+    assert data["SENDER_EMAIL"] == "noreply@neriacorp.com"
+    assert data["to"] == "cyrilalepsa@gmail.com"
+
+
+def test_debug_send_test_requires_auth(client):
+    r = client.get("/api/v1/auth/debug-send-test")
+    assert r.status_code == 401
+
+
+def test_debug_send_test_returns_error_payload(client, monkeypatch):
+    monkeypatch.setenv("ADMIN_SECRET", "diag-secret-unit-test")
+    failed = {
+        "ok": False,
+        "error": "RuntimeError: boom",
+        "resend": {"exception": "RuntimeError", "message": "boom"},
+        "traceback": "Traceback (most recent call last):\n boom",
+        "email_id": None,
+        "http_status": 500,
+        "skipped": False,
+    }
+    with patch("routes.auth.send_resend_email", return_value=failed):
+        r = client.get(
+            "/api/auth/debug-send-test",
+            params={"admin_secret": "diag-secret-unit-test"},
+        )
+    assert r.status_code == 200
+    data = r.json()
+    assert data["status"] == "error"
+    assert "boom" in data["error"]
+    assert "Traceback" in data["traceback"]

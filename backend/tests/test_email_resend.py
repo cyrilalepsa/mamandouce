@@ -133,8 +133,17 @@ def test_warns_when_from_not_neriacorp(monkeypatch, capsys):
         purpose="reset-password",
     )
     out = capsys.readouterr().out
-    assert "neriacorp_ok=False" in out
-    assert "does not end with @neriacorp.com" in out
+    assert "noreply@example.com" in out
+    assert "forcé" in out or "rejeté" in out
+    assert "noreply@neriacorp.com" in out
+
+
+def test_coerces_onboarding_resend_dev(monkeypatch):
+    monkeypatch.setenv("SENDER_EMAIL", "onboarding@resend.dev")
+    cfg = reload_email_settings()
+    assert cfg["SENDER_EMAIL"] == "noreply@neriacorp.com"
+    assert cfg["FROM_HEADER"] == "MamanDouce <noreply@neriacorp.com>"
+    assert cfg["SENDER_EMAIL_RAW"] == "onboarding@resend.dev"
 
 
 def test_public_email_config_masks_key(monkeypatch):
