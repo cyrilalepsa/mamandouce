@@ -146,10 +146,10 @@ function OnboardingPage() {
               <Crown className="w-10 h-10 text-amber-300 mx-auto mb-2" />
               <h3 className="text-xl font-bold text-white mb-1">Premium</h3>
               <div className="flex items-baseline justify-center gap-1">
-                <span className="text-3xl font-bold text-white">27€</span>
+                <span className="text-3xl font-bold text-white">30€</span>
                 <span className="text-lg text-white">/9 mois</span>
               </div>
-              <p className="text-sky-100 text-sm mt-1">soit 3€/mois</p>
+              <p className="text-sky-100 text-sm mt-1">soit 3,33€/mois</p>
             </div>
             
             <ul className="space-y-2 mb-6 text-sm">

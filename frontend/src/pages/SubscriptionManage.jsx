@@ -135,7 +135,7 @@ function SubscriptionManage() {
                     <CreditCard className="w-5 h-5 text-sky-500" />
                     <div>
                       <p className="text-sm text-slate-500">{t('subscription.amountPaid')}</p>
-                      <p className="font-bold text-slate-700">27€/{t('subscription.year')}</p>
+                      <p className="font-bold text-slate-700">30€ / 9 mois</p>
                     </div>
                   </div>
                   <p className="text-sm text-slate-500 mt-4">

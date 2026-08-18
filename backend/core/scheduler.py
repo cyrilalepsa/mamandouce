@@ -251,7 +251,7 @@ async def send_trial_expiry_reminders_job():
             await send_push_notification(
                 user_email=user_email,
                 title="Votre essai Premium expire demain !",
-                body=f"{user_name}, profitez de 27€ pour 9 mois d'accès illimité à toutes les fonctionnalités.",
+                body=f"{user_name}, profitez de 30€ pour 9 mois d'accès illimité à toutes les fonctionnalités.",
                 url="/pricing"
             )
             print(f"[Scheduler] Trial expiry reminder (1 day) sent to {user_email}")
@@ -306,11 +306,11 @@ async def send_trial_expiry_reminders_job():
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                                 <tr>
                                     <td align="center" style="padding: 20px 0;">
-                                        <a href="{frontend_url}/pricing" target="_blank" style="background-color: #8b5cf6; border-radius: 30px; color: #ffffff; display: inline-block; font-size: 16px; font-weight: bold; padding: 16px 40px; text-decoration: none;">Passer à Premium - 27€ pour 9 mois</a>
+                                        <a href="{frontend_url}/pricing" target="_blank" style="background-color: #8b5cf6; border-radius: 30px; color: #ffffff; display: inline-block; font-size: 16px; font-weight: bold; padding: 16px 40px; text-decoration: none;">Passer à Premium - 30€ pour 9 mois</a>
                                     </td>
                                 </tr>
                             </table>
-                            <p style="color: #94a3b8; font-size: 14px; text-align: center;">Soit seulement 3€/mois • Satisfait ou remboursé 30 jours</p>
+                            <p style="color: #94a3b8; font-size: 14px; text-align: center;">Soit seulement 3,33€/mois • Satisfait ou remboursé 30 jours</p>
                             <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
                             <p style="color: #9ca3af; font-size: 12px; text-align: center;">L'équipe MamanDouce 💕</p>
                             {email_brand_footer()}

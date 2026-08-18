@@ -9,6 +9,7 @@ import { isBiometricEnabled, checkBiometricSupport, isPinEnabled } from '../util
 import { AccountStatusSection } from '../components/settings';
 import { BadgesCard } from '../components/solidarity';
 import { Card } from '../components/ui/card';
+import { PregnancyToggle } from '../components/cycle/PregnancyToggle';
 import {
   SubscriptionStatusCards,
   UserInfoCard,
@@ -63,6 +64,12 @@ function ProfilePage() {
   // Subscription status
   const [subscriptionStatus, setSubscriptionStatus] = useState('free');
   const [fullStatus, setFullStatus] = useState(null);
+  const [isPregnant, setIsPregnant] = useState(
+    () => localStorage.getItem('mamandouce_pregnant') === 'true'
+  );
+  const [dueDate, setDueDate] = useState(
+    () => localStorage.getItem('mamandouce_due_date') || ''
+  );
 
   useEffect(() => {
     loadUserData();
@@ -276,6 +283,26 @@ function ProfilePage() {
               user={user} 
               onUpdate={(updatedUser) => setUser(prev => ({ ...prev, ...updatedUser }))}
             />
+
+            <PregnancyToggle
+              mode="profile"
+              isPregnant={isPregnant}
+              dueDate={dueDate}
+              lastPeriodDate={pregnancyProfile?.last_period_date}
+              onPregnant={async (dpaStr, periodDate) => {
+                setIsPregnant(true);
+                setDueDate(dpaStr);
+                try {
+                  await api.pregnancy.calculate({
+                    last_period_date: periodDate,
+                    cycle_length: pregnancyProfile?.cycle_length || 28,
+                  });
+                  await loadUserData();
+                } catch (error) {
+                  console.error('Erreur activation grossesse:', error);
+                }
+              }}
+            />
             
             {/* Section Mon Compte */}
             <CollapsibleSection
@@ -323,7 +350,7 @@ function ProfilePage() {
             <CollapsibleSection
               title="Grossesse & Fertilité"
               icon={Baby}
-              defaultOpen={false}
+              defaultOpen={true}
               iconBg="bg-gradient-to-br from-pink-100 to-rose-100"
               iconColor="text-pink-600"
               data-testid="pregnancy-section"

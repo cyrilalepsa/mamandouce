@@ -234,3 +234,42 @@ def test_cors_defaults_include_tenant_alias(monkeypatch):
     assert "https://mamandouce.neriacorp.com" in origins
     assert f"https://{ALIAS}" in origins
     assert f"https://www.{ALIAS}" in origins
+
+
+def test_premium_price_copy_is_30_euros_not_27():
+    pricing = (FRONTEND / "src" / "pages" / "PricingPage.jsx").read_text(encoding="utf-8")
+    checkout = (FRONTEND / "src" / "pages" / "SubscriptionCheckout.jsx").read_text(encoding="utf-8")
+    modal = (FRONTEND / "src" / "components" / "PremiumModal.jsx").read_text(encoding="utf-8")
+    lock = (FRONTEND / "src" / "components" / "PremiumFeatureLock.jsx").read_text(encoding="utf-8")
+    payments = (REPO / "backend" / "routes" / "payments.py").read_text(encoding="utf-8")
+    for src in (pricing, checkout, modal, lock):
+        assert "27€" not in src
+        assert "30€" in src
+    assert '"amount": 30.00' in payments or "'amount': 30.00" in payments
+    assert "Paiement sécurisé unique de 30€" in pricing
+
+
+def test_cycle_tracking_shows_ovulation_and_nidation():
+    page = (FRONTEND / "src" / "pages" / "CycleTrackingPage.jsx").read_text(encoding="utf-8")
+    agenda = (FRONTEND / "src" / "components" / "home" / "AgendaCard.jsx").read_text(encoding="utf-8")
+    assert "from '../components/home/AgendaCard'" in page
+    assert "<AgendaCard" in page
+    assert "implantationLikely" in page
+    assert "ovulationPeak" in agenda
+    assert "expected-nidation-card" in agenda
+    assert "fertileWindow" in agenda
+
+
+def test_profile_pregnant_card_and_home_sa_week():
+    profile = (FRONTEND / "src" / "pages" / "ProfilePage.jsx").read_text(encoding="utf-8")
+    home = (FRONTEND / "src" / "pages" / "HomePage.jsx").read_text(encoding="utf-8")
+    toggle = (FRONTEND / "src" / "components" / "cycle" / "PregnancyToggle.jsx").read_text(encoding="utf-8")
+    assert "PregnancyToggle" in profile
+    assert 'mode="profile"' in profile
+    assert "pregnant-button" in toggle
+    assert "sa-week-card" in toggle
+    assert "canvas-confetti" in toggle or "from 'canvas-confetti'" in toggle
+    assert 'mode="home"' in home
+    assign = next(line for line in home.splitlines() if "hasPregnancyProfile =" in line)
+    assert "hasRapportInFertileWindow" not in assign
+    assert "[&_#celebrate-section]:hidden" not in home

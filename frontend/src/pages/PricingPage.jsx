@@ -286,7 +286,7 @@ function PricingPage() {
                 },
                 {
                   question: "Comment fonctionne le paiement ?",
-                  answer: "Paiement sécurisé unique de 27€ pour 9 mois d'accès complet. Sans renouvellement automatique."
+                  answer: "Paiement sécurisé unique de 30€ pour 9 mois d'accès complet. Sans renouvellement automatique."
                 },
                 {
                   question: "Que se passe-t-il après les 9 mois ?",
@@ -302,7 +302,7 @@ function PricingPage() {
                 },
                 {
                   question: "Comment accéder au suivi post-partum ?",
-                  answer: "Vous pouvez acheter l'option (8€) à tout moment. Le contenu sera débloqué après avoir confirmé votre accouchement via l'icône bébé dans Profil → Informations de grossesse."
+                  answer: "Vous pouvez acheter l'option (10€) à tout moment. Le contenu sera débloqué après avoir confirmé votre accouchement via l'icône bébé dans Profil → Informations de grossesse."
                 }
               ].map((faq, index) => (
                 <div key={index} className={`border rounded-xl overflow-hidden ${isDarkMode ? 'border-slate-600' : 'border-slate-200'}`}>

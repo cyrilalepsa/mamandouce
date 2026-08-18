@@ -7,6 +7,12 @@ import { CalendarDays, Settings, Save, CalendarRange, Egg, Heart, Droplets, Baby
 import { getCurrentLanguage } from '../../i18n';
 import { toYearMonthDay } from '../../utils/cycleForm';
 
+function addDays(date, days) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
 export function AgendaCard({ 
   agendaData,
   lastPeriodDate,
@@ -17,7 +23,8 @@ export function AgendaCard({
   loading,
   onOpenCalendar,
   rapportDates,
-  getNextImplantation
+  getNextImplantation,
+  variant = 'full',
 }) {
   const { t } = useTranslation();
   const [showForm, setShowForm] = useState(false);
@@ -65,8 +72,19 @@ export function AgendaCard({
     setShowForm(false);
   };
 
+  const embedded = variant === 'embedded';
+  if (embedded && !agendaData) return null;
+
+  const ovulationBasedEarly = agendaData?.implantationStart
+    || (agendaData?.ovulationDate ? addDays(agendaData.ovulationDate, 6) : null);
+  const ovulationBasedLate = agendaData?.implantationEnd
+    || (agendaData?.ovulationDate ? addDays(agendaData.ovulationDate, 12) : null);
+  const ovulationBasedLikely = agendaData?.implantationLikely
+    || (agendaData?.ovulationDate ? addDays(agendaData.ovulationDate, 9) : null);
+
   return (
     <Card className="bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100" data-testid="agenda-card">
+      {!embedded && (
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
@@ -92,9 +110,10 @@ export function AgendaCard({
           </Button>
         </div>
       </div>
+      )}
 
       {/* Formulaire de saisie */}
-      {showForm && (
+      {!embedded && showForm && (
         <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 mb-4 space-y-3">
           <div>
             <label className="text-sm font-semibold text-slate-600 mb-1 block">
@@ -231,47 +250,52 @@ export function AgendaCard({
             </div>
           </div>
 
-          {/* Nidation estimée — Version Pédagogique avec Mode Fantôme si pas de rapport */}
+          {/* Nidation prévue (ovulation + 6 à 12 j, pic J+9) — toujours visible */}
+          {ovulationBasedLikely && (
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-200" data-testid="expected-nidation-card">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-400 rounded-xl flex items-center justify-center">
+                  <Baby className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-slate-500 font-semibold">Nidation estimée</p>
+                  <p className="text-lg font-bold text-amber-600">
+                    {formatDateFull(ovulationBasedLikely)}
+                  </p>
+                  {ovulationBasedEarly && ovulationBasedLate && (
+                    <p className="text-xs text-slate-500">
+                      Fenêtre prévue du {formatDateShort(ovulationBasedEarly)} au {formatDateShort(ovulationBasedLate)}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Nidation affinée si un rapport a été enregistré en période fertile */}
           {(() => {
             const implantation = getNextImplantation && getNextImplantation();
             if (!implantation || !agendaData) return null;
-            
+
             const rapportDate = new Date(implantation.rapportDate);
             const fertileStart = new Date(agendaData.fertileStart);
             const fertileEnd = new Date(agendaData.fertileEnd);
             const isInFertileWindow = rapportDate >= fertileStart && rapportDate <= fertileEnd;
-            
-            if (!isInFertileWindow) {
-              return (
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200">
-                  <div className="flex items-center gap-3 opacity-60">
-                    <div className="w-10 h-10 bg-slate-300 rounded-xl flex items-center justify-center">
-                      <Info className="w-5 h-5 text-slate-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm text-slate-500 font-semibold">Nidation estimée</p>
-                      <p className="text-xs text-slate-500 leading-normal mt-0.5">
-                        Elle s'affichera ici dès qu'un rapport sexuel sera enregistré durant votre fenêtre de fertilité.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            }
-            
+            if (!isInFertileWindow) return null;
+
             return (
-              <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-200">
+              <div className="bg-gradient-to-r from-orange-50 to-rose-50 rounded-2xl p-4 border border-orange-200" data-testid="rapport-nidation-card">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-400 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gradient-to-br from-rose-400 to-orange-400 rounded-xl flex items-center justify-center">
                     <Baby className="w-5 h-5 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-slate-500 font-semibold">Nidation estimée</p>
-                    <p className="text-base font-bold text-amber-600">
+                    <p className="text-sm text-slate-500 font-semibold">Nidation selon le rapport fertile</p>
+                    <p className="text-base font-bold text-rose-600">
                       Du {formatDateShort(implantation.early)} au {formatDateShort(implantation.late)}
                     </p>
                     <p className="text-xs text-slate-500">
-                      Basé sur le rapport du {formatDateShort(implantation.rapportDate)} (période fertile)
+                      Basé sur le rapport du {formatDateShort(implantation.rapportDate)}
                     </p>
                   </div>
                 </div>
@@ -306,7 +330,7 @@ export function AgendaCard({
             </p>
           </div>
         </div>
-      ) : (
+      ) : embedded ? null : (
         <div className="text-center py-6">
           <CalendarDays className="w-12 h-12 text-slate-300 mx-auto mb-3" />
           <p className="text-slate-500 mb-3">{t('fertility.enterPeriodDate', 'Renseignez la date de vos dernières règles pour voir vos prévisions')}</p>

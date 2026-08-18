@@ -222,3 +222,17 @@ def test_send_reset_password_email_uses_resend_wrapper(monkeypatch, capsys):
     params = fake_resend.Emails.send.call_args[0][0]
     assert params["to"] == ["cyrilalepsa@gmail.com"]
     assert params["from"].endswith("@neriacorp.com>")
+    assert params["subject"] == "Réinitialisation de votre mot de passe MamanDouce"
+
+
+def test_single_user_reset_email_wrapper():
+    """Un seul envoi reset utilisateur : send_reset_password_email, pas un 2e template."""
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[1]
+    email_src = (repo / "services" / "email.py").read_text(encoding="utf-8")
+    auth_src = (repo / "routes" / "auth.py").read_text(encoding="utf-8")
+    assert email_src.count("def send_reset_password_email") == 1
+    assert 'subject="Réinitialisation de votre mot de passe MamanDouce"' in email_src
+    assert "send_reset_password_email(" in auth_src
+    assert "send_resend_direct" not in auth_src.split("async def forgot_password", 1)[1].split("async def ", 1)[0]

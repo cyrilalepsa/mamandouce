@@ -247,8 +247,8 @@ async def get_advanced_stats(admin: User = Depends(get_admin_user)):
     unread_messages = await db.admin_messages.count_documents({"is_read": False})
     
     # Revenue estimate (VRAIS paiements uniquement)
-    # premium_paid * 27€ + postpartum_paid * 8€
-    estimated_revenue = (premium_paid * 27) + (postpartum_paid * 8)
+    # premium_paid * 30€ + postpartum_paid * 10€
+    estimated_revenue = (premium_paid * 30) + (postpartum_paid * 10)
     
     return {
         "users": {
