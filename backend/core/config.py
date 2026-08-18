@@ -106,7 +106,13 @@ def load_settings() -> None:
         SECRET_KEY = "votre-cle-secrete-changez-moi"
 
     RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
-    SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "noreply@neriacorp.com")
+    _sender = (os.environ.get("SENDER_EMAIL") or "noreply@neriacorp.com").strip()
+    if "<" in _sender and ">" in _sender:
+        _sender = _sender[_sender.rfind("<") + 1 : _sender.rfind(">")].strip()
+    if not _sender.lower().endswith("@neriacorp.com"):
+        SENDER_EMAIL = "noreply@neriacorp.com"
+    else:
+        SENDER_EMAIL = _sender
     CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL", "contact@neriacorp.com")
 
     ADMIN_SECRET = os.environ.get("ADMIN_SECRET")

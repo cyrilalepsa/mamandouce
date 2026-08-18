@@ -8,7 +8,9 @@ from pydantic import BaseModel, EmailStr
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 import logging
+import re
 import secrets
+import traceback
 
 from core.database import db
 from core.config import (
@@ -19,13 +21,39 @@ from core.config import (
 )
 from core.security import pwd_context, create_access_token, get_current_user
 from models.schemas import UserCreate, UserLogin, Token, User
-from services.email import public_email_config, reload_email_settings, send_resend_email
+from services.email import public_email_config, send_resend_email
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["auth"])
 _diag_bearer = HTTPBearer(auto_error=False)
 
 DIAG_TEST_EMAIL_TO = "cyrilalepsa@gmail.com"
+
+
+def normalize_email(email: str | None) -> str:
+    return (email or "").strip().lower()
+
+
+def user_email_query(email: str) -> dict:
+    """Filtre Mongo insensible à la casse (exact + regex)."""
+    raw = (email or "").strip()
+    lowered = raw.lower()
+    clauses = [{"email": lowered}]
+    if raw and raw != lowered:
+        clauses.append({"email": raw})
+    if lowered:
+        clauses.append(
+            {"email": {"$regex": f"^{re.escape(lowered)}$", "$options": "i"}}
+        )
+    return {"$or": clauses} if len(clauses) > 1 else clauses[0]
+
+
+async def find_user_by_email(email: str):
+    """Recherche un utilisateur par e-mail sans tenir compte de la casse."""
+    needle = normalize_email(email)
+    if not needle:
+        return None
+    return await db.users.find_one(user_email_query(email), {"_id": 0})
 
 
 def _admin_secret_matches(provided: str | None) -> bool:
@@ -499,25 +527,28 @@ async def update_profile(profile_data: ProfileUpdate, current_user: User = Depen
 @router.post("/auth/forgot-password")
 async def forgot_password(request: ForgotPasswordRequest):
     """Send password reset email"""
-    user = await db.users.find_one({"email": request.email})
-    
+    requested_email = normalize_email(str(request.email))
+    user = await find_user_by_email(requested_email)
+
     # Always return success to prevent email enumeration
     if not user:
         print(
-            f"[EMAIL] forgot-password user_found=False to={request.email} — e-mail non envoyé",
+            f"[EMAIL] forgot-password user_found=False to={requested_email} — e-mail non envoyé",
             flush=True,
         )
-        logger.info("forgot-password: no account for %s — skip send", request.email)
+        logger.warning("User not found in DB for email: %s", requested_email)
         return {"success": True, "message": "Si cet email existe, un lien de réinitialisation a été envoyé."}
-    
+
+    stored_email = normalize_email(user.get("email") or requested_email)
+
     # Generate reset token
     reset_token = secrets.token_urlsafe(32)
     expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
-    
-    # Store reset token in database
-    await db.password_resets.delete_many({"email": request.email})  # Remove old tokens
+
+    # Store reset token in database (e-mail canonique stocké)
+    await db.password_resets.delete_many(user_email_query(stored_email))
     await db.password_resets.insert_one({
-        "email": request.email,
+        "email": stored_email,
         "token": reset_token,
         "expires_at": expires_at.isoformat(),
         "created_at": datetime.now(timezone.utc).isoformat()
@@ -526,27 +557,16 @@ async def forgot_password(request: ForgotPasswordRequest):
     # Send email with reset link — logs détaillés (clé, from, to, retour Resend)
     frontend_url = app_public_url()
     reset_link = f"{frontend_url}/reset-password?token={reset_token}"
-    email_cfg = reload_email_settings()
     print(
-        f"[EMAIL] forgot-password user_found=True to={request.email} "
-        f"frontend_url={frontend_url} (token non logué)",
+        f"[EMAIL] forgot-password user_found=True to={stored_email} "
+        f"requested={requested_email} frontend_url={frontend_url} (token non logué)",
         flush=True,
     )
 
     send_result = send_resend_email(
-        to=request.email,
+        to=stored_email,
         subject="Réinitialisation de votre mot de passe MamanDouce",
         purpose="reset-password",
-        extra={
-            "reply_to": email_cfg["CONTACT_EMAIL"],
-            "headers": {
-                "X-Entity-Ref-ID": f"password-reset-{reset_token[:8]}",
-            },
-            "tags": [
-                {"name": "category", "value": "password-reset"},
-                {"name": "app", "value": "mamandouce"},
-            ],
-        },
         html=f"""
 <!DOCTYPE html>
 <html lang="fr">
@@ -621,8 +641,11 @@ async def forgot_password(request: ForgotPasswordRequest):
 
     if not send_result.get("ok"):
         err = send_result.get("error") or "envoi Resend échoué"
-        print(f"[EMAIL] forgot-password FAILED to={request.email}: {err}", flush=True)
-        logger.error("forgot-password email failed to=%s: %s", request.email, err)
+        tb = send_result.get("traceback") or ""
+        print(f"[EMAIL] forgot-password FAILED to={stored_email}: {err}", flush=True)
+        if tb:
+            print(tb, flush=True)
+        logger.error("forgot-password email failed to=%s: %s", stored_email, err)
         error_str = str(err)
         if "only send testing emails" in error_str.lower() or "verify a domain" in error_str.lower():
             print(
@@ -853,4 +876,63 @@ router.add_api_route(
     methods=["GET"],
     tags=["auth", "diagnostic"],
 )
+
+
+@router.get("/v1/auth/debug-send-test", tags=["auth", "diagnostic"])
+@router.get("/auth/debug-send-test", tags=["auth", "diagnostic"])
+async def debug_send_test(requested_by: str = Depends(require_email_diag_access)):
+    """
+    Diagnostic temporaire : envoi Resend isolé vers cyrilalepsa@gmail.com.
+
+    Renvoie la réponse brute SDK (`resend_response`) ou l'erreur + traceback.
+    """
+    cfg = public_email_config()
+    try:
+        send_result = send_resend_email(
+            to=DIAG_TEST_EMAIL_TO,
+            subject="[MamanDouce] debug-send-test",
+            purpose="debug-send-test",
+            html=(
+                "<p>Test isolé GET /api/v1/auth/debug-send-test — "
+                f"{datetime.now(timezone.utc).isoformat()}</p>"
+            ),
+        )
+        if send_result.get("ok"):
+            return {
+                "status": "ok",
+                "resend_response": send_result.get("resend"),
+                "email_id": send_result.get("email_id"),
+                "to": DIAG_TEST_EMAIL_TO,
+                "from": cfg["from"],
+                "SENDER_EMAIL": cfg["SENDER_EMAIL"],
+                "RESEND_API_KEY_present": cfg["RESEND_API_KEY_present"],
+                "RESEND_API_KEY_masked": cfg["RESEND_API_KEY_masked"],
+                "requested_by": requested_by,
+            }
+        return {
+            "status": "error",
+            "resend_response": send_result.get("resend"),
+            "error": send_result.get("error"),
+            "traceback": send_result.get("traceback"),
+            "http_status": send_result.get("http_status"),
+            "to": DIAG_TEST_EMAIL_TO,
+            "from": cfg["from"],
+            "SENDER_EMAIL": cfg["SENDER_EMAIL"],
+            "RESEND_API_KEY_present": cfg["RESEND_API_KEY_present"],
+            "RESEND_API_KEY_masked": cfg["RESEND_API_KEY_masked"],
+            "requested_by": requested_by,
+        }
+    except Exception as e:
+        tb = traceback.format_exc()
+        print(tb, flush=True)
+        logger.error("debug-send-test exception:\n%s", tb)
+        return {
+            "status": "error",
+            "error": f"{type(e).__name__}: {e}",
+            "traceback": tb,
+            "from": cfg["from"],
+            "SENDER_EMAIL": cfg["SENDER_EMAIL"],
+            "RESEND_API_KEY_present": cfg["RESEND_API_KEY_present"],
+            "RESEND_API_KEY_masked": cfg["RESEND_API_KEY_masked"],
+        }
 

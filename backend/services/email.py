@@ -15,6 +15,8 @@ logger = logging.getLogger("mamandouce.email")
 
 # Domaine d'expédition attendu (aligné DNS / Resend).
 EXPECTED_FROM_SUFFIX = "@neriacorp.com"
+DEFAULT_SENDER_ADDRESS = "noreply@neriacorp.com"
+DEFAULT_CONTACT_ADDRESS = "contact@neriacorp.com"
 
 
 def _print(msg: str) -> None:
@@ -31,29 +33,67 @@ def mask_api_key(key: str | None) -> str:
     return f"{raw[:6]}…{raw[-4:]} (len={len(raw)})"
 
 
+def extract_email_address(value: str | None) -> str:
+    """Extrait l'adresse d'un header `Name <addr@dom>` ou d'une adresse nue."""
+    text = (value or "").strip()
+    if "<" in text and ">" in text:
+        text = text[text.rfind("<") + 1 : text.rfind(">")].strip()
+    return text
+
+
+def coerce_neriacorp_sender(raw: str | None) -> tuple[str, str]:
+    """
+    Force un expéditeur @neriacorp.com.
+
+    Returns:
+        (adresse nue, header From `MamanDouce <addr>`)
+    """
+    addr = extract_email_address(raw)
+    if not addr.lower().endswith(EXPECTED_FROM_SUFFIX):
+        if addr:
+            logger.warning(
+                "SENDER_EMAIL %r n'utilise pas @neriacorp.com — forcé vers %s",
+                addr,
+                DEFAULT_SENDER_ADDRESS,
+            )
+            _print(
+                f"[EMAIL] ⚠ SENDER_EMAIL={addr!r} rejeté "
+                f"(pas {EXPECTED_FROM_SUFFIX}) → {DEFAULT_SENDER_ADDRESS}"
+            )
+        addr = DEFAULT_SENDER_ADDRESS
+    return addr, f"MamanDouce <{addr}>"
+
+
 def reload_email_settings() -> dict[str, str]:
     """Relit RESEND_API_KEY / SENDER_EMAIL depuis l'env (et core.config si dispo)."""
-    api_key = (os.environ.get("RESEND_API_KEY") or "").strip()
-    sender = (os.environ.get("SENDER_EMAIL") or "").strip()
-    contact = (os.environ.get("CONTACT_EMAIL") or "").strip()
     try:
         from core import config as cfg
 
         cfg.load_settings()
-        api_key = (getattr(cfg, "RESEND_API_KEY", None) or api_key or "").strip()
-        sender = (getattr(cfg, "SENDER_EMAIL", None) or sender or "").strip()
-        contact = (getattr(cfg, "CONTACT_EMAIL", None) or contact or "").strip()
     except Exception as exc:
         logger.warning("email: load_settings() a échoué, fallback os.environ: %s", exc)
         _print(f"[EMAIL] load_settings() failed, using os.environ: {exc}")
+        cfg = None
 
-    if not sender:
-        sender = "noreply@neriacorp.com"
+    api_key = (os.environ.get("RESEND_API_KEY") or "").strip()
+    sender_raw = (os.environ.get("SENDER_EMAIL") or "").strip()
+    contact = (os.environ.get("CONTACT_EMAIL") or "").strip()
+    if cfg is not None:
+        api_key = api_key or (getattr(cfg, "RESEND_API_KEY", None) or "").strip()
+        # Ne pas reprendre SENDER_EMAIL déjà coercé dans core.config :
+        # on conserve la valeur brute d'environnement pour le log / le forçage.
+        if not sender_raw:
+            sender_raw = (getattr(cfg, "SENDER_EMAIL", None) or "").strip()
+        contact = contact or (getattr(cfg, "CONTACT_EMAIL", None) or "").strip()
+
+    sender, from_header = coerce_neriacorp_sender(sender_raw)
     if not contact:
-        contact = "contact@neriacorp.com"
+        contact = DEFAULT_CONTACT_ADDRESS
     return {
         "RESEND_API_KEY": api_key,
         "SENDER_EMAIL": sender,
+        "SENDER_EMAIL_RAW": sender_raw,
+        "FROM_HEADER": from_header,
         "CONTACT_EMAIL": contact,
     }
 
@@ -109,11 +149,12 @@ def public_email_config() -> dict[str, Any]:
     cfg = reload_email_settings()
     key = cfg["RESEND_API_KEY"]
     sender = cfg["SENDER_EMAIL"]
-    from_addr = f"MamanDouce <{sender}>"
+    from_addr = cfg["FROM_HEADER"]
     return {
         "RESEND_API_KEY_present": bool(key),
         "RESEND_API_KEY_masked": mask_api_key(key),
         "SENDER_EMAIL": sender,
+        "SENDER_EMAIL_RAW": cfg.get("SENDER_EMAIL_RAW") or sender,
         "from": from_addr,
         "SENDER_EMAIL_neriacorp_ok": sender.lower().endswith(EXPECTED_FROM_SUFFIX),
         "CONTACT_EMAIL": cfg["CONTACT_EMAIL"],
@@ -124,11 +165,13 @@ def log_email_config(*, purpose: str) -> dict[str, str]:
     cfg = reload_email_settings()
     key = cfg["RESEND_API_KEY"]
     sender = cfg["SENDER_EMAIL"]
+    from_header = cfg["FROM_HEADER"]
     from_ok = sender.lower().endswith(EXPECTED_FROM_SUFFIX)
     _print("=" * 72)
     _print(f"[EMAIL] purpose={purpose}")
     _print(f"[EMAIL] RESEND_API_KEY loaded={bool(key)} masked={mask_api_key(key)}")
-    _print(f"[EMAIL] SENDER_EMAIL / from={sender} neriacorp_ok={from_ok}")
+    _print(f"[EMAIL] SENDER_EMAIL_RAW={cfg.get('SENDER_EMAIL_RAW')!r}")
+    _print(f"[EMAIL] SENDER_EMAIL / from={from_header} neriacorp_ok={from_ok}")
     if not key:
         _print("[EMAIL] ⚠ RESEND_API_KEY is None/empty — Resend will NOT send")
     if not from_ok:
@@ -141,7 +184,7 @@ def log_email_config(*, purpose: str) -> dict[str, str]:
         purpose,
         bool(key),
         mask_api_key(key),
-        sender,
+        from_header,
         from_ok,
     )
     return cfg
@@ -165,8 +208,8 @@ def send_resend_email(
     cfg = log_email_config(purpose=purpose)
     api_key = cfg["RESEND_API_KEY"]
     sender = cfg["SENDER_EMAIL"]
-    from_addr = f"{from_name} <{sender}>"
-    to_addr = (to or "").strip()
+    from_addr = cfg.get("FROM_HEADER") or f"{from_name} <{sender}>"
+    to_addr = (to or "").strip().lower()
 
     _print(f"[EMAIL] to={to_addr}")
     _print(f"[EMAIL] from={from_addr}")
@@ -216,18 +259,20 @@ def send_resend_email(
         }
 
     resend.api_key = api_key
-    payload: dict[str, Any] = {
+    # Syntaxe SDK Resend Python (Emails.send) — 4 champs requis.
+    params: dict[str, Any] = {
         "from": from_addr,
         "to": [to_addr],
         "subject": subject,
         "html": html,
     }
     if extra:
-        payload.update(extra)
-    _print(f"[EMAIL] payload keys={sorted(payload.keys())}")
+        params.update(extra)
+    _print(f"[EMAIL] payload keys={sorted(params.keys())}")
+    _print(f"[EMAIL] params.from={params['from']!r} params.to={params['to']!r}")
 
     try:
-        result = resend.Emails.send(payload)
+        result = resend.Emails.send(params)
         raw = _jsonable(result)
         email_id = extract_email_id(result)
         _print(f"[EMAIL] ✓ Resend API returned: {raw!r}")
@@ -241,27 +286,31 @@ def send_resend_email(
             "email_id": email_id,
             "http_status": 200,
             "skipped": False,
+            "traceback": None,
         }
-    except Exception as exc:
-        detail = serialize_resend_error(exc)
+    except Exception as e:
+        tb = traceback.format_exc()
+        detail = serialize_resend_error(e)
         http_status = detail.get("code")
-        _print(f"[EMAIL] ✗ Resend exception ({type(exc).__name__}): {exc}")
+        _print(f"[EMAIL] ✗ Resend exception ({type(e).__name__}): {e}")
         _print(f"[EMAIL] Resend error detail: {detail!r}")
-        _print("[EMAIL] traceback:")
-        traceback.print_exc()
+        _print("[EMAIL] traceback complet:")
+        _print(tb)
         logger.exception(
             "email FAILED purpose=%s to=%s from=%s: %s",
             purpose,
             to_addr,
             from_addr,
-            exc,
+            e,
         )
+        logger.error("Resend traceback:\n%s", tb)
         _print("=" * 72)
         return {
             "ok": False,
-            "error": f"{type(exc).__name__}: {exc}",
+            "error": f"{type(e).__name__}: {e}",
             "resend": detail,
             "email_id": None,
             "http_status": http_status,
             "skipped": False,
+            "traceback": tb,
         }
