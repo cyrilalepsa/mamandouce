@@ -181,6 +181,21 @@ export function withApiPrefix(pathname) {
   return `/api${path}`;
 }
 
+/**
+ * Préfixe auth côté FastAPI : /api + /v1/auth/…
+ * Évite /auth (SPA) et /api/auth (certaines stacks front interceptent ce chemin).
+ */
+export const AUTH_API_PREFIX = "/v1/auth";
+
+export function authApiPath(path = "") {
+  const suffix = String(path || "").replace(/^\/+/, "");
+  return suffix ? `${AUTH_API_PREFIX}/${suffix}` : AUTH_API_PREFIX;
+}
+
+export function authApiUrl(path = "", opts) {
+  return apiUrl(authApiPath(path), opts);
+}
+
 function standaloneSameOrigin(host, opts = {}) {
   const fromOpts = String(opts.origin || "").replace(/\/$/, "");
   if (fromOpts && /^https?:\/\//i.test(fromOpts) && !isN2CoreApiUrl(fromOpts)) {

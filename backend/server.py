@@ -271,8 +271,8 @@ if FRONTEND_DIR:
                     "detail": "Not Found",
                     "path": f"/{catchall}",
                     "hint": (
-                        "Préfixe global=/api. Reset: POST /api/auth/forgot-password "
-                        "(alias POST /api/v1/auth/forgot-password). "
+                        "Préfixe global=/api. Auth: POST /api/v1/auth/login|register|forgot-password "
+                        "(alias /api/auth/…). "
                         "Diag: GET /api/v1/auth/test-resend-direct "
                         "Probe Mongo: GET /api/v1/auth/forgot-password-probe"
                     ),

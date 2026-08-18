@@ -1086,3 +1086,35 @@ async def test_resend_direct():
             "db_name": resolve_db_name(),
         }
 
+
+def mirror_auth_routes_under_v1() -> None:
+    """Duplique /auth/* vers /v1/auth/* (préfixe FastAPI global = /api)."""
+    from fastapi.routing import APIRoute
+
+    existing = {getattr(route, "path", "") for route in router.routes}
+    for route in list(router.routes):
+        if not isinstance(route, APIRoute):
+            continue
+        path = route.path or ""
+        if not path.startswith("/auth/"):
+            continue
+        alias = f"/v1{path}"
+        if alias in existing:
+            continue
+        methods = set(route.methods or [])
+        methods.discard("HEAD")
+        if not methods:
+            continue
+        router.add_api_route(
+            alias,
+            route.endpoint,
+            methods=sorted(methods),
+            response_model=route.response_model,
+            dependencies=route.dependencies,
+            tags=list(route.tags or ["auth"]),
+        )
+        existing.add(alias)
+
+
+mirror_auth_routes_under_v1()
+

@@ -2,7 +2,7 @@
 
 // VERSION - Increment this to force cache update
 // IMPORTANT: Increment this version for every deployment with UI/text changes!
-const APP_VERSION = '2.6.3-md-same-origin';
+const APP_VERSION = '2.6.4-md-auth-v1';
 const N2_API_HOST = 'api.neriacorp.com';
 const CACHE_NAME = `mamandouce-v${APP_VERSION}`;
 const STATIC_CACHE = `mamandouce-static-v${APP_VERSION}`;
@@ -29,7 +29,8 @@ const CACHEABLE_API_PATTERNS = [
   '/api/food-library',
   '/api/birth-list',
   '/api/medical/scheduled-reminders',
-  '/api/auth/me'
+  '/api/auth/me',
+  '/api/v1/auth/me'
 ];
 
 // API endpoints that should be queued when offline (POST/PUT/DELETE)

@@ -50,6 +50,17 @@ test("no legacy boutique wildcard in frontend sources", () => {
   }
 });
 
+test("auth module uses /api/v1/auth prefix", () => {
+  const src = read("src/utils/api.jsx");
+  assert.match(src, /authApiUrl\("login"\)/);
+  assert.match(src, /authApiUrl\("register"\)/);
+  assert.match(src, /authApiUrl\("forgot-password"\)/);
+  assert.doesNotMatch(src, /\$\{API\(\)\}\/auth\/login/);
+  assert.doesNotMatch(src, /apiUrl\("\/auth\/forgot-password"\)/);
+  const page = read("src/pages/AuthPage.jsx");
+  assert.match(page, /authApiUrl\("forgot-password"\)/);
+});
+
 test("src modules resolve API via apiUrl / getApiBase (no localhost fallback)", () => {
   const files = [
     "src/utils/api.jsx",
