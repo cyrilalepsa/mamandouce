@@ -21,7 +21,7 @@ from core.config import (
 )
 from core.security import pwd_context, create_access_token, get_current_user
 from models.schemas import UserCreate, UserLogin, Token, User
-from services.email import public_email_config, send_resend_email
+from services.email import public_email_config, send_resend_direct, send_resend_email
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["auth"])
@@ -540,6 +540,11 @@ async def forgot_password(request: ForgotPasswordRequest):
         return {"success": True, "message": "Si cet email existe, un lien de réinitialisation a été envoyé."}
 
     stored_email = normalize_email(user.get("email") or requested_email)
+    logger.info(
+        "forgot-password matched DB email=%r requested=%r",
+        user.get("email"),
+        requested_email,
+    )
 
     # Generate reset token
     reset_token = secrets.token_urlsafe(32)
@@ -934,5 +939,45 @@ async def debug_send_test(requested_by: str = Depends(require_email_diag_access)
             "SENDER_EMAIL": cfg["SENDER_EMAIL"],
             "RESEND_API_KEY_present": cfg["RESEND_API_KEY_present"],
             "RESEND_API_KEY_masked": cfg["RESEND_API_KEY_masked"],
+        }
+
+
+@router.get("/v1/auth/test-resend-direct", tags=["auth", "diagnostic"])
+@router.get("/auth/test-resend-direct", tags=["auth", "diagnostic"])
+async def test_resend_direct(requested_by: str = Depends(require_email_diag_access)):
+    """
+    Diagnostic temporaire : appel SDK Resend direct (hors forgot-password).
+
+    Destinataire fixé : cyrilalepsa@gmail.com
+    Expéditeur forcé : MamanDouce <noreply@neriacorp.com>
+    Retourne la réponse brute Resend (id) ou l'erreur HTTP + traceback.
+    """
+    try:
+        payload = send_resend_direct(
+            to=DIAG_TEST_EMAIL_TO,
+            from_address="noreply@neriacorp.com",
+            subject="[MamanDouce] test-resend-direct",
+            html=(
+                "<p>Test isolé GET /api/v1/auth/test-resend-direct — "
+                f"{datetime.now(timezone.utc).isoformat()}</p>"
+            ),
+        )
+        payload["requested_by"] = requested_by
+        return payload
+    except Exception as e:
+        tb = traceback.format_exc()
+        print(tb, flush=True)
+        logger.error("test-resend-direct exception:\n%s", tb)
+        cfg = public_email_config()
+        return {
+            "status": "error",
+            "error": f"{type(e).__name__}: {e}",
+            "traceback": tb,
+            "to": DIAG_TEST_EMAIL_TO,
+            "from": cfg["from"],
+            "SENDER_EMAIL": cfg["SENDER_EMAIL"],
+            "RESEND_API_KEY_present": cfg["RESEND_API_KEY_present"],
+            "RESEND_API_KEY_masked": cfg["RESEND_API_KEY_masked"],
+            "requested_by": requested_by,
         }
 
