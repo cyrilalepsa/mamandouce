@@ -7,6 +7,8 @@ import {
   DEFAULT_LOCAL_API,
   DEFAULT_PUBLIC_API,
   apiUrl,
+  authApiPath,
+  authApiUrl,
   getApiBase,
   getBackendUrl,
   isN2CoreApiUrl,
@@ -142,9 +144,29 @@ assertEqual(
   "apiUrl cycle intelligence",
 );
 assertEqual(
-  apiUrl("/auth/forgot-password", { hostname: "mamandouce.neriacorp.com", envUrl: "" }),
-  `${mdOrigin}/api/auth/forgot-password`,
-  "forgot-password URL is /api/auth/forgot-password (not /api/v1)",
+  authApiPath("forgot-password"),
+  "/v1/auth/forgot-password",
+  "authApiPath forgot-password",
+);
+assertEqual(
+  authApiUrl("forgot-password", { hostname: "mamandouce.neriacorp.com", envUrl: "" }),
+  `${mdOrigin}/api/v1/auth/forgot-password`,
+  "forgot-password URL is exactly /api/v1/auth/forgot-password",
+);
+assertEqual(
+  authApiUrl("login", { hostname: "mamandouce.neriacorp.com", envUrl: "" }),
+  `${mdOrigin}/api/v1/auth/login`,
+  "login URL is /api/v1/auth/login",
+);
+assertEqual(
+  authApiUrl("register", { hostname: "mamandouce.neriacorp.com", envUrl: "" }),
+  `${mdOrigin}/api/v1/auth/register`,
+  "register URL is /api/v1/auth/register",
+);
+assertEqual(
+  apiUrl("/v1/auth/forgot-password", { hostname: "mamandouce.neriacorp.com", envUrl: "" }),
+  `${mdOrigin}/api/v1/auth/forgot-password`,
+  "apiUrl(/v1/auth/forgot-password) prefixes /api once",
 );
 assertEqual(
   apiUrl("http://localhost:8000/api/x", { hostname: "mamandouce.neriacorp.com" }),

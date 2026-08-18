@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/card';
 import { toast } from 'sonner';
 import api, { formatApiError } from '../utils/api';
-import { apiUrl } from '../utils/backendUrl';
+import { authApiUrl } from '../utils/backendUrl';
 import AppTitle from '../components/AppTitle';
 import { useTranslation } from 'react-i18next';
 import LanguageBubble from '../components/LanguageBubble';
@@ -281,7 +281,7 @@ function AuthPage({ setIsAuthenticated }) {
     e.preventDefault();
     setLoading(true);
     const email = String(formData.email || "").trim().toLowerCase();
-    const url = apiUrl("/auth/forgot-password");
+    const url = authApiUrl("forgot-password");
     console.info("[forgot-password] POST", url, { email });
 
     try {

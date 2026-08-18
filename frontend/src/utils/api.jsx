@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { apiUrl, getApiBase } from './backendUrl';
+import { apiUrl, authApiUrl, getApiBase } from './backendUrl';
 import { safeGet, safeRemove } from './safeStorage';
 
 const API = () => getApiBase();
@@ -63,27 +63,26 @@ export const api = {
   delete: (url, config) => axios.delete(apiUrl(url), { ...getAuthHeaders(), ...config }),
   
   auth: {
-    register: (data) => axios.post(`${API()}/auth/register`, data),
-    login: (data) => axios.post(`${API()}/auth/login`, data),
-    getMe: () => axios.get(`${API()}/auth/me`, getAuthHeaders()),
-    me: () => axios.get(`${API()}/auth/me`, getAuthHeaders()), // Alias for compatibility
-    updateProfile: (data) => axios.put(`${API()}/auth/profile`, data, getAuthHeaders()),
+    register: (data) => axios.post(authApiUrl("register"), data),
+    login: (data) => axios.post(authApiUrl("login"), data),
+    getMe: () => axios.get(authApiUrl("me"), getAuthHeaders()),
+    me: () => axios.get(authApiUrl("me"), getAuthHeaders()),
+    updateProfile: (data) => axios.put(authApiUrl("profile"), data, getAuthHeaders()),
     forgotPassword: (email) => {
       const payload = { email: String(email || "").trim().toLowerCase() };
-      const url = apiUrl("/auth/forgot-password");
+      const url = authApiUrl("forgot-password");
       return axios.post(url, payload);
     },
-    verifyResetToken: (token) => axios.post(`${API()}/auth/verify-reset-token`, { token }),
-    resetPassword: (token, new_password) => axios.post(`${API()}/auth/reset-password`, { token, new_password }),
-    updateEmail: (newEmail) => axios.post(`${API()}/auth/update-email`, { new_email: newEmail }, getAuthHeaders()),
-    updatePassword: (currentPassword, newPassword) => axios.post(`${API()}/auth/update-password`, { current_password: currentPassword, new_password: newPassword }, getAuthHeaders()),
-    endPremium: () => axios.post(`${API()}/auth/end-premium`, {}, getAuthHeaders()),
-    updateCity: (city) => axios.put(`${API()}/auth/profile`, { city }, getAuthHeaders()),
-    // 2FA
-    get2FAStatus: () => axios.get(`${API()}/auth/2fa/status`, getAuthHeaders()),
-    toggle2FA: (enable) => axios.post(`${API()}/auth/2fa/toggle`, { enable }, getAuthHeaders()),
-    request2FACode: (email) => axios.post(`${API()}/auth/2fa/request-code?email=${encodeURIComponent(email)}`),
-    verify2FACode: (email, code, password) => axios.post(`${API()}/auth/2fa/verify`, { email, code, password }),
+    verifyResetToken: (token) => axios.post(authApiUrl("verify-reset-token"), { token }),
+    resetPassword: (token, new_password) => axios.post(authApiUrl("reset-password"), { token, new_password }),
+    updateEmail: (newEmail) => axios.post(authApiUrl("update-email"), { new_email: newEmail }, getAuthHeaders()),
+    updatePassword: (currentPassword, newPassword) => axios.post(authApiUrl("update-password"), { current_password: currentPassword, new_password: newPassword }, getAuthHeaders()),
+    endPremium: () => axios.post(authApiUrl("end-premium"), {}, getAuthHeaders()),
+    updateCity: (city) => axios.put(authApiUrl("profile"), { city }, getAuthHeaders()),
+    get2FAStatus: () => axios.get(authApiUrl("2fa/status"), getAuthHeaders()),
+    toggle2FA: (enable) => axios.post(authApiUrl("2fa/toggle"), { enable }, getAuthHeaders()),
+    request2FACode: (email) => axios.post(authApiUrl(`2fa/request-code?email=${encodeURIComponent(email)}`)),
+    verify2FACode: (email, code, password) => axios.post(authApiUrl("2fa/verify"), { email, code, password }),
   },
   pregnancy: {
     calculate: (data) => axios.post(`${API()}/pregnancy/calculate`, data, getAuthHeaders()),

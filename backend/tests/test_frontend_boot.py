@@ -133,7 +133,13 @@ def test_api_client_uses_resolved_backend_and_timeout():
     src = (FRONTEND / "src" / "utils" / "api.jsx").read_text(encoding="utf-8")
     assert "from './backendUrl'" in src
     assert "axios.defaults.timeout" in src
-    assert 'apiUrl("/auth/forgot-password")' in src
+    assert 'authApiUrl("forgot-password")' in src
+    assert 'authApiUrl("login")' in src
+    assert 'authApiUrl("register")' in src
+    assert "/v1/auth" in src or "authApiUrl" in src
+    assert '${API()}/auth/login' not in src
+    assert '${API()}/auth/register' not in src
+    assert 'apiUrl("/auth/forgot-password")' not in src
     assert '{ email:' in src or "payload = { email:" in src
     assert "user_email" not in src.split("forgotPassword")[1].split("verifyResetToken")[0]
 
@@ -141,6 +147,8 @@ def test_api_client_uses_resolved_backend_and_timeout():
 def test_forgot_password_form_logs_api_errors():
     page = (FRONTEND / "src" / "pages" / "AuthPage.jsx").read_text(encoding="utf-8")
     assert "api.auth.forgotPassword" in page
+    assert 'authApiUrl("forgot-password")' in page
+    assert 'apiUrl("/auth/forgot-password")' not in page
     assert 'console.info("[forgot-password]' in page
     assert 'console.error("[forgot-password] error"' in page
     assert "formatApiError" in page
