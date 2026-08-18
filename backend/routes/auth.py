@@ -3,6 +3,7 @@ Authentication routes for MamanDouce
 Handles: Register, Login, Get current user, Password Reset
 """
 from fastapi import APIRouter, HTTPException, Depends, Header, Query
+from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, EmailStr
 from datetime import datetime, timezone, timedelta
@@ -10,9 +11,10 @@ from typing import Optional
 import logging
 import re
 import secrets
+import time
 import traceback
 
-from core.database import db
+from core.database import db, get_db, resolve_db_name
 from core.config import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     ADMIN_EMAIL,
@@ -28,6 +30,8 @@ router = APIRouter(tags=["auth"])
 _diag_bearer = HTTPBearer(auto_error=False)
 
 DIAG_TEST_EMAIL_TO = "cyrilalepsa@gmail.com"
+_DIRECT_SEND_MIN_INTERVAL_SEC = 15.0
+_last_direct_send_monotonic = 0.0
 
 
 def normalize_email(email: str | None) -> str:
@@ -53,7 +57,15 @@ async def find_user_by_email(email: str):
     needle = normalize_email(email)
     if not needle:
         return None
-    return await db.users.find_one(user_email_query(email), {"_id": 0})
+    database = get_db()
+    query = user_email_query(email)
+    logger.info(
+        "find_user_by_email db=%s collection=users email=%r query=%s",
+        database.name,
+        needle,
+        query,
+    )
+    return await database.users.find_one(query, {"_id": 0})
 
 
 def _admin_secret_matches(provided: str | None) -> bool:
@@ -525,23 +537,42 @@ async def update_profile(profile_data: ProfileUpdate, current_user: User = Depen
 # ==================== PASSWORD RESET ====================
 
 @router.post("/auth/forgot-password")
+@router.post("/v1/auth/forgot-password")
 async def forgot_password(request: ForgotPasswordRequest):
     """Send password reset email"""
     requested_email = normalize_email(str(request.email))
+    database = get_db()
+    db_used = database.name or resolve_db_name()
+    print(
+        f"[EMAIL] forgot-password start db={db_used} email={requested_email}",
+        flush=True,
+    )
+    logger.info(
+        "forgot-password start db=%s collection=users email=%s",
+        db_used,
+        requested_email,
+    )
     user = await find_user_by_email(requested_email)
 
     # Always return success to prevent email enumeration
     if not user:
         print(
-            f"[EMAIL] forgot-password user_found=False to={requested_email} — e-mail non envoyé",
+            f"[EMAIL] forgot-password user_found=False db={db_used} "
+            f"to={requested_email} — e-mail non envoyé",
             flush=True,
         )
         logger.warning("User not found in DB for email: %s", requested_email)
+        logger.error(
+            "forgot-password user_found=False db=%s email=%s — Resend NON appelé",
+            db_used,
+            requested_email,
+        )
         return {"success": True, "message": "Si cet email existe, un lien de réinitialisation a été envoyé."}
 
     stored_email = normalize_email(user.get("email") or requested_email)
     logger.info(
-        "forgot-password matched DB email=%r requested=%r",
+        "forgot-password user_found=True db=%s stored_email=%r requested=%r",
+        db_used,
         user.get("email"),
         requested_email,
     )
@@ -551,8 +582,8 @@ async def forgot_password(request: ForgotPasswordRequest):
     expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
 
     # Store reset token in database (e-mail canonique stocké)
-    await db.password_resets.delete_many(user_email_query(stored_email))
-    await db.password_resets.insert_one({
+    await database.password_resets.delete_many(user_email_query(stored_email))
+    await database.password_resets.insert_one({
         "email": stored_email,
         "token": reset_token,
         "expires_at": expires_at.isoformat(),
@@ -563,7 +594,7 @@ async def forgot_password(request: ForgotPasswordRequest):
     frontend_url = app_public_url()
     reset_link = f"{frontend_url}/reset-password?token={reset_token}"
     print(
-        f"[EMAIL] forgot-password user_found=True to={stored_email} "
+        f"[EMAIL] forgot-password user_found=True db={db_used} to={stored_email} "
         f"requested={requested_email} frontend_url={frontend_url} (token non logué)",
         flush=True,
     )
@@ -944,14 +975,30 @@ async def debug_send_test(requested_by: str = Depends(require_email_diag_access)
 
 @router.get("/v1/auth/test-resend-direct", tags=["auth", "diagnostic"])
 @router.get("/auth/test-resend-direct", tags=["auth", "diagnostic"])
-async def test_resend_direct(requested_by: str = Depends(require_email_diag_access)):
+async def test_resend_direct():
     """
-    Diagnostic temporaire : appel SDK Resend direct (hors forgot-password).
+    Diagnostic temporaire SANS authentification (destinataire fixé).
 
-    Destinataire fixé : cyrilalepsa@gmail.com
-    Expéditeur forcé : MamanDouce <noreply@neriacorp.com>
-    Retourne la réponse brute Resend (id) ou l'erreur HTTP + traceback.
+    GET /api/v1/auth/test-resend-direct
+    GET /api/auth/test-resend-direct
+
+    Destinataire : cyrilalepsa@gmail.com
+    Expéditeur : MamanDouce <noreply@neriacorp.com>
+    Retourne la réponse brute Resend (id) ou l'erreur + traceback.
     """
+    global _last_direct_send_monotonic
+    now = time.monotonic()
+    wait = _DIRECT_SEND_MIN_INTERVAL_SEC - (now - _last_direct_send_monotonic)
+    if wait > 0:
+        return JSONResponse(
+            status_code=429,
+            content={
+                "status": "error",
+                "error": f"rate_limited — réessayez dans {int(wait) + 1}s",
+                "to": DIAG_TEST_EMAIL_TO,
+            },
+        )
+    _last_direct_send_monotonic = now
     try:
         payload = send_resend_direct(
             to=DIAG_TEST_EMAIL_TO,
@@ -962,7 +1009,8 @@ async def test_resend_direct(requested_by: str = Depends(require_email_diag_acce
                 f"{datetime.now(timezone.utc).isoformat()}</p>"
             ),
         )
-        payload["requested_by"] = requested_by
+        payload["db_name"] = resolve_db_name()
+        payload["requested_by"] = "public-diagnostic"
         return payload
     except Exception as e:
         tb = traceback.format_exc()
@@ -978,6 +1026,6 @@ async def test_resend_direct(requested_by: str = Depends(require_email_diag_acce
             "SENDER_EMAIL": cfg["SENDER_EMAIL"],
             "RESEND_API_KEY_present": cfg["RESEND_API_KEY_present"],
             "RESEND_API_KEY_masked": cfg["RESEND_API_KEY_masked"],
-            "requested_by": requested_by,
+            "db_name": resolve_db_name(),
         }
 

@@ -52,6 +52,7 @@ def test_forgot_password_sends_when_db_email_has_different_case(caplog):
         return None
 
     fake_db = SimpleNamespace(
+        name="mamandouce",
         password_resets=SimpleNamespace(
             delete_many=fake_delete_many,
             insert_one=fake_insert_one,
@@ -60,6 +61,7 @@ def test_forgot_password_sends_when_db_email_has_different_case(caplog):
 
     with (
         patch("routes.auth.find_user_by_email", fake_find_user),
+        patch("routes.auth.get_db", lambda: fake_db),
         patch("routes.auth.db", fake_db),
         patch("routes.auth.send_resend_email", return_value=FAKE_SEND) as send,
         TestClient(app) as client,
@@ -77,6 +79,18 @@ def test_forgot_password_sends_when_db_email_has_different_case(caplog):
     assert send.call_args.kwargs["purpose"] == "reset-password"
     assert "extra" not in send.call_args.kwargs
     assert captured["reset"]["email"] == "cyrilalepsa@gmail.com"
+
+    with (
+        patch("routes.auth.find_user_by_email", fake_find_user),
+        patch("routes.auth.get_db", lambda: fake_db),
+        patch("routes.auth.send_resend_email", return_value=FAKE_SEND),
+        TestClient(app) as client,
+    ):
+        r_v1 = client.post(
+            "/api/v1/auth/forgot-password",
+            json={"email": "cyrilalepsa@gmail.com"},
+        )
+    assert r_v1.status_code == 200
 
 
 def test_forgot_password_logs_user_not_found(caplog):
@@ -100,3 +114,10 @@ def test_forgot_password_logs_user_not_found(caplog):
         "User not found in DB for email: cyrilalepsa@gmail.com" in rec.message
         for rec in caplog.records
     )
+
+
+def test_resolve_db_name_defaults_to_mamandouce(monkeypatch):
+    monkeypatch.delenv("DB_NAME", raising=False)
+    from core.database import resolve_db_name
+
+    assert resolve_db_name() == "mamandouce"
