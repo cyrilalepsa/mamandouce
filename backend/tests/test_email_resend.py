@@ -9,6 +9,7 @@ from services.email import (
     mask_api_key,
     public_email_config,
     reload_email_settings,
+    send_resend_direct,
     send_resend_email,
     serialize_resend_error,
 )
@@ -167,3 +168,39 @@ def test_serialize_resend_error_includes_http_code():
     assert detail["code"] == 401
     assert detail["exception"] == "FakeResendError"
     assert "invalid" in detail["message"]
+
+
+def test_send_resend_direct_hardcodes_neriacorp_and_returns_raw(monkeypatch):
+    monkeypatch.setenv("RESEND_API_KEY", "re_abcdefghijklmnopqrstuvwxyz")
+    monkeypatch.setenv("SENDER_EMAIL", "onboarding@resend.dev")
+    fake_resend = MagicMock()
+    fake_resend.Emails.send.return_value = {"id": "msg_direct_1"}
+
+    with patch.dict("sys.modules", {"resend": fake_resend}):
+        payload = send_resend_direct(
+            to="cyrilalepsa@gmail.com",
+            from_address="noreply@neriacorp.com",
+        )
+
+    assert payload["status"] == "ok"
+    assert payload["to"] == "cyrilalepsa@gmail.com"
+    assert payload["from"] == "MamanDouce <noreply@neriacorp.com>"
+    assert payload["resend_response"] == {"id": "msg_direct_1"}
+    params = fake_resend.Emails.send.call_args[0][0]
+    assert set(params.keys()) == {"from", "to", "subject", "html"}
+    assert params["from"].endswith("@neriacorp.com>")
+    assert params["to"] == ["cyrilalepsa@gmail.com"]
+    assert "re_abcdefghijklmnopqrstuvwxyz" not in payload["RESEND_API_KEY_masked"]
+
+
+def test_send_resend_direct_returns_traceback_on_sdk_error(monkeypatch):
+    monkeypatch.setenv("RESEND_API_KEY", "re_abcdefghijklmnopqrstuvwxyz")
+    fake_resend = MagicMock()
+    fake_resend.Emails.send.side_effect = RuntimeError("invalid from address")
+
+    with patch.dict("sys.modules", {"resend": fake_resend}):
+        payload = send_resend_direct(to="cyrilalepsa@gmail.com")
+
+    assert payload["status"] == "error"
+    assert "invalid from address" in payload["error"]
+    assert "Traceback" in (payload["traceback"] or "")

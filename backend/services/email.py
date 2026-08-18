@@ -314,3 +314,80 @@ def send_resend_email(
             "skipped": False,
             "traceback": tb,
         }
+
+
+def send_resend_direct(
+    *,
+    to: str = "cyrilalepsa@gmail.com",
+    from_address: str = DEFAULT_SENDER_ADDRESS,
+    subject: str = "[MamanDouce] test-resend-direct",
+    html: str | None = None,
+) -> dict[str, Any]:
+    """
+    Appel SDK Resend isolé (4 champs) — hors flux forgot-password.
+
+    `from_address` est forcé @neriacorp.com. Retourne un dict JSON-serializable
+    avec la réponse brute ou l'erreur + traceback.
+    """
+    cfg = reload_email_settings()
+    api_key = cfg["RESEND_API_KEY"]
+    sender, from_header = coerce_neriacorp_sender(from_address or DEFAULT_SENDER_ADDRESS)
+    to_addr = (to or "").strip().lower()
+    body = html or (
+        f"<p>Test direct Resend vers {to_addr} depuis {from_header}.</p>"
+    )
+    params = {
+        "from": from_header,
+        "to": [to_addr],
+        "subject": subject,
+        "html": body,
+    }
+    _print("=" * 72)
+    _print("[EMAIL] test-resend-direct SDK call")
+    _print(f"[EMAIL] RESEND_API_KEY loaded={bool(api_key)} masked={mask_api_key(api_key)}")
+    _print(f"[EMAIL] params={ {k: params[k] for k in ('from', 'to', 'subject')} }")
+
+    payload: dict[str, Any] = {
+        "status": "error",
+        "to": to_addr,
+        "from": from_header,
+        "SENDER_EMAIL": sender,
+        "RESEND_API_KEY_present": bool(api_key),
+        "RESEND_API_KEY_masked": mask_api_key(api_key),
+        "resend_response": None,
+        "error": None,
+        "traceback": None,
+    }
+    if not api_key:
+        payload["error"] = "RESEND_API_KEY manquante ou vide"
+        _print(f"[EMAIL] ✗ {payload['error']}")
+        return payload
+    try:
+        import resend
+    except Exception as e:
+        tb = traceback.format_exc()
+        payload["error"] = f"{type(e).__name__}: {e}"
+        payload["traceback"] = tb
+        _print(tb)
+        return payload
+
+    resend.api_key = api_key
+    try:
+        result = resend.Emails.send(params)
+        raw = _jsonable(result)
+        _print(f"[EMAIL] ✓ Resend API returned: {raw!r}")
+        _print("=" * 72)
+        payload["status"] = "ok"
+        payload["resend_response"] = raw
+        payload["email_id"] = extract_email_id(result)
+        return payload
+    except Exception as e:
+        tb = traceback.format_exc()
+        _print(tb)
+        logger.error("test-resend-direct traceback:\n%s", tb)
+        payload["error"] = f"{type(e).__name__}: {e}"
+        payload["resend_response"] = serialize_resend_error(e)
+        payload["traceback"] = tb
+        payload["http_status"] = getattr(e, "code", None)
+        _print("=" * 72)
+        return payload

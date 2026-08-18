@@ -178,3 +178,36 @@ def test_debug_send_test_returns_error_payload(client, monkeypatch):
     assert data["status"] == "error"
     assert "boom" in data["error"]
     assert "Traceback" in data["traceback"]
+
+
+def test_test_resend_direct_returns_raw_json(client, monkeypatch):
+    monkeypatch.setenv("ADMIN_SECRET", "diag-secret-unit-test")
+    direct = {
+        "status": "ok",
+        "resend_response": {"id": "msg_direct"},
+        "email_id": "msg_direct",
+        "to": "cyrilalepsa@gmail.com",
+        "from": "MamanDouce <noreply@neriacorp.com>",
+        "SENDER_EMAIL": "noreply@neriacorp.com",
+        "RESEND_API_KEY_present": True,
+        "RESEND_API_KEY_masked": "re_abc…wxyz (len=26)",
+        "error": None,
+        "traceback": None,
+    }
+    with patch("routes.auth.send_resend_direct", return_value=direct):
+        r = client.get(
+            "/api/v1/auth/test-resend-direct",
+            headers={"X-Admin-Secret": "diag-secret-unit-test"},
+        )
+    assert r.status_code == 200
+    data = r.json()
+    assert data["status"] == "ok"
+    assert data["resend_response"] == {"id": "msg_direct"}
+    assert data["to"] == "cyrilalepsa@gmail.com"
+    assert data["from"].endswith("@neriacorp.com>")
+    assert data["requested_by"] == "admin_secret"
+
+
+def test_test_resend_direct_requires_auth(client):
+    r = client.get("/api/v1/auth/test-resend-direct")
+    assert r.status_code == 401
