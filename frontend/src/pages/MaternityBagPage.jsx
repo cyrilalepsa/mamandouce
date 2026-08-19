@@ -45,9 +45,11 @@ export default function MaternityBagPage() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language?.split('-')[0] || 'fr';
-  const { isPremium: premiumFromGate, isAdmin } = useSubscription();
-  const { isPremium: premiumFromAuth, isAdmin: authAdmin } = useAuth();
-  const isPremium = Boolean(premiumFromGate || premiumFromAuth || isAdmin || authAdmin);
+  const { isPremium: premiumFromGate, isAdmin, isVip } = useSubscription();
+  const { isPremium: premiumFromAuth, isAdmin: authAdmin, isVip: authVip } = useAuth();
+  const isPremium = Boolean(
+    premiumFromGate || premiumFromAuth || isAdmin || authAdmin || isVip || authVip
+  );
   
   // Données localisées
   const localData = useMemo(() => getMaternityBagForLanguage(currentLang), [currentLang]);

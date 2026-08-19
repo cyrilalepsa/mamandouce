@@ -11,6 +11,7 @@ import {
 import api from '../utils/api';
 import { toast } from 'sonner';
 import { isSuperAdmin } from '../utils/superadmin';
+import { useAuth } from '../contexts/AuthContext';
 import { ToggleAllSections } from '../components/ToggleAllSections';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useHomeLayout } from '../contexts/HomeLayoutContext';
@@ -33,6 +34,7 @@ export default function PostpartumPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { t, i18n } = useTranslation();
+  const { isAdmin: authIsAdmin, isVip: authIsVip, isPremium: authIsPremium } = useAuth();
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [expandedSections, setExpandedSections] = useState({
@@ -193,9 +195,15 @@ export default function PostpartumPage() {
     }
   };
 
-  // Déterminer l'accès - Super admin a accès à tout
-  const hasPostpartumAccess = postpartumStatus?.postpartum_unlocked || isSuperAdminUser;
-  const hasGivenBirth = postpartumStatus?.actual_birth_date || isSuperAdminUser;
+  // Déterminer l'accès - Super admin / VIP / Premium a accès à tout
+  const hasPostpartumAccess = Boolean(
+    postpartumStatus?.postpartum_unlocked
+    || isSuperAdminUser
+    || authIsAdmin
+    || authIsVip
+    || authIsPremium
+  );
+  const hasGivenBirth = postpartumStatus?.actual_birth_date || isSuperAdminUser || authIsAdmin || authIsVip;
   const canViewFullContent = hasPostpartumAccess && hasGivenBirth;
   
   // Section actuellement ouverte (une seule à la fois, en plein écran)

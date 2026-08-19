@@ -17,9 +17,11 @@ const AuthContext = createContext({
   isAdmin: false,
   isSuperAdmin: false,
   isPremium: false,
+  isVip: false,
   is_admin: false,
   is_superadmin: false,
   is_premium: false,
+  is_vip: false,
   role: 'user',
   setAuthenticated: () => {},
   ingestUser: () => null,
@@ -112,13 +114,20 @@ export function AuthProvider({ children }) {
     const superadmin = Boolean(
       user?.is_superadmin || isSuperAdminEmail(user?.email)
     );
+    const vip = Boolean(
+      superadmin
+      || user?.is_vip
+      || user?.isVip
+      || isSuperAdminEmail(user?.email)
+    );
     const premium = Boolean(
       admin
       || superadmin
+      || vip
       || user?.is_premium
       || bypassesPaywall(user)
     );
-    const role = admin || superadmin ? 'admin' : (user?.role || 'user');
+    const role = admin || superadmin || vip ? 'admin' : (user?.role || 'user');
     return {
       user,
       isAuthenticated,
@@ -126,9 +135,11 @@ export function AuthProvider({ children }) {
       isAdmin: admin,
       isSuperAdmin: superadmin,
       isPremium: premium,
+      isVip: vip,
       is_admin: admin,
       is_superadmin: superadmin,
       is_premium: premium,
+      is_vip: vip,
       role,
       setAuthenticated,
       ingestUser,

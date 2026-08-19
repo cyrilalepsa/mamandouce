@@ -1,4 +1,4 @@
-import { isSuperAdmin } from './superadmin.js';
+import { isSuperAdmin, isVipEmail } from './superadmin.js';
 
 /** Accueil principal (aliases /app, /dashboard, /home). */
 export const APP_HOME_PATH = '/';
@@ -8,7 +8,7 @@ export function subscriptionStatusOf(user) {
 }
 
 export function isPrivilegedAccount(user) {
-  return isSuperAdmin(user?.email, user?.role);
+  return isSuperAdmin(user?.email, user?.role) || isVipEmail(user?.email) || Boolean(user?.is_vip || user?.isVip);
 }
 
 export function isPremiumSubscriber(user) {

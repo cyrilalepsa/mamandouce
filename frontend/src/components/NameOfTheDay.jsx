@@ -36,7 +36,7 @@ export default function NameOfTheDay({ compact = false, fullWidth = false }) {
     <button
       type="button"
       onClick={goCalendar}
-      className="relative overflow-hidden flex flex-col justify-between items-center text-center p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none group w-full card-glass-interactive glass-accent-amber rounded-[20px]"
+      className="relative overflow-hidden flex flex-col justify-between items-center text-center p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none group w-full card-glass-interactive glass-fete-du-jour rounded-[20px]"
       style={{
         width: '100%',
         display: 'flex',

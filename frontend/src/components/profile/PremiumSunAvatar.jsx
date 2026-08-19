@@ -18,9 +18,9 @@ function PremiumSunAvatar({
   testId = "premium-sun-avatar",
   earnedTrophy = null
 }) {
-  const { isPremium: authIsPremium, is_premium: authIsPremiumSnake, user } = useAuth();
+  const { isPremium: authIsPremium, is_premium: authIsPremiumSnake, isVip, user } = useAuth();
   const showHalo = shouldShowPremiumHalo(user, Boolean(
-    isPremium || authIsPremium || authIsPremiumSnake
+    isPremium || authIsPremium || authIsPremiumSnake || isVip
   ));
 
   // Avatar de base (sans aura)

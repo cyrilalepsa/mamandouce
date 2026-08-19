@@ -351,19 +351,25 @@ def test_superadmin_overlay_admin_menu_and_logout_to_login():
     assert "next.is_superadmin = true" in overlay
     assert "next.is_admin = true" in overlay
     assert "next.is_premium = true" in overlay
+    assert "next.is_vip = true" in overlay
+    assert "VIP_EMAILS" in overlay
     assert "shouldShowPremiumHalo" in overlay
     assert "clearAuthStorage" in ctx
     assert "window.location.assign(AUTH_LOGIN_PATH)" in ctx
     assert "is_superadmin" in ctx
     assert "is_admin" in ctx
     assert "is_premium" in ctx
+    assert "is_vip" in ctx
+    assert "isVip: vip" in ctx
     assert "isPremium: premium" in ctx
     assert "logout()" in top
     assert "admin-dashboard-link" in top
     assert "logout-menu-item" in top
+    assert "isVip" in top
     assert "useAuth" in bag
     assert "from 'react-i18next'" in bag
     assert "unlocked" in lock
+    assert "isVip" in lock
     assert "window.location.href = '/login'" in api
 
 
@@ -396,6 +402,25 @@ def test_premium_halo_on_home_and_profile_avatars():
     assert "authIsPremium" in home
     assert "PremiumSunAvatar" in profile
     assert 'testId="profile-avatar"' in profile
+
+
+def test_cycle_home_cards_glass_colors_and_no_name_day_on_cycle_page():
+    cycle = (FRONTEND / "src" / "pages" / "CycleTrackingPage.jsx").read_text(encoding="utf-8")
+    toggle = (FRONTEND / "src" / "components" / "cycle" / "PregnancyToggle.jsx").read_text(
+        encoding="utf-8"
+    )
+    fete = (FRONTEND / "src" / "components" / "NameOfTheDay.jsx").read_text(encoding="utf-8")
+    glass = (FRONTEND / "src" / "styles" / "glossy" / "_glass-cards.css").read_text(
+        encoding="utf-8"
+    )
+    assert 'mode="cycle"' in cycle
+    assert "NameOfTheDay" not in cycle
+    assert "glass-fete-du-jour" in fete
+    assert "glass-sa-week" in toggle
+    assert "glass-fete-du-jour" in glass
+    assert "glass-sa-week" in glass
+    assert "rgba(251, 191, 36" in glass
+    assert "rgba(219, 39, 119" in glass
 
 
 def test_railway_frontend_listens_on_port():
