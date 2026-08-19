@@ -3,11 +3,11 @@ MamanDouce API Server
 Main FastAPI application with modular routes
 Optimized for Low Memory Profile (Railway)
 """
-from n2_vault_client import sync_secrets
+from n2_vault_client import sync_secrets_at_boot
 
 # Chargement prioritaire des secrets chiffrés en mémoire RAM (aucun écriture disque)
 # — avant MongoDB, Cloudinary, Gemini, SSO ou toute autre init.
-sync_secrets()
+sync_secrets_at_boot()
 
 from fastapi import FastAPI, APIRouter, Request
 from fastapi.exception_handlers import request_validation_exception_handler

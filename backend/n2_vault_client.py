@@ -236,3 +236,20 @@ def sync_secrets(*, force: bool = False) -> int:
     _state["count"] = count
     logger.info("N2-Vault : %s secret(s) chargés en mémoire (aucun fichier écrit)", count)
     return count
+
+
+def sync_secrets_at_boot() -> int:
+    """Boot Railway : ne jamais faire crasher uvicorn si le coffre timeout/5xx.
+
+    Les variables déjà injectées par Railway restent disponibles.
+    """
+    try:
+        return sync_secrets()
+    except Exception as exc:
+        print(f"[VAULT] boot sync failed ({type(exc).__name__}): {exc}", flush=True)
+        logger.exception(
+            "N2-Vault boot sync failed — continuing with process environment"
+        )
+        _state["done"] = True
+        _state["count"] = 0
+        return 0

@@ -2,6 +2,10 @@
   "build": {
     "builder": "NIXPACKS",
     "nixpacksPlan": {
+      "providers": ["node"],
+      "variables": {
+        "NIXPACKS_NODE_VERSION": "22"
+      },
       "phases": {
         "build": {
           "cmds": [
@@ -11,5 +15,9 @@
         }
       }
     }
+  },
+  "deploy": {
+    "startCommand": "npx serve -s dist -l tcp://0.0.0.0:$PORT",
+    "restartPolicyType": "ON_FAILURE"
   }
 }

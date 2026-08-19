@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "serve -s dist",
+    "start": "serve -s dist -l tcp://0.0.0.0:$PORT",
     "test": "node src/utils/backendUrl.standalone.test.mjs && node --test src/utils/pwa-verify.test.mjs src/utils/cycleForm.test.mjs"
   },
   "dependencies": {
