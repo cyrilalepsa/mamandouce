@@ -2,7 +2,7 @@
 import asyncio
 import os
 import sys
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
@@ -84,9 +84,14 @@ def test_sqlite_fallback_when_mongo_fails(tmp_path, monkeypatch):
     from core import cycle_store
 
     failing = AsyncMock(side_effect=RuntimeError("mongo down"))
-    with patch.object(cycle_store.db.pregnancy_profiles, "update_one", failing), patch.object(
-        cycle_store.db.user_cycle_settings, "update_one", failing
-    ), patch.object(cycle_store.db.users, "update_one", failing):
+    find_none = AsyncMock(return_value=None)
+    with patch.object(cycle_store.db, "pregnancy_profiles") as profiles, patch.object(
+        cycle_store.db, "user_cycle_settings"
+    ) as cycle_coll, patch.object(cycle_store.db, "users") as users_coll:
+        profiles.find_one = find_none
+        profiles.update_one = failing
+        cycle_coll.update_one = failing
+        users_coll.update_one = failing
         store = asyncio.run(
             cycle_store.persist_cycle_settings(
                 "user-cycle-1",
@@ -97,6 +102,68 @@ def test_sqlite_fallback_when_mongo_fails(tmp_path, monkeypatch):
     loaded = cycle_store.sqlite_get("user-cycle-1")
     assert loaded["last_period_date"] == "2026-08-17"
     assert loaded["cycle_length"] == 29
+
+
+def test_pregnancy_user_query_matches_str_and_int():
+    from core.cycle_store import canonical_user_id, pregnancy_user_query
+
+    assert canonical_user_id(42) == "42"
+    assert pregnancy_user_query("user-cycle-1") == {"user_id": "user-cycle-1"}
+    assert pregnancy_user_query(42) == {"$or": [{"user_id": "42"}, {"user_id": 42}]}
+
+
+def test_persist_does_not_overwrite_created_at_when_existing():
+    from core import cycle_store
+
+    profiles = MagicMock()
+    profiles.find_one = AsyncMock(
+        return_value={"_id": "doc1", "user_id": "user-cycle-1", "created_at": "2026-01-01T00:00:00+00:00"}
+    )
+    profiles.update_one = AsyncMock()
+    with patch.object(cycle_store.db, "pregnancy_profiles", profiles), patch.object(
+        cycle_store.db, "user_cycle_settings", MagicMock(update_one=AsyncMock())
+    ), patch.object(
+        cycle_store.db, "users", MagicMock(update_one=AsyncMock())
+    ), patch.object(cycle_store, "sqlite_upsert"):
+        asyncio.run(
+            cycle_store.persist_cycle_settings(
+                "user-cycle-1",
+                {
+                    "last_period_date": "2026-08-17",
+                    "cycle_length": 28,
+                    "created_at": "SHOULD_NOT_WRITE",
+                },
+            )
+        )
+    query, op = profiles.update_one.await_args.args
+    assert query == {"user_id": "user-cycle-1"}
+    assert "created_at" not in op["$set"]
+    assert "$setOnInsert" not in op
+    assert op["$set"]["user_id"] == "user-cycle-1"
+
+
+def test_persist_sets_created_at_only_on_insert():
+    from core import cycle_store
+
+    profiles = MagicMock()
+    profiles.find_one = AsyncMock(return_value=None)
+    profiles.update_one = AsyncMock()
+    with patch.object(cycle_store.db, "pregnancy_profiles", profiles), patch.object(
+        cycle_store.db, "user_cycle_settings", MagicMock(update_one=AsyncMock())
+    ), patch.object(
+        cycle_store.db, "users", MagicMock(update_one=AsyncMock())
+    ), patch.object(cycle_store, "sqlite_upsert"):
+        asyncio.run(
+            cycle_store.persist_cycle_settings(
+                99,
+                {"last_period_date": "2026-08-17", "cycle_length": 28},
+            )
+        )
+    query, op = profiles.update_one.await_args.args
+    assert query == {"user_id": "99"}
+    assert op["$set"]["user_id"] == "99"
+    assert "created_at" not in op["$set"]
+    assert "created_at" in op["$setOnInsert"]
 
 
 def test_cycle_intelligence_ok_without_history(user_client):

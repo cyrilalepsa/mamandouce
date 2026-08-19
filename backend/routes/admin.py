@@ -686,7 +686,7 @@ async def set_user_postpartum(user_id: str, enabled: bool = True, admin: User = 
 # ==================== ADMIN ROLE MANAGEMENT ====================
 
 # Admin principaux permanents — ne peuvent jamais perdre leurs droits
-from core.privileges import is_superadmin_email
+from core.privileges import SUPER_ADMIN_EMAILS, is_superadmin_email
 
 @router.post("/admin/user/{user_id}/set-role")
 async def set_user_role(user_id: str, role: str = "user", admin: User = Depends(get_admin_user)):
@@ -702,11 +702,12 @@ async def set_user_role(user_id: str, role: str = "user", admin: User = Depends(
         raise HTTPException(status_code=404, detail="Utilisatrice non trouvée")
     
     # Protection du super admin - personne ne peut lui retirer ses droits
-    if is_superadmin_email(user.get("email")) and role == "user":
-        raise HTTPException(
-            status_code=403, 
-            detail="Ce compte est l'administrateur principal permanent. Ses droits ne peuvent pas être modifiés."
-        )
+    if user.get("email") in SUPER_ADMIN_EMAILS or is_superadmin_email(user.get("email")):
+        if role == "user":
+            raise HTTPException(
+                status_code=403, 
+                detail="Ce compte est l'administrateur principal permanent. Ses droits ne peuvent pas être modifiés."
+            )
     
     # Empêcher de se retirer ses propres droits admin (pour les autres admins)
     if user.get("email") == admin.email and role == "user":

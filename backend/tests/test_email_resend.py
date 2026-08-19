@@ -78,6 +78,7 @@ def test_send_skipped_when_recipient_empty(monkeypatch, capsys):
 def test_send_success_logs_resend_return(monkeypatch, capsys):
     monkeypatch.setenv("RESEND_API_KEY", "re_abcdefghijklmnopqrstuvwxyz")
     monkeypatch.setenv("SENDER_EMAIL", "noreply@neriacorp.com")
+    monkeypatch.delenv("CONTACT_EMAIL", raising=False)
     fake_resend = MagicMock()
     fake_resend.Emails.send.return_value = {"id": "msg_123"}
 
@@ -96,6 +97,7 @@ def test_send_success_logs_resend_return(monkeypatch, capsys):
     assert payload["from"] == "MamanDouce <noreply@neriacorp.com>"
     assert payload["to"] == ["user@example.com"]
     assert payload["from"].endswith("@neriacorp.com>")
+    assert payload["reply_to"] == "contact@mamandouce.neriacorp.com"
     out = capsys.readouterr().out
     assert "Resend API returned" in out
     assert "msg_123" in out
@@ -138,6 +140,20 @@ def test_warns_when_from_not_neriacorp(monkeypatch, capsys):
     assert "noreply@example.com" in out
     assert "forcé" in out or "rejeté" in out
     assert "noreply@neriacorp.com" in out
+
+
+def test_allows_mamandouce_neriacorp_subdomain_sender(monkeypatch):
+    monkeypatch.setenv("SENDER_EMAIL", "contact@mamandouce.neriacorp.com")
+    monkeypatch.setenv("CONTACT_EMAIL", "contact@mamandouce.neriacorp.com")
+    cfg = reload_email_settings()
+    assert cfg["SENDER_EMAIL"] == "contact@mamandouce.neriacorp.com"
+    assert cfg["CONTACT_EMAIL"] == "contact@mamandouce.neriacorp.com"
+
+
+def test_default_contact_is_mamandouce_neriacorp(monkeypatch):
+    monkeypatch.delenv("CONTACT_EMAIL", raising=False)
+    cfg = reload_email_settings()
+    assert cfg["CONTACT_EMAIL"] == "contact@mamandouce.neriacorp.com"
 
 
 def test_coerces_onboarding_resend_dev(monkeypatch):
@@ -210,6 +226,7 @@ def test_send_resend_direct_returns_traceback_on_sdk_error(monkeypatch):
 def test_send_reset_password_email_uses_resend_wrapper(monkeypatch, capsys):
     monkeypatch.setenv("RESEND_API_KEY", "re_abcdefghijklmnopqrstuvwxyz")
     monkeypatch.setenv("SENDER_EMAIL", "noreply@neriacorp.com")
+    monkeypatch.delenv("CONTACT_EMAIL", raising=False)
     fake_resend = MagicMock()
     fake_resend.Emails.send.return_value = {"id": "msg_reset"}
 
@@ -223,6 +240,7 @@ def test_send_reset_password_email_uses_resend_wrapper(monkeypatch, capsys):
     assert params["to"] == ["cyrilalepsa@gmail.com"]
     assert params["from"].endswith("@neriacorp.com>")
     assert params["subject"] == "Réinitialisation de votre mot de passe MamanDouce"
+    assert params["reply_to"] == "contact@mamandouce.neriacorp.com"
 
 
 def test_single_user_reset_email_wrapper():

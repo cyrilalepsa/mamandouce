@@ -162,7 +162,7 @@ async def calculate_pregnancy(data: PregnancyCalculation, current_user: User = D
     ymd = last_period.strftime("%Y-%m-%d")
 
     profile = PregnancyProfile(
-        user_id=current_user.id,
+        user_id=str(current_user.id),
         last_period_date=ymd,
         cycle_length=result["cycle_duration"],
         estimated_conception_date=result["conception_date"],
@@ -178,7 +178,7 @@ async def calculate_pregnancy(data: PregnancyCalculation, current_user: User = D
     profile_dict["trimester"] = result["trimester"]
 
     try:
-        stored = await persist_cycle_settings(current_user.id, profile_dict)
+        stored = await persist_cycle_settings(str(current_user.id), profile_dict)
         logger.info(
             "cycle settings saved user_id=%s last_period_date=%s cycle_length=%s store=%s",
             current_user.id,
@@ -206,7 +206,7 @@ async def calculate_pregnancy(data: PregnancyCalculation, current_user: User = D
 @router.get("/pregnancy/profile")
 async def get_pregnancy_profile(current_user: User = Depends(get_current_user)):
     """Get user's pregnancy profile with updated calculations"""
-    profile = await load_cycle_profile(current_user.id)
+    profile = await load_cycle_profile(str(current_user.id))
     if not profile:
         return None
     
@@ -332,7 +332,7 @@ async def check_fertility_window(current_user: User = Depends(get_current_user))
     from routes.push_notifications import send_push_notification
     
     # Get user's pregnancy profile
-    profile = await load_cycle_profile(current_user.id)
+    profile = await load_cycle_profile(str(current_user.id))
     if not profile or not profile.get("last_period_date"):
         return {"in_fertile_window": False, "message": "Profil de cycle non configuré"}
     

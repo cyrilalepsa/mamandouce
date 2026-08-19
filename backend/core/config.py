@@ -46,6 +46,17 @@ def _normalize_origin(value: str) -> str:
     return (value or "").strip().strip("\"'").rstrip("/")
 
 
+def is_neriacorp_mailbox(address: str | None) -> bool:
+    """True si l'adresse est @neriacorp.com ou @*.neriacorp.com."""
+    text = (address or "").strip().lower()
+    if "<" in text and ">" in text:
+        text = text[text.rfind("<") + 1 : text.rfind(">")].strip()
+    if "@" not in text:
+        return False
+    domain = text.rsplit("@", 1)[-1]
+    return domain == "neriacorp.com" or domain.endswith(".neriacorp.com")
+
+
 def parse_cors_origins(raw: str | None = None) -> list[str]:
     """CORS_ORIGINS / ALLOWED_ORIGINS : chaîne CSV (ou JSON) → liste.
 
@@ -109,11 +120,13 @@ def load_settings() -> None:
     _sender = (os.environ.get("SENDER_EMAIL") or "noreply@neriacorp.com").strip()
     if "<" in _sender and ">" in _sender:
         _sender = _sender[_sender.rfind("<") + 1 : _sender.rfind(">")].strip()
-    if not _sender.lower().endswith("@neriacorp.com"):
+    if not is_neriacorp_mailbox(_sender):
         SENDER_EMAIL = "noreply@neriacorp.com"
     else:
         SENDER_EMAIL = _sender
-    CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL", "contact@neriacorp.com")
+    CONTACT_EMAIL = os.environ.get(
+        "CONTACT_EMAIL", "contact@mamandouce.neriacorp.com"
+    ).strip() or "contact@mamandouce.neriacorp.com"
 
     ADMIN_SECRET = os.environ.get("ADMIN_SECRET")
     if not ADMIN_SECRET:
@@ -130,7 +143,9 @@ def load_settings() -> None:
     VAPID_CLAIMS_EMAIL = os.environ.get("VAPID_CLAIMS_EMAIL", "contact@neriacorp.com")
 
     STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "")
-    FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173").rstrip("/")
+    FRONTEND_URL = os.environ.get(
+        "FRONTEND_URL", "https://mamandouce.neriacorp.com"
+    ).rstrip("/")
 
     OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
     OPENAI_CHAT_MODEL = os.environ.get("OPENAI_CHAT_MODEL", "gpt-4o-mini")
@@ -157,13 +172,22 @@ def load_settings() -> None:
 load_settings()
 
 
+def _is_local_app_url(url: str) -> bool:
+    lower = (url or "").lower()
+    return "localhost" in lower or "127.0.0.1" in lower
+
+
 def app_public_url() -> str:
-    """URL front publique (sans slash final) — emails, reset-password, catalogue."""
-    return (
-        os.environ.get("FRONTEND_URL")
-        or os.environ.get("PUBLIC_APP_URL")
-        or "https://mamandouce.neriacorp.com"
-    ).strip().rstrip("/")
+    """URL front publique (sans slash final) — emails, reset-password, catalogue.
+
+    Ignore localhost / 127.0.0.1 : un .env de dev ne doit pas se retrouver
+    dans les liens de reset-password en production.
+    """
+    for key in ("FRONTEND_URL", "PUBLIC_APP_URL"):
+        raw = (os.environ.get(key) or "").strip().rstrip("/")
+        if raw and not _is_local_app_url(raw):
+            return raw
+    return "https://mamandouce.neriacorp.com"
 
 
 def email_brand_footer() -> str:

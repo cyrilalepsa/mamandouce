@@ -10,7 +10,7 @@ import {
   shouldLeavePricingPage,
   subscriptionStatusOf,
 } from "./postLogin.js";
-import { applySuperadminOverlay, shouldShowPremiumHalo, VIP_EMAILS } from "./superadmin.js";
+import { ADMIN_EMAILS, applySuperadminOverlay, shouldShowPremiumHalo, VIP_EMAILS } from "./superadmin.js";
 
 const cyril = { email: "CyrilAlepsa@Gmail.com", role: "user", subscription_status: "free" };
 const neria = { email: "superadmin@neriacorp.com", role: "user", subscription_status: "free" };
@@ -87,4 +87,5 @@ test("premium halo for privilege emails and premium status", () => {
 test("VIP_EMAILS aliases privilege accounts", () => {
   assert.ok(VIP_EMAILS.includes("cyrilalepsa@gmail.com"));
   assert.ok(VIP_EMAILS.includes("superadmin@neriacorp.com"));
+  assert.deepEqual(ADMIN_EMAILS, ["cyrilalepsa@gmail.com", "superadmin@neriacorp.com"]);
 });

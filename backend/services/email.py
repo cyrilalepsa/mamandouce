@@ -16,7 +16,21 @@ logger = logging.getLogger("mamandouce.email")
 # Domaine d'expédition attendu (aligné DNS / Resend).
 EXPECTED_FROM_SUFFIX = "@neriacorp.com"
 DEFAULT_SENDER_ADDRESS = "noreply@neriacorp.com"
-DEFAULT_CONTACT_ADDRESS = "contact@neriacorp.com"
+DEFAULT_CONTACT_ADDRESS = "contact@mamandouce.neriacorp.com"
+
+
+def is_neriacorp_mailbox(address: str | None) -> bool:
+    """True si l'adresse est @neriacorp.com ou @*.neriacorp.com."""
+    try:
+        from core.config import is_neriacorp_mailbox as _cfg_ok
+
+        return _cfg_ok(address)
+    except Exception:
+        text = extract_email_address(address).strip().lower()
+        if "@" not in text:
+            return False
+        domain = text.rsplit("@", 1)[-1]
+        return domain == "neriacorp.com" or domain.endswith(".neriacorp.com")
 
 
 def _print(msg: str) -> None:
@@ -43,13 +57,13 @@ def extract_email_address(value: str | None) -> str:
 
 def coerce_neriacorp_sender(raw: str | None) -> tuple[str, str]:
     """
-    Force un expéditeur @neriacorp.com.
+    Force un expéditeur @neriacorp.com ou @*.neriacorp.com.
 
     Returns:
         (adresse nue, header From `MamanDouce <addr>`)
     """
     addr = extract_email_address(raw)
-    if not addr.lower().endswith(EXPECTED_FROM_SUFFIX):
+    if not is_neriacorp_mailbox(addr):
         if addr:
             logger.warning(
                 "SENDER_EMAIL %r n'utilise pas @neriacorp.com — forcé vers %s",
@@ -58,7 +72,7 @@ def coerce_neriacorp_sender(raw: str | None) -> tuple[str, str]:
             )
             _print(
                 f"[EMAIL] ⚠ SENDER_EMAIL={addr!r} rejeté "
-                f"(pas {EXPECTED_FROM_SUFFIX}) → {DEFAULT_SENDER_ADDRESS}"
+                f"(pas neriacorp.com) → {DEFAULT_SENDER_ADDRESS}"
             )
         addr = DEFAULT_SENDER_ADDRESS
     return addr, f"MamanDouce <{addr}>"
@@ -156,7 +170,7 @@ def public_email_config() -> dict[str, Any]:
         "SENDER_EMAIL": sender,
         "SENDER_EMAIL_RAW": cfg.get("SENDER_EMAIL_RAW") or sender,
         "from": from_addr,
-        "SENDER_EMAIL_neriacorp_ok": sender.lower().endswith(EXPECTED_FROM_SUFFIX),
+        "SENDER_EMAIL_neriacorp_ok": is_neriacorp_mailbox(sender),
         "CONTACT_EMAIL": cfg["CONTACT_EMAIL"],
     }
 
@@ -166,7 +180,7 @@ def log_email_config(*, purpose: str) -> dict[str, str]:
     key = cfg["RESEND_API_KEY"]
     sender = cfg["SENDER_EMAIL"]
     from_header = cfg["FROM_HEADER"]
-    from_ok = sender.lower().endswith(EXPECTED_FROM_SUFFIX)
+    from_ok = is_neriacorp_mailbox(sender)
     _print("=" * 72)
     _print(f"[EMAIL] purpose={purpose}")
     _print(f"[EMAIL] RESEND_API_KEY loaded={bool(key)} masked={mask_api_key(key)}")
@@ -259,13 +273,16 @@ def send_resend_email(
         }
 
     resend.api_key = api_key
-    # Syntaxe SDK Resend Python (Emails.send) — 4 champs requis.
+    reply_to = (cfg.get("CONTACT_EMAIL") or DEFAULT_CONTACT_ADDRESS).strip()
+    # Syntaxe SDK Resend Python (Emails.send) — from/to/subject/html + reply_to.
     params: dict[str, Any] = {
         "from": from_addr,
         "to": [to_addr],
         "subject": subject,
         "html": html,
     }
+    if reply_to:
+        params["reply_to"] = reply_to
     if extra:
         params.update(extra)
     _print(f"[EMAIL] payload keys={sorted(params.keys())}")
