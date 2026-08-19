@@ -4,6 +4,9 @@ export const SUPERADMIN_EMAILS = [
   "superadmin@neriacorp.com",
 ];
 
+/** Alias historique VIP — mêmes e-mails privilège (isVip / is_vip / VIP_EMAILS). */
+export const VIP_EMAILS = SUPERADMIN_EMAILS;
+
 export const AUTH_LOGIN_PATH = "/login";
 
 export function normalizeSuperadminEmail(email) {
@@ -12,6 +15,10 @@ export function normalizeSuperadminEmail(email) {
 
 export function isSuperAdminEmail(email) {
   return SUPERADMIN_EMAILS.includes(normalizeSuperadminEmail(email));
+}
+
+export function isVipEmail(email) {
+  return isSuperAdminEmail(email);
 }
 
 /** Accès dashboard / premium : superadmin hardcodé ou rôle admin en BDD. */
@@ -30,7 +37,7 @@ export function shouldShowPremiumHalo(user, isPremiumProp = false) {
   if (isPremiumProp) return true;
   if (!user) return false;
   if (isSuperAdminEmail(user.email)) return true;
-  if (user.is_premium || user.is_admin || user.is_superadmin) return true;
+  if (user.is_premium || user.is_admin || user.is_superadmin || user.is_vip || user.isVip) return true;
   return subscriptionLooksPremium(user);
 }
 
@@ -47,6 +54,10 @@ export function applySuperadminOverlay(user) {
     next.is_superadmin = true;
     next.is_admin = true;
     next.is_premium = true;
+    next.is_vip = true;
+    next.isVip = true;
+    next.isAdmin = true;
+    next.isPremium = true;
     next.postpartum_purchased = true;
     next.postpartum_unlocked = true;
     return next;

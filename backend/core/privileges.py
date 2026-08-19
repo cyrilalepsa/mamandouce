@@ -26,6 +26,7 @@ SUPERADMIN_DB_SET = {
     "is_superadmin": True,
     "is_admin": True,
     "is_premium": True,
+    "is_vip": True,
 }
 
 
@@ -62,6 +63,7 @@ def apply_superadmin_overlay(user: dict[str, Any] | None) -> dict[str, Any] | No
         patched["is_superadmin"] = True
         patched["is_admin"] = True
         patched["is_premium"] = True
+        patched["is_vip"] = True
         return patched
     role = str(patched.get("role") or "user").lower()
     patched["is_superadmin"] = False
@@ -70,6 +72,7 @@ def apply_superadmin_overlay(user: dict[str, Any] | None) -> dict[str, Any] | No
     patched["is_premium"] = bool(
         patched.get("is_premium") or patched["is_admin"] or status in ("premium", "trial")
     )
+    patched["is_vip"] = bool(patched.get("is_vip"))
     return patched
 
 
@@ -83,6 +86,7 @@ def privilege_public_fields(user: dict[str, Any] | None) -> dict[str, Any]:
         "is_superadmin": bool(overlaid.get("is_superadmin")),
         "is_admin": bool(overlaid.get("is_admin")),
         "is_premium": bool(overlaid.get("is_premium")),
+        "is_vip": bool(overlaid.get("is_vip")),
     }
 
 

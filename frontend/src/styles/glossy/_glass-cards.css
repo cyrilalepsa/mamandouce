@@ -107,6 +107,32 @@ button.card-glass-interactive,
   background-color: rgba(253, 224, 71, 0.16) !important;
   border-color: rgba(234, 179, 8, 0.4) !important;
 }
+
+/* Fête du jour — jaune chaleureux lumineux, glass 3D conservé */
+.card-glass-interactive.glass-fete-du-jour,
+.glass-fete-du-jour {
+  background-color: rgba(250, 204, 21, 0.22) !important;
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 251, 220, 0.58) 0%,
+    rgba(254, 240, 138, 0.38) 42%,
+    rgba(251, 191, 36, 0.22) 100%
+  ) !important;
+  border-color: rgba(245, 158, 11, 0.5) !important;
+}
+
+/* Semaine d'aménorrhée — rose magenta lumineux, glass 3D conservé */
+.card-glass-interactive.glass-sa-week,
+.glass-sa-week {
+  background-color: rgba(219, 39, 119, 0.16) !important;
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 228, 240, 0.55) 0%,
+    rgba(244, 114, 182, 0.32) 45%,
+    rgba(190, 24, 93, 0.18) 100%
+  ) !important;
+  border-color: rgba(219, 39, 119, 0.45) !important;
+}
 .card-glass-interactive[data-accent="violet"],
 .glass-accent-violet {
   background-color: rgba(221, 214, 254, 0.18) !important;

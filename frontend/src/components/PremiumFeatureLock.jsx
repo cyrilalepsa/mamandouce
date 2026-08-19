@@ -22,9 +22,9 @@ export function PremiumFeatureLock({
   showUpgradeButton = true
 }) {
   const { isPremium, loading } = useSubscription();
-  const { isAdmin, isSuperAdmin } = useAuth();
+  const { isAdmin, isSuperAdmin, isVip } = useAuth();
   const navigate = useNavigate();
-  const unlocked = isPremium || isAdmin || isSuperAdmin;
+  const unlocked = isPremium || isAdmin || isSuperAdmin || isVip;
 
   // Si chargement, afficher un placeholder
   if (loading) {

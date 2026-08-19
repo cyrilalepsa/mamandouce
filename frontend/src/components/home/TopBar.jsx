@@ -89,9 +89,14 @@ function LanguageInlineFlag() {
 
 export function TopBar({ isAdmin: isAdminProp, userAvatar = null, userAvatarConfig = null }) {
   const navigate = useNavigate();
-  const { isAdmin: isAdminAuth, is_admin, role, logout } = useAuth();
+  const { isAdmin: isAdminAuth, is_admin, isVip, is_vip, role, logout } = useAuth();
   const isAdmin = Boolean(
-    isAdminAuth || is_admin || isAdminProp || String(role || '').toLowerCase() === 'admin'
+    isAdminAuth
+    || is_admin
+    || isVip
+    || is_vip
+    || isAdminProp
+    || String(role || '').toLowerCase() === 'admin'
   );
   const [menuOpen, setMenuOpen] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);

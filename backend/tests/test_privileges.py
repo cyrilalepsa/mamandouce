@@ -36,11 +36,13 @@ def test_overlay_forces_admin_premium():
     assert patched["is_superadmin"] is True
     assert patched["is_admin"] is True
     assert patched["is_premium"] is True
+    assert patched["is_vip"] is True
     regular = apply_superadmin_overlay({"email": "maman@test.com", "role": "user"})
     assert regular["role"] == "user"
     assert regular["is_superadmin"] is False
     assert regular["is_admin"] is False
     assert regular["is_premium"] is False
+    assert regular["is_vip"] is False
     admin_role = apply_superadmin_overlay({"email": "staff@test.com", "role": "admin"})
     assert admin_role["is_admin"] is True
     assert admin_role["is_superadmin"] is False
@@ -75,6 +77,7 @@ def test_login_token_fields_force_superadmin_flags():
     assert fields["is_superadmin"] is True
     assert fields["is_admin"] is True
     assert fields["is_premium"] is True
+    assert fields["is_vip"] is True
 
 
 async def _ensure():

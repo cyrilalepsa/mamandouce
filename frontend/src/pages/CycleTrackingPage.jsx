@@ -645,6 +645,7 @@ return (
 
               {/* 🎯 INTEGRATION DE L'EFFET COMBINÉ (Cœurs + Scintillements) */}
               <PregnancyToggle
+                mode="cycle"
                 isPregnant={isPregnant}
                 dueDate={dueDate}
                 lastPeriodDate={lastPeriodDate}

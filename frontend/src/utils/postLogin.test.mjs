@@ -10,7 +10,7 @@ import {
   shouldLeavePricingPage,
   subscriptionStatusOf,
 } from "./postLogin.js";
-import { applySuperadminOverlay, shouldShowPremiumHalo } from "./superadmin.js";
+import { applySuperadminOverlay, shouldShowPremiumHalo, VIP_EMAILS } from "./superadmin.js";
 
 const cyril = { email: "CyrilAlepsa@Gmail.com", role: "user", subscription_status: "free" };
 const neria = { email: "superadmin@neriacorp.com", role: "user", subscription_status: "free" };
@@ -61,12 +61,17 @@ test("applySuperadminOverlay forces admin premium flags", () => {
   assert.equal(overlaid.is_superadmin, true);
   assert.equal(overlaid.is_admin, true);
   assert.equal(overlaid.is_premium, true);
+  assert.equal(overlaid.is_vip, true);
+  assert.equal(overlaid.isVip, true);
+  assert.equal(overlaid.isAdmin, true);
+  assert.equal(overlaid.isPremium, true);
   const neriaOverlaid = applySuperadminOverlay({
     email: "superadmin@neriacorp.com",
     role: "user",
   });
   assert.equal(neriaOverlaid.is_admin, true);
   assert.equal(neriaOverlaid.is_premium, true);
+  assert.equal(neriaOverlaid.is_vip, true);
   assert.equal(neriaOverlaid.role, "admin");
 });
 
@@ -77,4 +82,9 @@ test("premium halo for privilege emails and premium status", () => {
   assert.equal(shouldShowPremiumHalo(free), false);
   assert.equal(shouldShowPremiumHalo(free, true), true);
   assert.equal(shouldShowPremiumHalo(null, true), true);
+});
+
+test("VIP_EMAILS aliases privilege accounts", () => {
+  assert.ok(VIP_EMAILS.includes("cyrilalepsa@gmail.com"));
+  assert.ok(VIP_EMAILS.includes("superadmin@neriacorp.com"));
 });

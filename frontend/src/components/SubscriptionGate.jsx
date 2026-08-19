@@ -9,6 +9,7 @@ const SubscriptionContext = createContext({
   isPremium: false,
   isAdmin: false,
   isSuperAdmin: false,
+  isVip: false,
   subscriptionStatus: null,
   loading: true,
   refreshStatus: () => {}
@@ -28,6 +29,8 @@ const PUBLIC_PAGES = [
 
 const FULL_PRIVILEGE_STATUS = {
   is_premium: true,
+  is_vip: true,
+  is_admin: true,
   subscription_status: 'premium',
   postpartum_unlocked: true,
   postpartum_purchased: true,
@@ -43,7 +46,7 @@ export function SubscriptionGate({ children }) {
 
   const applyPrivileged = (rawUser) => {
     const user = applySuperadminOverlay(rawUser);
-    const userIsAdmin = isPrivilegedAccount(user) || auth.isAdmin;
+    const userIsAdmin = isPrivilegedAccount(user) || auth.isAdmin || auth.isVip;
     setIsAdmin(userIsAdmin);
     if (userIsAdmin) {
       setIsPremium(true);
@@ -121,11 +124,13 @@ export function SubscriptionGate({ children }) {
 
   return (
     <SubscriptionContext.Provider value={{ 
-      isPremium: isPremium || auth.isPremium,
-      isAdmin: isAdmin || auth.isAdmin,
+      isPremium: isPremium || auth.isPremium || auth.isVip,
+      isAdmin: isAdmin || auth.isAdmin || auth.isVip,
       isSuperAdmin: auth.isSuperAdmin,
-      is_admin: isAdmin || auth.isAdmin,
+      isVip: Boolean(auth.isVip || auth.is_vip),
+      is_admin: isAdmin || auth.isAdmin || auth.isVip,
       is_superadmin: auth.isSuperAdmin,
+      is_vip: Boolean(auth.isVip || auth.is_vip),
       subscriptionStatus, 
       loading,
       refreshStatus: checkSubscription 
