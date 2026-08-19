@@ -105,3 +105,10 @@ test("src modules resolve API via apiUrl / getApiBase (no localhost fallback)", 
     assert.doesNotMatch(src, /import\.meta\.env\.VITE_BACKEND_URL/, rel);
   }
 });
+
+test("SubscriptionCheckout declares resolvingUser state", () => {
+  const src = read("src/pages/SubscriptionCheckout.jsx");
+  assert.match(src, /const \[resolvingUser, setResolvingUser\] = useState\(true\)/);
+  assert.match(src, /if \(resolvingUser\)/);
+  assert.match(src, /setResolvingUser\(false\)/);
+});

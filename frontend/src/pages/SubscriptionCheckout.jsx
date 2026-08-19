@@ -19,6 +19,7 @@ function SubscriptionCheckout() {
   const [user, setUser] = useState(null);
   const [trialStatus, setTrialStatus] = useState(null);
   const [startingTrial, setStartingTrial] = useState(false);
+  const [resolvingUser, setResolvingUser] = useState(true);
   const { isDarkMode } = useTheme();
   
   const packageType = searchParams.get('package') || 'annual';
