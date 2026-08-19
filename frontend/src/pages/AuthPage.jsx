@@ -8,13 +8,10 @@ import AppTitle from '../components/AppTitle';
 import { useTranslation } from 'react-i18next';
 import LanguageBubble from '../components/LanguageBubble';
 import { 
-  isBiometricAvailable,
   authenticateWithBiometric, 
   enableBiometricLogin,
-  checkBiometricSupport,
   enablePinLogin,
   authenticateWithPin,
-  isQuickLoginAvailable,
   getQuickLoginType
 } from '../utils/biometricAuth';
 import {
@@ -29,6 +26,8 @@ import {
   PinLoginSection
 } from '../components/auth';
 import { incrementLoginCount } from '../components/home/PushNotificationReminder';
+import { withTimeout } from '../utils/backendUrl';
+import { destinationAfterAuth } from '../utils/postLogin';
 
 function AuthPage({ setIsAuthenticated }) {
   const { t } = useTranslation();
@@ -74,9 +73,7 @@ function AuthPage({ setIsAuthenticated }) {
           password: credentials.password 
         });
         localStorage.setItem('token', response.data.access_token);
-        setIsAuthenticated(true);
-        toast.success('Connexion réussie !');
-        navigate('/');
+        await completeLogin(false);
       }
     } catch (error) {
       const status = error.response?.status;
@@ -109,9 +106,7 @@ function AuthPage({ setIsAuthenticated }) {
           password: credentials.password 
         });
         localStorage.setItem('token', response.data.access_token);
-        setIsAuthenticated(true);
-        toast.success('Connexion réussie !');
-        navigate('/');
+        await completeLogin(false);
       }
     } catch (error) {
       const status = error.response?.status;
@@ -129,52 +124,29 @@ function AuthPage({ setIsAuthenticated }) {
   };
 
   const completeLogin = async (isNewUser = false) => {
-    // Incrémenter le compteur de connexions pour le rappel de notifications
-    if (!isNewUser) {
-      incrementLoginCount();
-    }
-    
-    // Pour les nouveaux utilisateurs, rediriger vers la page d'abonnement
-    if (isNewUser) {
-      setIsAuthenticated(true);
-      toast.success('Inscription réussie ! Choisissez votre formule.');
-      navigate('/subscription/checkout?onboarding=true');
-      return;
-    }
-    
-    // Pour les utilisateurs existants, vérifier s'ils ont un abonnement
     try {
-      const subResponse = await api.subscription.getFullStatus();
-      const status = subResponse.data;
-      const hasActiveSubscription = status.is_premium || status.postpartum_purchased;
-      
-      if (!hasActiveSubscription) {
-        // Pas d'abonnement, rediriger vers choix
-        setIsAuthenticated(true);
-        toast.success('Connexion réussie !');
-        navigate('/subscription/checkout?onboarding=true');
-        return;
+      if (!isNewUser) {
+        incrementLoginCount();
       }
-    } catch (error) {
-      // En cas d'erreur, continuer normalement
-    }
-    
-    if (!isQuickLoginAvailable()) {
-      const canUseBiometric = await isBiometricAvailable();
-      if (canUseBiometric) {
-        setShowEnableBiometric(true);
-        setLoading(false);
-        return;
-      } else {
-        setShowEnablePin(true);
-        setLoading(false);
-        return;
+
+      let user = null;
+      try {
+        const me = await withTimeout(api.auth.me(), 8000, 'auth.me');
+        user = me.data;
+      } catch (error) {
+        console.error('[auth] /auth/me après connexion', error);
       }
+
+      setIsAuthenticated(true);
+      toast.success(
+        isNewUser
+          ? t('auth.registerSuccess', 'Inscription réussie !')
+          : t('auth.loginSuccess', 'Connexion réussie !')
+      );
+      navigate(destinationAfterAuth(user), { replace: true });
+    } finally {
+      setLoading(false);
     }
-    
-    setIsAuthenticated(true);
-    toast.success('Connexion réussie!');
-    navigate('/');
   };
 
   const handleSubmit = async (e) => {
@@ -212,6 +184,7 @@ function AuthPage({ setIsAuthenticated }) {
       } else {
         toast.error(detail || 'Une erreur est survenue');
       }
+    } finally {
       setLoading(false);
     }
   };
@@ -232,6 +205,7 @@ function AuthPage({ setIsAuthenticated }) {
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Code invalide');
       setTwoFactorCode('');
+    } finally {
       setLoading(false);
     }
   };

@@ -30,6 +30,8 @@ def test_overlay_forces_admin_premium():
     assert patched["role"] == "admin"
     assert patched["subscription_status"] == "premium"
     assert patched["gold_status"] is True
+    assert patched["postpartum_purchased"] is True
+    assert patched["postpartum_free_via_referral"] is True
     regular = apply_superadmin_overlay({"email": "maman@test.com", "role": "user"})
     assert regular["role"] == "user"
 
@@ -47,6 +49,10 @@ def test_frontend_lists_both_superadmins():
     )
     assert "cyrilalepsa@gmail.com" in src
     assert "superadmin@neriacorp.com" in src
+    postpartum = (
+        Path(__file__).resolve().parents[2] / "backend" / "routes" / "postpartum.py"
+    ).read_text(encoding="utf-8")
+    assert "apply_superadmin_overlay" in postpartum
 
 
 async def _ensure():

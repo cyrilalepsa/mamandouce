@@ -4,6 +4,7 @@ from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 from core.database import db
 from core.security import get_current_user
+from core.privileges import apply_superadmin_overlay
 from models.schemas import User
 
 router = APIRouter()
@@ -1375,7 +1376,8 @@ async def set_birth_date(data: BirthDateInput, current_user: User = Depends(get_
 async def get_postpartum_status(current_user: User = Depends(get_current_user)):
     """Vérifier le statut du suivi post-partum"""
     user = await db.users.find_one({"id": current_user.id}, {"_id": 0})
-    
+    user = apply_superadmin_overlay(user or {"email": current_user.email})
+
     postpartum_unlocked = user.get("postpartum_purchased", False) or user.get("postpartum_free_via_referral", False)
     actual_birth_date = user.get("actual_birth_date")
     
@@ -1841,7 +1843,8 @@ POSTPARTUM_DURATION_DAYS = 180  # 6 mois
 async def get_account_status(current_user: User = Depends(get_current_user)):
     """Vérifier le statut du compte et la date d'expiration post-partum"""
     user = await db.users.find_one({"id": current_user.id}, {"_id": 0})
-    
+    user = apply_superadmin_overlay(user or {"email": current_user.email})
+
     actual_birth_date = user.get("actual_birth_date")
     postpartum_unlocked = user.get("postpartum_purchased", False) or user.get("postpartum_free_via_referral", False)
     account_archived = user.get("account_archived", False)

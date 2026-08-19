@@ -1,10 +1,9 @@
 import { useState, useEffect, createContext, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
 import api from '../utils/api';
 import { withTimeout } from '../utils/backendUrl';
 import { isSuperAdmin } from '../utils/superadmin';
+import { isPremiumSubscriber, isPrivilegedAccount } from '../utils/postLogin';
 
-// Context pour partager le statut d'abonnement dans toute l'app
 const SubscriptionContext = createContext({
   isPremium: false,
   isAdmin: false,
@@ -15,7 +14,6 @@ const SubscriptionContext = createContext({
 
 export const useSubscription = () => useContext(SubscriptionContext);
 
-// Pages accessibles sans authentification
 const PUBLIC_PAGES = [
   '/auth',
   '/reset-password',
@@ -25,39 +23,62 @@ const PUBLIC_PAGES = [
   '/recipes/shared'
 ];
 
+const FULL_PRIVILEGE_STATUS = {
+  is_premium: true,
+  subscription_status: 'premium',
+  postpartum_unlocked: true,
+  postpartum_purchased: true,
+  postpartum_eligible: true,
+};
+
 export function SubscriptionGate({ children }) {
   const [loading, setLoading] = useState(true);
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
   const [isPremium, setIsPremium] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const location = useLocation();
 
   const checkSubscription = async () => {
+    setLoading(true);
     try {
-      // Vérifier le statut de l'utilisateur
-      const userResponse = await withTimeout(api.auth.getMe(), 8000, 'subscription.me');
-      const user = userResponse.data;
-      const userIsAdmin = isSuperAdmin(user.email, user.role);
+      let user = null;
+      try {
+        const userResponse = await withTimeout(api.auth.getMe(), 8000, 'subscription.me');
+        user = userResponse.data;
+      } catch (error) {
+        console.error('Erreur /auth/me:', error);
+      }
+
+      const userIsAdmin = isPrivilegedAccount(user);
       setIsAdmin(userIsAdmin);
 
-      // Vérifier le statut d'abonnement
-      const subResponse = await withTimeout(api.subscription.getFullStatus(), 8000, 'subscription.status');
-      const status = subResponse.data;
-      
-      setSubscriptionStatus(status);
-      
-      // Super admin a TOUJOURS accès premium complet
       if (userIsAdmin) {
-        setIsPremium(true); // Admin = Premium automatique
-      } else {
-        setIsPremium(status.is_premium);
+        setIsPremium(true);
+        setSubscriptionStatus(FULL_PRIVILEGE_STATUS);
+        return;
       }
-      
-    } catch (error) {
-      console.error('Erreur vérification abonnement:', error);
-      // En cas d'erreur, définir comme utilisateur gratuit
-      setIsPremium(false);
-      setSubscriptionStatus({ is_premium: false, subscription_status: 'free' });
+
+      const premiumFromMe = isPremiumSubscriber(user);
+      if (premiumFromMe) {
+        setIsPremium(true);
+      }
+
+      try {
+        const subResponse = await withTimeout(api.subscription.getFullStatus(), 8000, 'subscription.status');
+        const status = subResponse.data;
+        setSubscriptionStatus(status);
+        setIsPremium(Boolean(status?.is_premium) || premiumFromMe || isSuperAdmin(user?.email, user?.role));
+      } catch (error) {
+        console.error('Erreur statut abonnement:', error);
+        if (premiumFromMe) {
+          setSubscriptionStatus({
+            is_premium: true,
+            subscription_status: user.subscription_status,
+          });
+        } else {
+          setIsPremium(false);
+          setSubscriptionStatus({ is_premium: false, subscription_status: 'free' });
+        }
+      }
     } finally {
       setLoading(false);
     }
@@ -65,11 +86,11 @@ export function SubscriptionGate({ children }) {
 
   useEffect(() => {
     checkSubscription();
-  }, [location.pathname]);
+  }, []);
 
   if (loading) {
     return (
-      <div className="min-h-screen gradient-bg flex items-center justify-center">
+      <div className="min-h-screen gradient-bg flex items-center justify-center" data-testid="subscription-boot-loader">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-4 border-pink-400 border-t-transparent rounded-full mx-auto mb-4"></div>
           <p className="text-slate-500 text-sm">Chargement...</p>
