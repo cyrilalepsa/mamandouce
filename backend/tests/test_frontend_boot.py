@@ -273,3 +273,11 @@ def test_profile_pregnant_card_and_home_sa_week():
     assign = next(line for line in home.splitlines() if "hasPregnancyProfile =" in line)
     assert "hasRapportInFertileWindow" not in assign
     assert "[&_#celebrate-section]:hidden" not in home
+
+
+def test_railway_frontend_listens_on_port():
+    pkg = (FRONTEND / "package.json").read_text(encoding="utf-8")
+    railway = (FRONTEND / "railway.json").read_text(encoding="utf-8")
+    assert "serve -s dist -l tcp://0.0.0.0:$PORT" in pkg
+    assert "npx serve -s dist -l tcp://0.0.0.0:$PORT" in railway
+    assert '"NIXPACKS_NODE_VERSION": "22"' in railway

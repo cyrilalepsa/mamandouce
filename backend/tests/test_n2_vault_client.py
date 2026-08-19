@@ -12,6 +12,7 @@ from n2_vault_client import (
     VaultMasterKeyError,
     reset_sync_state,
     sync_secrets,
+    sync_secrets_at_boot,
     vault_sync_url,
 )
 
@@ -173,12 +174,23 @@ def test_http_error_surfaces_status(monkeypatch):
             sync_secrets(force=True)
 
 
+def test_boot_wrapper_does_not_crash_when_vault_down(monkeypatch):
+    monkeypatch.setenv("NERIACORP_MASTER_KEY", "master-test-key")
+    monkeypatch.setenv("N2_VAULT_SYNC", "on")
+
+    def _boom(*_a, **_k):
+        raise RuntimeError("N2-Vault injoignable")
+
+    with patch("n2_vault_client.urllib.request.urlopen", side_effect=_boom):
+        assert sync_secrets_at_boot() == 0
+
+
 def test_boot_calls_sync_secrets_before_services():
     backend = Path(__file__).resolve().parents[1]
     server_src = (backend / "server.py").read_text(encoding="utf-8")
     main_src = (backend / "main.py").read_text(encoding="utf-8")
-    assert "from n2_vault_client import sync_secrets" in server_src
-    assert server_src.find("sync_secrets()") < server_src.find("from core.config")
-    assert server_src.find("sync_secrets()") < server_src.find("from routes.")
-    assert "sync_secrets()" in main_src
-    assert main_src.find("sync_secrets()") < main_src.find("from server import app")
+    assert "from n2_vault_client import sync_secrets_at_boot" in server_src
+    assert server_src.find("sync_secrets_at_boot()") < server_src.find("from core.config")
+    assert server_src.find("sync_secrets_at_boot()") < server_src.find("from routes.")
+    assert "sync_secrets_at_boot()" in main_src
+    assert main_src.find("sync_secrets_at_boot()") < main_src.find("from server import app")
