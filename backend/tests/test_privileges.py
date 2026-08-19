@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from core.privileges import (
     HARDCODED_SUPERADMIN_EMAILS,
+    SUPER_ADMIN_EMAILS,
     SUPERADMIN_DB_SET,
     apply_superadmin_overlay,
     is_superadmin_email,
@@ -16,6 +17,10 @@ from core.privileges import (
 
 
 def test_hardcoded_superadmins():
+    assert SUPER_ADMIN_EMAILS == [
+        "cyrilalepsa@gmail.com",
+        "superadmin@neriacorp.com",
+    ]
     assert "cyrilalepsa@gmail.com" in HARDCODED_SUPERADMIN_EMAILS
     assert "superadmin@neriacorp.com" in HARDCODED_SUPERADMIN_EMAILS
     assert is_superadmin_email("CyrilAlepsa@Gmail.com")
@@ -62,10 +67,16 @@ def test_frontend_lists_both_superadmins():
     )
     assert "cyrilalepsa@gmail.com" in src
     assert "superadmin@neriacorp.com" in src
+    assert "ADMIN_EMAILS" in src
     postpartum = (
         Path(__file__).resolve().parents[2] / "backend" / "routes" / "postpartum.py"
     ).read_text(encoding="utf-8")
     assert "apply_superadmin_overlay" in postpartum
+    admin_py = (
+        Path(__file__).resolve().parents[2] / "backend" / "routes" / "admin.py"
+    ).read_text(encoding="utf-8")
+    assert "SUPER_ADMIN_EMAILS" in admin_py
+    assert "user.get(\"email\") in SUPER_ADMIN_EMAILS" in admin_py
 
 
 def test_login_token_fields_force_superadmin_flags():

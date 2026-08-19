@@ -325,7 +325,7 @@ def test_email_defaults_use_neriacorp_domain(monkeypatch):
 
     load_settings()
     assert cfg.SENDER_EMAIL == "noreply@neriacorp.com"
-    assert cfg.CONTACT_EMAIL == "contact@neriacorp.com"
+    assert cfg.CONTACT_EMAIL == "contact@mamandouce.neriacorp.com"
 
 
 def test_email_sender_rejects_resend_dev_and_gmail(monkeypatch):
@@ -343,6 +343,10 @@ def test_email_sender_rejects_resend_dev_and_gmail(monkeypatch):
     monkeypatch.setenv("SENDER_EMAIL", "hello@neriacorp.com")
     load_settings()
     assert cfg.SENDER_EMAIL == "hello@neriacorp.com"
+
+    monkeypatch.setenv("SENDER_EMAIL", "contact@mamandouce.neriacorp.com")
+    load_settings()
+    assert cfg.SENDER_EMAIL == "contact@mamandouce.neriacorp.com"
 
 
 def test_n2_ocr_defaults_to_central_worker(monkeypatch):

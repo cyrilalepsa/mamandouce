@@ -13,6 +13,28 @@ from core.database import db
 
 logger = logging.getLogger("mamandouce.cycle")
 
+
+def canonical_user_id(user_id: Any) -> str:
+    """GET et POST/PUT utilisent toujours le même type (str) pour user_id."""
+    return str(user_id).strip() if user_id is not None else ""
+
+
+def pregnancy_user_query(user_id: Any) -> Dict[str, Any]:
+    """Filtre pregnancy_profiles : str + éventuel int historique (même valeur)."""
+    uid = canonical_user_id(user_id)
+    variants: list[Any] = [uid]
+    if uid.isdigit():
+        as_int = int(uid)
+        if str(as_int) == uid:
+            variants.append(as_int)
+    unique: list[Any] = []
+    for value in variants:
+        if value not in unique:
+            unique.append(value)
+    if len(unique) == 1:
+        return {"user_id": unique[0]}
+    return {"$or": [{"user_id": value} for value in unique]}
+
 _CREATE_SQL = """
 CREATE TABLE IF NOT EXISTS user_cycle_settings (
     user_id TEXT PRIMARY KEY,
@@ -129,17 +151,32 @@ async def persist_cycle_settings(user_id: str, payload: Dict[str, Any]) -> str:
     If Mongo fails, fall back to a local SQLite table so the save still succeeds.
     """
     now = datetime.now(timezone.utc).isoformat()
+    user_id = canonical_user_id(user_id)
     payload = dict(payload)
-    payload.setdefault("user_id", user_id)
+    payload["user_id"] = user_id
     payload.setdefault("updated_at", now)
+    payload.pop("created_at", None)
+
+    lookup = pregnancy_user_query(user_id)
+    write_query = {"user_id": user_id}
 
     mongo_ok = False
     try:
-        await db.pregnancy_profiles.update_one(
-            {"user_id": user_id},
-            {"$set": payload, "$setOnInsert": {"created_at": now}},
-            upsert=True,
+        existing = await db.pregnancy_profiles.find_one(
+            lookup, {"_id": 1, "created_at": 1, "user_id": 1}
         )
+        if existing:
+            stored_id = existing.get("user_id", user_id)
+            await db.pregnancy_profiles.update_one(
+                {"user_id": stored_id},
+                {"$set": payload},
+            )
+        else:
+            await db.pregnancy_profiles.update_one(
+                write_query,
+                {"$set": payload, "$setOnInsert": {"created_at": now}},
+                upsert=True,
+            )
         cycle_row = {
             "user_id": user_id,
             "last_period_date": payload.get("last_period_date"),
@@ -147,7 +184,7 @@ async def persist_cycle_settings(user_id: str, payload: Dict[str, Any]) -> str:
             "updated_at": now,
         }
         await db.user_cycle_settings.update_one(
-            {"user_id": user_id},
+            write_query,
             {"$set": cycle_row},
             upsert=True,
         )
@@ -183,15 +220,17 @@ async def persist_cycle_settings(user_id: str, payload: Dict[str, Any]) -> str:
 
 
 async def load_cycle_profile(user_id: str) -> Optional[Dict[str, Any]]:
+    user_id = canonical_user_id(user_id)
+    query = pregnancy_user_query(user_id)
     try:
-        profile = await db.pregnancy_profiles.find_one({"user_id": user_id}, {"_id": 0})
+        profile = await db.pregnancy_profiles.find_one(query, {"_id": 0})
         if profile and profile.get("last_period_date"):
             return profile
     except Exception:
         logger.exception("Mongo pregnancy_profiles read failed user_id=%s", user_id)
 
     try:
-        cycle_row = await db.user_cycle_settings.find_one({"user_id": user_id}, {"_id": 0})
+        cycle_row = await db.user_cycle_settings.find_one(query, {"_id": 0})
         if cycle_row and cycle_row.get("last_period_date"):
             return cycle_row
     except Exception:

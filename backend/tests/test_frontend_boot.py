@@ -163,6 +163,9 @@ def test_superadmin_helper_lists_both_accounts():
     gate = (FRONTEND / "src" / "components" / "SubscriptionGate.jsx").read_text(encoding="utf-8")
     assert "isSuperAdmin" in gate
     admin = (FRONTEND / "src" / "pages" / "AdminPage.jsx").read_text(encoding="utf-8")
+    assert "ADMIN_EMAILS" in src
+    assert "ADMIN_EMAILS" in admin
+    assert "response.data.role === 'admin' || ADMIN_EMAILS.includes(response.data.email)" in admin
     assert "isSuperAdmin" in admin
 
 

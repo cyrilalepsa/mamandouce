@@ -10,10 +10,11 @@ import re
 from datetime import datetime, timezone
 from typing import Any
 
-HARDCODED_SUPERADMIN_EMAILS = (
+SUPER_ADMIN_EMAILS = [
     "cyrilalepsa@gmail.com",
     "superadmin@neriacorp.com",
-)
+]
+HARDCODED_SUPERADMIN_EMAILS = tuple(SUPER_ADMIN_EMAILS)
 
 SUPERADMIN_DB_SET = {
     "role": "admin",

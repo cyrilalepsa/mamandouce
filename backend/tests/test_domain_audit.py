@@ -167,6 +167,14 @@ def test_app_public_url_prefers_frontend_url(monkeypatch):
     assert app_public_url() == "https://mamandouce.neriacorp.com"
 
 
+def test_app_public_url_ignores_localhost_frontend_url(monkeypatch):
+    monkeypatch.setenv("FRONTEND_URL", "http://localhost:5173")
+    monkeypatch.delenv("PUBLIC_APP_URL", raising=False)
+    from core.config import app_public_url
+
+    assert app_public_url() == "https://mamandouce.neriacorp.com"
+
+
 def test_app_public_url_falls_back_to_public_app_url(monkeypatch):
     monkeypatch.delenv("FRONTEND_URL", raising=False)
     monkeypatch.setenv("PUBLIC_APP_URL", "https://mamandouce.neriacorp.com/")

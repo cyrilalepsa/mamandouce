@@ -74,8 +74,12 @@ async def get_current_user_optional(credentials: Optional[HTTPAuthorizationCrede
 
 async def get_admin_user(current_user: "User" = Depends(get_current_user)):
     """Verify that the current user is an admin"""
-    from core.privileges import is_superadmin_email
+    from core.privileges import SUPER_ADMIN_EMAILS, is_superadmin_email
 
-    if current_user.role == "admin" or is_superadmin_email(current_user.email):
+    if (
+        current_user.role == "admin"
+        or current_user.email in SUPER_ADMIN_EMAILS
+        or is_superadmin_email(current_user.email)
+    ):
         return current_user
     raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")

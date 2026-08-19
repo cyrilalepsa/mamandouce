@@ -7,7 +7,7 @@ import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, Hand
 import api from '../utils/api';
 import PageHeader from '../components/PageHeader';
 import { toast } from 'sonner';
-import { isSuperAdmin, applySuperadminOverlay } from '../utils/superadmin';
+import { isSuperAdmin, applySuperadminOverlay, ADMIN_EMAILS } from '../utils/superadmin';
 import {
   DashboardTab,
   UsersTab,
@@ -84,7 +84,7 @@ function AdminPage() {
       
       const response = await api.auth.me();
       const me = applySuperadminOverlay(response.data);
-      if (isSuperAdmin(me.email, me.role) || me.is_admin || me.is_superadmin) {
+      if (response.data.role === 'admin' || ADMIN_EMAILS.includes(response.data.email) || isSuperAdmin(me.email, me.role) || me.is_admin || me.is_superadmin) {
         setIsAdmin(true);
         loadAllData();
       } else {
@@ -103,7 +103,7 @@ function AdminPage() {
           try {
             const response = await api.auth.me();
             const me = applySuperadminOverlay(response.data);
-            if (isSuperAdmin(me.email, me.role) || me.is_admin || me.is_superadmin) {
+            if (response.data.role === 'admin' || ADMIN_EMAILS.includes(response.data.email) || isSuperAdmin(me.email, me.role) || me.is_admin || me.is_superadmin) {
               setIsAdmin(true);
               loadAllData();
             } else {
