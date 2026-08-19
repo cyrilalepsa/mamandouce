@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { useTheme } from '../contexts/ThemeContext';
 import { withTimeout } from '../utils/backendUrl';
 import { destinationAfterAuth, isPrivilegedAccount, shouldLeavePricingPage } from '../utils/postLogin';
+import { useAuth } from '../contexts/AuthContext';
 
 function SubscriptionCheckout() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ function SubscriptionCheckout() {
   const stepActiveBg = isDarkMode ? 'bg-slate-700 border-sky-500' : 'bg-gradient-to-r from-sky-50 to-pink-50 border-sky-100';
   const stepInactiveBg = isDarkMode ? 'bg-slate-700/50' : 'bg-slate-50';
 
-  const [resolvingUser, setResolvingUser] = useState(true);
+  const { logout } = useAuth();
 
   const steps = [
     { label: 'Préparation...', icon: Check },
@@ -168,8 +169,7 @@ function SubscriptionCheckout() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/auth');
+    logout();
   };
 
   if (resolvingUser) {

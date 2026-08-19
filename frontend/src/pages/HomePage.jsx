@@ -3,7 +3,8 @@ import { PartyPopper, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
-import { isSuperAdmin } from '../utils/superadmin';
+import { isSuperAdmin, applySuperadminOverlay } from '../utils/superadmin';
+import { useAuth } from '../contexts/AuthContext';
 import AppTitle from '../components/AppTitle';
 import { AvatarPreview } from '../components/profile/AvatarBuilder';
 import PremiumSunAvatar from '../components/profile/PremiumSunAvatar';
@@ -23,6 +24,7 @@ import { NewsBubble, NewsPopup, useNews } from '../components/home/NewsBubble';
 function HomePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { isAdmin: authIsAdmin } = useAuth();
   const [userName, setUserName] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [userAvatar, setUserAvatar] = useState('');
@@ -99,13 +101,14 @@ function HomePage() {
   const loadUserData = async () => {
     try {
       const userRes = await api.auth.getMe();
-      setUserName(userRes.data.name);
-      setDisplayName(userRes.data.display_name || '');
-      setUserAvatar(userRes.data.avatar || '');
-      setUserAvatarConfig(userRes.data.avatar_config || null);
-      setUserEmail(userRes.data.email);
-      setUserRole(userRes.data.role || 'user');
-      setIsPremium(userRes.data.subscription_status === 'premium' || userRes.data.subscription_status === 'trial');
+      const me = applySuperadminOverlay(userRes.data);
+      setUserName(me.name);
+      setDisplayName(me.display_name || '');
+      setUserAvatar(me.avatar || '');
+      setUserAvatarConfig(me.avatar_config || null);
+      setUserEmail(me.email);
+      setUserRole(me.role || 'user');
+      setIsPremium(me.subscription_status === 'premium' || me.subscription_status === 'trial' || me.is_admin || me.is_superadmin);
       
       const profileRes = await api.pregnancy.getProfile();
       setPregnancyProfile(profileRes.data);
@@ -193,7 +196,7 @@ function HomePage() {
     };
   }, []);
 
-  const isAdmin = isSuperAdmin(userEmail, userRole);
+  const isAdmin = authIsAdmin || isSuperAdmin(userEmail, userRole);
   const hasPregnancyProfile = Boolean(
     isPregnantHome || (pregnancyProfile && pregnancyProfile.current_week)
   );

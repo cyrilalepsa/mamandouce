@@ -71,12 +71,21 @@ test("superadmin emails unlock dashboard and premium", () => {
     "src/pages/HomePage.jsx",
     "src/pages/PostpartumPage.jsx",
     "src/utils/postLogin.js",
+    "src/contexts/AuthContext.jsx",
   ]) {
     assert.match(read(rel), /isSuperAdmin|isPrivilegedAccount/, rel);
   }
   const auth = read("src/pages/AuthPage.jsx");
   assert.match(auth, /destinationAfterAuth/);
   assert.doesNotMatch(auth, /checkout\?onboarding=true/);
+  const overlay = read("src/utils/superadmin.js");
+  assert.match(overlay, /applySuperadminOverlay/);
+  const top = read("src/components/home/TopBar.jsx");
+  assert.match(top, /admin-dashboard-link/);
+  assert.match(top, /logout-menu-item/);
+  const ctx = read("src/contexts/AuthContext.jsx");
+  assert.match(ctx, /AUTH_LOGIN_PATH/);
+  assert.match(ctx, /clearAuthStorage/);
 });
 
 test("src modules resolve API via apiUrl / getApiBase (no localhost fallback)", () => {

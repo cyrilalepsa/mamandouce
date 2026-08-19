@@ -7,7 +7,7 @@ import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, Hand
 import api from '../utils/api';
 import PageHeader from '../components/PageHeader';
 import { toast } from 'sonner';
-import { isSuperAdmin } from '../utils/superadmin';
+import { isSuperAdmin, applySuperadminOverlay } from '../utils/superadmin';
 import {
   DashboardTab,
   UsersTab,
@@ -78,12 +78,13 @@ function AdminPage() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        navigate('/auth');
+        navigate('/login');
         return;
       }
       
       const response = await api.auth.me();
-      if (isSuperAdmin(response.data.email, response.data.role)) {
+      const me = applySuperadminOverlay(response.data);
+      if (isSuperAdmin(me.email, me.role) || me.is_admin || me.is_superadmin) {
         setIsAdmin(true);
         loadAllData();
       } else {
@@ -95,13 +96,14 @@ function AdminPage() {
       // Only redirect if it's a 401 (unauthorized), not network errors
       if (error.response?.status === 401) {
         localStorage.removeItem('token');
-        navigate('/auth');
+        navigate('/login');
       } else {
         // Retry once after a short delay for network errors
         setTimeout(async () => {
           try {
             const response = await api.auth.me();
-            if (isSuperAdmin(response.data.email, response.data.role)) {
+            const me = applySuperadminOverlay(response.data);
+            if (isSuperAdmin(me.email, me.role) || me.is_admin || me.is_superadmin) {
               setIsAdmin(true);
               loadAllData();
             } else {
@@ -109,7 +111,7 @@ function AdminPage() {
               setLoading(false);
             }
           } catch (retryError) {
-            navigate('/auth');
+            navigate('/login');
           }
         }, 1000);
       }

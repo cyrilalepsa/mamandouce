@@ -15,10 +15,12 @@ def test_i18n_boot_does_not_touch_raw_local_storage():
 
 def test_app_imports_home_layout_provider():
     app = (FRONTEND / "src" / "App.jsx").read_text(encoding="utf-8")
+    ctx = (FRONTEND / "src" / "contexts" / "AuthContext.jsx").read_text(encoding="utf-8")
     assert "import { HomeLayoutProvider }" in app
     assert "from './contexts/HomeLayoutContext'" in app
-    assert "withTimeout(api.auth.me()" in app
-    assert "hideBootLoader()" in app
+    assert "AuthProvider" in app
+    assert "withTimeout(api.auth.me()" in ctx
+    assert "hideBootLoader()" in ctx
 
 
 def test_main_wraps_app_with_error_boundary_and_i18n():
@@ -315,10 +317,12 @@ def test_login_goes_home_never_pricing_and_loading_always_clears():
     assert "navigate('/pricing'" not in auth
     assert "setLoading(false)" in auth
     assert "} finally {" in auth
-    assert "await withTimeout(api.auth.me()" in app
-    assert "if (!cancelled) setLoading(false)" in app
+    ctx = (FRONTEND / "src" / "contexts" / "AuthContext.jsx").read_text(encoding="utf-8")
+    assert "await withTimeout(api.auth.me()" in ctx
+    assert "if (!cancelled) setLoading(false)" in ctx
     assert 'path="/app"' in app
     assert 'path="/dashboard"' in app
+    assert 'path="/login"' in app
     assert "isAuthenticated ? (" in app
     assert "setLoading(false)" in gate
     assert "isPrivilegedAccount" in gate
@@ -329,6 +333,33 @@ def test_login_goes_home_never_pricing_and_loading_always_clears():
     assert "shouldLeavePricingPage" in checkout
     assert "destinationAfterAuth" in post
     assert "shouldAutoRedirectToPricing" in post
+
+
+def test_superadmin_overlay_admin_menu_and_logout_to_login():
+    overlay = (FRONTEND / "src" / "utils" / "superadmin.js").read_text(encoding="utf-8")
+    ctx = (FRONTEND / "src" / "contexts" / "AuthContext.jsx").read_text(encoding="utf-8")
+    top = (FRONTEND / "src" / "components" / "home" / "TopBar.jsx").read_text(encoding="utf-8")
+    bag = (FRONTEND / "src" / "pages" / "MaternityBagPage.jsx").read_text(encoding="utf-8")
+    lock = (FRONTEND / "src" / "components" / "PremiumFeatureLock.jsx").read_text(
+        encoding="utf-8"
+    )
+    api = (FRONTEND / "src" / "utils" / "api.jsx").read_text(encoding="utf-8")
+    assert "applySuperadminOverlay" in overlay
+    assert "AUTH_LOGIN_PATH" in overlay
+    assert 'next.role = "admin"' in overlay
+    assert 'next.subscription_status = "premium"' in overlay
+    assert "next.is_superadmin = true" in overlay
+    assert "next.is_admin = true" in overlay
+    assert "clearAuthStorage" in ctx
+    assert "window.location.assign(AUTH_LOGIN_PATH)" in ctx
+    assert "is_superadmin" in ctx
+    assert "is_admin" in ctx
+    assert "logout()" in top
+    assert "admin-dashboard-link" in top
+    assert "logout-menu-item" in top
+    assert "useAuth" in bag
+    assert "unlocked" in lock
+    assert "window.location.href = '/login'" in api
 
 
 def test_railway_frontend_listens_on_port():

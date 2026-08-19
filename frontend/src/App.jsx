@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import './App.css';
 import ErrorBoundary from './components/ErrorBoundary';
 import { SubscriptionGate } from './components/SubscriptionGate';
@@ -8,7 +8,6 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { AutoRefreshProvider } from './contexts/AutoRefreshContext';
 import { checkFirstVisitLanguage } from './i18n';
 import { toast } from 'sonner';
-import api from './utils/api';
 import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import PregnancyCalculator from './pages/PregnancyCalculator';
@@ -79,9 +78,9 @@ import { Toaster } from './components/ui/sonner';
 import { hydrateCloudinaryFromApi } from './utils/fetusAssets';
 import MaintenanceBanner from './components/MaintenanceBanner';
 import { HomeLayoutProvider } from './contexts/HomeLayoutContext';
-import { hideBootLoader, withTimeout } from './utils/backendUrl';
-import { safeGet, safeRemove } from './utils/safeStorage';
 import { destinationAfterAuth } from './utils/postLogin';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AUTH_LOGIN_PATH } from './utils/superadmin';
 
 function AuthBootLoader() {
   return (
@@ -98,31 +97,17 @@ function AuthBootLoader() {
 }
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+  return (
+    <AuthProvider>
+      <AppInner />
+    </AuthProvider>
+  );
+}
+
+function AppInner() {
+  const { isAuthenticated, loading, setAuthenticated } = useAuth();
 
 useEffect(() => {
-    let cancelled = false;
-
-    const bootstrapAuth = async () => {
-      try {
-        const token = safeGet('token');
-        if (!token) {
-          if (!cancelled) setIsAuthenticated(false);
-          return;
-        }
-        await withTimeout(api.auth.me(), 8000, 'auth.me');
-        if (!cancelled) setIsAuthenticated(true);
-      } catch {
-        safeRemove('token');
-        if (!cancelled) setIsAuthenticated(false);
-      } finally {
-        if (!cancelled) setLoading(false);
-        hideBootLoader();
-      }
-    };
-
-    bootstrapAuth();
     hydrateCloudinaryFromApi();
     
     // Vérifier si c'est la première visite et afficher la langue détectée
@@ -165,7 +150,6 @@ useEffect(() => {
     }
 
     return () => {
-      cancelled = true;
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.removeEventListener('message', onSwMessage);
       }
@@ -173,7 +157,7 @@ useEffect(() => {
   }, []);
   const ProtectedRoute = ({ children, requireSubscription = true }) => {
     if (loading) return <AuthBootLoader />;
-    if (!isAuthenticated) return <Navigate to="/auth" replace />;
+    if (!isAuthenticated) return <Navigate to={AUTH_LOGIN_PATH} replace />;
     
     // Si l'abonnement est requis, encapsuler avec SubscriptionGate
     if (requireSubscription) {
@@ -201,7 +185,19 @@ useEffect(() => {
                     ) : isAuthenticated ? (
                       <Navigate to={destinationAfterAuth(null)} replace />
                     ) : (
-                      <AuthPage setIsAuthenticated={setIsAuthenticated} />
+                      <AuthPage setIsAuthenticated={setAuthenticated} />
+                    )
+                  }
+                />
+                <Route
+                  path="/login"
+                  element={
+                    loading ? (
+                      <AuthBootLoader />
+                    ) : isAuthenticated ? (
+                      <Navigate to={destinationAfterAuth(null)} replace />
+                    ) : (
+                      <AuthPage setIsAuthenticated={setAuthenticated} />
                     )
                   }
                 />

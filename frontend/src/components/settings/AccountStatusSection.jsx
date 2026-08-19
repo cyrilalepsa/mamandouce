@@ -59,7 +59,7 @@ export function AccountStatusSection() {
       toast.success('Votre compte a été archivé. Merci d\'avoir utilisé MamanDouce !');
       // Déconnecter l'utilisateur
       localStorage.removeItem('token');
-      window.location.href = '/auth';
+      window.location.href = '/login';
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Erreur lors de l\'archivage');
     } finally {
@@ -74,7 +74,7 @@ export function AccountStatusSection() {
       await api.postpartum.requestEarlyArchive();
       toast.success('Votre compte a été archivé. Merci d\'avoir utilisé MamanDouce !');
       localStorage.removeItem('token');
-      window.location.href = '/auth';
+      window.location.href = '/login';
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Erreur lors de l\'archivage');
     } finally {

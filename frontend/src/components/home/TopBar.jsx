@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { Crown, User, Settings, LogOut, Shield, MoreVertical, Share2, Download, MessageSquare, PiggyBank } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../../utils/api';
+import { useAuth } from '../../contexts/AuthContext';
 import { AvatarPreview } from '../profile/AvatarBuilder';
 import { languages, changeLanguage, getCurrentLanguage } from '../../i18n';
 import { Check, X } from 'lucide-react';
@@ -86,8 +87,10 @@ function LanguageInlineFlag() {
   );
 }
 
-export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) {
+export function TopBar({ isAdmin: isAdminProp, userAvatar = null, userAvatarConfig = null }) {
   const navigate = useNavigate();
+  const { isAdmin: isAdminAuth, logout } = useAuth();
+  const isAdmin = Boolean(isAdminAuth || isAdminProp);
   const [menuOpen, setMenuOpen] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -171,8 +174,8 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/auth');
+    setMenuOpen(false);
+    logout();
   };
 
   const handleShare = async () => {
@@ -235,13 +238,12 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
   };
 
   const menuItems = [
-    // Option Premium/Tarification (toujours en premier)
-    {
+    ...(!isAdmin ? [{
       icon: Crown,
       label: 'Premium',
       onClick: () => { navigate('/pricing'); setMenuOpen(false); },
       iconBg: 'bg-gradient-to-br from-amber-400 to-amber-300'
-    },
+    }] : []),
     // Option d'installation (seulement si pas déjà installée)
     ...(!isInstalled ? [{
       icon: Download,
@@ -260,7 +262,8 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
       label: 'Admin',
       onClick: () => { navigate('/admin'); setMenuOpen(false); },
       iconBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
-      badge: adminUnreadMessages > 0 ? adminUnreadMessages : null
+      badge: adminUnreadMessages > 0 ? adminUnreadMessages : null,
+      testId: 'admin-dashboard-link',
     }] : []),
     {
       icon: User,
@@ -280,7 +283,8 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
       label: 'Déconnexion',
       onClick: handleLogout,
       iconBg: 'bg-gradient-to-br from-rose-400 to-red-500',
-      danger: true
+      danger: true,
+      testId: 'logout-menu-item',
     }
   ];
 
@@ -289,6 +293,7 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
       {/* À gauche : Couronne Premium + Tirelire */}
       <div className="flex items-center gap-2">
         {/* Bouton Premium - COURONNE OR GLOSSY 3D INTENSE */}
+        {!isAdmin && (
         <Button
           onClick={() => navigate('/pricing')}
           data-testid="premium-button"
@@ -301,6 +306,7 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
         >
           <Crown className="w-5 h-5" style={{ color: '#78350f' }} />
         </Button>
+        )}
 
         {/* Tirelire — fond jaune CLAIR, cochon rose, SANS contour */}
         <button
@@ -358,6 +364,7 @@ export function TopBar({ isAdmin, userAvatar = null, userAvatarConfig = null }) 
                 <button
                   key={index}
                   onClick={item.onClick}
+                  data-testid={item.testId}
                   className={`w-full px-4 py-2.5 flex items-center gap-3 transition-colors ${
                     item.danger 
                       ? 'hover:bg-rose-50 text-rose-600' 

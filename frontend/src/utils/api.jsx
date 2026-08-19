@@ -45,8 +45,8 @@ axios.interceptors.response.use(
       const token = safeGet('token');
       if (token) {
         safeRemove('token');
-        if (window.location.pathname !== '/auth' && window.location.pathname !== '/pricing' && window.location.pathname !== '/') {
-          window.location.href = '/auth';
+        if (window.location.pathname !== '/auth' && window.location.pathname !== '/login' && window.location.pathname !== '/pricing' && window.location.pathname !== '/') {
+          window.location.href = '/login';
         }
       }
     }

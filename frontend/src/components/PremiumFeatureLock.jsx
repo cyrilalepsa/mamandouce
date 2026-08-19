@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Crown, Lock } from 'lucide-react';
 import { Button } from './ui/button';
 import { useSubscription } from './SubscriptionGate';
+import { useAuth } from '../contexts/AuthContext';
 
 /**
  * Composant pour afficher un verrou sur les fonctionnalités premium
@@ -21,7 +22,9 @@ export function PremiumFeatureLock({
   showUpgradeButton = true
 }) {
   const { isPremium, loading } = useSubscription();
+  const { isAdmin, isSuperAdmin } = useAuth();
   const navigate = useNavigate();
+  const unlocked = isPremium || isAdmin || isSuperAdmin;
 
   // Si chargement, afficher un placeholder
   if (loading) {
@@ -31,7 +34,7 @@ export function PremiumFeatureLock({
   }
 
   // Si premium, afficher le contenu
-  if (isPremium) {
+  if (unlocked) {
     return children;
   }
 

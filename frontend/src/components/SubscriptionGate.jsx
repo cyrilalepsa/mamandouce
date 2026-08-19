@@ -1,12 +1,14 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import api from '../utils/api';
 import { withTimeout } from '../utils/backendUrl';
-import { isSuperAdmin } from '../utils/superadmin';
+import { isSuperAdmin, applySuperadminOverlay } from '../utils/superadmin';
 import { isPremiumSubscriber, isPrivilegedAccount } from '../utils/postLogin';
+import { useAuth } from '../contexts/AuthContext';
 
 const SubscriptionContext = createContext({
   isPremium: false,
   isAdmin: false,
+  isSuperAdmin: false,
   subscriptionStatus: null,
   loading: true,
   refreshStatus: () => {}
@@ -16,6 +18,7 @@ export const useSubscription = () => useContext(SubscriptionContext);
 
 const PUBLIC_PAGES = [
   '/auth',
+  '/login',
   '/reset-password',
   '/pricing',
   '/privacy',
@@ -32,28 +35,41 @@ const FULL_PRIVILEGE_STATUS = {
 };
 
 export function SubscriptionGate({ children }) {
+  const auth = useAuth();
   const [loading, setLoading] = useState(true);
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
   const [isPremium, setIsPremium] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const applyPrivileged = (rawUser) => {
+    const user = applySuperadminOverlay(rawUser);
+    const userIsAdmin = isPrivilegedAccount(user) || auth.isAdmin;
+    setIsAdmin(userIsAdmin);
+    if (userIsAdmin) {
+      setIsPremium(true);
+      setSubscriptionStatus(FULL_PRIVILEGE_STATUS);
+      return true;
+    }
+    return false;
+  };
+
   const checkSubscription = async () => {
     setLoading(true);
     try {
-      let user = null;
+      if (applyPrivileged(auth.user)) {
+        return;
+      }
+
+      let user = auth.user;
       try {
         const userResponse = await withTimeout(api.auth.getMe(), 8000, 'subscription.me');
-        user = userResponse.data;
+        user = applySuperadminOverlay(userResponse.data);
+        auth.ingestUser?.(user);
       } catch (error) {
         console.error('Erreur /auth/me:', error);
       }
 
-      const userIsAdmin = isPrivilegedAccount(user);
-      setIsAdmin(userIsAdmin);
-
-      if (userIsAdmin) {
-        setIsPremium(true);
-        setSubscriptionStatus(FULL_PRIVILEGE_STATUS);
+      if (applyPrivileged(user)) {
         return;
       }
 
@@ -66,7 +82,11 @@ export function SubscriptionGate({ children }) {
         const subResponse = await withTimeout(api.subscription.getFullStatus(), 8000, 'subscription.status');
         const status = subResponse.data;
         setSubscriptionStatus(status);
-        setIsPremium(Boolean(status?.is_premium) || premiumFromMe || isSuperAdmin(user?.email, user?.role));
+        setIsPremium(
+          Boolean(status?.is_premium) ||
+            premiumFromMe ||
+            isSuperAdmin(user?.email, user?.role)
+        );
       } catch (error) {
         console.error('Erreur statut abonnement:', error);
         if (premiumFromMe) {
@@ -86,7 +106,7 @@ export function SubscriptionGate({ children }) {
 
   useEffect(() => {
     checkSubscription();
-  }, []);
+  }, [auth.user?.email, auth.isAdmin]);
 
   if (loading) {
     return (
@@ -101,8 +121,11 @@ export function SubscriptionGate({ children }) {
 
   return (
     <SubscriptionContext.Provider value={{ 
-      isPremium, 
-      isAdmin, 
+      isPremium: isPremium || auth.isPremium,
+      isAdmin: isAdmin || auth.isAdmin,
+      isSuperAdmin: auth.isSuperAdmin,
+      is_admin: isAdmin || auth.isAdmin,
+      is_superadmin: auth.isSuperAdmin,
       subscriptionStatus, 
       loading,
       refreshStatus: checkSubscription 

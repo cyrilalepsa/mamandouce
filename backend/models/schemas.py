@@ -21,7 +21,12 @@ class UserLogin(BaseModel):
 
 class Token(BaseModel):
     access_token: str
-    token_type: str
+    token_type: str = "bearer"
+    email: Optional[str] = None
+    role: Optional[str] = None
+    subscription_status: Optional[str] = None
+    is_superadmin: Optional[bool] = False
+    is_admin: Optional[bool] = False
 
 class User(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -36,6 +41,8 @@ class User(BaseModel):
     status: Optional[str] = None  # 'envie_bebe' ou 'enceinte'
     role: str = "user"  # "user" or "admin"
     subscription_status: Optional[str] = "free"  # "free", "trial", "premium"
+    is_superadmin: Optional[bool] = False
+    is_admin: Optional[bool] = False
     gold_status: Optional[bool] = False  # Statut Marraine Or (3 parrainages + 5 contributions)
     badge_level: Optional[str] = None  # 'bronze', 'silver', 'gold'
     contributions_validated: Optional[int] = 0  # Nombre de contributions validées

@@ -45,7 +45,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 
     if is_superadmin_email(user.get("email") or email):
         await ensure_superadmin_privileges(user.get("email") or email)
-        user = apply_superadmin_overlay(user)
+    user = apply_superadmin_overlay(user)
     return User(**user)
 
 async def get_current_user_optional(credentials: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer(auto_error=False))):
@@ -67,10 +67,9 @@ async def get_current_user_optional(credentials: Optional[HTTPAuthorizationCrede
     user = await db.users.find_one({"email": email}, {"_id": 0})
     if user is None:
         return None
-    from core.privileges import apply_superadmin_overlay, is_superadmin_email
+    from core.privileges import apply_superadmin_overlay
 
-    if is_superadmin_email(user.get("email") or email):
-        user = apply_superadmin_overlay(user)
+    user = apply_superadmin_overlay(user)
     return User(**user)
 
 async def get_admin_user(current_user: "User" = Depends(get_current_user)):

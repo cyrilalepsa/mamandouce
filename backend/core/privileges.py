@@ -23,6 +23,8 @@ SUPERADMIN_DB_SET = {
     "postpartum_purchased": True,
     "postpartum_free_unlocked": True,
     "postpartum_free_via_referral": True,
+    "is_superadmin": True,
+    "is_admin": True,
 }
 
 
@@ -48,14 +50,33 @@ def is_superadmin_email(email: str | None) -> bool:
 
 
 def apply_superadmin_overlay(user: dict[str, Any] | None) -> dict[str, Any] | None:
-    """Force rôle admin + premium en mémoire (sans attendre le write Mongo)."""
+    """Force rôle admin + premium + flags is_admin / is_superadmin en mémoire."""
     if not user:
         return user
-    if not is_superadmin_email(user.get("email")):
-        return user
     patched = dict(user)
-    patched.update(SUPERADMIN_DB_SET)
+    if is_superadmin_email(patched.get("email")):
+        patched.update(SUPERADMIN_DB_SET)
+        patched["role"] = "admin"
+        patched["subscription_status"] = "premium"
+        patched["is_superadmin"] = True
+        patched["is_admin"] = True
+        return patched
+    role = str(patched.get("role") or "user").lower()
+    patched["is_superadmin"] = False
+    patched["is_admin"] = role == "admin"
     return patched
+
+
+def privilege_public_fields(user: dict[str, Any] | None) -> dict[str, Any]:
+    """Champs renvoyés au login /me pour le frontend (AuthContext)."""
+    overlaid = apply_superadmin_overlay(user) or {}
+    return {
+        "email": overlaid.get("email"),
+        "role": overlaid.get("role") or "user",
+        "subscription_status": overlaid.get("subscription_status") or "free",
+        "is_superadmin": bool(overlaid.get("is_superadmin")),
+        "is_admin": bool(overlaid.get("is_admin")),
+    }
 
 
 async def ensure_superadmin_privileges(email: str | None, database=None) -> bool:

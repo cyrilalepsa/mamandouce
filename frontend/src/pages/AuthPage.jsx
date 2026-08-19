@@ -28,9 +28,11 @@ import {
 import { incrementLoginCount } from '../components/home/PushNotificationReminder';
 import { withTimeout } from '../utils/backendUrl';
 import { destinationAfterAuth } from '../utils/postLogin';
+import { useAuth } from '../contexts/AuthContext';
 
 function AuthPage({ setIsAuthenticated }) {
   const { t } = useTranslation();
+  const auth = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '', name: '', city: '' });
@@ -123,21 +125,30 @@ function AuthPage({ setIsAuthenticated }) {
     }
   };
 
-  const completeLogin = async (isNewUser = false) => {
+  const markAuthenticated = (value) => {
+    auth.setAuthenticated(value);
+    if (typeof setIsAuthenticated === 'function') setIsAuthenticated(value);
+  };
+
+  const completeLogin = async (isNewUser = false, loginPayload = null) => {
     try {
       if (!isNewUser) {
         incrementLoginCount();
       }
 
-      let user = null;
+      if (loginPayload) {
+        auth.ingestUser(loginPayload);
+      }
+
+      let user = loginPayload;
       try {
         const me = await withTimeout(api.auth.me(), 8000, 'auth.me');
-        user = me.data;
+        user = auth.ingestUser(me.data);
       } catch (error) {
         console.error('[auth] /auth/me après connexion', error);
       }
 
-      setIsAuthenticated(true);
+      markAuthenticated(true);
       toast.success(
         isNewUser
           ? t('auth.registerSuccess', 'Inscription réussie !')
@@ -158,6 +169,7 @@ function AuthPage({ setIsAuthenticated }) {
         try {
           const response = await api.auth.login({ email: formData.email, password: formData.password });
           localStorage.setItem('token', response.data.access_token);
+          auth.ingestUser(response.data);
         } catch (loginError) {
           if (loginError.response?.status === 403) {
             setPending2FAEmail(formData.email);
@@ -173,7 +185,8 @@ function AuthPage({ setIsAuthenticated }) {
       } else {
         const response = await api.auth.register(formData);
         localStorage.setItem('token', response.data.access_token);
-        await completeLogin(true); // Nouveau utilisateur
+        auth.ingestUser(response.data);
+        await completeLogin(true, response.data);
       }
     } catch (error) {
       const status = error.response?.status;
@@ -199,9 +212,10 @@ function AuthPage({ setIsAuthenticated }) {
     try {
       const response = await api.auth.verify2FACode(pending2FAEmail, twoFactorCode, pending2FAPassword);
       localStorage.setItem('token', response.data.access_token);
+      auth.ingestUser(response.data);
       setFormData({ ...formData, email: pending2FAEmail, password: pending2FAPassword });
       setShow2FAInput(false);
-      await completeLogin();
+      await completeLogin(false, response.data);
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Code invalide');
       setTwoFactorCode('');
