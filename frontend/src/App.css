@@ -166,7 +166,7 @@ button:active {
 }
 .heart-burst { animation: heartBurstAnim 1.5s ease-in-out infinite; }
 
-/* Empêche le rebond du navigateur lors du scroll sur mobile */
+/* Autorise le pull-to-refresh mobile (tirer vers le bas) */
 body, html {
-  overscroll-behavior-y: contain;
+  overscroll-behavior-y: auto;
 }

@@ -275,6 +275,31 @@ def test_profile_pregnant_card_and_home_sa_week():
     assert "[&_#celebrate-section]:hidden" not in home
 
 
+def test_home_visible_immediately_with_pull_to_refresh():
+    home = (FRONTEND / "src" / "pages" / "HomePage.jsx").read_text(encoding="utf-8")
+    assert "isLoaded" not in home
+    assert "opacity-0" not in home
+    assert 'data-testid="home-scroll-root"' in home
+    assert 'data-testid="home-content"' in home
+    assert "passive: false" in home
+    assert "overscrollBehaviorY: 'auto'" in home or 'overscrollBehaviorY: "auto"' in home
+    bg = (FRONTEND / "src" / "styles" / "glossy" / "_background.css").read_text(encoding="utf-8")
+    app_css = (FRONTEND / "src" / "App.css").read_text(encoding="utf-8")
+    assert "overscroll-behavior-y: contain" not in bg
+    assert "overscroll-behavior-y: contain" not in app_css
+    assert "overscroll-behavior-y: auto" in bg
+    assert "overscroll-behavior-y: auto" in app_css
+    emo = (FRONTEND / "src" / "components" / "EmotionalIntelligence.jsx").read_text(
+        encoding="utf-8"
+    )
+    toggle = (FRONTEND / "src" / "components" / "cycle" / "PregnancyToggle.jsx").read_text(
+        encoding="utf-8"
+    )
+    for src in (emo, toggle):
+        assert "makeHeartShape" in src
+        assert "shapeFromPath indisponible" in src
+
+
 def test_railway_frontend_listens_on_port():
     pkg = (FRONTEND / "package.json").read_text(encoding="utf-8")
     railway = (FRONTEND / "railway.json").read_text(encoding="utf-8")

@@ -32,7 +32,6 @@ function HomePage() {
   const [userRole, setUserRole] = useState('user');
   const [isPremium, setIsPremium] = useState(false);
   const [currentPageType, setCurrentPageType] = useState('default');
-  const [isLoaded, setIsLoaded] = useState(false);
   const [earnedTrophy, setEarnedTrophy] = useState(null);
   const [isPregnantHome, setIsPregnantHome] = useState(
     () => localStorage.getItem('mamandouce_pregnant') === 'true'
@@ -112,8 +111,6 @@ function HomePage() {
       setPregnancyProfile(profileRes.data);
     } catch (error) {
       console.error('Erreur chargement données:', error);
-    } finally {
-      setTimeout(() => setIsLoaded(true), 100);
     }
   };
 
@@ -127,43 +124,74 @@ function HomePage() {
     } catch (e) {}
   };
 
-  const handleTouchStart = (e) => {
-    if (scrollContainerRef.current && scrollContainerRef.current.scrollTop === 0 && !isRefreshing) {
-      touchStartRef.current = e.touches ? e.touches[0].clientY : e.clientY;
-    }
-  };
-
-  const handleTouchMove = (e) => {
-    if (touchStartRef.current === 0 || isRefreshing || !scrollContainerRef.current) return;
-    
-    const currentY = e.touches ? e.touches[0].clientY : e.clientY;
-    const pull = currentY - touchStartRef.current;
-    
-    if (pull > 0 && scrollContainerRef.current.scrollTop === 0) {
-      const resistance = Math.min(70, pull * 0.4);
-      setPullDistance(resistance);
-      if (e.cancelable) e.preventDefault();
-    }
-  };
-
-  const handleTouchEnd = async () => {
-    touchStartRef.current = 0;
-    if (pullDistance >= 50) {
-      setIsRefreshing(true);
-      setPullDistance(50);
-      
-      await Promise.all([loadUserData(), loadTrophyData()]);
-      
-      setIsRefreshing(false);
-      setPullDistance(0);
-    } else {
-      setPullDistance(0);
-    }
-  };
-
   const handleAvatarClick = () => {
     navigate('/profile?tab=avatar');
   };
+
+  const pullDistanceRef = useRef(0);
+  const isRefreshingRef = useRef(false);
+  const loadUserDataRef = useRef(loadUserData);
+  const loadTrophyDataRef = useRef(loadTrophyData);
+  loadUserDataRef.current = loadUserData;
+  loadTrophyDataRef.current = loadTrophyData;
+
+  useEffect(() => {
+    const scroller = scrollContainerRef.current;
+    if (!scroller) return;
+
+    const onStart = (e) => {
+      if (isRefreshingRef.current) return;
+      if (scroller.scrollTop > 0) {
+        touchStartRef.current = 0;
+        return;
+      }
+      const point = e.touches ? e.touches[0] : e;
+      touchStartRef.current = point.clientY;
+    };
+
+    const onMove = (e) => {
+      if (!touchStartRef.current || isRefreshingRef.current) return;
+      if (scroller.scrollTop > 0) return;
+      const point = e.touches ? e.touches[0] : e;
+      const pull = point.clientY - touchStartRef.current;
+      if (pull > 8) {
+        if (e.cancelable) e.preventDefault();
+        const next = Math.min(70, pull * 0.4);
+        pullDistanceRef.current = next;
+        setPullDistance(next);
+      }
+    };
+
+    const onEnd = async () => {
+      const dist = pullDistanceRef.current;
+      touchStartRef.current = 0;
+      if (dist >= 50 && !isRefreshingRef.current) {
+        isRefreshingRef.current = true;
+        setIsRefreshing(true);
+        setPullDistance(50);
+        try {
+          await Promise.all([loadUserDataRef.current(), loadTrophyDataRef.current()]);
+        } finally {
+          isRefreshingRef.current = false;
+          setIsRefreshing(false);
+          pullDistanceRef.current = 0;
+          setPullDistance(0);
+        }
+      } else {
+        pullDistanceRef.current = 0;
+        setPullDistance(0);
+      }
+    };
+
+    scroller.addEventListener('touchstart', onStart, { passive: true });
+    scroller.addEventListener('touchmove', onMove, { passive: false });
+    scroller.addEventListener('touchend', onEnd, { passive: true });
+    return () => {
+      scroller.removeEventListener('touchstart', onStart);
+      scroller.removeEventListener('touchmove', onMove);
+      scroller.removeEventListener('touchend', onEnd);
+    };
+  }, []);
 
   const isAdmin = isSuperAdmin(userEmail, userRole);
   const hasPregnancyProfile = Boolean(
@@ -173,13 +201,8 @@ function HomePage() {
   return (
     <div 
       className="gradient-bg relative" 
-      style={{ height: '100dvh', overflow: 'hidden', overscrollBehaviorY: 'contain' }}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onMouseDown={handleTouchStart}
-      onMouseMove={handleTouchMove}
-      onMouseUp={handleTouchEnd}
+      style={{ height: '100dvh', overflow: 'hidden', overscrollBehaviorY: 'auto' }}
+      data-testid="home-scroll-root"
     >
         <div 
           className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center transition-all duration-200 pointer-events-none z-50"
@@ -202,9 +225,10 @@ function HomePage() {
             height: '100dvh'
           }}
         >
-          <div 
-            className={`max-w-4xl mx-auto p-6 space-y-6 transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+          <div
+            className="max-w-4xl mx-auto p-6 space-y-6"
             style={{ contain: 'layout style' }}
+            data-testid="home-content"
           >
             
             <TopBar 
