@@ -10,7 +10,7 @@ import {
   shouldLeavePricingPage,
   subscriptionStatusOf,
 } from "./postLogin.js";
-import { applySuperadminOverlay } from "./superadmin.js";
+import { applySuperadminOverlay, shouldShowPremiumHalo } from "./superadmin.js";
 
 const cyril = { email: "CyrilAlepsa@Gmail.com", role: "user", subscription_status: "free" };
 const neria = { email: "superadmin@neriacorp.com", role: "user", subscription_status: "free" };
@@ -60,9 +60,21 @@ test("applySuperadminOverlay forces admin premium flags", () => {
   assert.equal(overlaid.subscription_status, "premium");
   assert.equal(overlaid.is_superadmin, true);
   assert.equal(overlaid.is_admin, true);
+  assert.equal(overlaid.is_premium, true);
   const neriaOverlaid = applySuperadminOverlay({
     email: "superadmin@neriacorp.com",
     role: "user",
   });
   assert.equal(neriaOverlaid.is_admin, true);
+  assert.equal(neriaOverlaid.is_premium, true);
+  assert.equal(neriaOverlaid.role, "admin");
+});
+
+test("premium halo for privilege emails and premium status", () => {
+  assert.equal(shouldShowPremiumHalo(cyril), true);
+  assert.equal(shouldShowPremiumHalo(neria), true);
+  assert.equal(shouldShowPremiumHalo(premium), true);
+  assert.equal(shouldShowPremiumHalo(free), false);
+  assert.equal(shouldShowPremiumHalo(free, true), true);
+  assert.equal(shouldShowPremiumHalo(null, true), true);
 });

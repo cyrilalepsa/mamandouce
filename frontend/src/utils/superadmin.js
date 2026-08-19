@@ -20,6 +20,20 @@ export function isSuperAdmin(email, role) {
   return String(role || "").toLowerCase() === "admin";
 }
 
+export function subscriptionLooksPremium(user) {
+  const status = String(user?.subscription_status || "").trim().toLowerCase();
+  return status === "premium" || status === "trial";
+}
+
+/** Halo jaune scintillant : compte privilège ou abonnement premium. */
+export function shouldShowPremiumHalo(user, isPremiumProp = false) {
+  if (isPremiumProp) return true;
+  if (!user) return false;
+  if (isSuperAdminEmail(user.email)) return true;
+  if (user.is_premium || user.is_admin || user.is_superadmin) return true;
+  return subscriptionLooksPremium(user);
+}
+
 /**
  * Force role=admin + subscription_status=premium + flags context
  * dès que l'email est privilège, même si l'API renvoie encore "free"/"user".
@@ -32,6 +46,7 @@ export function applySuperadminOverlay(user) {
     next.subscription_status = "premium";
     next.is_superadmin = true;
     next.is_admin = true;
+    next.is_premium = true;
     next.postpartum_purchased = true;
     next.postpartum_unlocked = true;
     return next;
@@ -39,8 +54,10 @@ export function applySuperadminOverlay(user) {
   const admin = String(next.role || "").toLowerCase() === "admin";
   next.is_superadmin = false;
   next.is_admin = Boolean(next.is_admin) || admin;
+  next.is_premium = Boolean(next.is_premium) || admin || subscriptionLooksPremium(next);
   if (next.is_admin && !next.subscription_status) {
     next.subscription_status = "premium";
+    next.is_premium = true;
   }
   return next;
 }

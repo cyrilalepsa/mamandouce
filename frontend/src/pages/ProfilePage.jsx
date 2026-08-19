@@ -5,6 +5,8 @@ import { Button } from '../components/ui/button';
 import { ArrowLeft, User, Baby, Settings, MessageSquare, Trophy, Heart, Calendar, Crown } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
+import { applySuperadminOverlay } from '../utils/superadmin';
+import { useAuth } from '../contexts/AuthContext';
 import { isBiometricEnabled, checkBiometricSupport, isPinEnabled } from '../utils/biometricAuth';
 import { AccountStatusSection } from '../components/settings';
 import { BadgesCard } from '../components/solidarity';
@@ -39,6 +41,7 @@ function urlBase64ToUint8Array(base64String) {
 function ProfilePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { ingestUser } = useAuth();
   const [user, setUser] = useState(null);
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -101,7 +104,9 @@ function ProfilePage() {
   const loadUserData = async () => {
     try {
       const userRes = await api.auth.getMe();
-      setUser(userRes.data);
+      const me = applySuperadminOverlay(userRes.data);
+      ingestUser?.(me);
+      setUser(me);
       
       const profileRes = await api.pregnancy.getProfile();
       setPregnancyProfile(profileRes.data);

@@ -1,5 +1,7 @@
 import React from 'react';
 import { AvatarPreview } from './AvatarBuilder';
+import { useAuth } from '../../contexts/AuthContext';
+import { shouldShowPremiumHalo } from '../../utils/superadmin';
 
 /**
  * PremiumSunAvatar - Avatar avec effet "MAMAN SOLEIL VAPOREUSE"
@@ -16,7 +18,11 @@ function PremiumSunAvatar({
   testId = "premium-sun-avatar",
   earnedTrophy = null
 }) {
-  
+  const { isPremium: authIsPremium, is_premium: authIsPremiumSnake, user } = useAuth();
+  const showHalo = shouldShowPremiumHalo(user, Boolean(
+    isPremium || authIsPremium || authIsPremiumSnake
+  ));
+
   // Avatar de base (sans aura)
   const renderAvatar = () => (
     <div className="w-full h-full rounded-full overflow-hidden">
@@ -42,7 +48,7 @@ function PremiumSunAvatar({
   );
 
   // Si pas Premium, rendu simple sans aura
-  if (!isPremium) {
+  if (!showHalo) {
     return (
       <div 
         className="rounded-full overflow-hidden border-4 border-white shadow-lg flex-shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition-transform"
@@ -61,7 +67,7 @@ function PremiumSunAvatar({
   
   return (
     <div 
-      className="relative flex items-center justify-center"
+      className="premium-halo relative flex items-center justify-center"
       style={{ 
         width: `${haloSize}px`, 
         height: `${haloSize}px`,

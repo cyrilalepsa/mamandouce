@@ -6,9 +6,15 @@ import { Label } from '../ui/label';
 import { Camera, Pencil, X, Check, Loader2, Palette } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../../utils/api';
-import { AvatarBuilder, AvatarPreview } from './AvatarBuilder';
+import { AvatarBuilder } from './AvatarBuilder';
+import PremiumSunAvatar from './PremiumSunAvatar';
+import { useAuth } from '../../contexts/AuthContext';
+import { shouldShowPremiumHalo } from '../../utils/superadmin';
 
 export function ProfileEditCard({ user, onUpdate }) {
+  const { isPremium: authIsPremium, user: authUser } = useAuth();
+  const haloUser = user || authUser;
+  const showHalo = shouldShowPremiumHalo(haloUser, authIsPremium);
   const [isEditing, setIsEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user?.display_name || '');
   const [avatar, setAvatar] = useState(user?.avatar || '');
@@ -117,35 +123,6 @@ export function ProfileEditCard({ user, onUpdate }) {
 
   const currentDisplayName = user?.display_name || user?.name || 'Utilisatrice';
 
-  // Détermine comment afficher l'avatar
-  const renderAvatar = (size = 80) => {
-    if (previewAvatar) {
-      return (
-        <img 
-          src={previewAvatar} 
-          alt="Avatar" 
-          className="w-full h-full object-cover"
-          data-testid="user-avatar-image"
-        />
-      );
-    }
-    
-    if (avatarConfig) {
-      return <AvatarPreview config={avatarConfig} size={size} />;
-    }
-    
-    // Avatar par défaut - silhouette femme
-    return (
-      <div className="w-full h-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center">
-        <svg viewBox="0 0 24 24" className="w-3/5 h-3/5 text-white/90" fill="currentColor">
-          <circle cx="12" cy="6" r="4" />
-          <path d="M12 12c-4 0-6 2-6 4v1c0 .5.2 1 .6 1.3.5.4 1.2.7 2.4.7h6c1.2 0 1.9-.3 2.4-.7.4-.3.6-.8.6-1.3v-1c0-2-2-4-6-4z" />
-          <path d="M9 19c-.3 1.5-.5 2.5-.5 3h7c0-.5-.2-1.5-.5-3H9z" />
-        </svg>
-      </div>
-    );
-  };
-
   return (
     <>
       <Card className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl p-6 border-0" data-testid="profile-edit-card">
@@ -195,14 +172,14 @@ export function ProfileEditCard({ user, onUpdate }) {
         <div className="flex items-center gap-4">
           {/* Avatar */}
           <div className="relative">
-            <div 
-              className={`w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-lg ${
-                isEditing ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''
-              }`}
+            <PremiumSunAvatar
+              isPremium={showHalo}
+              userAvatar={previewAvatar || avatar || null}
+              userAvatarConfig={avatarConfig}
+              size={80}
               onClick={() => isEditing && setShowAvatarBuilder(true)}
-            >
-              {renderAvatar(80)}
-            </div>
+              testId="profile-avatar"
+            />
             
             {isEditing && (
               <>

@@ -6,7 +6,6 @@ import api from '../utils/api';
 import { isSuperAdmin, applySuperadminOverlay } from '../utils/superadmin';
 import { useAuth } from '../contexts/AuthContext';
 import AppTitle from '../components/AppTitle';
-import { AvatarPreview } from '../components/profile/AvatarBuilder';
 import PremiumSunAvatar from '../components/profile/PremiumSunAvatar';
 import { isNameCelebratedToday, getSaintOfTheDay } from '../data/saintsCalendar';
 import CustomizableHome from '../components/home/CustomizableHome';
@@ -24,7 +23,7 @@ import { NewsBubble, NewsPopup, useNews } from '../components/home/NewsBubble';
 function HomePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isAdmin: authIsAdmin } = useAuth();
+  const { isAdmin: authIsAdmin, isPremium: authIsPremium, user: authUser, ingestUser } = useAuth();
   const [userName, setUserName] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [userAvatar, setUserAvatar] = useState('');
@@ -32,7 +31,7 @@ function HomePage() {
   const [userEmail, setUserEmail] = useState('');
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [userRole, setUserRole] = useState('user');
-  const [isPremium, setIsPremium] = useState(false);
+  const [localIsPremium, setIsPremium] = useState(false);
   const [currentPageType, setCurrentPageType] = useState('default');
   const [earnedTrophy, setEarnedTrophy] = useState(null);
   const [isPregnantHome, setIsPregnantHome] = useState(
@@ -102,6 +101,7 @@ function HomePage() {
     try {
       const userRes = await api.auth.getMe();
       const me = applySuperadminOverlay(userRes.data);
+      ingestUser?.(me);
       setUserName(me.name);
       setDisplayName(me.display_name || '');
       setUserAvatar(me.avatar || '');
@@ -196,7 +196,14 @@ function HomePage() {
     };
   }, []);
 
-  const isAdmin = authIsAdmin || isSuperAdmin(userEmail, userRole);
+  const isAdmin = authIsAdmin || isSuperAdmin(userEmail || authUser?.email, userRole || authUser?.role);
+  const isPremium = Boolean(
+    authIsPremium
+    || localIsPremium
+    || authUser?.is_premium
+    || authUser?.subscription_status === 'premium'
+    || isSuperAdmin(userEmail || authUser?.email, userRole || authUser?.role)
+  );
   const hasPregnancyProfile = Boolean(
     isPregnantHome || (pregnancyProfile && pregnancyProfile.current_week)
   );
