@@ -4,7 +4,8 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { ArrowLeft, CheckSquare, Square, Plus, Send, Briefcase, Baby, Car, ChevronDown, ChevronUp, Heart, Crown, Lock, FileText, Clock, AlertCircle, Globe } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useSubscription } from '../components/SubscriptionGate';
+import { useAuth } from '../contexts/AuthContext';
 import { getMaternityBagForLanguage } from '../data/maternityBagByCountry';
 import api from '../utils/api';
 import { toast } from 'sonner';
@@ -43,6 +44,9 @@ export default function MaternityBagPage() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language?.split('-')[0] || 'fr';
+  const { isPremium: premiumFromGate, isAdmin } = useSubscription();
+  const { isPremium: premiumFromAuth, isAdmin: authAdmin } = useAuth();
+  const isPremium = Boolean(premiumFromGate || premiumFromAuth || isAdmin || authAdmin);
   
   // Données localisées
   const localData = useMemo(() => getMaternityBagForLanguage(currentLang), [currentLang]);
@@ -60,33 +64,24 @@ export default function MaternityBagPage() {
     'Pour bébé': false,
     'Pour le retour': false
   });
-  
-  // Subscription state
-  const [isPremium, setIsPremium] = useState(false);
-  const [subscriptionLoading, setSubscriptionLoading] = useState(true);
 
   useEffect(() => {
-    loadSubscriptionAndItems();
-  }, []);
+    loadItemsIfUnlocked();
+  }, [isPremium]);
 
-  const loadSubscriptionAndItems = async () => {
+  const loadItemsIfUnlocked = async () => {
+    if (!isPremium) {
+      setLoading(false);
+      return;
+    }
     try {
-      // Vérifier l'abonnement d'abord
-      const subResponse = await api.subscription.getFullStatus();
-      const isPrem = subResponse.data.is_premium || subResponse.data.subscription_status === 'premium';
-      setIsPremium(isPrem);
-      setSubscriptionLoading(false);
-      
-      // Si premium, charger les items
-      if (isPrem) {
-        const [bagResponse, favResponse] = await Promise.all([
-          api.postpartum.getMaternityBag(),
-          api.postpartum.getMaternityBagFavorites()
-        ]);
-        setItems(bagResponse.data.items || []);
-        setCustomItems(bagResponse.data.custom_items || []);
-        setFavorites(favResponse.data.favorites || []);
-      }
+      const [bagResponse, favResponse] = await Promise.all([
+        api.postpartum.getMaternityBag(),
+        api.postpartum.getMaternityBagFavorites()
+      ]);
+      setItems(bagResponse.data.items || []);
+      setCustomItems(bagResponse.data.custom_items || []);
+      setFavorites(favResponse.data.favorites || []);
     } catch (error) {
       console.error('Erreur chargement:', error);
     } finally {
@@ -95,7 +90,7 @@ export default function MaternityBagPage() {
   };
 
   // Si pas premium, afficher page de blocage
-  if (!subscriptionLoading && !isPremium) {
+  if (!isPremium) {
     return (
       <div className="min-h-screen gradient-bg p-6">
         <div className="max-w-2xl mx-auto">

@@ -10,6 +10,7 @@ from core.privileges import (
     SUPERADMIN_DB_SET,
     apply_superadmin_overlay,
     is_superadmin_email,
+    privilege_public_fields,
     superadmin_emails,
 )
 
@@ -32,8 +33,15 @@ def test_overlay_forces_admin_premium():
     assert patched["gold_status"] is True
     assert patched["postpartum_purchased"] is True
     assert patched["postpartum_free_via_referral"] is True
+    assert patched["is_superadmin"] is True
+    assert patched["is_admin"] is True
     regular = apply_superadmin_overlay({"email": "maman@test.com", "role": "user"})
     assert regular["role"] == "user"
+    assert regular["is_superadmin"] is False
+    assert regular["is_admin"] is False
+    admin_role = apply_superadmin_overlay({"email": "staff@test.com", "role": "admin"})
+    assert admin_role["is_admin"] is True
+    assert admin_role["is_superadmin"] is False
 
 
 def test_example_admin_email_not_hardcoded():
@@ -53,6 +61,16 @@ def test_frontend_lists_both_superadmins():
         Path(__file__).resolve().parents[2] / "backend" / "routes" / "postpartum.py"
     ).read_text(encoding="utf-8")
     assert "apply_superadmin_overlay" in postpartum
+
+
+def test_login_token_fields_force_superadmin_flags():
+    fields = privilege_public_fields(
+        {"email": "cyrilalepsa@gmail.com", "role": "user", "subscription_status": "free"}
+    )
+    assert fields["role"] == "admin"
+    assert fields["subscription_status"] == "premium"
+    assert fields["is_superadmin"] is True
+    assert fields["is_admin"] is True
 
 
 async def _ensure():

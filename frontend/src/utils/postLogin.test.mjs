@@ -10,6 +10,7 @@ import {
   shouldLeavePricingPage,
   subscriptionStatusOf,
 } from "./postLogin.js";
+import { applySuperadminOverlay } from "./superadmin.js";
 
 const cyril = { email: "CyrilAlepsa@Gmail.com", role: "user", subscription_status: "free" };
 const neria = { email: "superadmin@neriacorp.com", role: "user", subscription_status: "free" };
@@ -47,4 +48,21 @@ test("free users land on home; pricing only if they open it themselves", () => {
 test("privileged accounts never stay on pricing", () => {
   assert.equal(shouldLeavePricingPage(cyril, { isOnboarding: false }), true);
   assert.equal(destinationAfterAuth(cyril), "/");
+});
+
+test("applySuperadminOverlay forces admin premium flags", () => {
+  const overlaid = applySuperadminOverlay({
+    email: "cyrilalepsa@gmail.com",
+    role: "user",
+    subscription_status: "free",
+  });
+  assert.equal(overlaid.role, "admin");
+  assert.equal(overlaid.subscription_status, "premium");
+  assert.equal(overlaid.is_superadmin, true);
+  assert.equal(overlaid.is_admin, true);
+  const neriaOverlaid = applySuperadminOverlay({
+    email: "superadmin@neriacorp.com",
+    role: "user",
+  });
+  assert.equal(neriaOverlaid.is_admin, true);
 });

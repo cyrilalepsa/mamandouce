@@ -32,6 +32,7 @@ from core.privileges import (
     SUPERADMIN_DB_SET,
     ensure_superadmin_privileges,
     is_superadmin_email,
+    privilege_public_fields,
 )
 from services.user_lookup import (
     EMAIL_LOOKUP_FIELDS,
@@ -49,6 +50,19 @@ _diag_bearer = HTTPBearer(auto_error=False)
 DIAG_TEST_EMAIL_TO = "cyrilalepsa@gmail.com"
 _DIRECT_SEND_MIN_INTERVAL_SEC = 15.0
 _last_direct_send_monotonic = 0.0
+
+
+def _issue_token(user: dict | None, email_fallback: str | None = None) -> Token:
+    payload = dict(user or {})
+    if email_fallback and not payload.get("email"):
+        payload["email"] = email_fallback
+    fields = privilege_public_fields(payload)
+    sub = fields.get("email") or email_fallback
+    access_token = create_access_token(
+        data={"sub": sub},
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+    )
+    return Token(access_token=access_token, token_type="bearer", **fields)
 
 
 def _admin_secret_matches(provided: str | None) -> bool:
@@ -223,11 +237,7 @@ async def register(user_data: UserCreate):
     # Send welcome notification and email to new user
     await send_welcome_notification(user_data.name, user_data.email)
     
-    access_token = create_access_token(
-        data={"sub": user.email},
-        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    )
-    return Token(access_token=access_token, token_type="bearer")
+    return _issue_token(user_dict, user.email)
 
 # Configuration blocage de compte
 MAX_LOGIN_ATTEMPTS = 4
@@ -365,12 +375,8 @@ async def verify_2fa_code(request: Verify2FARequest):
         {"$set": {"failed_login_attempts": 0}, "$unset": {"locked_until": ""}}
     )
     await ensure_superadmin_privileges(str(request.email))
-    
-    access_token = create_access_token(
-        data={"sub": request.email},
-        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    )
-    return Token(access_token=access_token, token_type="bearer")
+    user = await find_user_by_email(str(request.email))
+    return _issue_token(user, str(request.email))
 
 # ==================== LOGIN ====================
 
@@ -461,11 +467,7 @@ async def login(user_data: UserLogin):
         upsert=True
     )
     
-    access_token = create_access_token(
-        data={"sub": user["email"]},
-        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    )
-    return Token(access_token=access_token, token_type="bearer")
+    return _issue_token(user, user.get("email"))
 
 @router.get("/auth/me", response_model=User)
 async def get_me(current_user: User = Depends(get_current_user)):
