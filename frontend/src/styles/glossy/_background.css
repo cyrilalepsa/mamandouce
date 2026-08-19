@@ -18,8 +18,8 @@ body,
   background-attachment: fixed !important;
 }
 
-/* Pull-to-refresh autorisé — overscroll-behavior contain */
+/* Pull-to-refresh navigateur (tirer vers le bas) — contain le bloquait. */
 body {
-  overscroll-behavior-y: contain !important;
+  overscroll-behavior-y: auto !important;
   overflow: auto !important;
 }
