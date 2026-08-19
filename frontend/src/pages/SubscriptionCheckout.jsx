@@ -6,6 +6,8 @@ import { Loader, Shield, CreditCard, Check, Crown, Baby, Lock, Heart, Sparkles, 
 import api from '../utils/api';
 import { toast } from 'sonner';
 import { useTheme } from '../contexts/ThemeContext';
+import { withTimeout } from '../utils/backendUrl';
+import { destinationAfterAuth, isPrivilegedAccount, shouldLeavePricingPage } from '../utils/postLogin';
 
 function SubscriptionCheckout() {
   const navigate = useNavigate();
@@ -31,6 +33,8 @@ function SubscriptionCheckout() {
   const stepActiveBg = isDarkMode ? 'bg-slate-700 border-sky-500' : 'bg-gradient-to-r from-sky-50 to-pink-50 border-sky-100';
   const stepInactiveBg = isDarkMode ? 'bg-slate-700/50' : 'bg-slate-50';
 
+  const [resolvingUser, setResolvingUser] = useState(true);
+
   const steps = [
     { label: 'Préparation...', icon: Check },
     { label: 'Création de session sécurisée...', icon: Shield },
@@ -38,19 +42,41 @@ function SubscriptionCheckout() {
   ];
 
   useEffect(() => {
-    loadUser();
-    loadTrialStatus();
-    
-    // Si démarrage d'essai gratuit
-    if (isTrial) {
-      handleStartTrial();
-      return;
-    }
-    
-    // Si pas en mode onboarding et un produit spécifique est demandé, lancer le checkout directement
-    if (!isOnboarding && (product || packageType)) {
-      handleDirectCheckout();
-    }
+    let cancelled = false;
+    const bootstrap = async () => {
+      let leaving = false;
+      try {
+        const response = await withTimeout(api.auth.getMe(), 8000, 'checkout.me');
+        if (cancelled) return;
+        const me = response.data;
+        setUser(me);
+        if (shouldLeavePricingPage(me, { isOnboarding }) || isPrivilegedAccount(me)) {
+          leaving = true;
+          navigate(destinationAfterAuth(me), { replace: true });
+          return;
+        }
+        loadTrialStatus();
+        if (isTrial) {
+          await handleStartTrial();
+          return;
+        }
+        if (!isOnboarding && (product || packageType)) {
+          await handleDirectCheckout();
+        }
+      } catch (error) {
+        console.error('Erreur chargement utilisateur:', error);
+        if (isOnboarding && !cancelled) {
+          leaving = true;
+          navigate(destinationAfterAuth(null), { replace: true });
+        }
+      } finally {
+        if (!cancelled && !leaving) setResolvingUser(false);
+      }
+    };
+    bootstrap();
+    return () => {
+      cancelled = true;
+    };
   }, []);
   
   const loadTrialStatus = async () => {
@@ -78,7 +104,7 @@ function SubscriptionCheckout() {
     } catch (error) {
       const message = error.response?.data?.detail || "Erreur lors de l'activation";
       toast.error(message);
-      navigate('/pricing', { replace: true });
+      navigate(isPrivilegedAccount(user) ? destinationAfterAuth(user) : '/pricing', { replace: true });
     } finally {
       setStartingTrial(false);
     }
@@ -92,15 +118,6 @@ function SubscriptionCheckout() {
       return () => clearInterval(interval);
     }
   }, [loading, isOnboarding]);
-
-  const loadUser = async () => {
-    try {
-      const response = await api.auth.getMe();
-      setUser(response.data);
-    } catch (error) {
-      console.error('Erreur chargement utilisateur:', error);
-    }
-  };
 
   const handleDirectCheckout = async () => {
     setLoading(true);
@@ -154,6 +171,17 @@ function SubscriptionCheckout() {
     localStorage.removeItem('token');
     navigate('/auth');
   };
+
+  if (resolvingUser) {
+    return (
+      <div className="min-h-screen gradient-bg flex items-center justify-center" data-testid="checkout-auth-check">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-4 border-pink-400 border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-slate-500 text-sm">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Mode Onboarding - Afficher le choix des plans
   if (isOnboarding) {

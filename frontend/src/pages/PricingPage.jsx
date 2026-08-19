@@ -6,6 +6,10 @@ import { Card } from '../components/ui/card';
 import { Check, X, Crown, Baby, Users, Lock, Gift, Heart, HelpCircle, ChevronDown } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import { useTheme } from '../contexts/ThemeContext';
+import api from '../utils/api';
+import { withTimeout } from '../utils/backendUrl';
+import { safeGet } from '../utils/safeStorage';
+import { destinationAfterAuth, shouldLeavePricingPage } from '../utils/postLogin';
 
 function PricingPage() {
   const navigate = useNavigate();
@@ -13,6 +17,35 @@ function PricingPage() {
   const [faqOpen, setFaqOpen] = useState(false);
   const [openQuestion, setOpenQuestion] = useState(null);
   const { isDarkMode } = useTheme();
+  const [checking, setChecking] = useState(() => Boolean(safeGet('token')));
+
+  useEffect(() => {
+    let cancelled = false;
+    const resolve = async () => {
+      if (!safeGet('token')) {
+        if (!cancelled) setChecking(false);
+        return;
+      }
+      let leaving = false;
+      try {
+        const me = await withTimeout(api.auth.me(), 8000, 'pricing.me');
+        if (cancelled) return;
+        if (shouldLeavePricingPage(me.data, { isOnboarding: false })) {
+          leaving = true;
+          navigate(destinationAfterAuth(me.data), { replace: true });
+          return;
+        }
+      } catch (error) {
+        console.error('[pricing] /auth/me', error);
+      } finally {
+        if (!cancelled && !leaving) setChecking(false);
+      }
+    };
+    resolve();
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate]);
   
   // Couleurs conditionnelles pour le mode sombre
   const cardBg = isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200';
@@ -24,6 +57,17 @@ function PricingPage() {
   const featureExcluded = isDarkMode ? 'text-slate-500' : 'text-slate-400';
   const faqBg = isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-50 hover:bg-slate-100';
   const faqAnswerBg = isDarkMode ? 'bg-slate-800 border-slate-600' : 'bg-white border-slate-200';
+
+  if (checking) {
+    return (
+      <div className="min-h-screen gradient-bg flex items-center justify-center" data-testid="pricing-auth-check">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-4 border-pink-400 border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-slate-500 text-sm">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
 
   const featuresStandard = [
     { text: t('pricing.basicCalculator', 'Calculateur de grossesse basique'), included: true },

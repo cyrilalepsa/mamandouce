@@ -300,6 +300,37 @@ def test_home_visible_immediately_with_pull_to_refresh():
         assert "shapeFromPath indisponible" in src
 
 
+def test_login_goes_home_never_pricing_and_loading_always_clears():
+    auth = (FRONTEND / "src" / "pages" / "AuthPage.jsx").read_text(encoding="utf-8")
+    app = (FRONTEND / "src" / "App.jsx").read_text(encoding="utf-8")
+    gate = (FRONTEND / "src" / "components" / "SubscriptionGate.jsx").read_text(encoding="utf-8")
+    pricing = (FRONTEND / "src" / "pages" / "PricingPage.jsx").read_text(encoding="utf-8")
+    checkout = (FRONTEND / "src" / "pages" / "SubscriptionCheckout.jsx").read_text(
+        encoding="utf-8"
+    )
+    post = (FRONTEND / "src" / "utils" / "postLogin.js").read_text(encoding="utf-8")
+    assert "destinationAfterAuth" in auth
+    assert "api.auth.me()" in auth
+    assert "checkout?onboarding=true" not in auth
+    assert "navigate('/pricing'" not in auth
+    assert "setLoading(false)" in auth
+    assert "} finally {" in auth
+    assert "await withTimeout(api.auth.me()" in app
+    assert "if (!cancelled) setLoading(false)" in app
+    assert 'path="/app"' in app
+    assert 'path="/dashboard"' in app
+    assert "isAuthenticated ? (" in app
+    assert "setLoading(false)" in gate
+    assert "isPrivilegedAccount" in gate
+    assert "FULL_PRIVILEGE_STATUS" in gate
+    assert "postpartum_unlocked: true" in gate
+    assert "shouldLeavePricingPage" in pricing
+    assert "pricing-auth-check" in pricing
+    assert "shouldLeavePricingPage" in checkout
+    assert "destinationAfterAuth" in post
+    assert "shouldAutoRedirectToPricing" in post
+
+
 def test_railway_frontend_listens_on_port():
     pkg = (FRONTEND / "package.json").read_text(encoding="utf-8")
     railway = (FRONTEND / "railway.json").read_text(encoding="utf-8")

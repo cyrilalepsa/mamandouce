@@ -81,6 +81,21 @@ import MaintenanceBanner from './components/MaintenanceBanner';
 import { HomeLayoutProvider } from './contexts/HomeLayoutContext';
 import { hideBootLoader, withTimeout } from './utils/backendUrl';
 import { safeGet, safeRemove } from './utils/safeStorage';
+import { destinationAfterAuth } from './utils/postLogin';
+
+function AuthBootLoader() {
+  return (
+    <div
+      className="min-h-screen gradient-bg flex items-center justify-center"
+      data-testid="auth-boot-loader"
+    >
+      <div className="text-center">
+        <div className="animate-spin w-8 h-8 border-4 border-pink-400 border-t-transparent rounded-full mx-auto mb-4" />
+        <p className="text-slate-500 text-sm">Chargement...</p>
+      </div>
+    </div>
+  );
+}
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -90,13 +105,12 @@ useEffect(() => {
     let cancelled = false;
 
     const bootstrapAuth = async () => {
-      const token = safeGet('token');
-      if (!token) {
-        if (!cancelled) setLoading(false);
-        hideBootLoader();
-        return;
-      }
       try {
+        const token = safeGet('token');
+        if (!token) {
+          if (!cancelled) setIsAuthenticated(false);
+          return;
+        }
         await withTimeout(api.auth.me(), 8000, 'auth.me');
         if (!cancelled) setIsAuthenticated(true);
       } catch {
@@ -123,8 +137,6 @@ useEffect(() => {
         });
       }, 1500);
     }
-
-    hideBootLoader();
 
     // Force Service Worker update check on app load
     const onSwMessage = (event) => {
@@ -160,8 +172,8 @@ useEffect(() => {
     };
   }, []);
   const ProtectedRoute = ({ children, requireSubscription = true }) => {
-    if (loading) return <div>Chargement...</div>;
-    if (!isAuthenticated) return <Navigate to="/auth" />;
+    if (loading) return <AuthBootLoader />;
+    if (!isAuthenticated) return <Navigate to="/auth" replace />;
     
     // Si l'abonnement est requis, encapsuler avec SubscriptionGate
     if (requireSubscription) {
@@ -181,12 +193,25 @@ useEffect(() => {
             <div className="App">
               <BrowserRouter>
                 <Routes>
-                <Route path="/auth" element={<AuthPage setIsAuthenticated={setIsAuthenticated} />} />
+                <Route
+                  path="/auth"
+                  element={
+                    loading ? (
+                      <AuthBootLoader />
+                    ) : isAuthenticated ? (
+                      <Navigate to={destinationAfterAuth(null)} replace />
+                    ) : (
+                      <AuthPage setIsAuthenticated={setIsAuthenticated} />
+                    )
+                  }
+                />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
                 <Route path="/privacy" element={<PrivacyPolicyPage />} />
                 <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
                 <Route path="/home" element={<Navigate to="/" replace />} />
+                <Route path="/app" element={<Navigate to="/" replace />} />
+                <Route path="/dashboard" element={<Navigate to="/" replace />} />
                 <Route path="/calculator" element={<ProtectedRoute><PregnancyCalculator /></ProtectedRoute>} />
                 <Route path="/wheel" element={<ProtectedRoute><PregnancyWheel /></ProtectedRoute>} />
                 <Route path="/scanner" element={<ProtectedRoute><FoodScanner /></ProtectedRoute>} />
