@@ -17,6 +17,10 @@ const AuthContext = createContext({
   isAdmin: false,
   isSuperAdmin: false,
   isPremium: false,
+  is_admin: false,
+  is_superadmin: false,
+  is_premium: false,
+  role: 'user',
   setAuthenticated: () => {},
   ingestUser: () => null,
   refreshMe: async () => null,
@@ -108,15 +112,24 @@ export function AuthProvider({ children }) {
     const superadmin = Boolean(
       user?.is_superadmin || isSuperAdminEmail(user?.email)
     );
+    const premium = Boolean(
+      admin
+      || superadmin
+      || user?.is_premium
+      || bypassesPaywall(user)
+    );
+    const role = admin || superadmin ? 'admin' : (user?.role || 'user');
     return {
       user,
       isAuthenticated,
       loading,
       isAdmin: admin,
       isSuperAdmin: superadmin,
+      isPremium: premium,
       is_admin: admin,
       is_superadmin: superadmin,
-      isPremium: Boolean(admin || superadmin || bypassesPaywall(user)),
+      is_premium: premium,
+      role,
       setAuthenticated,
       ingestUser,
       refreshMe,

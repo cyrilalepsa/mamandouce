@@ -350,16 +350,52 @@ def test_superadmin_overlay_admin_menu_and_logout_to_login():
     assert 'next.subscription_status = "premium"' in overlay
     assert "next.is_superadmin = true" in overlay
     assert "next.is_admin = true" in overlay
+    assert "next.is_premium = true" in overlay
+    assert "shouldShowPremiumHalo" in overlay
     assert "clearAuthStorage" in ctx
     assert "window.location.assign(AUTH_LOGIN_PATH)" in ctx
     assert "is_superadmin" in ctx
     assert "is_admin" in ctx
+    assert "is_premium" in ctx
+    assert "isPremium: premium" in ctx
     assert "logout()" in top
     assert "admin-dashboard-link" in top
     assert "logout-menu-item" in top
     assert "useAuth" in bag
+    assert "from 'react-i18next'" in bag
     assert "unlocked" in lock
     assert "window.location.href = '/login'" in api
+
+
+def test_use_translation_is_imported_everywhere_it_is_called():
+    missing = []
+    for path in (FRONTEND / "src").rglob("*"):
+        if path.suffix not in {".js", ".jsx", ".ts", ".tsx"}:
+            continue
+        src = path.read_text(encoding="utf-8")
+        if "useTranslation(" not in src:
+            continue
+        if "from 'react-i18next'" not in src and 'from "react-i18next"' not in src:
+            missing.append(str(path.relative_to(FRONTEND)))
+    assert missing == [], f"useTranslation without import: {missing}"
+
+
+def test_premium_halo_on_home_and_profile_avatars():
+    avatar = (FRONTEND / "src" / "components" / "profile" / "PremiumSunAvatar.jsx").read_text(
+        encoding="utf-8"
+    )
+    home = (FRONTEND / "src" / "pages" / "HomePage.jsx").read_text(encoding="utf-8")
+    profile = (FRONTEND / "src" / "components" / "profile" / "ProfileEditCard.jsx").read_text(
+        encoding="utf-8"
+    )
+    assert "premium-halo" in avatar
+    assert "shouldShowPremiumHalo" in avatar
+    assert "useAuth" in avatar
+    assert "home-avatar" in home
+    assert "isPremium={isPremium}" in home
+    assert "authIsPremium" in home
+    assert "PremiumSunAvatar" in profile
+    assert 'testId="profile-avatar"' in profile
 
 
 def test_railway_frontend_listens_on_port():
