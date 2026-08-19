@@ -334,6 +334,9 @@ def test_login_goes_home_never_pricing_and_loading_always_clears():
     assert "shouldLeavePricingPage" in pricing
     assert "pricing-auth-check" in pricing
     assert "shouldLeavePricingPage" in checkout
+    assert "const [resolvingUser, setResolvingUser] = useState(true)" in checkout
+    assert "if (resolvingUser)" in checkout
+    assert "setResolvingUser(false)" in checkout
     assert "destinationAfterAuth" in post
     assert "shouldAutoRedirectToPricing" in post
 
