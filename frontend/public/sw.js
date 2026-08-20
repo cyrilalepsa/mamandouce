@@ -266,8 +266,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Same-origin /api/ (si un proxy local existe) : réseau seul, pas de cache SW
-  if (url.pathname.startsWith('/api/')) {
+  // Same-origin /api/ et porte Cloudflare /__mamandouce/ : réseau seul, pas de cache SW
+  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/__mamandouce/')) {
     event.respondWith(fetch(request));
     return;
   }

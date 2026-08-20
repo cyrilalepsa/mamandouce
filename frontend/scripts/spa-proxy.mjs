@@ -23,6 +23,7 @@ const __dirname = path.dirname(__filename);
 
 export const N2_CORE_API_HOST = "api.neriacorp.com";
 export const PROXY_STATUS_PATH = "/__mamandouce/proxy-status";
+export const STANDALONE_API_GATE = "/__mamandouce/api";
 const MAX_API_BODY_BYTES = 2 * 1024 * 1024;
 const UPSTREAM_TIMEOUT_MS = 12000;
 
@@ -106,9 +107,24 @@ export function isApiPath(urlPath) {
   return (
     p === "/api" ||
     p.startsWith("/api/") ||
+    p === STANDALONE_API_GATE ||
+    p.startsWith(`${STANDALONE_API_GATE}/`) ||
     p === "/health" ||
     p.startsWith("/health/")
   );
+}
+
+/** `/__mamandouce/api/v1/auth/login` → `/api/v1/auth/login` for FastAPI. */
+export function upstreamRequestUrl(reqUrl) {
+  const raw = String(reqUrl || "/");
+  const queryIndex = raw.indexOf("?");
+  const query = queryIndex >= 0 ? raw.slice(queryIndex) : "";
+  const p = pathnameOf(raw);
+  if (p === STANDALONE_API_GATE || p.startsWith(`${STANDALONE_API_GATE}/`)) {
+    const rest = p.slice(STANDALONE_API_GATE.length);
+    return `/api${rest}${query}`;
+  }
+  return `${p}${query}` || "/";
 }
 
 export function isProxyStatusPath(urlPath) {
@@ -182,12 +198,24 @@ export function isSelfProxyTarget(origin, env = {}, requestHost = "") {
   return aliases.some((alias) => isSameProxyHost(origin, alias));
 }
 
-export function resolveApiTarget(env = process.env) {
-  const raw = String(
+export function discoverApiUrlFromEnv(env = process.env) {
+  const direct = String(
     env.API_URL || env.BACKEND_URL || env.MAMANDOUCE_API_URL || "",
-  )
-    .trim()
-    .replace(/\/+$/, "");
+  ).trim();
+  if (direct) return direct;
+  const keys = Object.keys(env || {}).sort();
+  for (const key of keys) {
+    if (!/^RAILWAY_SERVICE_.+_URL$/i.test(key)) continue;
+    if (/FRONTEND|STATIC|SPA|UI|CLIENT/i.test(key)) continue;
+    if (!/(API|BACKEND|FASTAPI|SERVER|WEB|MAMANDOUCE|UVICORN)/i.test(key)) continue;
+    const val = String(env[key] || "").trim();
+    if (val) return val;
+  }
+  return "";
+}
+
+export function resolveApiTarget(env = process.env) {
+  const raw = discoverApiUrlFromEnv(env).replace(/\/+$/, "");
   if (!raw) {
     return { origin: "", error: "missing" };
   }
@@ -225,7 +253,7 @@ function sendJson(res, status, body) {
 function apiMisconfigured(res, resolved, urlPath) {
   const hints = {
     missing:
-      "API_URL is not set on the frontend Railway service. /api cannot be served as HTML.",
+      "API_URL n'est pas défini sur le service frontend Railway. Indiquez l'origine FastAPI MamanDouce (pas ce domaine SPA, pas api.neriacorp.com).",
     invalid: "API_URL is not a valid URL.",
     protocol: "API_URL must be http(s).",
     blocked:
@@ -318,7 +346,7 @@ export async function proxyApiRequest(req, res, origin) {
 
   let upstream;
   try {
-    upstream = await fetch(`${target.origin}${req.url || "/"}`, init);
+    upstream = await fetch(`${target.origin}${upstreamRequestUrl(req.url)}`, init);
   } catch (err) {
     sendJson(res, 502, {
       detail: "Upstream API unreachable",
@@ -424,6 +452,7 @@ export function createSpaProxyServer({ distDir, env = process.env } = {}) {
           apiConfigured: Boolean(resolved.origin) && !resolved.error,
           apiHost: hostnameOf(resolved.origin) || null,
           error: resolved.error,
+          gate: STANDALONE_API_GATE,
         });
         return;
       }

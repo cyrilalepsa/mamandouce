@@ -7,12 +7,15 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import {
   createSpaProxyServer,
+  discoverApiUrlFromEnv,
   isApiPath,
   isBlockedApiTarget,
   isSelfProxyTarget,
   pathnameOf,
   pickUpstreamRequestHeaders,
   resolveApiTarget,
+  STANDALONE_API_GATE,
+  upstreamRequestUrl,
 } from "./spa-proxy.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -22,10 +25,15 @@ test("isApiPath never treats /api as an SPA route", () => {
   assert.equal(isApiPath("/api/health"), true);
   assert.equal(isApiPath("/api/v1/auth/login"), true);
   assert.equal(isApiPath("/api/v1/auth/me?x=1"), true);
+  assert.equal(isApiPath(`${STANDALONE_API_GATE}/v1/auth/login`), true);
   assert.equal(isApiPath("/login"), false);
   assert.equal(isApiPath("/"), false);
   assert.equal(isApiPath("/health"), true);
   assert.equal(pathnameOf("/api/v1/auth/me?foo=bar"), "/api/v1/auth/me");
+  assert.equal(
+    upstreamRequestUrl(`${STANDALONE_API_GATE}/v1/auth/login?x=1`),
+    "/api/v1/auth/login?x=1",
+  );
 });
 
 test("resolveApiTarget rejects N2 core and SPA loop hosts", () => {
@@ -40,6 +48,19 @@ test("resolveApiTarget rejects N2 core and SPA loop hosts", () => {
   const ok = resolveApiTarget({ API_URL: "https://mamandouce-api.up.railway.app/" });
   assert.equal(ok.error, null);
   assert.equal(ok.origin, "https://mamandouce-api.up.railway.app");
+  assert.equal(
+    discoverApiUrlFromEnv({
+      RAILWAY_SERVICE_FRONTEND_URL: "https://frontend.up.railway.app",
+      RAILWAY_SERVICE_BACKEND_URL: "http://backend.railway.internal:8080",
+    }),
+    "http://backend.railway.internal:8080",
+  );
+  assert.equal(
+    resolveApiTarget({
+      RAILWAY_SERVICE_BACKEND_URL: "http://backend.railway.internal:8080",
+    }).origin,
+    "http://backend.railway.internal:8080",
+  );
   assert.equal(
     isSelfProxyTarget("https://frontend-prod.up.railway.app", {
       RAILWAY_PUBLIC_DOMAIN: "frontend-prod.up.railway.app",
@@ -105,6 +126,11 @@ test("spa-proxy returns JSON 502 for /api when API_URL is missing, never index.h
     const parsed = JSON.parse(api.body);
     assert.equal(parsed.code, "SPA_API_PROXY_MISCONFIGURED");
 
+    const gated = await request(port, `${STANDALONE_API_GATE}/v1/auth/login`);
+    assert.equal(gated.status, 502);
+    assert.match(gated.headers["content-type"], /application\/json/);
+    assert.equal(JSON.parse(gated.body).code, "SPA_API_PROXY_MISCONFIGURED");
+
     const spa = await request(port, "/login");
     assert.equal(spa.status, 200);
     assert.match(spa.body, /<!doctype html>/i);
@@ -151,7 +177,11 @@ test("spa-proxy forwards /api JSON and never HTML-fallback login", async () => {
       assert.equal(health.status, 200);
       assert.deepEqual(JSON.parse(health.body), { status: "ok", service: "mamandouce" });
 
-      const login = await request(port, "/api/v1/auth/login", {
+      const gated = await request(port, `${STANDALONE_API_GATE}/health`);
+      assert.equal(gated.status, 200);
+      assert.deepEqual(JSON.parse(gated.body), { status: "ok", service: "mamandouce" });
+
+      const login = await request(port, `${STANDALONE_API_GATE}/v1/auth/login`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ email: "cyrilalepsa@gmail.com", password: "x" }),

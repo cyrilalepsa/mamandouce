@@ -46,6 +46,8 @@ def test_backend_url_resolver_covers_tenant_hosts():
     assert "mamandouce.neriacorp.com" in src
     assert "www.mamandouce.neriacorp.com" in src
     assert "STANDALONE_MAMANDOUCE_HOSTS" in src
+    assert "STANDALONE_API_GATE" in src
+    assert "/__mamandouce/api" in src
     assert "isStandaloneMamandouceHost" in src
     assert ALIAS in src
     assert "https://api.neriacorp.com" in src
@@ -446,6 +448,8 @@ def test_railway_frontend_listens_on_port():
     assert "SPA_API_PROXY_LOOP" in proxy
     assert "cdn-loop" in proxy
     assert "AbortSignal.timeout" in proxy
+    assert "STANDALONE_API_GATE" in proxy
+    assert "/__mamandouce/api" in proxy
 
 
 def test_auth_login_passes_payload_and_rejects_html():
@@ -457,6 +461,7 @@ def test_auth_login_passes_payload_and_rejects_html():
     assert auth_page.count("completeLogin(false, response.data)") >= 3
     assert "sanitizeAuthPayload" in ctx
     assert "isHtmlApiResponse" in api
+    assert "formatApiError" in auth_page
     assert "API_HTML_FALLBACK" in api
     assert "find_user_by_email" in security
     assert "normalize_email" in security
