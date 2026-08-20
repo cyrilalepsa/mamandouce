@@ -27,6 +27,8 @@ class Token(BaseModel):
     subscription_status: Optional[str] = None
     is_superadmin: Optional[bool] = False
     is_admin: Optional[bool] = False
+    is_premium: Optional[bool] = False
+    is_vip: Optional[bool] = False
 
 class User(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -43,6 +45,8 @@ class User(BaseModel):
     subscription_status: Optional[str] = "free"  # "free", "trial", "premium"
     is_superadmin: Optional[bool] = False
     is_admin: Optional[bool] = False
+    is_premium: Optional[bool] = False
+    is_vip: Optional[bool] = False
     gold_status: Optional[bool] = False  # Statut Marraine Or (3 parrainages + 5 contributions)
     badge_level: Optional[str] = None  # 'bronze', 'silver', 'gold'
     contributions_validated: Optional[int] = 0  # Nombre de contributions validées
