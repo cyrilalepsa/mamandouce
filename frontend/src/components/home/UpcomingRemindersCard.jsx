@@ -54,7 +54,7 @@ export function UpcomingRemindersCard() {
               items.push({
                 id: apt._id || apt.id || `apt-${apt.date}`,
                 type: 'appointment',
-                title: apt.title || apt.name || t('medical.appointment', 'Rendez-vous médical'),
+                title: apt.title || apt.name || '',
                 date: apt.date,
                 daysUntil,
                 icon: '🩺',
@@ -80,7 +80,7 @@ export function UpcomingRemindersCard() {
               items.push({
                 id: rem._id || rem.id || `rem-${date}`,
                 type: 'reminder',
-                title: rem.title || t('reminders.reminder', 'Rappel'),
+                title: rem.title || '',
                 date,
                 daysUntil,
                 icon: '🔔',
@@ -114,7 +114,7 @@ export function UpcomingRemindersCard() {
     } finally {
       if (!cancelled()) setIsLoading(false);
     }
-  }, [t]);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -202,7 +202,11 @@ export function UpcomingRemindersCard() {
             </span>
           </div>
           <h3 className="font-bold text-slate-700 text-sm truncate">
-            {item.title}
+            {item.title || (
+              item.type === 'appointment'
+                ? t('medical.appointment', 'Rendez-vous médical')
+                : t('reminders.reminder', 'Rappel')
+            )}
           </h3>
           <div className="flex items-center gap-1 mt-0.5">
             <Calendar className="w-3 h-3 text-slate-400" />

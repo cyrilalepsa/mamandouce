@@ -29,6 +29,8 @@ test("home fetch callbacks are stable and use implemented progress API", () => {
 
   assert.match(home, /const loadUserData = useCallback\(/);
   assert.match(home, /const loadTrophyData = useCallback\(/);
+  assert.doesNotMatch(home, /api\.auth\.getMe\(\)/);
+  assert.match(home, /refreshMeRef\.current\(\)/);
   assert.match(home, /api\.contributions\.getBadgeProgress\(\)/);
   assert.doesNotMatch(home, /trophies\/progress/);
   assert.match(home, /\[loadUserData, loadTrophyData\]/);
@@ -43,5 +45,17 @@ test("dashboard reminders avoid missing /reminders route and swallow 404", () =>
   assert.doesNotMatch(reminders, /api\.get\(['"]\/api\/reminders/);
   assert.match(reminders, /status !== 404/);
   assert.match(reminders, /const loadUpcomingReminders = useCallback\(/);
+  assert.match(reminders, /}\s*, \[\]\);/);
   assert.match(reminders, /\[loadUpcomingReminders\]/);
+});
+
+test("subscription refresh does not unmount dashboard or duplicate /auth/me", () => {
+  const gate = read("src/components/SubscriptionGate.jsx");
+
+  assert.doesNotMatch(gate, /api\.auth\.getMe\(\)/);
+  assert.match(gate, /initialCheckDoneRef/);
+  assert.match(gate, /if \(showLoader\) setLoading\(true\)/);
+  assert.match(gate, /checkSubscription\(auth\.user, \{ showLoader \}\)/);
+  assert.match(gate, /const contextValue = useMemo\(/);
+  assert.match(gate, /value=\{contextValue\}/);
 });

@@ -3,7 +3,7 @@ import { PartyPopper, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
-import { isSuperAdmin, applySuperadminOverlay } from '../utils/superadmin';
+import { isSuperAdmin } from '../utils/superadmin';
 import { useAuth } from '../contexts/AuthContext';
 import AppTitle from '../components/AppTitle';
 import PremiumSunAvatar from '../components/profile/PremiumSunAvatar';
@@ -23,15 +23,26 @@ import { NewsBubble, NewsPopup, useNews } from '../components/home/NewsBubble';
 function HomePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isAdmin: authIsAdmin, isPremium: authIsPremium, user: authUser, ingestUser } = useAuth();
-  const [userName, setUserName] = useState(() => authUser?.name || authUser?.first_name || '');
-  const [displayName, setDisplayName] = useState(() => authUser?.display_name || '');
-  const [userAvatar, setUserAvatar] = useState(() => authUser?.avatar || '');
-  const [userAvatarConfig, setUserAvatarConfig] = useState(() => authUser?.avatar_config || null);
-  const [userEmail, setUserEmail] = useState(() => authUser?.email || '');
+  const {
+    isAdmin: authIsAdmin,
+    isPremium: authIsPremium,
+    user: authUser,
+    refreshMe,
+  } = useAuth();
+  const userName = authUser?.name || authUser?.first_name || '';
+  const displayName = authUser?.display_name || '';
+  const userAvatar = authUser?.avatar || '';
+  const userAvatarConfig = authUser?.avatar_config || null;
+  const userEmail = authUser?.email || '';
+  const userRole = authUser?.role || 'user';
+  const localIsPremium = Boolean(
+    authUser?.subscription_status === 'premium'
+    || authUser?.subscription_status === 'trial'
+    || authUser?.is_admin
+    || authUser?.is_superadmin
+    || authUser?.is_premium
+  );
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
-  const [userRole, setUserRole] = useState('user');
-  const [localIsPremium, setIsPremium] = useState(false);
   const [currentPageType, setCurrentPageType] = useState('default');
   const [earnedTrophy, setEarnedTrophy] = useState(null);
   const [isPregnantHome, setIsPregnantHome] = useState(
@@ -81,31 +92,17 @@ function HomePage() {
 
   const loadUserData = useCallback(async ({ cancelled = () => false } = {}) => {
     try {
-      const userRes = await api.auth.getMe();
-      if (cancelled()) return;
-      const me = applySuperadminOverlay(userRes.data);
-      ingestUser?.(me);
-      setUserName(me.name || me.first_name || '');
-      setDisplayName(me.display_name || '');
-      setUserAvatar(me.avatar || '');
-      setUserAvatarConfig(me.avatar_config || null);
-      setUserEmail(me.email || '');
-      setUserRole(me.role || 'user');
-      setIsPremium(me.subscription_status === 'premium' || me.subscription_status === 'trial' || me.is_admin || me.is_superadmin);
-
-      // A profile failure must not erase the successfully loaded user header.
-      try {
-        const profileRes = await api.pregnancy.getProfile();
-        if (!cancelled()) setPregnancyProfile(profileRes.data || null);
-      } catch (profileError) {
-        if (profileError?.response?.status !== 404) {
-          console.error('Erreur chargement profil grossesse:', profileError);
-        }
+      // AuthProvider is the single source of truth for name/avatar. Home only
+      // owns the pregnancy profile, avoiding another /auth/me request.
+      const profileRes = await api.pregnancy.getProfile();
+      if (!cancelled()) setPregnancyProfile(profileRes.data || null);
+    } catch (profileError) {
+      // A missing optional profile must not clear the already-rendered user.
+      if (profileError?.response?.status !== 404) {
+        console.error('Erreur chargement profil grossesse:', profileError);
       }
-    } catch (error) {
-      console.error('Erreur chargement données:', error);
     }
-  }, [ingestUser]);
+  }, []);
 
   const loadTrophyData = useCallback(async ({ cancelled = () => false } = {}) => {
     try {
@@ -163,8 +160,10 @@ function HomePage() {
   const isRefreshingRef = useRef(false);
   const loadUserDataRef = useRef(loadUserData);
   const loadTrophyDataRef = useRef(loadTrophyData);
+  const refreshMeRef = useRef(refreshMe);
   loadUserDataRef.current = loadUserData;
   loadTrophyDataRef.current = loadTrophyData;
+  refreshMeRef.current = refreshMe;
 
   useEffect(() => {
     const scroller = scrollContainerRef.current;
@@ -201,7 +200,11 @@ function HomePage() {
         setIsRefreshing(true);
         setPullDistance(50);
         try {
-          await Promise.all([loadUserDataRef.current(), loadTrophyDataRef.current()]);
+          await Promise.allSettled([
+            refreshMeRef.current(),
+            loadUserDataRef.current(),
+            loadTrophyDataRef.current(),
+          ]);
         } finally {
           isRefreshingRef.current = false;
           setIsRefreshing(false);
