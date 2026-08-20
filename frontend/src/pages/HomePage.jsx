@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { PartyPopper, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -24,11 +24,11 @@ function HomePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isAdmin: authIsAdmin, isPremium: authIsPremium, user: authUser, ingestUser } = useAuth();
-  const [userName, setUserName] = useState('');
-  const [displayName, setDisplayName] = useState('');
-  const [userAvatar, setUserAvatar] = useState('');
-  const [userAvatarConfig, setUserAvatarConfig] = useState(null);
-  const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState(() => authUser?.name || authUser?.first_name || '');
+  const [displayName, setDisplayName] = useState(() => authUser?.display_name || '');
+  const [userAvatar, setUserAvatar] = useState(() => authUser?.avatar || '');
+  const [userAvatarConfig, setUserAvatarConfig] = useState(() => authUser?.avatar_config || null);
+  const [userEmail, setUserEmail] = useState(() => authUser?.email || '');
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [userRole, setUserRole] = useState('user');
   const [localIsPremium, setIsPremium] = useState(false);
@@ -62,24 +62,6 @@ function HomePage() {
   
   const { hasNews, updates, isPopupOpen, openPopup, closePopup, markAsSeen } = useNews();
 
-  useEffect(() => {
-    loadUserData();
-    loadTrophyData();
-    
-    // 🎯 Extraction sécurisée pour éviter l'erreur React #31
-    if (typeof getSaintOfTheDay === 'function') {
-      try {
-        const todaySaint = getSaintOfTheDay(new Date());
-        if (todaySaint) {
-          const saintName = typeof todaySaint === 'object' ? todaySaint.name : todaySaint;
-          setNameOfTheDay(saintName || '');
-        }
-      } catch (e) {
-        console.error("Erreur calendrier des saints:", e);
-      }
-    }
-  }, []);
-
   // Resync cartes grossesse à chaque retour sur l'accueil
   useEffect(() => {
     const syncPregnant = () => {
@@ -97,35 +79,81 @@ function HomePage() {
     };
   }, []);
 
-  const loadUserData = async () => {
+  const loadUserData = useCallback(async ({ cancelled = () => false } = {}) => {
     try {
       const userRes = await api.auth.getMe();
+      if (cancelled()) return;
       const me = applySuperadminOverlay(userRes.data);
       ingestUser?.(me);
-      setUserName(me.name);
+      setUserName(me.name || me.first_name || '');
       setDisplayName(me.display_name || '');
       setUserAvatar(me.avatar || '');
       setUserAvatarConfig(me.avatar_config || null);
-      setUserEmail(me.email);
+      setUserEmail(me.email || '');
       setUserRole(me.role || 'user');
       setIsPremium(me.subscription_status === 'premium' || me.subscription_status === 'trial' || me.is_admin || me.is_superadmin);
-      
-      const profileRes = await api.pregnancy.getProfile();
-      setPregnancyProfile(profileRes.data);
+
+      // A profile failure must not erase the successfully loaded user header.
+      try {
+        const profileRes = await api.pregnancy.getProfile();
+        if (!cancelled()) setPregnancyProfile(profileRes.data || null);
+      } catch (profileError) {
+        if (profileError?.response?.status !== 404) {
+          console.error('Erreur chargement profil grossesse:', profileError);
+        }
+      }
     } catch (error) {
       console.error('Erreur chargement données:', error);
     }
-  };
+  }, [ingestUser]);
 
-  const loadTrophyData = async () => {
+  const loadTrophyData = useCallback(async ({ cancelled = () => false } = {}) => {
     try {
-      const res = await api.get('/api/trophies/progress');
+      // Use the implemented badge endpoint, not the removed legacy progress route.
+      const res = await api.contributions.getBadgeProgress();
+      if (cancelled()) return;
       const progress = res.data;
-      if (progress?.gold?.earned) setEarnedTrophy('gold');
-      else if (progress?.silver?.earned) setEarnedTrophy('silver');
-      else if (progress?.bronze?.earned) setEarnedTrophy('bronze');
-    } catch (e) {}
-  };
+      const names = Array.isArray(progress?.badge_names) ? progress.badge_names : [];
+      if (progress?.gold?.earned || progress?.progress?.has_gold || names.includes('Marraine Or')) {
+        setEarnedTrophy('gold');
+      } else if (progress?.silver?.earned || progress?.progress?.has_silver) {
+        setEarnedTrophy('silver');
+      } else if (progress?.bronze?.earned || progress?.progress?.has_bronze) {
+        setEarnedTrophy('bronze');
+      }
+    } catch (error) {
+      // Optional home decoration: a missing endpoint is an empty result,
+      // never a state reset or retry trigger.
+      if (error?.response?.status !== 404) {
+        console.error('Erreur chargement progression badges:', error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const isCancelled = () => cancelled;
+
+    loadUserData({ cancelled: isCancelled });
+    loadTrophyData({ cancelled: isCancelled });
+
+    // 🎯 Extraction sécurisée pour éviter l'erreur React #31
+    if (typeof getSaintOfTheDay === 'function') {
+      try {
+        const todaySaint = getSaintOfTheDay(new Date());
+        if (todaySaint) {
+          const saintName = typeof todaySaint === 'object' ? todaySaint.name : todaySaint;
+          setNameOfTheDay(saintName || '');
+        }
+      } catch (e) {
+        console.error("Erreur calendrier des saints:", e);
+      }
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [loadUserData, loadTrophyData]);
 
   const handleAvatarClick = () => {
     navigate('/profile?tab=avatar');
