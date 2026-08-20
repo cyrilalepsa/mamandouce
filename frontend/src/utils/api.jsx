@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { apiUrl, authApiUrl, getApiBase } from './backendUrl';
+import { isHtmlApiResponse } from './apiPayload';
 import { safeGet, safeRemove } from './safeStorage';
 
 const API = () => getApiBase();
@@ -28,7 +29,17 @@ const getAuthHeaders = () => ({
 
 // Intercepteur global pour gérer les erreurs d'authentification
 axios.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (isHtmlApiResponse(response)) {
+      const err = new Error(
+        "Réponse HTML reçue à la place du JSON API. Le domaine sert le SPA au lieu de FastAPI.",
+      );
+      err.code = "API_HTML_FALLBACK";
+      err.response = response;
+      return Promise.reject(err);
+    }
+    return response;
+  },
   (error) => {
     // Ne pas rediriger si c'est une erreur réseau temporaire
     if (!error.response) {

@@ -11,12 +11,16 @@ from typing import Optional
 
 from .config import SECRET_KEY, ALGORITHM
 from .database import db
+from services.user_lookup import find_user_by_email, normalize_email
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
+    sub = to_encode.get("sub")
+    if sub:
+        to_encode["sub"] = normalize_email(str(sub))
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
@@ -24,6 +28,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+async def _user_from_token_email(email: str):
+    """Resolve JWT sub with the same case-insensitive lookup as login."""
+    return await find_user_by_email(email, database=db)
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Get current authenticated user from JWT token"""
@@ -38,7 +46,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     except JWTError:
         raise HTTPException(status_code=401, detail="Token invalide")
     
-    user = await db.users.find_one({"email": email}, {"_id": 0})
+    user = await _user_from_token_email(email)
     if user is None:
         raise HTTPException(status_code=401, detail="Utilisateur non trouvé")
     from core.privileges import apply_superadmin_overlay, ensure_superadmin_privileges, is_superadmin_email
@@ -64,7 +72,7 @@ async def get_current_user_optional(credentials: Optional[HTTPAuthorizationCrede
     except JWTError:
         return None
     
-    user = await db.users.find_one({"email": email}, {"_id": 0})
+    user = await _user_from_token_email(email)
     if user is None:
         return None
     from core.privileges import apply_superadmin_overlay

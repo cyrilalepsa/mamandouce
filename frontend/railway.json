@@ -17,7 +17,7 @@
     }
   },
   "deploy": {
-    "startCommand": "npx serve -s dist -l tcp://0.0.0.0:$PORT",
+    "startCommand": "node scripts/spa-proxy.mjs",
     "restartPolicyType": "ON_FAILURE"
   }
 }

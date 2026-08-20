@@ -9,6 +9,7 @@ import {
   isSuperAdminEmail,
 } from '../utils/superadmin';
 import { bypassesPaywall } from '../utils/postLogin';
+import { sanitizeAuthPayload } from '../utils/apiPayload';
 
 const AuthContext = createContext({
   user: null,
@@ -53,7 +54,8 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   const ingestUser = useCallback((raw) => {
-    const next = applySuperadminOverlay(raw);
+    const payload = sanitizeAuthPayload(raw);
+    const next = applySuperadminOverlay(payload);
     setUser(next || null);
     return next;
   }, []);
