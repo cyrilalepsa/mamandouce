@@ -6,6 +6,7 @@ import {
   APP_SLUG_MAMANDOUCE,
   DEFAULT_LOCAL_API,
   DEFAULT_PUBLIC_API,
+  STANDALONE_API_GATE,
   apiUrl,
   authApiPath,
   authApiUrl,
@@ -116,31 +117,36 @@ assertEqual(
 );
 assertEqual(
   getApiBase({ hostname: "mamandouce.neriacorp.com", envUrl: "" }),
-  `${mdOrigin}/api`,
-  "getApiBase is same-origin /api on standalone",
+  `${mdOrigin}${STANDALONE_API_GATE}`,
+  "getApiBase uses Cloudflare-safe gate on standalone",
 );
 assertEqual(withApiPrefix("/emotional/cycle-status"), "/api/emotional/cycle-status", "prefix cycle-status");
 assertEqual(withApiPrefix("/api/cycle/intelligence"), "/api/cycle/intelligence", "keep /api cycle path");
 assertEqual(withApiPrefix("notifications/subscribe"), "/api/notifications/subscribe", "prefix subscribe");
+assertEqual(
+  withApiPrefix("/api/v1/auth/login", { hostname: "mamandouce.neriacorp.com" }),
+  `${STANDALONE_API_GATE}/v1/auth/login`,
+  "standalone login uses gate, not /api",
+);
 assertEqual(isN2CoreApiUrl(DEFAULT_PUBLIC_API), true, "N2 core detection");
 assertEqual(
   apiUrl("/api/neriacorp/media", { hostname: "mamandouce.neriacorp.com", envUrl: "" }),
-  `${mdOrigin}/api/neriacorp/media`,
+  `${mdOrigin}${STANDALONE_API_GATE}/neriacorp/media`,
   "apiUrl Cloudinary media",
 );
 assertEqual(
   apiUrl("/api/notifications/vapid-public-key", { hostname: "mamandouce.neriacorp.com" }),
-  `${mdOrigin}/api/notifications/vapid-public-key`,
+  `${mdOrigin}${STANDALONE_API_GATE}/notifications/vapid-public-key`,
   "apiUrl VAPID",
 );
 assertEqual(
   apiUrl("/emotional/cycle-status", { hostname: "mamandouce.neriacorp.com" }),
-  `${mdOrigin}/api/emotional/cycle-status`,
+  `${mdOrigin}${STANDALONE_API_GATE}/emotional/cycle-status`,
   "apiUrl cycle-status gets /api prefix",
 );
 assertEqual(
   apiUrl("/api/cycle/intelligence", { hostname: "mamandouce.neriacorp.com" }),
-  `${mdOrigin}/api/cycle/intelligence`,
+  `${mdOrigin}${STANDALONE_API_GATE}/cycle/intelligence`,
   "apiUrl cycle intelligence",
 );
 assertEqual(
@@ -150,23 +156,23 @@ assertEqual(
 );
 assertEqual(
   authApiUrl("forgot-password", { hostname: "mamandouce.neriacorp.com", envUrl: "" }),
-  `${mdOrigin}/api/v1/auth/forgot-password`,
-  "forgot-password URL is exactly /api/v1/auth/forgot-password",
+  `${mdOrigin}${STANDALONE_API_GATE}/v1/auth/forgot-password`,
+  "forgot-password URL uses Cloudflare-safe gate",
 );
 assertEqual(
   authApiUrl("login", { hostname: "mamandouce.neriacorp.com", envUrl: "" }),
-  `${mdOrigin}/api/v1/auth/login`,
-  "login URL is /api/v1/auth/login",
+  `${mdOrigin}${STANDALONE_API_GATE}/v1/auth/login`,
+  "login URL uses Cloudflare-safe gate",
 );
 assertEqual(
   authApiUrl("register", { hostname: "mamandouce.neriacorp.com", envUrl: "" }),
-  `${mdOrigin}/api/v1/auth/register`,
-  "register URL is /api/v1/auth/register",
+  `${mdOrigin}${STANDALONE_API_GATE}/v1/auth/register`,
+  "register URL uses Cloudflare-safe gate",
 );
 assertEqual(
   apiUrl("/v1/auth/forgot-password", { hostname: "mamandouce.neriacorp.com", envUrl: "" }),
-  `${mdOrigin}/api/v1/auth/forgot-password`,
-  "apiUrl(/v1/auth/forgot-password) prefixes /api once",
+  `${mdOrigin}${STANDALONE_API_GATE}/v1/auth/forgot-password`,
+  "apiUrl(/v1/auth/forgot-password) prefixes gate once",
 );
 assertEqual(
   apiUrl("http://localhost:8000/api/x", { hostname: "mamandouce.neriacorp.com" }),

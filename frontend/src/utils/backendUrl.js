@@ -12,6 +12,13 @@ export const DEFAULT_LOCAL_API = "http://localhost:8000";
 export const N2_CORE_API_HOST = "api.neriacorp.com";
 export const APP_SLUG_MAMANDOUCE = "mamandouce";
 
+/**
+ * Cloudflare (et parfois Hikari) intercepte `/api` sur mamandouce.neriacorp.com
+ * et renvoie un 502/520 sans atteindre le Node Railway. Le SPA standalone
+ * passe par cette porte, que spa-proxy.mjs réécrit vers FastAPI `/api`.
+ */
+export const STANDALONE_API_GATE = "/__mamandouce/api";
+
 /** Labels de premier niveau qui ne sont pas des boutiques B2B. */
 export const RESERVED_HOST_LABELS = [
   "hub",
@@ -173,12 +180,26 @@ export function isN2CoreApiUrl(url) {
 }
 
 /** FastAPI MamanDouce est monté sous /api — jamais l'origine nue (404 N2). */
-export function withApiPrefix(pathname) {
+export function usesStandaloneApiGate(opts = {}) {
+  const host = normalizeHost(
+    opts.hostname ?? (typeof window !== "undefined" ? window.location.hostname : ""),
+  );
+  return isStandaloneMamandouceHost(host);
+}
+
+export function withApiPrefix(pathname, opts = {}) {
   const raw = String(pathname || "").trim();
-  if (!raw) return "/api";
-  const path = raw.startsWith("/") ? raw : `/${raw}`;
-  if (path === "/api" || path.startsWith("/api/")) return path;
-  return `/api${path}`;
+  let path = !raw ? "/api" : raw.startsWith("/") ? raw : `/${raw}`;
+  if (path === STANDALONE_API_GATE || path.startsWith(`${STANDALONE_API_GATE}/`)) {
+    path = `/api${path.slice(STANDALONE_API_GATE.length)}` || "/api";
+  }
+  if (!(path === "/api" || path.startsWith("/api/"))) {
+    path = `/api${path}`;
+  }
+  if (usesStandaloneApiGate(opts)) {
+    path = `${STANDALONE_API_GATE}${path === "/api" ? "" : path.slice(4)}`;
+  }
+  return path;
 }
 
 /**
@@ -251,7 +272,8 @@ export function getBackendUrl(opts) {
 }
 
 export function getApiBase(opts) {
-  return `${String(getBackendUrl(opts)).replace(/\/$/, "")}/api`;
+  const base = String(getBackendUrl(opts)).replace(/\/$/, "");
+  return usesStandaloneApiGate(opts) ? `${base}${STANDALONE_API_GATE}` : `${base}/api`;
 }
 
 /**
@@ -267,8 +289,8 @@ export function apiUrl(path = "", opts) {
     return suffix.replace(/\/$/, "");
   }
   const base = String(getBackendUrl(opts)).replace(/\/$/, "");
-  if (!suffix) return `${base}/api`;
-  return `${base}${withApiPrefix(suffix)}`;
+  if (!suffix) return getApiBase(opts);
+  return `${base}${withApiPrefix(suffix, opts)}`;
 }
 
 export const BACKEND_URL = getBackendUrl();

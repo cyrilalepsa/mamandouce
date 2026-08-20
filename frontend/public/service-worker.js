@@ -64,8 +64,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Same-origin /api/ : réseau uniquement, aucun cache
-  if (url.pathname.startsWith('/api/')) {
+  // Same-origin /api/ et porte Cloudflare /__mamandouce/ : réseau uniquement, aucun cache
+  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/__mamandouce/')) {
     event.respondWith(fetch(request));
     return;
   }

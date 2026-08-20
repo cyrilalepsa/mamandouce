@@ -191,7 +191,7 @@ function AuthPage({ setIsAuthenticated }) {
       }
     } catch (error) {
       const status = error.response?.status;
-      const detail = error.response?.data?.detail;
+      const detail = formatApiError(error);
       
       if (status === 423) {
         toast.error(detail || 'Compte temporairement bloqué', { duration: 6000 });
