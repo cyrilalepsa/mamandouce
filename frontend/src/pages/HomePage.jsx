@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { PartyPopper, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
-import { isSuperAdmin, applySuperadminOverlay } from '../utils/superadmin';
+import { isSuperAdmin } from '../utils/superadmin';
 import { useAuth } from '../contexts/AuthContext';
 import AppTitle from '../components/AppTitle';
 import PremiumSunAvatar from '../components/profile/PremiumSunAvatar';
@@ -23,15 +23,26 @@ import { NewsBubble, NewsPopup, useNews } from '../components/home/NewsBubble';
 function HomePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isAdmin: authIsAdmin, isPremium: authIsPremium, user: authUser, ingestUser } = useAuth();
-  const [userName, setUserName] = useState('');
-  const [displayName, setDisplayName] = useState('');
-  const [userAvatar, setUserAvatar] = useState('');
-  const [userAvatarConfig, setUserAvatarConfig] = useState(null);
-  const [userEmail, setUserEmail] = useState('');
+  const {
+    isAdmin: authIsAdmin,
+    isPremium: authIsPremium,
+    user: authUser,
+    refreshMe,
+  } = useAuth();
+  const userName = authUser?.name || authUser?.first_name || '';
+  const displayName = authUser?.display_name || '';
+  const userAvatar = authUser?.avatar || '';
+  const userAvatarConfig = authUser?.avatar_config || null;
+  const userEmail = authUser?.email || '';
+  const userRole = authUser?.role || 'user';
+  const localIsPremium = Boolean(
+    authUser?.subscription_status === 'premium'
+    || authUser?.subscription_status === 'trial'
+    || authUser?.is_admin
+    || authUser?.is_superadmin
+    || authUser?.is_premium
+  );
   const [pregnancyProfile, setPregnancyProfile] = useState(null);
-  const [userRole, setUserRole] = useState('user');
-  const [localIsPremium, setIsPremium] = useState(false);
   const [currentPageType, setCurrentPageType] = useState('default');
   const [earnedTrophy, setEarnedTrophy] = useState(null);
   const [isPregnantHome, setIsPregnantHome] = useState(
@@ -62,24 +73,6 @@ function HomePage() {
   
   const { hasNews, updates, isPopupOpen, openPopup, closePopup, markAsSeen } = useNews();
 
-  useEffect(() => {
-    loadUserData();
-    loadTrophyData();
-    
-    // 🎯 Extraction sécurisée pour éviter l'erreur React #31
-    if (typeof getSaintOfTheDay === 'function') {
-      try {
-        const todaySaint = getSaintOfTheDay(new Date());
-        if (todaySaint) {
-          const saintName = typeof todaySaint === 'object' ? todaySaint.name : todaySaint;
-          setNameOfTheDay(saintName || '');
-        }
-      } catch (e) {
-        console.error("Erreur calendrier des saints:", e);
-      }
-    }
-  }, []);
-
   // Resync cartes grossesse à chaque retour sur l'accueil
   useEffect(() => {
     const syncPregnant = () => {
@@ -97,35 +90,67 @@ function HomePage() {
     };
   }, []);
 
-  const loadUserData = async () => {
+  const loadUserData = useCallback(async ({ cancelled = () => false } = {}) => {
     try {
-      const userRes = await api.auth.getMe();
-      const me = applySuperadminOverlay(userRes.data);
-      ingestUser?.(me);
-      setUserName(me.name);
-      setDisplayName(me.display_name || '');
-      setUserAvatar(me.avatar || '');
-      setUserAvatarConfig(me.avatar_config || null);
-      setUserEmail(me.email);
-      setUserRole(me.role || 'user');
-      setIsPremium(me.subscription_status === 'premium' || me.subscription_status === 'trial' || me.is_admin || me.is_superadmin);
-      
+      // AuthProvider is the single source of truth for name/avatar. Home only
+      // owns the pregnancy profile, avoiding another /auth/me request.
       const profileRes = await api.pregnancy.getProfile();
-      setPregnancyProfile(profileRes.data);
-    } catch (error) {
-      console.error('Erreur chargement données:', error);
+      if (!cancelled()) setPregnancyProfile(profileRes.data || null);
+    } catch (profileError) {
+      // A missing optional profile must not clear the already-rendered user.
+      if (profileError?.response?.status !== 404) {
+        console.error('Erreur chargement profil grossesse:', profileError);
+      }
     }
-  };
+  }, []);
 
-  const loadTrophyData = async () => {
+  const loadTrophyData = useCallback(async ({ cancelled = () => false } = {}) => {
     try {
-      const res = await api.get('/api/trophies/progress');
+      // Use the implemented badge endpoint, not the removed legacy progress route.
+      const res = await api.contributions.getBadgeProgress();
+      if (cancelled()) return;
       const progress = res.data;
-      if (progress?.gold?.earned) setEarnedTrophy('gold');
-      else if (progress?.silver?.earned) setEarnedTrophy('silver');
-      else if (progress?.bronze?.earned) setEarnedTrophy('bronze');
-    } catch (e) {}
-  };
+      const names = Array.isArray(progress?.badge_names) ? progress.badge_names : [];
+      if (progress?.gold?.earned || progress?.progress?.has_gold || names.includes('Marraine Or')) {
+        setEarnedTrophy('gold');
+      } else if (progress?.silver?.earned || progress?.progress?.has_silver) {
+        setEarnedTrophy('silver');
+      } else if (progress?.bronze?.earned || progress?.progress?.has_bronze) {
+        setEarnedTrophy('bronze');
+      }
+    } catch (error) {
+      // Optional home decoration: a missing endpoint is an empty result,
+      // never a state reset or retry trigger.
+      if (error?.response?.status !== 404) {
+        console.error('Erreur chargement progression badges:', error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const isCancelled = () => cancelled;
+
+    loadUserData({ cancelled: isCancelled });
+    loadTrophyData({ cancelled: isCancelled });
+
+    // 🎯 Extraction sécurisée pour éviter l'erreur React #31
+    if (typeof getSaintOfTheDay === 'function') {
+      try {
+        const todaySaint = getSaintOfTheDay(new Date());
+        if (todaySaint) {
+          const saintName = typeof todaySaint === 'object' ? todaySaint.name : todaySaint;
+          setNameOfTheDay(saintName || '');
+        }
+      } catch (e) {
+        console.error("Erreur calendrier des saints:", e);
+      }
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [loadUserData, loadTrophyData]);
 
   const handleAvatarClick = () => {
     navigate('/profile?tab=avatar');
@@ -135,8 +160,10 @@ function HomePage() {
   const isRefreshingRef = useRef(false);
   const loadUserDataRef = useRef(loadUserData);
   const loadTrophyDataRef = useRef(loadTrophyData);
+  const refreshMeRef = useRef(refreshMe);
   loadUserDataRef.current = loadUserData;
   loadTrophyDataRef.current = loadTrophyData;
+  refreshMeRef.current = refreshMe;
 
   useEffect(() => {
     const scroller = scrollContainerRef.current;
@@ -173,7 +200,11 @@ function HomePage() {
         setIsRefreshing(true);
         setPullDistance(50);
         try {
-          await Promise.all([loadUserDataRef.current(), loadTrophyDataRef.current()]);
+          await Promise.allSettled([
+            refreshMeRef.current(),
+            loadUserDataRef.current(),
+            loadTrophyDataRef.current(),
+          ]);
         } finally {
           isRefreshingRef.current = false;
           setIsRefreshing(false);

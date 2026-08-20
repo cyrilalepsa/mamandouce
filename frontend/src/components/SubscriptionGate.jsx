@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+import { useState, useEffect, createContext, useContext, useCallback, useMemo, useRef } from 'react';
 import api from '../utils/api';
 import { withTimeout } from '../utils/backendUrl';
 import { isSuperAdmin, applySuperadminOverlay } from '../utils/superadmin';
@@ -43,8 +43,9 @@ export function SubscriptionGate({ children }) {
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
   const [isPremium, setIsPremium] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const initialCheckDoneRef = useRef(false);
 
-  const applyPrivileged = (rawUser) => {
+  const applyPrivileged = useCallback((rawUser) => {
     const user = applySuperadminOverlay(rawUser);
     const userIsAdmin = isPrivilegedAccount(user) || auth.isAdmin || auth.isVip;
     setIsAdmin(userIsAdmin);
@@ -54,32 +55,18 @@ export function SubscriptionGate({ children }) {
       return true;
     }
     return false;
-  };
+  }, [auth.isAdmin, auth.isVip]);
 
-  const checkSubscription = async () => {
-    setLoading(true);
+  const checkSubscription = useCallback(async (rawUser, { showLoader = false } = {}) => {
+    if (showLoader) setLoading(true);
     try {
-      if (applyPrivileged(auth.user)) {
-        return;
-      }
-
-      let user = auth.user;
-      try {
-        const userResponse = await withTimeout(api.auth.getMe(), 8000, 'subscription.me');
-        user = applySuperadminOverlay(userResponse.data);
-        auth.ingestUser?.(user);
-      } catch (error) {
-        console.error('Erreur /auth/me:', error);
-      }
-
+      const user = applySuperadminOverlay(rawUser);
       if (applyPrivileged(user)) {
         return;
       }
 
       const premiumFromMe = isPremiumSubscriber(user);
-      if (premiumFromMe) {
-        setIsPremium(true);
-      }
+      setIsPremium(premiumFromMe);
 
       try {
         const subResponse = await withTimeout(api.subscription.getFullStatus(), 8000, 'subscription.status');
@@ -103,13 +90,44 @@ export function SubscriptionGate({ children }) {
         }
       }
     } finally {
-      setLoading(false);
+      if (showLoader) setLoading(false);
     }
-  };
+  }, [applyPrivileged]);
 
   useEffect(() => {
-    checkSubscription();
-  }, [auth.user?.email, auth.isAdmin]);
+    const showLoader = !initialCheckDoneRef.current;
+    initialCheckDoneRef.current = true;
+    checkSubscription(auth.user, { showLoader });
+  }, [auth.user?.email, auth.isAdmin, auth.isVip, checkSubscription]);
+
+  const refreshStatus = useCallback(
+    () => checkSubscription(auth.user, { showLoader: false }),
+    [auth.user, checkSubscription],
+  );
+
+  const contextValue = useMemo(() => ({
+    isPremium: isPremium || auth.isPremium || auth.isVip,
+    isAdmin: isAdmin || auth.isAdmin || auth.isVip,
+    isSuperAdmin: auth.isSuperAdmin,
+    isVip: Boolean(auth.isVip || auth.is_vip),
+    is_admin: isAdmin || auth.isAdmin || auth.isVip,
+    is_superadmin: auth.isSuperAdmin,
+    is_vip: Boolean(auth.isVip || auth.is_vip),
+    subscriptionStatus,
+    loading,
+    refreshStatus,
+  }), [
+    isPremium,
+    isAdmin,
+    auth.isPremium,
+    auth.isAdmin,
+    auth.isSuperAdmin,
+    auth.isVip,
+    auth.is_vip,
+    subscriptionStatus,
+    loading,
+    refreshStatus,
+  ]);
 
   if (loading) {
     return (
@@ -123,18 +141,7 @@ export function SubscriptionGate({ children }) {
   }
 
   return (
-    <SubscriptionContext.Provider value={{ 
-      isPremium: isPremium || auth.isPremium || auth.isVip,
-      isAdmin: isAdmin || auth.isAdmin || auth.isVip,
-      isSuperAdmin: auth.isSuperAdmin,
-      isVip: Boolean(auth.isVip || auth.is_vip),
-      is_admin: isAdmin || auth.isAdmin || auth.isVip,
-      is_superadmin: auth.isSuperAdmin,
-      is_vip: Boolean(auth.isVip || auth.is_vip),
-      subscriptionStatus, 
-      loading,
-      refreshStatus: checkSubscription 
-    }}>
+    <SubscriptionContext.Provider value={contextValue}>
       {children}
     </SubscriptionContext.Provider>
   );

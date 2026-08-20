@@ -96,6 +96,27 @@ function AuthBootLoader() {
   );
 }
 
+/**
+ * Must stay at module scope.
+ *
+ * Defining this component inside AppInner creates a new React component type
+ * every time AuthContext updates. React then unmounts/remounts the active
+ * page, so every mount-only data effect fires again (profile, messages,
+ * appointments, progress, reminders).
+ */
+function ProtectedRoute({ children, requireSubscription = true }) {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) return <AuthBootLoader />;
+  if (!isAuthenticated) return <Navigate to={AUTH_LOGIN_PATH} replace />;
+
+  return requireSubscription ? (
+    <SubscriptionGate>{children}</SubscriptionGate>
+  ) : (
+    children
+  );
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -155,18 +176,6 @@ useEffect(() => {
       }
     };
   }, []);
-  const ProtectedRoute = ({ children, requireSubscription = true }) => {
-    if (loading) return <AuthBootLoader />;
-    if (!isAuthenticated) return <Navigate to={AUTH_LOGIN_PATH} replace />;
-    
-    // Si l'abonnement est requis, encapsuler avec SubscriptionGate
-    if (requireSubscription) {
-      return <SubscriptionGate>{children}</SubscriptionGate>;
-    }
-    
-    return children;
-  };
-
   return (
     <ErrorBoundary>
       <ThemeProvider>
