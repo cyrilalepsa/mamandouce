@@ -75,7 +75,7 @@ function AuthPage({ setIsAuthenticated }) {
           password: credentials.password 
         });
         localStorage.setItem('token', response.data.access_token);
-        await completeLogin(false);
+        await completeLogin(false, response.data);
       }
     } catch (error) {
       const status = error.response?.status;
@@ -108,7 +108,7 @@ function AuthPage({ setIsAuthenticated }) {
           password: credentials.password 
         });
         localStorage.setItem('token', response.data.access_token);
-        await completeLogin(false);
+        await completeLogin(false, response.data);
       }
     } catch (error) {
       const status = error.response?.status;
@@ -166,8 +166,9 @@ function AuthPage({ setIsAuthenticated }) {
 
     try {
       if (isLogin) {
+        let response;
         try {
-          const response = await api.auth.login({ email: formData.email, password: formData.password });
+          response = await api.auth.login({ email: formData.email, password: formData.password });
           localStorage.setItem('token', response.data.access_token);
           auth.ingestUser(response.data);
         } catch (loginError) {
@@ -181,7 +182,7 @@ function AuthPage({ setIsAuthenticated }) {
           }
           throw loginError;
         }
-        await completeLogin(false);
+        await completeLogin(false, response.data);
       } else {
         const response = await api.auth.register(formData);
         localStorage.setItem('token', response.data.access_token);

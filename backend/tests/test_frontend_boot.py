@@ -432,6 +432,28 @@ def test_cycle_home_cards_glass_colors_and_no_name_day_on_cycle_page():
 def test_railway_frontend_listens_on_port():
     pkg = (FRONTEND / "package.json").read_text(encoding="utf-8")
     railway = (FRONTEND / "railway.json").read_text(encoding="utf-8")
-    assert "serve -s dist -l tcp://0.0.0.0:$PORT" in pkg
-    assert "npx serve -s dist -l tcp://0.0.0.0:$PORT" in railway
+    proxy = (FRONTEND / "scripts" / "spa-proxy.mjs").read_text(encoding="utf-8")
+    assert "node scripts/spa-proxy.mjs" in pkg
+    assert "node scripts/spa-proxy.mjs" in railway
+    assert "serve -s dist" not in pkg
+    assert "serve -s dist" not in railway
     assert '"NIXPACKS_NODE_VERSION": "22"' in railway
+    assert "isApiPath" in proxy
+    assert "API_URL" in proxy
+    assert "n2-core" in proxy.lower() or "api.neriacorp.com" in proxy
+    assert "index.html" in proxy
+    assert "SPA_API_PROXY_MISCONFIGURED" in proxy
+
+
+def test_auth_login_passes_payload_and_rejects_html():
+    auth_page = (FRONTEND / "src" / "pages" / "AuthPage.jsx").read_text(encoding="utf-8")
+    ctx = (FRONTEND / "src" / "contexts" / "AuthContext.jsx").read_text(encoding="utf-8")
+    api = (FRONTEND / "src" / "utils" / "api.jsx").read_text(encoding="utf-8")
+    security = (REPO / "backend" / "core" / "security.py").read_text(encoding="utf-8")
+    assert "completeLogin(false, response.data)" in auth_page
+    assert auth_page.count("completeLogin(false, response.data)") >= 3
+    assert "sanitizeAuthPayload" in ctx
+    assert "isHtmlApiResponse" in api
+    assert "API_HTML_FALLBACK" in api
+    assert "find_user_by_email" in security
+    assert "normalize_email" in security

@@ -245,22 +245,17 @@ if __name__ == "__main__":
 # =====================================================================
 # 🌐 SERVICE FRONTEND FINAL (Fix 404)
 # =====================================================================
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
-import os
+from core.frontend_static import discover_frontend_dir
 
-# Liste des dossiers possibles générés par Vite ou Webpack
-POSSIBLE_DIRS = [ROOT_DIR / "dist", ROOT_DIR / "build", ROOT_DIR / "client" / "build"]
-FRONTEND_DIR = next((d for d in POSSIBLE_DIRS if d.exists()), None)
+FRONTEND_DIR = discover_frontend_dir(root=ROOT_DIR)
 
 if FRONTEND_DIR:
-    logger.info(f"✅ Frontend trouvé dans : {FRONTEND_DIR}")
-    
-    # 1. On monte les fichiers statiques (images, css, js)
-    # On monte le dossier racine pour être sûr de trouver le manifest et le favicon
-    app.mount("/assets", StaticFiles(directory=FRONTEND_DIR / "assets"), name="assets")
-    
-    # 2. La "Route Joker" : tout ce qui n'est pas /api est envoyé vers index.html
+    logger.info("Frontend SPA found at %s", FRONTEND_DIR)
+    assets_dir = FRONTEND_DIR / "assets"
+    if assets_dir.is_dir():
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
     @app.get("/{catchall:path}", include_in_schema=False)
     async def serve_react_app(catchall: str):
         # Ne jamais masquer un 404 API par index.html (sinon /api/v1/... « disparaît »).
@@ -278,12 +273,12 @@ if FRONTEND_DIR:
                     ),
                 },
             )
-        # Si c'est un fichier réel (ex: logo.png), on le sert
         file_path = FRONTEND_DIR / catchall
         if file_path.is_file():
             return FileResponse(file_path)
-
-        # Sinon, on renvoie index.html (pour React Router)
         return FileResponse(FRONTEND_DIR / "index.html")
 else:
-    logger.error("❌ ERREUR CRITIQUE : Aucun dossier de build (dist/build) détecté.")
+    logger.warning(
+        "API-only mode: no SPA dist (set FRONTEND_DIR or deploy spa-proxy). "
+        "/api still returns JSON, never index.html."
+    )
