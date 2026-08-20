@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiUrl, authApiUrl, getApiBase } from './backendUrl';
-import { isHtmlApiResponse } from './apiPayload';
+import { isHtmlApiResponse, looksLikeCloudflareGatewayError } from './apiPayload';
 import { safeGet, safeRemove } from './safeStorage';
 
 const API = () => getApiBase();
@@ -8,13 +8,24 @@ const API = () => getApiBase();
 axios.defaults.timeout = 12000;
 
 export function formatApiError(error) {
-  const detail = error?.response?.data?.detail;
+  const data = error?.response?.data;
+  const raw =
+    (typeof data === "string" && data) ||
+    (typeof data?.detail === "string" && data.detail) ||
+    "";
+  if (
+    error?.code === "API_HTML_FALLBACK" ||
+    looksLikeCloudflareGatewayError(raw)
+  ) {
+    return "Le serveur API n'a pas répondu (Cloudflare 502). Vérifiez API_URL du service frontend Railway.";
+  }
+  const detail = data?.detail;
   if (typeof detail === "string" && detail.trim()) return detail;
   if (Array.isArray(detail)) {
     const msgs = detail.map((item) => item?.msg || item?.message || "").filter(Boolean);
     if (msgs.length) return msgs.join("; ");
   }
-  if (error?.response?.data?.message) return String(error.response.data.message);
+  if (data?.message) return String(data.message);
   if (error?.message) return error.message;
   return "Une erreur est survenue";
 }

@@ -2,6 +2,15 @@
  * Garde-fous : une 200 HTML (SPA fallback) ne doit jamais devenir un "user".
  */
 
+export function looksLikeCloudflareGatewayError(value) {
+  const text = String(value || "");
+  return (
+    /error code:\s*50[024]/i.test(text) ||
+    /invalid or incomplete response to Cloudflare/i.test(text) ||
+    /web server is returning an unknown error/i.test(text)
+  );
+}
+
 export function looksLikeHtml(value) {
   if (typeof value !== "string") return false;
   const s = value.trim().slice(0, 96).toLowerCase();

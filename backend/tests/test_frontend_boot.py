@@ -443,6 +443,9 @@ def test_railway_frontend_listens_on_port():
     assert "n2-core" in proxy.lower() or "api.neriacorp.com" in proxy
     assert "index.html" in proxy
     assert "SPA_API_PROXY_MISCONFIGURED" in proxy
+    assert "SPA_API_PROXY_LOOP" in proxy
+    assert "cdn-loop" in proxy
+    assert "AbortSignal.timeout" in proxy
 
 
 def test_auth_login_passes_payload_and_rejects_html():

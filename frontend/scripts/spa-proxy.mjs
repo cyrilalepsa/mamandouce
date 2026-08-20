@@ -3,18 +3,18 @@
  * Serveur SPA Railway : fichiers statiques + fallback index.html,
  * SAUF /api (et /health) qui sont proxifiés vers FastAPI.
  *
- * `npx serve -s dist` renvoyait index.html pour TOUT chemin, y compris
- * /api/health et /api/v1/auth/login — le navigateur avalait du HTML
- * à la place du JSON. Ce script rend ça impossible.
+ * Cloudflare 502/520 (« invalid or incomplete response ») apparaît si
+ * l'origine ferme la connexion ou recopie des en-têtes hop-by-hop /
+ * `cdn-loop`. Ce proxy bufferise /api et ne renvoie que des réponses
+ * HTTP/1.1 complètes (content-length).
  *
  * Runtime (service frontend Railway, PAS VITE_*) :
  *   API_URL | BACKEND_URL | MAMANDOUCE_API_URL  = origine FastAPI MamanDouce
  *   (ex. https://<service>.up.railway.app) — jamais api.neriacorp.com (N2)
- *   et jamais mamandouce.neriacorp.com (ce domaine est le SPA).
+ *   et jamais le domaine SPA ni l'URL publique de CE service (boucle).
  */
 import fs from "node:fs";
 import http from "node:http";
-import https from "node:https";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -22,6 +22,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const N2_CORE_API_HOST = "api.neriacorp.com";
+export const PROXY_STATUS_PATH = "/__mamandouce/proxy-status";
+const MAX_API_BODY_BYTES = 2 * 1024 * 1024;
+const UPSTREAM_TIMEOUT_MS = 12000;
 
 export const SPA_LOOP_HOSTS = new Set([
   "mamandouce.neriacorp.com",
@@ -50,7 +53,7 @@ const MIME = {
   ".webmanifest": "application/manifest+json",
 };
 
-const HOP_BY_HOP = new Set([
+const DROP_REQUEST_HEADERS = new Set([
   "connection",
   "keep-alive",
   "proxy-authenticate",
@@ -59,6 +62,32 @@ const HOP_BY_HOP = new Set([
   "trailers",
   "transfer-encoding",
   "upgrade",
+  "host",
+  "content-length",
+  "accept-encoding",
+  "cdn-loop",
+  "cf-ray",
+  "cf-connecting-ip",
+  "cf-ipcountry",
+  "cf-visitor",
+  "cf-ew-via",
+  "cf-warp-tag-id",
+  "cf-pseudo-ipv4",
+  "true-client-ip",
+  "x-forwarded-for",
+  "x-forwarded-proto",
+  "x-forwarded-host",
+  "forwarded",
+]);
+
+const PASS_RESPONSE_HEADERS = new Set([
+  "content-type",
+  "cache-control",
+  "retry-after",
+  "www-authenticate",
+  "x-tenant",
+  "x-tenant-kind",
+  "x-neriacorp-publication-id",
 ]);
 
 export function pathnameOf(url) {
@@ -82,8 +111,23 @@ export function isApiPath(urlPath) {
   );
 }
 
+export function isProxyStatusPath(urlPath) {
+  return pathnameOf(urlPath) === PROXY_STATUS_PATH;
+}
+
+export function hostnameOf(value) {
+  const raw = String(value || "").trim().toLowerCase();
+  if (!raw) return "";
+  try {
+    const withProto = raw.includes("://") ? raw : `https://${raw}`;
+    return new URL(withProto).hostname.toLowerCase();
+  } catch {
+    return raw.split("/")[0].split(":")[0];
+  }
+}
+
 export function isBlockedApiHost(hostname) {
-  const host = String(hostname || "").toLowerCase().split(":")[0];
+  const host = hostnameOf(hostname);
   if (!host) return true;
   if (host === N2_CORE_API_HOST || host === `www.${N2_CORE_API_HOST}`) return true;
   if (SPA_LOOP_HOSTS.has(host)) return true;
@@ -96,6 +140,46 @@ export function isBlockedApiTarget(url) {
   } catch {
     return true;
   }
+}
+
+export function parseHostPort(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return { host: "", port: "" };
+  try {
+    const withProto = raw.includes("://") ? raw : `http://${raw}`;
+    const parsed = new URL(withProto);
+    return { host: parsed.hostname.toLowerCase(), port: parsed.port || "" };
+  } catch {
+    const hostport = raw.split("/")[0];
+    const [host, port = ""] = hostport.split(":");
+    return { host: host.toLowerCase(), port };
+  }
+}
+
+function isLoopbackHost(host) {
+  return host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0" || host === "::1";
+}
+
+export function isSameProxyHost(left, right) {
+  const a = parseHostPort(left);
+  const b = parseHostPort(right);
+  if (!a.host || !b.host || a.host !== b.host) return false;
+  if (a.port === b.port) return true;
+  if (isLoopbackHost(a.host)) return a.port !== "" && b.port !== "" && a.port === b.port;
+  if (!a.port || !b.port) return true;
+  return false;
+}
+
+export function isSelfProxyTarget(origin, env = {}, requestHost = "") {
+  const target = parseHostPort(origin);
+  if (!target.host) return true;
+  const aliases = [
+    requestHost,
+    env.RAILWAY_PUBLIC_DOMAIN,
+    env.RAILWAY_PRIVATE_DOMAIN,
+    env.RAILWAY_STATIC_URL,
+  ];
+  return aliases.some((alias) => isSameProxyHost(origin, alias));
 }
 
 export function resolveApiTarget(env = process.env) {
@@ -127,11 +211,13 @@ export function isHtmlContentType(value) {
 }
 
 function sendJson(res, status, body) {
+  if (res.writableEnded || res.headersSent) return;
   const data = JSON.stringify(body);
   res.writeHead(status, {
     "content-type": "application/json; charset=utf-8",
     "cache-control": "no-store",
     "content-length": Buffer.byteLength(data),
+    connection: "close",
   });
   res.end(data);
 }
@@ -153,18 +239,54 @@ function apiMisconfigured(res, resolved, urlPath) {
   });
 }
 
-function filterHeaders(headers, extraDrop = []) {
-  const drop = new Set([...HOP_BY_HOP, ...extraDrop.map((h) => h.toLowerCase())]);
+export function pickUpstreamRequestHeaders(headers) {
   const out = {};
   for (const [key, value] of Object.entries(headers || {})) {
-    if (drop.has(String(key).toLowerCase())) continue;
-    if (value == null) continue;
-    out[key] = value;
+    const name = String(key).toLowerCase();
+    if (DROP_REQUEST_HEADERS.has(name)) continue;
+    if (name.startsWith("cf-")) continue;
+    if (value == null || value === "") continue;
+    out[name] = Array.isArray(value) ? value.join(", ") : String(value);
+  }
+  out.accept = out.accept || "application/json, */*";
+  out["accept-encoding"] = "identity";
+  return out;
+}
+
+function pickClientResponseHeaders(upstreamHeaders, contentType, byteLength) {
+  const out = {
+    "content-type": contentType || "application/json; charset=utf-8",
+    "cache-control": "no-store",
+    "content-length": byteLength,
+    connection: "close",
+  };
+  if (!upstreamHeaders || typeof upstreamHeaders.get !== "function") return out;
+  for (const name of PASS_RESPONSE_HEADERS) {
+    const value = upstreamHeaders.get(name);
+    if (value && name !== "content-type") out[name] = value;
   }
   return out;
 }
 
-export function proxyApiRequest(req, res, origin) {
+function readRequestBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let size = 0;
+    req.on("data", (chunk) => {
+      size += chunk.length;
+      if (size > MAX_API_BODY_BYTES) {
+        reject(new Error("Request body too large"));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("error", reject);
+  });
+}
+
+export async function proxyApiRequest(req, res, origin) {
   const urlPath = pathnameOf(req.url);
   let target;
   try {
@@ -173,44 +295,60 @@ export function proxyApiRequest(req, res, origin) {
     sendJson(res, 502, { detail: "Invalid API origin", path: urlPath });
     return;
   }
-  const lib = target.protocol === "https:" ? https : http;
-  const headers = filterHeaders(req.headers, ["host"]);
-  headers.host = target.host;
-  headers["x-forwarded-host"] = req.headers.host || "";
-  headers["x-forwarded-proto"] = "https";
 
-  const proxyReq = lib.request(
-    {
-      hostname: target.hostname,
-      port: target.port || (target.protocol === "https:" ? 443 : 80),
-      path: req.url || "/",
-      method: req.method,
-      headers,
-    },
-    (proxyRes) => {
-      if (isHtmlContentType(proxyRes.headers["content-type"])) {
-        proxyRes.resume();
-        sendJson(res, 502, {
-          detail:
-            "Upstream returned HTML instead of JSON. API_URL does not point to MamanDouce FastAPI.",
-          path: urlPath,
-          code: "SPA_API_UPSTREAM_HTML",
-        });
-        return;
-      }
-      res.writeHead(proxyRes.statusCode || 502, filterHeaders(proxyRes.headers));
-      proxyRes.pipe(res);
-    },
-  );
-  proxyReq.on("error", (err) => {
+  const method = String(req.method || "GET").toUpperCase();
+  let body;
+  try {
+    body = await readRequestBody(req);
+  } catch (err) {
+    sendJson(res, 413, { detail: String(err.message || err), path: urlPath });
+    return;
+  }
+
+  const headers = pickUpstreamRequestHeaders(req.headers);
+  const init = {
+    method,
+    headers,
+    redirect: "manual",
+    signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+  };
+  if (method !== "GET" && method !== "HEAD") {
+    init.body = body;
+  }
+
+  let upstream;
+  try {
+    upstream = await fetch(`${target.origin}${req.url || "/"}`, init);
+  } catch (err) {
     sendJson(res, 502, {
       detail: "Upstream API unreachable",
       path: urlPath,
       code: "SPA_API_UPSTREAM_UNREACHABLE",
       error: String(err && err.message ? err.message : err),
     });
-  });
-  req.pipe(proxyReq);
+    return;
+  }
+
+  const buf = Buffer.from(await upstream.arrayBuffer());
+  const contentType = upstream.headers.get("content-type") || "";
+  const preview = buf.slice(0, 96).toString("utf8").trim().toLowerCase();
+  const bodyLooksHtml = preview.startsWith("<!doctype") || preview.startsWith("<html");
+  if (isHtmlContentType(contentType) || bodyLooksHtml) {
+    sendJson(res, 502, {
+      detail:
+        "Upstream returned HTML instead of JSON. API_URL does not point to MamanDouce FastAPI.",
+      path: urlPath,
+      code: "SPA_API_UPSTREAM_HTML",
+    });
+    return;
+  }
+
+  if (res.writableEnded || res.headersSent) return;
+  res.writeHead(
+    upstream.status || 502,
+    pickClientResponseHeaders(upstream.headers, contentType || "application/json; charset=utf-8", buf.length),
+  );
+  res.end(buf);
 }
 
 function safeJoin(root, urlPath) {
@@ -261,18 +399,69 @@ export function serveStaticOrSpa(req, res, distDir) {
 
 export function createSpaProxyServer({ distDir, env = process.env } = {}) {
   const resolved = resolveApiTarget(env);
-  return http.createServer((req, res) => {
-    const urlPath = pathnameOf(req.url);
-    if (isApiPath(urlPath)) {
-      if (resolved.error || !resolved.origin) {
-        apiMisconfigured(res, resolved, urlPath);
+  const server = http.createServer((req, res) => {
+    const fail = (err) => {
+      if (!res.headersSent && !res.writableEnded) {
+        sendJson(res, 500, {
+          detail: "spa-proxy failed",
+          error: String(err && err.message ? err.message : err),
+          code: "SPA_PROXY_CRASH",
+        });
+      } else {
+        try {
+          res.destroy();
+        } catch {
+          /* ignore */
+        }
+      }
+    };
+
+    try {
+      const urlPath = pathnameOf(req.url);
+      if (isProxyStatusPath(urlPath)) {
+        sendJson(res, 200, {
+          ok: true,
+          apiConfigured: Boolean(resolved.origin) && !resolved.error,
+          apiHost: hostnameOf(resolved.origin) || null,
+          error: resolved.error,
+        });
         return;
       }
-      proxyApiRequest(req, res, resolved.origin);
-      return;
+      if (isApiPath(urlPath)) {
+        if (resolved.error || !resolved.origin) {
+          apiMisconfigured(res, resolved, urlPath);
+          return;
+        }
+        if (isSelfProxyTarget(resolved.origin, env, req.headers.host)) {
+          sendJson(res, 502, {
+            detail:
+              "API_URL points at this same frontend service (proxy loop). Use the FastAPI Railway URL.",
+            path: urlPath,
+            code: "SPA_API_PROXY_LOOP",
+          });
+          return;
+        }
+        proxyApiRequest(req, res, resolved.origin).catch(fail);
+        return;
+      }
+      serveStaticOrSpa(req, res, distDir);
+    } catch (err) {
+      fail(err);
     }
-    serveStaticOrSpa(req, res, distDir);
   });
+  server.keepAliveTimeout = 5000;
+  server.headersTimeout = 10000;
+  server.requestTimeout = UPSTREAM_TIMEOUT_MS + 2000;
+  server.on("clientError", (_err, socket) => {
+    try {
+      socket.end(
+        "HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nContent-Length: 16\r\nConnection: close\r\n\r\n{\"detail\":\"bad\"}",
+      );
+    } catch {
+      /* ignore */
+    }
+  });
+  return server;
 }
 
 export function defaultDistDir() {

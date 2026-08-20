@@ -9,7 +9,9 @@ import {
   createSpaProxyServer,
   isApiPath,
   isBlockedApiTarget,
+  isSelfProxyTarget,
   pathnameOf,
+  pickUpstreamRequestHeaders,
   resolveApiTarget,
 } from "./spa-proxy.mjs";
 
@@ -38,6 +40,28 @@ test("resolveApiTarget rejects N2 core and SPA loop hosts", () => {
   const ok = resolveApiTarget({ API_URL: "https://mamandouce-api.up.railway.app/" });
   assert.equal(ok.error, null);
   assert.equal(ok.origin, "https://mamandouce-api.up.railway.app");
+  assert.equal(
+    isSelfProxyTarget("https://frontend-prod.up.railway.app", {
+      RAILWAY_PUBLIC_DOMAIN: "frontend-prod.up.railway.app",
+    }),
+    true,
+  );
+  assert.equal(
+    isSelfProxyTarget("http://127.0.0.1:8000", {}, "127.0.0.1:3000"),
+    false,
+  );
+  const forwarded = pickUpstreamRequestHeaders({
+    "cdn-loop": "cloudflare",
+    "cf-ray": "abc",
+    authorization: "Bearer tok",
+    "content-type": "application/json",
+    host: "mamandouce.neriacorp.com",
+  });
+  assert.equal(forwarded["cdn-loop"], undefined);
+  assert.equal(forwarded["cf-ray"], undefined);
+  assert.equal(forwarded.host, undefined);
+  assert.equal(forwarded.authorization, "Bearer tok");
+  assert.equal(forwarded["accept-encoding"], "identity");
 });
 
 function listen(server) {
@@ -166,6 +190,75 @@ test("spa-proxy rejects upstream HTML on /api", async () => {
       assert.equal(api.status, 502);
       assert.equal(JSON.parse(api.body).code, "SPA_API_UPSTREAM_HTML");
       assert.doesNotMatch(api.body, /<!doctype html>/i);
+    } finally {
+      proxy.close();
+    }
+  } finally {
+    upstream.close();
+    fs.rmSync(dist, { recursive: true, force: true });
+  }
+});
+
+test("spa-proxy refuses self-loop and strips Cloudflare hop headers", async () => {
+  const dist = fs.mkdtempSync(path.join(os.tmpdir(), "md-dist-"));
+  fs.writeFileSync(path.join(dist, "index.html"), "<!doctype html><title>SPA</title>");
+
+  const loop = createSpaProxyServer({
+    distDir: dist,
+    env: {
+      API_URL: "https://frontend-prod.up.railway.app",
+      RAILWAY_PUBLIC_DOMAIN: "frontend-prod.up.railway.app",
+    },
+  });
+  try {
+    const port = await listen(loop);
+    const api = await request(port, "/api/health", {
+      headers: { host: "frontend-prod.up.railway.app" },
+    });
+    assert.equal(api.status, 502);
+    assert.equal(JSON.parse(api.body).code, "SPA_API_PROXY_LOOP");
+    assert.match(api.headers["content-type"], /application\/json/);
+    assert.equal(api.headers["content-length"], String(Buffer.byteLength(api.body)));
+  } finally {
+    loop.close();
+  }
+
+  let seenCdnLoop = false;
+  const upstream = http.createServer((req, res) => {
+    if (req.headers["cdn-loop"]) seenCdnLoop = true;
+    res.writeHead(200, {
+      "content-type": "application/json",
+      connection: "close",
+      "cdn-loop": "cloudflare",
+      "cf-ray": "should-not-leak",
+    });
+    res.end(JSON.stringify({ status: "ok", sawCdnLoop: Boolean(req.headers["cdn-loop"]) }));
+  });
+  try {
+    const upPort = await listen(upstream);
+    const proxy = createSpaProxyServer({
+      distDir: dist,
+      env: { API_URL: `http://127.0.0.1:${upPort}` },
+    });
+    const port = await listen(proxy);
+    try {
+      const health = await request(port, "/api/health", {
+        headers: {
+          "cdn-loop": "cloudflare",
+          "cf-ray": "abc",
+          host: "mamandouce.neriacorp.com",
+        },
+      });
+      assert.equal(health.status, 200);
+      assert.deepEqual(JSON.parse(health.body), { status: "ok", sawCdnLoop: false });
+      assert.equal(seenCdnLoop, false);
+      assert.equal(health.headers["cdn-loop"], undefined);
+      assert.equal(health.headers["cf-ray"], undefined);
+      assert.equal(health.headers["content-length"], String(Buffer.byteLength(health.body)));
+
+      const status = await request(port, "/__mamandouce/proxy-status");
+      assert.equal(status.status, 200);
+      assert.equal(JSON.parse(status.body).apiConfigured, true);
     } finally {
       proxy.close();
     }
