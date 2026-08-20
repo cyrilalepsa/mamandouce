@@ -29,6 +29,7 @@ from services.email import (
     send_reset_password_email,
 )
 from core.privileges import (
+    SUPER_ADMIN_EMAILS,
     SUPERADMIN_DB_SET,
     ensure_superadmin_privileges,
     is_superadmin_email,
@@ -52,11 +53,33 @@ _DIRECT_SEND_MIN_INTERVAL_SEC = 15.0
 _last_direct_send_monotonic = 0.0
 
 
+def _force_vip_auth_fields(payload: dict) -> dict:
+    """Force admin + premium + flags VIP pour les deux e-mails privilège.
+
+    Ces champs doivent toujours être présents dans le JSON /login et /auth/me
+    pour que AuthContext mette à jour l'état au chargement.
+    """
+    data = dict(payload or {})
+    data.update(privilege_public_fields(data))
+    email = (data.get("email") or "").strip().lower()
+    if email in SUPER_ADMIN_EMAILS or email in (
+        "cyrilalepsa@gmail.com",
+        "superadmin@neriacorp.com",
+    ):
+        data["role"] = "admin"
+        data["subscription_status"] = "premium"
+        data["is_admin"] = True
+        data["is_premium"] = True
+        data["is_vip"] = True
+        data["is_superadmin"] = True
+    return data
+
+
 def _issue_token(user: dict | None, email_fallback: str | None = None) -> Token:
     payload = dict(user or {})
     if email_fallback and not payload.get("email"):
         payload["email"] = email_fallback
-    fields = privilege_public_fields(payload)
+    fields = _force_vip_auth_fields(payload)
     sub = fields.get("email") or email_fallback
     access_token = create_access_token(
         data={"sub": sub},
@@ -471,8 +494,10 @@ async def login(user_data: UserLogin):
 
 @router.get("/auth/me", response_model=User)
 async def get_me(current_user: User = Depends(get_current_user)):
-    """Get current authenticated user"""
-    return current_user
+    """Get current authenticated user — flags VIP toujours présents dans le JSON."""
+    payload = current_user.model_dump()
+    payload.update(_force_vip_auth_fields(payload))
+    return User(**payload)
 
 
 from models.schemas import ProfileUpdate

@@ -89,6 +89,18 @@ def test_login_token_fields_force_superadmin_flags():
     assert fields["is_admin"] is True
     assert fields["is_premium"] is True
     assert fields["is_vip"] is True
+    from pathlib import Path
+
+    auth_src = (Path(__file__).resolve().parents[1] / "routes" / "auth.py").read_text(
+        encoding="utf-8"
+    )
+    schema_src = (Path(__file__).resolve().parents[1] / "models" / "schemas.py").read_text(
+        encoding="utf-8"
+    )
+    assert "_force_vip_auth_fields" in auth_src
+    assert "payload.update(_force_vip_auth_fields(payload))" in auth_src
+    assert "is_premium: Optional[bool] = False" in schema_src
+    assert "is_vip: Optional[bool] = False" in schema_src
 
 
 async def _ensure():
