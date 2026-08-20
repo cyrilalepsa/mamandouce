@@ -3,6 +3,7 @@ import { test } from "node:test";
 import {
   assertNotHtmlApiPayload,
   isHtmlApiResponse,
+  looksLikeCloudflareGatewayError,
   looksLikeHtml,
   sanitizeAuthPayload,
 } from "./apiPayload.js";
@@ -41,4 +42,15 @@ test("isHtmlApiResponse catches content-type and body", () => {
     false,
   );
   assert.deepEqual(assertNotHtmlApiPayload({ ok: true }), { ok: true });
+});
+
+test("looksLikeCloudflareGatewayError matches CF 502/520 pages", () => {
+  assert.equal(looksLikeCloudflareGatewayError("error code: 502"), true);
+  assert.equal(
+    looksLikeCloudflareGatewayError(
+      "The origin web server returned an invalid or incomplete response to Cloudflare.",
+    ),
+    true,
+  );
+  assert.equal(looksLikeCloudflareGatewayError('{"email":"cyrilalepsa@gmail.com"}'), false);
 });
