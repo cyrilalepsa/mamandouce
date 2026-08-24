@@ -1,16 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { Search, ShieldCheck, ShieldAlert, ShieldX, AlertTriangle, ChevronDown, Heart, Plus, BookOpen, Loader2, Camera, Sparkles } from 'lucide-react';
+import { Search, ChevronDown, Heart, Plus, BookOpen, Loader2 } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { FoodScannerAI } from '../components/food';
 import { useTheme } from '../contexts/ThemeContext';
+import {
+  dedupeFoodsByName,
+  getFoodStatusStyle,
+  normalizeFoodStatus,
+} from '../utils/foodSafety';
 
 function FoodLibraryPage() {
   const navigate = useNavigate();
@@ -27,6 +32,7 @@ function FoodLibraryPage() {
   const [total, setTotal] = useState(0);
   const [favorites, setFavorites] = useState(new Set());
   const [showScanner, setShowScanner] = useState(false);
+  const requestIdRef = useRef(0);
   
   // Langue actuelle
   const currentLang = i18n.language?.split('-')[0] || 'fr';
@@ -52,6 +58,7 @@ function FoodLibraryPage() {
   }, [searchQuery, selectedCategory, selectedStatus, page]);
 
   const loadFoods = async () => {
+    const requestId = ++requestIdRef.current;
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -62,15 +69,21 @@ function FoodLibraryPage() {
       params.append('limit', '30');
 
       const response = await api.foodLibrary.getAll(params.toString());
-      setFoods(response.data.foods || []);
+      if (requestId !== requestIdRef.current) return;
+      const normalizedFoods = dedupeFoodsByName(response.data?.foods).map(food => ({
+        ...food,
+        safe_for_pregnancy: normalizeFoodStatus(food?.safe_for_pregnancy),
+      }));
+      setFoods(normalizedFoods);
       setTotalPages(response.data.pages || 1);
       setTotal(response.data.total || 0);
       setCategories(response.data.categories || []);
     } catch (error) {
+      if (requestId !== requestIdRef.current) return;
       console.error('Erreur chargement bibliothèque:', error);
       toast.error('Erreur lors du chargement');
     } finally {
-      setLoading(false);
+      if (requestId === requestIdRef.current) setLoading(false);
     }
   };
 
@@ -109,33 +122,19 @@ function FoodLibraryPage() {
     }
   };
 
-  const getSafetyIcon = (status) => {
-    switch (status) {
-      case 'safe':
-        return <ShieldCheck className="w-4 h-4 text-green-500" />;
-      case 'caution':
-        return <ShieldAlert className="w-4 h-4 text-yellow-500" />;
-      case 'avoid':
-        return <AlertTriangle className="w-4 h-4 text-orange-500" />;
-      case 'unsafe':
-        return <ShieldX className="w-4 h-4 text-red-500" />;
-      default:
-        return <ShieldAlert className="w-4 h-4 text-gray-400" />;
-    }
-  };
-
   const getSafetyBadge = (status) => {
-    switch (status) {
+    const style = getFoodStatusStyle(status);
+    switch (style.status) {
       case 'safe':
-        return { text: t('scanner.safe'), color: 'bg-green-100 text-green-700 border-green-200' };
+        return { ...style, text: t('scanner.allowed', 'Autorisé') };
       case 'caution':
-        return { text: t('scanner.caution'), color: 'bg-yellow-100 text-yellow-700 border-yellow-200' };
+        return { ...style, text: t('library.showCaution', 'Avec précaution') };
       case 'avoid':
-        return { text: t('scanner.avoid'), color: 'bg-orange-100 text-orange-700 border-orange-200' };
+        return { ...style, text: t('scanner.avoid', 'À éviter') };
       case 'unsafe':
-        return { text: t('scanner.forbidden'), color: 'bg-red-100 text-red-700 border-red-200' };
+        return { ...style, text: t('scanner.forbidden', 'Interdit') };
       default:
-        return { text: t('scanner.unknown'), color: 'bg-gray-100 text-gray-600 border-gray-200' };
+        return { ...style, text: t('scanner.unknown', 'Inconnu') };
     }
   };
 
@@ -189,7 +188,10 @@ function FoodLibraryPage() {
                 type="text"
                 placeholder={t('library.searchPlaceholder')}
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setPage(1);
+                }}
                 className="pl-12 rounded-2xl"
                 style={{ background: '#ffffff', color: '#000000', border: '1px solid #e2e8f0' }}
                 data-testid="food-search-input"
@@ -281,7 +283,7 @@ function FoodLibraryPage() {
                 };
                 return (
                   <div
-                    key={index}
+                    key={`${food.name}-${food.safe_for_pregnancy}`}
                     className="rounded-2xl p-3.5 relative overflow-hidden transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
                     style={{
                       background: pastelStyle.bg,
@@ -311,12 +313,12 @@ function FoodLibraryPage() {
                             />
                           </button>
                         </div>
-                        <span className={`inline-flex items-center gap-1 mt-2 px-2.5 py-1 rounded-full text-xs font-bold ${
-                          food.safe_for_pregnancy === 'yes' ? 'bg-emerald-100 text-emerald-700' :
-                          food.safe_for_pregnancy === 'caution' ? 'bg-orange-100 text-orange-700' :
-                          'bg-red-100 text-red-700'
-                        }`}>
-                          {food.safe_for_pregnancy === 'yes' ? 'Sur' : food.safe_for_pregnancy === 'caution' ? 'Précaution' : 'Interdit'}
+                        <span
+                          className={`inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-full border text-xs shadow-sm ${badge.className}`}
+                          data-testid={`food-status-${badge.status}`}
+                        >
+                          <span aria-hidden="true">{badge.icon}</span>
+                          {badge.text}
                         </span>
                         {food.reason && (
                           <p className="mt-2 text-xs text-slate-600 line-clamp-2">{food.reason}</p>

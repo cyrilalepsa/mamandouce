@@ -19,6 +19,35 @@ router = APIRouter(prefix="/food", tags=["food"])
 # Import food database
 from data.food_database import FOOD_SAFETY_DATABASE as FOOD_DATABASE
 
+FOOD_SAFETY_STATUSES = {"safe", "caution", "avoid", "unsafe"}
+FOOD_STATUS_ALIASES = {
+    "yes": "safe",
+    "allowed": "safe",
+    "authorized": "safe",
+    "precaution": "caution",
+    "forbidden": "unsafe",
+    "no": "unsafe",
+}
+
+
+def normalize_food_status(value: str | None) -> str:
+    status = str(value or "unknown").strip().lower()
+    return FOOD_STATUS_ALIASES.get(status, status)
+
+
+def normalized_food_library(food_db: dict) -> list[dict]:
+    """Canonical, duplicate-free rows sorted after normalization."""
+    by_name: dict[str, dict] = {}
+    for raw in food_db.values():
+        food = dict(raw)
+        food["safe_for_pregnancy"] = normalize_food_status(
+            food.get("safe_for_pregnancy")
+        )
+        dedupe_key = str(food.get("name") or "").strip().casefold()
+        if dedupe_key:
+            by_name[dedupe_key] = food
+    return sorted(by_name.values(), key=lambda item: item["name"].casefold())
+
 async def get_food_safety_database():
     """Get the food safety database"""
     return FOOD_DATABASE
@@ -157,7 +186,10 @@ async def search_food(query: str, current_user: User = Depends(get_current_user)
 async def get_safe_foods(current_user: User = Depends(get_current_user)):
     """Get all safe foods"""
     food_db = await get_food_safety_database()
-    safe_foods = [v for v in food_db.values() if v["safe_for_pregnancy"] == "safe"]
+    safe_foods = [
+        food for food in normalized_food_library(food_db)
+        if food["safe_for_pregnancy"] == "safe"
+    ]
     return safe_foods
 
 # ==================== FOOD LIBRARY ====================
@@ -174,7 +206,7 @@ async def get_food_library(
     """Get complete food library with search and filtering"""
     food_db = await get_food_safety_database()
     
-    foods = sorted(food_db.values(), key=lambda x: x["name"].lower())
+    foods = normalized_food_library(food_db)
     
     if search:
         search_lower = search.lower()
@@ -184,12 +216,20 @@ async def get_food_library(
         foods = [f for f in foods if f.get("category", "").lower() == category.lower()]
     
     if status:
-        foods = [f for f in foods if f.get("safe_for_pregnancy") == status]
+        canonical_status = normalize_food_status(status)
+        if canonical_status not in FOOD_SAFETY_STATUSES:
+            raise HTTPException(status_code=400, detail="Statut alimentaire invalide")
+        foods = [
+            f for f in foods
+            if f.get("safe_for_pregnancy") == canonical_status
+        ]
     
-    all_foods = list(food_db.values())
+    all_foods = normalized_food_library(food_db)
     categories = sorted(list(set(f.get("category", "Autre") for f in all_foods)))
     
     total = len(foods)
+    page = max(1, page)
+    limit = min(100, max(1, limit))
     start = (page - 1) * limit
     end = start + limit
     foods_page = foods[start:end]
@@ -199,7 +239,7 @@ async def get_food_library(
         "total": total,
         "page": page,
         "limit": limit,
-        "pages": (total + limit - 1) // limit,
+        "pages": max(1, (total + limit - 1) // limit),
         "categories": categories
     }
 

@@ -29,13 +29,13 @@ FOOD_SAFETY_DATABASE = {
     "boeuf-cuit": {"name": "Bœuf bien cuit", "safe_for_pregnancy": "safe", "category": "Viandes", "reason": "Cuisson à cœur obligatoire. Éviter saignant."},
     "boeuf-cru": {"name": "Bœuf cru (tartare)", "safe_for_pregnancy": "unsafe", "category": "Viandes", "reason": "INTERDIT. Risque de toxoplasmose et listériose."},
     "boudin-noir": {"name": "Boudin noir", "safe_for_pregnancy": "caution", "category": "Charcuterie", "reason": "À consommer avec modération et bien cuit. Excès de vitamine A, risque de malformations."},
-    "brie": {"name": "Brie au lait cru", "safe_for_pregnancy": "avoid", "category": "Fromages", "reason": "Risque de listériose. Préférer le brie pasteurisé."},
+    "brie": {"name": "Brie au lait cru", "safe_for_pregnancy": "unsafe", "category": "Fromages", "reason": "INTERDIT. Lait cru : risque de listériose. Choisir une version pasteurisée."},
     "brocoli": {"name": "Brocoli", "safe_for_pregnancy": "safe", "category": "Légumes", "reason": "Excellent source d'acide folique et vitamine C."},
     
     # ===== C =====
     "cabillaud": {"name": "Cabillaud cuit", "safe_for_pregnancy": "safe", "category": "Poissons", "reason": "Poisson maigre recommandé, bien cuire."},
     "cafe": {"name": "Café", "safe_for_pregnancy": "caution", "category": "Boissons", "reason": "À consommer avec modération (max 200mg/jour soit 2 tasses). Excès de caféine, risque de fausse couche ou petit poids de naissance."},
-    "camembert-lait-cru": {"name": "Camembert au lait cru", "safe_for_pregnancy": "avoid", "category": "Fromages", "reason": "Risque de listériose. Choisir version pasteurisée."},
+    "camembert-lait-cru": {"name": "Camembert au lait cru", "safe_for_pregnancy": "unsafe", "category": "Fromages", "reason": "INTERDIT. Lait cru : risque de listériose. Choisir une version pasteurisée."},
     "camembert-pasteurise": {"name": "Camembert pasteurisé", "safe_for_pregnancy": "safe", "category": "Fromages", "reason": "Sûr si fabriqué avec du lait pasteurisé."},
     "canard-cuit": {"name": "Canard bien cuit", "safe_for_pregnancy": "safe", "category": "Viandes", "reason": "Cuisson à cœur obligatoire."},
     "carotte": {"name": "Carotte", "safe_for_pregnancy": "safe", "category": "Légumes", "reason": "Riche en bêta-carotène. Bien laver si crue."},
@@ -45,7 +45,7 @@ FOOD_SAFETY_DATABASE = {
     "cerise": {"name": "Cerise", "safe_for_pregnancy": "safe", "category": "Fruits", "reason": "Bien laver avant consommation."},
     "champignons-cuits": {"name": "Champignons cuits", "safe_for_pregnancy": "safe", "category": "Légumes", "reason": "Bien cuire. Éviter les champignons sauvages."},
     "cheddar": {"name": "Cheddar", "safe_for_pregnancy": "safe", "category": "Fromages", "reason": "Fromage à pâte dure, sûr pendant la grossesse."},
-    "chevre-frais": {"name": "Chèvre frais au lait cru", "safe_for_pregnancy": "avoid", "category": "Fromages", "reason": "Risque de listériose si non pasteurisé."},
+    "chevre-frais": {"name": "Chèvre frais au lait cru", "safe_for_pregnancy": "unsafe", "category": "Fromages", "reason": "INTERDIT. Lait cru : risque de listériose. Choisir un chèvre pasteurisé."},
     "chevre-pasteurise": {"name": "Chèvre pasteurisé", "safe_for_pregnancy": "safe", "category": "Fromages", "reason": "Sûr si pasteurisé."},
     "chocolat-noir": {"name": "Chocolat noir", "safe_for_pregnancy": "safe", "category": "Produits sucrés", "reason": "Avec modération. Contient de la caféine."},
     "chorizo": {"name": "Chorizo", "safe_for_pregnancy": "caution", "category": "Charcuterie", "reason": "À consommer bien cuit uniquement. Cru : risque de toxoplasmose."},
@@ -83,7 +83,7 @@ FOOD_SAFETY_DATABASE = {
     
     # ===== F =====
     "feta-pasteurisee": {"name": "Feta pasteurisée", "safe_for_pregnancy": "safe", "category": "Fromages", "reason": "Sûre si pasteurisée."},
-    "feta-lait-cru": {"name": "Feta au lait cru", "safe_for_pregnancy": "avoid", "category": "Fromages", "reason": "Risque de listériose."},
+    "feta-lait-cru": {"name": "Feta au lait cru", "safe_for_pregnancy": "unsafe", "category": "Fromages", "reason": "INTERDIT. Lait cru : risque de listériose."},
     "figue": {"name": "Figue", "safe_for_pregnancy": "safe", "category": "Fruits", "reason": "Riche en fibres et calcium."},
     "flageolets": {"name": "Flageolets", "safe_for_pregnancy": "safe", "category": "Légumineuses", "reason": "Source de protéines végétales et fer."},
     "foie": {"name": "Foie", "safe_for_pregnancy": "avoid", "category": "Abats", "reason": "Trop riche en vitamine A (tératogène)."},
@@ -113,7 +113,7 @@ FOOD_SAFETY_DATABASE = {
     
     # ===== J =====
     "jambon-blanc": {"name": "Jambon blanc", "safe_for_pregnancy": "safe", "category": "Charcuterie", "reason": "Cuit, généralement sûr."},
-    "jambon-cru": {"name": "Jambon cru (serrano, parme)", "safe_for_pregnancy": "avoid", "category": "Charcuterie", "reason": "Risque de toxoplasmose si non immunisée."},
+    "jambon-cru": {"name": "Jambon cru (serrano, parme)", "safe_for_pregnancy": "unsafe", "category": "Charcuterie", "reason": "INTERDIT non cuit. Risque de toxoplasmose et de listériose."},
     "jus-orange-pasteurise": {"name": "Jus d'orange pasteurisé", "safe_for_pregnancy": "safe", "category": "Boissons", "reason": "Riche en vitamine C."},
     "jus-fruits-frais": {"name": "Jus de fruits frais", "safe_for_pregnancy": "caution", "category": "Boissons", "reason": "Préférer pasteurisé. Boire immédiatement si pressé."},
     
@@ -123,7 +123,7 @@ FOOD_SAFETY_DATABASE = {
     # ===== L =====
     "lait-cru": {"name": "Lait cru", "safe_for_pregnancy": "unsafe", "category": "Produits laitiers", "reason": "INTERDIT. Risque de listériose."},
     "lait-pasteurise": {"name": "Lait pasteurisé/UHT", "safe_for_pregnancy": "safe", "category": "Produits laitiers", "reason": "Source de calcium essentiel."},
-    "laitue": {"name": "Laitue", "safe_for_pregnancy": "caution", "category": "Légumes", "reason": "Bien laver soigneusement."},
+    "laitue": {"name": "Laitue", "safe_for_pregnancy": "safe", "category": "Légumes", "reason": "AUTORISÉE. Laver feuille par feuille très soigneusement avant consommation."},
     "lapin-cuit": {"name": "Lapin bien cuit", "safe_for_pregnancy": "safe", "category": "Viandes", "reason": "Bien cuire à cœur."},
     "lardons": {"name": "Lardons", "safe_for_pregnancy": "caution", "category": "Charcuterie", "reason": "Bien cuire avant consommation."},
     "lentilles": {"name": "Lentilles", "safe_for_pregnancy": "safe", "category": "Légumineuses", "reason": "Excellente source de fer et acide folique."},
@@ -131,7 +131,7 @@ FOOD_SAFETY_DATABASE = {
     "litchi": {"name": "Litchi", "safe_for_pregnancy": "safe", "category": "Fruits", "reason": "Avec modération."},
     
     # ===== M =====
-    "mache": {"name": "Mâche", "safe_for_pregnancy": "caution", "category": "Légumes", "reason": "Bien laver très soigneusement."},
+    "mache": {"name": "Mâche", "safe_for_pregnancy": "safe", "category": "Légumes", "reason": "AUTORISÉE. Laver plusieurs fois très soigneusement avant consommation."},
     "maïs": {"name": "Maïs", "safe_for_pregnancy": "safe", "category": "Céréales", "reason": "Bien cuit, source de fibres."},
     "mandarine": {"name": "Mandarine", "safe_for_pregnancy": "safe", "category": "Fruits", "reason": "Riche en vitamine C."},
     "mangue": {"name": "Mangue", "safe_for_pregnancy": "safe", "category": "Fruits", "reason": "Riche en vitamines A et C."},
@@ -149,7 +149,7 @@ FOOD_SAFETY_DATABASE = {
     "moules-cuites": {"name": "Moules cuites", "safe_for_pregnancy": "safe", "category": "Fruits de mer", "reason": "Bien cuites, consommer frais."},
     "mousse-chocolat": {"name": "Mousse au chocolat maison", "safe_for_pregnancy": "unsafe", "category": "Desserts", "reason": "INTERDIT si œufs crus. Version industrielle OK."},
     "mozzarella-pasteurisee": {"name": "Mozzarella pasteurisée", "safe_for_pregnancy": "safe", "category": "Fromages", "reason": "Sûre si pasteurisée."},
-    "munster": {"name": "Munster", "safe_for_pregnancy": "avoid", "category": "Fromages", "reason": "Fromage à croûte lavée, risque de listériose."},
+    "munster": {"name": "Munster au lait cru", "safe_for_pregnancy": "unsafe", "category": "Fromages", "reason": "INTERDIT au lait cru. Risque de listériose."},
     "myrtille": {"name": "Myrtille", "safe_for_pregnancy": "safe", "category": "Fruits", "reason": "Riche en antioxydants. Bien laver."},
     
     # ===== N =====
@@ -161,7 +161,7 @@ FOOD_SAFETY_DATABASE = {
     
     # ===== O =====
     "oeuf-dur": {"name": "Œuf dur", "safe_for_pregnancy": "safe", "category": "Œufs", "reason": "Bien cuit, excellent pour la grossesse."},
-    "oeuf-mollet": {"name": "Œuf mollet", "safe_for_pregnancy": "avoid", "category": "Œufs", "reason": "Jaune pas assez cuit, risque de salmonellose."},
+    "oeuf-mollet": {"name": "Œuf mollet", "safe_for_pregnancy": "caution", "category": "Œufs", "reason": "Avec précaution : utiliser des œufs extra-frais et préférer une cuisson complète pour éviter la salmonellose."},
     "oeuf-cru": {"name": "Œuf cru", "safe_for_pregnancy": "unsafe", "category": "Œufs", "reason": "INTERDIT. Risque de salmonellose."},
     "oignon": {"name": "Oignon", "safe_for_pregnancy": "safe", "category": "Légumes", "reason": "Cuit ou bien lavé si cru."},
     "olive": {"name": "Olive", "safe_for_pregnancy": "safe", "category": "Fruits", "reason": "Source de bonnes graisses."},
@@ -173,7 +173,7 @@ FOOD_SAFETY_DATABASE = {
     "papaye": {"name": "Papaye mûre", "safe_for_pregnancy": "safe", "category": "Fruits", "reason": "Mûre uniquement. Éviter verte."},
     "parmesan": {"name": "Parmesan", "safe_for_pregnancy": "safe", "category": "Fromages", "reason": "Fromage à pâte dure, sûr."},
     "pastèque": {"name": "Pastèque", "safe_for_pregnancy": "safe", "category": "Fruits", "reason": "Bien laver l'extérieur avant de couper."},
-    "pate-de-campagne": {"name": "Pâté de campagne", "safe_for_pregnancy": "avoid", "category": "Charcuterie", "reason": "Risque de listériose."},
+    "pate-de-campagne": {"name": "Pâté de campagne artisanal", "safe_for_pregnancy": "unsafe", "category": "Charcuterie", "reason": "INTERDIT s'il est artisanal ou non recuit. Risque de listériose."},
     "pates": {"name": "Pâtes", "safe_for_pregnancy": "safe", "category": "Céréales", "reason": "Source d'énergie. Préférer complètes."},
     "peche": {"name": "Pêche", "safe_for_pregnancy": "safe", "category": "Fruits", "reason": "Bien laver ou peler."},
     "persil": {"name": "Persil", "safe_for_pregnancy": "safe", "category": "Herbes", "reason": "Riche en fer. Bien laver."},
@@ -197,19 +197,19 @@ FOOD_SAFETY_DATABASE = {
     "quinoa": {"name": "Quinoa", "safe_for_pregnancy": "safe", "category": "Céréales", "reason": "Excellente source de protéines complètes."},
     
     # ===== R =====
-    "radis": {"name": "Radis", "safe_for_pregnancy": "caution", "category": "Légumes", "reason": "Bien laver soigneusement."},
+    "radis": {"name": "Radis", "safe_for_pregnancy": "safe", "category": "Légumes", "reason": "AUTORISÉ. Retirer la terre et laver très soigneusement avant consommation."},
     "raisin": {"name": "Raisin", "safe_for_pregnancy": "safe", "category": "Fruits", "reason": "Bien laver."},
     "ravioli": {"name": "Ravioli", "safe_for_pregnancy": "safe", "category": "Pâtes", "reason": "Bien cuire. Vérifier la garniture."},
-    "reblochon": {"name": "Reblochon", "safe_for_pregnancy": "avoid", "category": "Fromages", "reason": "Fromage à croûte lavée, risque de listériose."},
+    "reblochon": {"name": "Reblochon au lait cru", "safe_for_pregnancy": "unsafe", "category": "Fromages", "reason": "INTERDIT au lait cru. Risque de listériose."},
     "requin": {"name": "Requin", "safe_for_pregnancy": "avoid", "category": "Poissons", "reason": "Taux très élevé de mercure."},
-    "rillettes": {"name": "Rillettes", "safe_for_pregnancy": "avoid", "category": "Charcuterie", "reason": "Risque de listériose."},
+    "rillettes": {"name": "Rillettes artisanales", "safe_for_pregnancy": "unsafe", "category": "Charcuterie", "reason": "INTERDITES sans recuisson. Risque de listériose."},
     "riz": {"name": "Riz", "safe_for_pregnancy": "safe", "category": "Céréales", "reason": "Source d'énergie. Préférer complet."},
-    "roquefort": {"name": "Roquefort", "safe_for_pregnancy": "avoid", "category": "Fromages", "reason": "Fromage à pâte persillée, risque de listériose."},
+    "roquefort": {"name": "Roquefort au lait cru", "safe_for_pregnancy": "unsafe", "category": "Fromages", "reason": "INTERDIT au lait cru. Risque de listériose."},
     
     # ===== S =====
     "salade-composee": {"name": "Salade composée", "safe_for_pregnancy": "caution", "category": "Plats préparés", "reason": "Préférer fait maison, bien laver."},
     "saucisse-cuite": {"name": "Saucisse bien cuite", "safe_for_pregnancy": "safe", "category": "Charcuterie", "reason": "Bien cuire à cœur."},
-    "saucisson": {"name": "Saucisson sec", "safe_for_pregnancy": "avoid", "category": "Charcuterie", "reason": "Viande crue séchée, risque de toxoplasmose."},
+    "saucisson": {"name": "Saucisson sec", "safe_for_pregnancy": "unsafe", "category": "Charcuterie", "reason": "INTERDIT non cuit. Viande crue séchée : risque de toxoplasmose."},
     "saumon-cuit": {"name": "Saumon cuit", "safe_for_pregnancy": "safe", "category": "Poissons", "reason": "Riche en oméga-3. Bien cuire."},
     "saumon-fume": {"name": "Saumon fumé", "safe_for_pregnancy": "caution", "category": "Poissons", "reason": "À consommer avec modération et bien cuit. Fumé à froid : risque de listériose (infection grave)."},
     "soja": {"name": "Soja", "safe_for_pregnancy": "caution", "category": "Légumineuses", "reason": "À consommer avec modération. Phytoestrogènes pouvant perturber le développement hormonal."},
@@ -219,12 +219,12 @@ FOOD_SAFETY_DATABASE = {
     "sushi": {"name": "Sushi au poisson cru", "safe_for_pregnancy": "unsafe", "category": "Poissons", "reason": "INTERDIT. Poisson cru."},
     
     # ===== T =====
-    "tarama": {"name": "Tarama", "safe_for_pregnancy": "avoid", "category": "Poissons", "reason": "Œufs de poisson crus, risque de listériose."},
+    "tarama": {"name": "Tarama", "safe_for_pregnancy": "unsafe", "category": "Poissons", "reason": "INTERDIT. Œufs de poisson crus : risque de listériose."},
     "tartare-saumon": {"name": "Tartare de saumon", "safe_for_pregnancy": "unsafe", "category": "Poissons", "reason": "INTERDIT. Poisson cru."},
     "the": {"name": "Thé", "safe_for_pregnancy": "caution", "category": "Boissons", "reason": "À consommer avec modération. Les tanins réduisent l'absorption du fer, risque d'anémie."},
     "thon-boite": {"name": "Thon en boîte", "safe_for_pregnancy": "caution", "category": "Poissons", "reason": "À consommer avec modération (max 150g/semaine). Contient du mercure, risque pour le développement neurologique du bébé."},
     "tiramisu": {"name": "Tiramisu maison", "safe_for_pregnancy": "unsafe", "category": "Desserts", "reason": "Contient œufs crus et mascarpone."},
-    "tofu": {"name": "Tofu", "safe_for_pregnancy": "safe", "category": "Légumineuses", "reason": "Source de protéines. Avec modération."},
+    "tofu": {"name": "Tofu (soja)", "safe_for_pregnancy": "caution", "category": "Légumineuses", "reason": "Avec précaution : source de protéines à limiter à un produit au soja par jour."},
     "tomate": {"name": "Tomate", "safe_for_pregnancy": "safe", "category": "Légumes", "reason": "Riche en lycopène. Bien laver."},
     "truite-cuite": {"name": "Truite cuite", "safe_for_pregnancy": "safe", "category": "Poissons", "reason": "Bien cuire, recommandé."},
     "truite-fumee": {"name": "Truite fumée", "safe_for_pregnancy": "caution", "category": "Poissons", "reason": "Préférer bien cuite."},
@@ -238,8 +238,6 @@ FOOD_SAFETY_DATABASE = {
     # ===== Y =====
     "yaourt": {"name": "Yaourt", "safe_for_pregnancy": "safe", "category": "Produits laitiers", "reason": "Excellent source de calcium et probiotiques."},
     
-    # ===== Z =====
-    "courgette": {"name": "Courgette", "safe_for_pregnancy": "safe", "category": "Légumes", "reason": "Bien laver ou cuire."},
 }
 
 # Liste des catégories disponibles
