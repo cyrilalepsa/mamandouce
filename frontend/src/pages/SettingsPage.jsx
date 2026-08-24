@@ -16,7 +16,8 @@ import {
   NotificationsSection,
   TwoFactorSection,
   PushNotificationsSection,
-  LanguageSelector
+  LanguageSelector,
+  FamilySituationSection
 } from '../components/settings';
 
 // Composant CollapsibleSection pour les paramètres avec effet glossy
@@ -74,6 +75,7 @@ function SettingsPage() {
     language: false,
     promo: false,
     account: false,
+    family: false,
     security: false,
     referral: false,
     refund: false,
@@ -92,6 +94,7 @@ function SettingsPage() {
       language: open,
       promo: open,
       account: open,
+      family: open,
       security: open,
       referral: open,
       refund: open,
@@ -228,6 +231,20 @@ function SettingsPage() {
               <AccountSection 
                 userInfo={userInfo}
                 emailAddress={preferences?.email_address}
+                onReloadUserInfo={loadUserInfo}
+              />
+            </CollapsibleSettingsSection>
+
+            <CollapsibleSettingsSection
+              title="Modifier la situation familiale"
+              icon={Users}
+              isOpen={openSections.family}
+              onToggle={() => toggleSection('family')}
+              iconBg="bg-gradient-to-br from-violet-100 to-purple-100"
+              iconColor="text-violet-600"
+            >
+              <FamilySituationSection
+                userInfo={userInfo}
                 onReloadUserInfo={loadUserInfo}
               />
             </CollapsibleSettingsSection>

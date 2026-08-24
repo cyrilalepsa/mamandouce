@@ -8,10 +8,15 @@ import api from '../utils/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/PageHeader';
 import { useSubscription } from '../components/SubscriptionGate';
+import { useAuth } from '../contexts/AuthContext';
+import { MultiplePregnancyModal } from '../components/pregnancy/MultiplePregnancyModal';
+
+const MORPHO_ECHO_APPOINTMENT_ID = 'apt_6';
 
 function MedicalAppointmentsPage() {
   const navigate = useNavigate();
   const { isPremium } = useSubscription();
+  const { ingestUser } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [currentWeek, setCurrentWeek] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -35,6 +40,8 @@ function MedicalAppointmentsPage() {
   const [reminderTime, setReminderTime] = useState('09:00');
   const [reminderType, setReminderType] = useState('both'); // push, email, both
   const [showAutoReminderSuggestion, setShowAutoReminderSuggestion] = useState(null);
+  const [showMultiplePregnancyModal, setShowMultiplePregnancyModal] = useState(false);
+  const [savingMultiplePregnancy, setSavingMultiplePregnancy] = useState(false);
 
   useEffect(() => {
     loadAppointments();
@@ -141,10 +148,29 @@ function MedicalAppointmentsPage() {
       } else {
         await api.medical.markComplete(appointmentId);
         toast.success('Rendez-vous complété !');
+        if (appointmentId === MORPHO_ECHO_APPOINTMENT_ID) {
+          setShowMultiplePregnancyModal(true);
+        }
       }
       loadAppointments();
     } catch (error) {
       toast.error('Erreur lors de la mise à jour');
+    }
+  };
+
+  const handleMultiplePregnancySelect = async (value) => {
+    setSavingMultiplePregnancy(true);
+    try {
+      const response = await api.auth.updateProfile({ multiple_pregnancy: value });
+      if (response.data?.user) {
+        ingestUser(response.data.user);
+      }
+      toast.success('Votre congé maternité a été recalculé');
+      setShowMultiplePregnancyModal(false);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erreur lors de la mise à jour');
+    } finally {
+      setSavingMultiplePregnancy(false);
     }
   };
 
@@ -881,6 +907,13 @@ function MedicalAppointmentsPage() {
           </>
         )}
       </div>
+
+      <MultiplePregnancyModal
+        open={showMultiplePregnancyModal}
+        onClose={() => setShowMultiplePregnancyModal(false)}
+        onSelect={handleMultiplePregnancySelect}
+        saving={savingMultiplePregnancy}
+      />
     </div>
   );
 }

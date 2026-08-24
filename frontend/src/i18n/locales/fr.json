@@ -201,7 +201,8 @@
     "reminders": "Rappels",
     "notifications": "Notifications",
     "parentalLeave": "Congés parentaux",
-    "parentalLeaveDesc": "Nouvelle loi 2024 - Vos droits"
+    "parentalLeaveDesc": "Nouvelle loi 2024 - Vos droits",
+    "maternityLeave": "Mon congé maternité"
   },
   "parentalLeave": {
     "title": "Congés parentaux",

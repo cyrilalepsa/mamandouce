@@ -14,7 +14,7 @@ import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
 import { useHomeLayout } from '../contexts/HomeLayoutContext';
 import { useSubscription } from '../components/SubscriptionGate';
-import { useTheme } from '../contexts/ThemeContext';
+import { MaternityLeaveSummaryCard } from '../components/pregnancy/MaternityLeaveSummaryCard';
 
 // Métadonnées des sections
 const SECTION_META = {
@@ -569,6 +569,7 @@ function SectionDetailPage() {
               isSelected={selectedItem?.id === item.id}
             />
           ))}
+          {sectionId === 'pregnancy' && <MaternityLeaveSummaryCard />}
         </div>
 
         {/* Footer */}

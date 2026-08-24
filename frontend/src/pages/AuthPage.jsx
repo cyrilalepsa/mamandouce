@@ -35,7 +35,13 @@ function AuthPage({ setIsAuthenticated }) {
   const auth = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
-  const [formData, setFormData] = useState({ email: '', password: '', name: '', city: '' });
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    name: '',
+    city: '',
+    children_at_home: 0,
+  });
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [showBiometricOption, setShowBiometricOption] = useState(false);
