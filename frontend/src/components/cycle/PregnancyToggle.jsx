@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti';
 import NameOfTheDay from '../NameOfTheDay';
@@ -93,6 +93,35 @@ export function persistPregnant(dpaStr) {
 }
 
 /**
+ * Kept at module scope and declared before the component. The previous
+ * useMemo callback shadowed the `currentWeek`/`trimester` props with local
+ * const/let declarations, which triggers a Temporal Dead Zone in production.
+ */
+export function resolvePregnancyInfo({
+  currentWeek,
+  trimester,
+  dueDate,
+  lastPeriodDate,
+}) {
+  if (currentWeek) {
+    return pregnancyProgress(
+      { current_week: currentWeek, trimester, estimated_due_date: dueDate },
+      dueDate,
+    );
+  }
+  const startStr = lastPeriodDate || (dueDate ? addDaysYmd(dueDate, -280) : null);
+  if (!startStr) return { week: 1, trimester: 1 };
+  const start = new Date(startStr);
+  const today = new Date();
+  const diffDays = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+  const calculatedWeek = Math.max(1, Math.floor(diffDays / 7) + 1);
+  let calculatedTrimester = 1;
+  if (calculatedWeek > 14 && calculatedWeek <= 28) calculatedTrimester = 2;
+  if (calculatedWeek > 28) calculatedTrimester = 3;
+  return { week: calculatedWeek, trimester: calculatedTrimester };
+}
+
+/**
  * Composant Caméléon PregnancyToggle — feux d'artifice + carte SA
  */
 export function PregnancyToggle({
@@ -107,29 +136,13 @@ export function PregnancyToggle({
 }) {
   const navigate = useNavigate();
 
-  const pregnancyInfo = useMemo(() => {
-    if (currentWeek) {
-      return pregnancyProgress(
-        { current_week: currentWeek, trimester, estimated_due_date: dueDate },
-        dueDate,
-      );
-    }
-    const startStr = lastPeriodDate || (dueDate ? addDaysYmd(dueDate, -280) : null);
-    if (!startStr) return { week: 1, trimester: 1 };
-    const start = new Date(startStr);
-    const today = new Date();
-    const diffDays = Math.floor((today - start) / (1000 * 60 * 60 * 24));
-    const currentWeek = Math.max(1, Math.floor(diffDays / 7) + 1);
-    let trimester = 1;
-    if (currentWeek > 14 && currentWeek <= 28) trimester = 2;
-    if (currentWeek > 28) trimester = 3;
-    return { week: currentWeek, trimester };
-  }, [currentWeek, trimester, lastPeriodDate, dueDate]);
-
-  const cycleSummary = useMemo(
-    () => calculateCycleSummary(lastPeriodDate, cycleLength),
-    [lastPeriodDate, cycleLength],
-  );
+  const pregnancyInfo = resolvePregnancyInfo({
+    currentWeek,
+    trimester,
+    dueDate,
+    lastPeriodDate,
+  });
+  const cycleSummary = calculateCycleSummary(lastPeriodDate, cycleLength);
 
   const handleClick = async () => {
     firePregnancyConfetti();
