@@ -49,8 +49,30 @@ def normalized_food_library(food_db: dict) -> list[dict]:
     return sorted(by_name.values(), key=lambda item: item["name"].casefold())
 
 async def get_food_safety_database():
-    """Get the food safety database"""
-    return FOOD_DATABASE
+    """Merge curated seeds with foods approved through community moderation."""
+    merged = dict(FOOD_DATABASE)
+    try:
+        approved = await db.approved_foods.find(
+            {"status": "published"},
+            {"_id": 0},
+        ).to_list(5000)
+        for food in approved:
+            name = str(food.get("name") or "").strip()
+            status = normalize_food_status(food.get("safe_for_pregnancy"))
+            if not name or status not in FOOD_SAFETY_STATUSES:
+                continue
+            key = f"community-{food.get('id') or name.casefold()}"
+            merged[key] = {
+                "name": name,
+                "safe_for_pregnancy": status,
+                "category": str(food.get("category") or "Autre"),
+                "reason": str(food.get("reason") or "Validé par la communauté MamanDouce."),
+                "community_validated": True,
+            }
+    except Exception as exc:
+        # Local/unit environments may not expose the dynamic collection.
+        logger.warning("Approved foods unavailable, using seeds only: %s", exc)
+    return merged
 
 # Pydantic model for search history (inline to avoid circular import)
 from pydantic import BaseModel, Field
@@ -358,8 +380,12 @@ async def add_user_food(food_data: AddFoodRequest, current_user: User = Depends(
         "success": True,
         "message": "Proposition envoyée !",
         "pending_food": True,
-        "potential_reward_points": 20,
-        "potential_badge": "Maman Contributrice",
+        "potential_contribution_credit": 1,
+        "badge_progression": {
+            "bronze": "3 contributions validées",
+            "silver": "2 contributions validées + 1 parrainage",
+            "gold": "5 contributions validées + 3 parrainages",
+        },
         "food": {
             "id": user_food.id,
             "name": user_food.name,

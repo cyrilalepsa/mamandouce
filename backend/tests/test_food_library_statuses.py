@@ -2,6 +2,7 @@
 import asyncio
 import os
 import sys
+from unittest.mock import AsyncMock, patch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
@@ -28,7 +29,11 @@ def _library(**kwargs):
         "current_user": _user(),
     }
     defaults.update(kwargs)
-    return asyncio.run(get_food_library(**defaults))
+    with patch(
+        "routes.food.get_food_safety_database",
+        AsyncMock(return_value=FOOD_SAFETY_DATABASE),
+    ):
+        return asyncio.run(get_food_library(**defaults))
 
 
 def test_reference_foods_have_expected_medical_statuses():

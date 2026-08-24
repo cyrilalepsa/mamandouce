@@ -510,7 +510,7 @@ export default function FoodScannerAI({ isOpen, onClose }) {
                     <div>
                       <p className="font-semibold text-pink-600 text-sm">Tu peux nous aider !</p>
                       <p className="text-xs text-purple-500 mt-1">
-                        Propose cet aliment à la communauté. Après validation, tu gagneras 20 points et le badge Maman Contributrice.
+                        Propose cet aliment à la communauté. Après validation, il comptera comme une contribution pour tes badges.
                       </p>
                     </div>
                   </div>
@@ -550,7 +550,7 @@ export default function FoodScannerAI({ isOpen, onClose }) {
                     <div>
                       <p className="font-semibold text-green-600 text-sm">Merci pour ta contribution !</p>
                       <p className="text-xs text-emerald-500 mt-1">
-                        Proposition envoyée ! Elle sera vérifiée avant l'attribution des 20 points.
+                        Proposition envoyée ! Elle sera vérifiée avant d'être ajoutée à ta progression.
                       </p>
                     </div>
                   </div>

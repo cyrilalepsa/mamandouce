@@ -134,8 +134,8 @@ export default function WalletCard({ compact = false }) {
         {/* Info cagnotte */}
         <div className={`mt-4 p-3 ${isDarkMode ? 'bg-purple-900/30' : 'bg-purple-50'} rounded-xl`}>
           <p className={`text-xs ${textMuted}`} style={textShadow}>
-            💡 Gagnez <span className="font-medium text-purple-500 inline-flex items-center gap-0.5"><N20Amount value={3} size={12} showSign /></span> pour chaque parrainage réussi
-            et <span className="font-medium text-purple-500 inline-flex items-center gap-0.5"><N20Amount value={1} size={12} showSign /></span> par contribution validée !
+            💡 Gagnez <span className="font-medium text-purple-500 inline-flex items-center gap-0.5"><N20Amount value={3} size={12} showSign /></span> pour chaque parrainage réussi.
+            Les contributions validées font progresser vos badges Bronze, Argent et Or.
           </p>
         </div>
       </div>

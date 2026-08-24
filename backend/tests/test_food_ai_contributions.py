@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from models.schemas import AddFoodRequest, User
 from routes.admin import update_food_status
-from routes.food import add_user_food, search_food
+from routes.food import add_user_food, get_food_safety_database, search_food
 from services.food_scanner_ai import food_scanner
 
 
@@ -74,11 +74,13 @@ def test_food_proposal_keeps_ai_status_and_returns_pending_reward():
     assert inserted["status"] == "pending"
     assert inserted["safety_level"] == "caution"
     assert result["message"] == "Proposition envoyée !"
-    assert result["potential_reward_points"] == 20
-    assert result["potential_badge"] == "Maman Contributrice"
+    assert result["potential_contribution_credit"] == 1
+    assert result["badge_progression"]["bronze"] == "3 contributions validées"
+    assert "potential_reward_points" not in result
+    assert "potential_badge" not in result
 
 
-def test_admin_approval_awards_points_and_contributor_badge_once():
+def test_admin_approval_credits_canonical_badge_progress_once():
     pending_food = {
         "id": "food-1",
         "user_id": "u1",
@@ -93,34 +95,39 @@ def test_admin_approval_awards_points_and_contributor_badge_once():
         users=SimpleNamespace(update_one=AsyncMock()),
         badge_progress=SimpleNamespace(
             update_one=AsyncMock(),
-            find_one=AsyncMock(return_value={"contributions_validated": 1}),
+            find_one=AsyncMock(return_value={
+                "contributions_validated": 3,
+                "referrals_completed": 0,
+            }),
         ),
         user_badges=SimpleNamespace(
             find_one=AsyncMock(return_value=None),
             insert_one=AsyncMock(),
         ),
         contribution_rewards=SimpleNamespace(insert_one=AsyncMock()),
+        approved_foods=SimpleNamespace(update_one=AsyncMock()),
     )
     admin = User(id="admin", email="admin@example.com", name="Admin", role="admin")
 
     with patch("routes.admin.db", fake_db):
         result = asyncio.run(update_food_status("food-1", "approved", admin))
 
-    assert result["reward_points"] == 20
-    assert result["badge_unlocked"] == "Maman Contributrice"
-    fake_db.users.update_one.assert_awaited_once_with(
-        {"id": "u1"},
-        {"$inc": {"contribution_points": 20}},
-    )
+    assert result["contribution_credit"] == 1
+    assert result["badges_unlocked"] == ["bronze"]
+    assert "reward_points" not in result
+    progress_update = fake_db.badge_progress.update_one.await_args.args[1]
+    assert progress_update["$inc"] == {"contributions_validated": 1}
+    fake_db.users.update_one.assert_not_awaited()
+    fake_db.contribution_rewards.insert_one.assert_not_awaited()
     inserted_badges = [
         call.args[0]
         for call in fake_db.user_badges.insert_one.await_args_list
     ]
     assert any(
-        badge["badge_type"] == "maman_contributrice"
+        badge["badge_type"] == "bronze"
         for badge in inserted_badges
     )
-    fake_db.contribution_rewards.insert_one.assert_awaited_once()
+    fake_db.approved_foods.update_one.assert_awaited_once()
 
     fake_db.user_added_foods.find_one.return_value = {
         **pending_food,
@@ -128,4 +135,30 @@ def test_admin_approval_awards_points_and_contributor_badge_once():
     }
     with patch("routes.admin.db", fake_db):
         repeated = asyncio.run(update_food_status("food-1", "approved", admin))
-    assert repeated["reward_points"] == 0
+    assert repeated["contribution_credit"] == 0
+
+
+def test_approved_foods_are_merged_into_searchable_library():
+    class Cursor:
+        async def to_list(self, _limit):
+            return [{
+                "id": "food-community",
+                "name": "Snack communautaire",
+                "category": "Analyse IA",
+                "safe_for_pregnancy": "caution",
+                "reason": "À limiter",
+                "status": "published",
+            }]
+
+    fake_db = SimpleNamespace(
+        approved_foods=SimpleNamespace(find=lambda *_args: Cursor())
+    )
+    with patch("routes.food.db", fake_db):
+        database = asyncio.run(get_food_safety_database())
+
+    foods = list(database.values())
+    published = next(
+        food for food in foods if food["name"] == "Snack communautaire"
+    )
+    assert published["safe_for_pregnancy"] == "caution"
+    assert published["community_validated"] is True
