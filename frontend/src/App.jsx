@@ -29,7 +29,6 @@ import SubscriptionSuccess from './pages/SubscriptionSuccess';
 import SubscriptionCancel from './pages/SubscriptionCancel';
 import SubscriptionManage from './pages/SubscriptionManage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
-import AdminPage from './pages/AdminPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import MaternityBagPage from './pages/MaternityBagPage';
 import BabyVideosPage from './pages/BabyVideosPage';
@@ -237,7 +236,6 @@ useEffect(() => {
                 <Route path="/subscription/success" element={<ProtectedRoute requireSubscription={false}><SubscriptionSuccess /></ProtectedRoute>} />
                 <Route path="/subscription/cancel" element={<ProtectedRoute requireSubscription={false}><SubscriptionCancel /></ProtectedRoute>} />
                 <Route path="/subscription/manage" element={<ProtectedRoute requireSubscription={false}><SubscriptionManage /></ProtectedRoute>} />
-                <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
                 <Route path="/maternity-bag" element={<ProtectedRoute><MaternityBagPage /></ProtectedRoute>} />
                 <Route path="/postpartum" element={<ProtectedRoute><PostpartumPage /></ProtectedRoute>} />
                 {/* Routes post-partum niveau 2 */}

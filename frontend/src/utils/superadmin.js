@@ -4,7 +4,7 @@ export const SUPERADMIN_EMAILS = [
   "superadmin@neriacorp.com",
 ];
 
-/** Alias demandé (vérification auth / AdminPage). */
+/** Alias demandé (vérification auth / privilèges client). */
 export const ADMIN_EMAILS = SUPERADMIN_EMAILS;
 
 /** Alias historique VIP — mêmes e-mails privilège (isVip / is_vip / VIP_EMAILS). */

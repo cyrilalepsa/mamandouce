@@ -67,7 +67,6 @@ test("superadmin emails unlock dashboard and premium", () => {
   assert.match(src, /superadmin@neriacorp\.com/);
   for (const rel of [
     "src/components/SubscriptionGate.jsx",
-    "src/pages/AdminPage.jsx",
     "src/pages/HomePage.jsx",
     "src/pages/PostpartumPage.jsx",
     "src/utils/postLogin.js",
@@ -81,8 +80,9 @@ test("superadmin emails unlock dashboard and premium", () => {
   const overlay = read("src/utils/superadmin.js");
   assert.match(overlay, /applySuperadminOverlay/);
   const top = read("src/components/home/TopBar.jsx");
-  assert.match(top, /admin-dashboard-link/);
   assert.match(top, /logout-menu-item/);
+  assert.doesNotMatch(top, /admin-dashboard-link/);
+  assert.doesNotMatch(read("src/App.jsx"), /path="\/admin"/);
   const ctx = read("src/contexts/AuthContext.jsx");
   assert.match(ctx, /AUTH_LOGIN_PATH/);
   assert.match(ctx, /clearAuthStorage/);
