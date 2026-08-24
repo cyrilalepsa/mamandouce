@@ -164,11 +164,10 @@ def test_superadmin_helper_lists_both_accounts():
     assert "superadmin@neriacorp.com" in src
     gate = (FRONTEND / "src" / "components" / "SubscriptionGate.jsx").read_text(encoding="utf-8")
     assert "isSuperAdmin" in gate
-    admin = (FRONTEND / "src" / "pages" / "AdminPage.jsx").read_text(encoding="utf-8")
+    home = (FRONTEND / "src" / "pages" / "HomePage.jsx").read_text(encoding="utf-8")
     assert "ADMIN_EMAILS" in src
-    assert "ADMIN_EMAILS" in admin
-    assert "response.data.role === 'admin' || ADMIN_EMAILS.includes(response.data.email)" in admin
-    assert "isSuperAdmin" in admin
+    assert "isSuperAdmin" in home
+    assert "isSuperAdmin" in gate
 
 
 def test_index_html_hides_loader_on_error():
@@ -377,8 +376,9 @@ def test_superadmin_overlay_admin_menu_and_logout_to_login():
     assert "isVip: vip" in ctx
     assert "isPremium: premium" in ctx
     assert "logout()" in top
-    assert "admin-dashboard-link" in top
     assert "logout-menu-item" in top
+    assert "/admin" not in (FRONTEND / "src" / "App.jsx").read_text(encoding="utf-8")
+    assert not (FRONTEND / "src" / "pages" / "AdminPage.jsx").exists()
     assert "isVip" in top
     assert "useAuth" in bag
     assert "from 'react-i18next'" in bag

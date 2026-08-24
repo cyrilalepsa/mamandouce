@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
-import { Crown, User, Settings, LogOut, Shield, MoreVertical, Share2, Download, MessageSquare, PiggyBank } from 'lucide-react';
+import { Crown, User, Settings, LogOut, MoreVertical, Share2, Download, MessageSquare, PiggyBank } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../../utils/api';
 import { useAuth } from '../../contexts/AuthContext';
@@ -102,7 +102,6 @@ export function TopBar({ isAdmin: isAdminProp, userAvatar = null, userAvatarConf
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState(0);
-  const [adminUnreadMessages, setAdminUnreadMessages] = useState(0);
   const menuRef = useRef(null);
   const menuDropdownRef = useRef(null);
 
@@ -121,16 +120,6 @@ export function TopBar({ isAdmin: isAdminProp, userAvatar = null, userAvatarConf
           m => m.admin_reply && !m.user_read_reply
         ).length;
         setUnreadMessages(unreadReplies);
-
-        // Messages admin (si admin)
-        if (isAdmin) {
-          const adminResponse = await api.admin.getMessages();
-          const adminMessages = adminResponse.data.messages || adminResponse.data || [];
-          const unreadAdmin = Array.isArray(adminMessages) 
-            ? adminMessages.filter(m => !m.is_read).length 
-            : (adminResponse.data.stats?.unread || 0);
-          setAdminUnreadMessages(unreadAdmin);
-        }
       } catch (error) {
         console.log('Error loading unread messages');
       }
@@ -140,9 +129,9 @@ export function TopBar({ isAdmin: isAdminProp, userAvatar = null, userAvatarConf
     // Recharger toutes les 30 secondes
     const interval = setInterval(loadUnreadMessages, 30000);
     return () => clearInterval(interval);
-  }, [isAdmin]);
+  }, []);
 
-  const hasNotifications = unreadMessages > 0 || adminUnreadMessages > 0;
+  const hasNotifications = unreadMessages > 0;
 
   // Fermer le menu quand on clique ailleurs (mais PAS sur le dropdown lui-même)
   useEffect(() => {
@@ -264,14 +253,6 @@ export function TopBar({ isAdmin: isAdminProp, userAvatar = null, userAvatarConf
       onClick: handleShare,
       iconBg: 'bg-gradient-to-br from-pink-400 to-purple-500'
     },
-    ...(isAdmin ? [{
-      icon: Shield,
-      label: 'Admin',
-      onClick: () => { navigate('/admin'); setMenuOpen(false); },
-      iconBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
-      badge: adminUnreadMessages > 0 ? adminUnreadMessages : null,
-      testId: 'admin-dashboard-link',
-    }] : []),
     {
       icon: User,
       label: 'Profil',
