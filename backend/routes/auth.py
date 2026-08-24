@@ -234,10 +234,12 @@ async def register(user_data: UserCreate):
     hashed_password = pwd_context.hash(user_data.password)
     user = User(
         email=normalize_email(str(user_data.email)),
-        name=user_data.name, 
+        name=user_data.name,
         city=user_data.city,
         birth_date=user_data.birth_date,
-        status=user_data.status
+        status=user_data.status,
+        children_at_home=user_data.children_at_home,
+        multiple_pregnancy=user_data.multiple_pregnancy,
     )
     user_dict = user.model_dump()
     user_dict["hashed_password"] = hashed_password
@@ -543,6 +545,12 @@ async def update_profile(profile_data: ProfileUpdate, current_user: User = Depen
         if len(city) > 100:
             raise HTTPException(status_code=400, detail="Le nom de ville ne peut pas dépasser 100 caractères")
         update_fields["city"] = city if city else None
+
+    if profile_data.children_at_home is not None:
+        update_fields["children_at_home"] = profile_data.children_at_home
+
+    if profile_data.multiple_pregnancy is not None:
+        update_fields["multiple_pregnancy"] = profile_data.multiple_pregnancy
     
     if not update_fields:
         return {"success": True, "message": "Aucune modification"}

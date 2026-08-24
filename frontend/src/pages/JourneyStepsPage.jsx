@@ -84,6 +84,7 @@ const SECTION_ITEMS = {
     { id: 'baby-weight', icon: '⚖️', name: 'Poids de bébé', nameKey: 'pregnancy.babyWeight', route: '/baby-weight', color: 'red' },
     { id: 'kick-counter', icon: '👣', name: 'Compteur de coups', nameKey: 'pregnancy.kickCounter', route: '/kick-counter', color: 'red' },
     { id: 'parental-leave', icon: '⚖️', name: 'Congés parentaux', nameKey: 'pregnancy.parentalLeave', route: '/parental-leave', color: 'green' },
+    { id: 'maternity-leave', icon: '📅', name: 'Mon congé maternité', nameKey: 'pregnancy.maternityLeave', route: '/section/pregnancy', color: 'violet' },
   ],
   'baby-preparation': [
     { id: 'birth-list', icon: '📝', name: 'Liste de naissance', nameKey: 'babyPrep.birthList', route: '/birth-list' },

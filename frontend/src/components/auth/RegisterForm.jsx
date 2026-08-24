@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Eye, EyeOff, MapPin, Calendar, Heart, Baby } from 'lucide-react';
+import { Eye, EyeOff, MapPin, Calendar, Heart, Baby, Users } from 'lucide-react';
 
 export function RegisterForm({ 
   formData, 
@@ -105,6 +105,32 @@ export function RegisterForm({
               )}
             </button>
           </div>
+        </div>
+
+        <div>
+          <Label htmlFor="children_at_home" className="text-slate-600 font-semibold">
+            Enfants déjà à charge
+          </Label>
+          <div className="relative">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-violet-400">
+              <Users className="w-5 h-5" />
+            </div>
+            <Input
+              id="children_at_home"
+              data-testid="children-at-home-input"
+              type="number"
+              min={0}
+              max={20}
+              value={formData.children_at_home ?? 0}
+              onChange={(e) =>
+                setFormData({ ...formData, children_at_home: e.target.value })
+              }
+              className="w-full rounded-2xl border-violet-200/60 bg-gradient-to-r from-white/90 via-violet-50/50 to-white/90 pl-12 pr-4 py-3 text-slate-600 focus:border-violet-300 focus:ring-4 focus:ring-violet-100/50"
+            />
+          </div>
+          <p className="text-xs text-slate-500 mt-1">
+            Pour estimer votre congé maternité (0 si premier bébé).
+          </p>
         </div>
         
         {/* Champ City - Style Nuage/Nacre avec icône */}

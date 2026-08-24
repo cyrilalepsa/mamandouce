@@ -7,6 +7,16 @@ from datetime import datetime, timezone
 import uuid
 
 # ==================== AUTH ====================
+MULTIPLE_PREGNANCY_VALUES = frozenset({"none", "twins", "triplets_or_more"})
+
+
+def normalize_multiple_pregnancy(value: Optional[str]) -> str:
+    raw = str(value or "none").strip().lower()
+    if raw in MULTIPLE_PREGNANCY_VALUES:
+        return raw
+    return "none"
+
+
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
@@ -14,6 +24,26 @@ class UserCreate(BaseModel):
     city: Optional[str] = None
     birth_date: Optional[str] = None  # Date de naissance format YYYY-MM-DD
     status: Optional[str] = None  # 'envie_bebe' ou 'enceinte'
+    children_at_home: int = 0
+    multiple_pregnancy: str = "none"
+
+    @field_validator("children_at_home", mode="before")
+    @classmethod
+    def coerce_children_at_home(cls, value):
+        if value is None or value == "":
+            return 0
+        try:
+            parsed = int(value)
+        except (TypeError, ValueError):
+            raise ValueError("children_at_home must be a non-negative integer")
+        if parsed < 0:
+            raise ValueError("children_at_home must be a non-negative integer")
+        return parsed
+
+    @field_validator("multiple_pregnancy", mode="before")
+    @classmethod
+    def coerce_multiple_pregnancy(cls, value):
+        return normalize_multiple_pregnancy(value)
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -43,7 +73,25 @@ class User(BaseModel):
     status: Optional[str] = None  # 'envie_bebe' ou 'enceinte'
     is_pregnant: Optional[bool] = None
     pregnancy_status: Optional[str] = None
+    children_at_home: int = 0
+    multiple_pregnancy: str = "none"
     role: str = "user"  # "user" or "admin"
+
+    @field_validator("children_at_home", mode="before")
+    @classmethod
+    def coerce_user_children_at_home(cls, value):
+        if value is None or value == "":
+            return 0
+        try:
+            parsed = int(value)
+        except (TypeError, ValueError):
+            return 0
+        return max(0, parsed)
+
+    @field_validator("multiple_pregnancy", mode="before")
+    @classmethod
+    def coerce_user_multiple_pregnancy(cls, value):
+        return normalize_multiple_pregnancy(value)
     subscription_status: Optional[str] = "free"  # "free", "trial", "premium"
     is_superadmin: Optional[bool] = False
     is_admin: Optional[bool] = False
@@ -134,6 +182,28 @@ class ProfileUpdate(BaseModel):
     avatar: Optional[str] = None  # Base64 encoded image
     avatar_config: Optional[dict] = None  # Configuration de l'avatar personnalisé
     city: Optional[str] = None  # Ville de l'utilisatrice
+    children_at_home: Optional[int] = None
+    multiple_pregnancy: Optional[str] = None
+
+    @field_validator("children_at_home", mode="before")
+    @classmethod
+    def coerce_profile_children_at_home(cls, value):
+        if value is None or value == "":
+            return None
+        try:
+            parsed = int(value)
+        except (TypeError, ValueError):
+            raise ValueError("children_at_home must be a non-negative integer")
+        if parsed < 0:
+            raise ValueError("children_at_home must be a non-negative integer")
+        return parsed
+
+    @field_validator("multiple_pregnancy", mode="before")
+    @classmethod
+    def coerce_profile_multiple_pregnancy(cls, value):
+        if value is None or value == "":
+            return None
+        return normalize_multiple_pregnancy(value)
 
 # ==================== PREGNANCY ====================
 class PregnancyCalculation(BaseModel):
