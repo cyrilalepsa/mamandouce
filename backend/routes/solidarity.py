@@ -10,6 +10,7 @@ import uuid
 
 from core.database import db
 from core.security import get_current_user
+from core.gamification import badge_progress_percent, eligible_badges
 from models.schemas import User
 from models.solidarity import (
     WalletTransaction, WalletTransactionType, UserWallet,
@@ -128,7 +129,7 @@ async def get_badges(current_user: User = Depends(get_current_user)):
     # Compter les contributions validées (via le système contributions)
     contributions_validated = await db.contributions.count_documents({
         "user_id": current_user.id,
-        "status": "validated"
+        "status": {"$in": ["approved", "validated"]},
     })
     
     # Ajouter les aliments approuvés par l'admin
@@ -165,61 +166,38 @@ async def get_badges(current_user: User = Depends(get_current_user)):
         has_bronze=BadgeType.BRONZE in badge_types,
         has_silver=BadgeType.SILVER in badge_types,
         has_gold=BadgeType.GOLD in badge_types,
-        bronze_progress=min(100, (contributions_validated / 3) * 100),
-        silver_progress=min(100, (contributions_validated / 5) * 100),
-        gold_progress=min(100, ((contributions_validated / 5) * 50 + (referrals_completed / 3) * 50))
+        bronze_progress=badge_progress_percent(
+            "bronze", contributions_validated, referrals_completed
+        ),
+        silver_progress=badge_progress_percent(
+            "silver", contributions_validated, referrals_completed
+        ),
+        gold_progress=badge_progress_percent(
+            "gold", contributions_validated, referrals_completed
+        ),
     )
     
     # Vérifier si nouveaux badges à attribuer
     new_badges = []
     
-    # Bronze: 3 contributions
-    if contributions_validated >= 3 and not progress.has_bronze:
+    for badge_name in eligible_badges(
+        contributions_validated, referrals_completed
+    ):
+        badge_type = BadgeType(badge_name)
+        if badge_name in badge_types:
+            continue
         badge = UserBadge(
             user_id=current_user.id,
-            badge_type=BadgeType.BRONZE,
-            contributions_count=contributions_validated
-        ).dict()
-        await db.user_badges.insert_one(badge)
-        new_badges.append(BadgeType.BRONZE)
-    
-    # Argent: 5 contributions
-    if contributions_validated >= 5 and not progress.has_silver:
-        badge = UserBadge(
-            user_id=current_user.id,
-            badge_type=BadgeType.SILVER,
-            contributions_count=contributions_validated
-        ).dict()
-        await db.user_badges.insert_one(badge)
-        new_badges.append(BadgeType.SILVER)
-    
-    # Or: 5 contributions + 3 parrainages
-    if contributions_validated >= 5 and referrals_completed >= 3 and not progress.has_gold:
-        badge = UserBadge(
-            user_id=current_user.id,
-            badge_type=BadgeType.GOLD,
+            badge_type=badge_type,
             contributions_count=contributions_validated,
-            referrals_count=referrals_completed
-        ).dict()
+            referrals_count=referrals_completed,
+        ).model_dump()
         await db.user_badges.insert_one(badge)
-        new_badges.append(BadgeType.GOLD)
+        new_badges.append(badge_type)
     
-    progress_payload = progress.dict()
-    progress_payload["has_maman_contributrice"] = (
-        "maman_contributrice" in badge_types
-    )
-    progress_payload["maman_contributrice_progress"] = (
-        100 if progress_payload["has_maman_contributrice"] else 0
-    )
-    progress_payload["contribution_points"] = int(
-        (badge_progress_doc or {}).get(
-            "contribution_points", progress_contributions * 20
-        ) or 0
-    )
-
     return {
         "badges": badges,
-        "progress": progress_payload,
+        "progress": progress.dict(),
         "new_badges": new_badges
     }
 

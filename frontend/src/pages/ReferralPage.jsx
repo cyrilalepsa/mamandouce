@@ -358,7 +358,9 @@ function ReferralPage() {
               </div>
               <p className={`text-sm font-medium ${hasSilver ? 'text-slate-600' : 'text-slate-400'}`}>Argent</p>
               {!hasSilver && (
-                <p className="text-xs text-slate-400">{badgeProgress.contributions_validated || 0}/5</p>
+                <p className="text-xs text-slate-400">
+                  {badgeProgress.contributions_validated || 0}/2 • {badgeProgress.referrals_completed || 0}/1 parrainage
+                </p>
               )}
             </div>
             

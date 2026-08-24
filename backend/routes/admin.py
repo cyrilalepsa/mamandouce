@@ -6,11 +6,11 @@ from fastapi import APIRouter, HTTPException, Depends
 from datetime import datetime, timezone, timedelta
 import logging
 import json
-import uuid
 
 from core.database import db
 from core.config import RESEND_API_KEY, SENDER_EMAIL, VAPID_PRIVATE_KEY, VAPID_CLAIMS_EMAIL, app_public_url, email_brand_footer
 from core.security import get_admin_user
+from core.gamification import eligible_badges
 from models.schemas import (
     User, PromoCode, AdminMessage, ContactMessageRequest, AdminReplyRequest,
     SubscribeRequest, RegisteredUserResponse, RegisteredUsersResponse
@@ -892,8 +892,8 @@ async def update_food_status(food_id: str, status: str, admin: User = Depends(ge
         return {
             "success": True,
             "status": status,
-            "reward_points": 0,
-            "badge_unlocked": None,
+            "contribution_credit": 0,
+            "badges_unlocked": [],
             "message": "Statut déjà appliqué",
         }
     
@@ -907,25 +907,38 @@ async def update_food_status(food_id: str, status: str, admin: User = Depends(ge
     )
     
     # Si approuvé, incrémenter les contributions validées de l'utilisateur pour les badges
-    reward_points = 0
-    badge_unlocked = None
+    contribution_credit = 0
+    badges_unlocked = []
     if status == "approved" and food.get("user_id"):
         user_id = food["user_id"]
-        reward_points = 20
+        contribution_credit = 1
+        from routes.food import FOOD_SAFETY_STATUSES, normalize_food_status
 
-        await db.users.update_one(
-            {"id": user_id},
-            {"$inc": {"contribution_points": reward_points}},
+        published_status = normalize_food_status(food.get("safety_level"))
+        if published_status not in FOOD_SAFETY_STATUSES:
+            published_status = "caution"
+
+        await db.approved_foods.update_one(
+            {"source_food_id": food_id},
+            {"$set": {
+                "id": food_id,
+                "source_food_id": food_id,
+                "name": food.get("name") or "Aliment",
+                "category": food.get("category") or "Autre",
+                "safe_for_pregnancy": published_status,
+                "reason": food.get("notes") or "Validé par la communauté MamanDouce.",
+                "status": "published",
+                "validated_by": admin.email,
+                "validated_at": datetime.now(timezone.utc).isoformat(),
+            }},
+            upsert=True,
         )
-        
+
         # Incrémenter le compteur de contributions validées
         await db.badge_progress.update_one(
             {"user_id": user_id},
             {
-                "$inc": {
-                    "contributions_validated": 1,
-                    "contribution_points": reward_points,
-                },
+                "$inc": {"contributions_validated": contribution_credit},
                 "$setOnInsert": {
                     "user_id": user_id,
                     "referrals_completed": 0,
@@ -935,73 +948,30 @@ async def update_food_status(food_id: str, status: str, admin: User = Depends(ge
             upsert=True
         )
 
-        contributor_badge = await db.user_badges.find_one({
-            "user_id": user_id,
-            "badge_type": "maman_contributrice",
-        })
-        if not contributor_badge:
-            await db.user_badges.insert_one({
-                "user_id": user_id,
-                "badge_type": "maman_contributrice",
-                "badge_name": "Maman Contributrice",
-                "unlocked_at": datetime.now(timezone.utc).isoformat(),
-                "reward_claimed": True,
-                "source": "food_validation",
-            })
-            badge_unlocked = "Maman Contributrice"
-
-        await db.contribution_rewards.insert_one({
-            "id": str(uuid.uuid4()),
-            "user_id": user_id,
-            "food_id": food_id,
-            "points": reward_points,
-            "reason": "Aliment validé par la modération",
-            "created_at": datetime.now(timezone.utc).isoformat(),
-        })
-        
         # Vérifier et attribuer les badges
         progress = await db.badge_progress.find_one({"user_id": user_id}, {"_id": 0})
         contributions = progress.get("contributions_validated", 0) if progress else 1
         referrals = progress.get("referrals_completed", 0) if progress else 0
         
-        # Badge Bronze: 3 contributions
-        if contributions >= 3:
-            existing_bronze = await db.user_badges.find_one({"user_id": user_id, "badge_type": "bronze"})
-            if not existing_bronze:
+        for badge_type in eligible_badges(contributions, referrals):
+            existing_badge = await db.user_badges.find_one({
+                "user_id": user_id,
+                "badge_type": badge_type,
+            })
+            if not existing_badge:
                 await db.user_badges.insert_one({
                     "user_id": user_id,
-                    "badge_type": "bronze",
+                    "badge_type": badge_type,
                     "unlocked_at": datetime.now(timezone.utc).isoformat(),
-                    "reward_claimed": False
+                    "reward_claimed": False,
                 })
-        
-        # Badge Argent: 5 contributions
-        if contributions >= 5:
-            existing_silver = await db.user_badges.find_one({"user_id": user_id, "badge_type": "silver"})
-            if not existing_silver:
-                await db.user_badges.insert_one({
-                    "user_id": user_id,
-                    "badge_type": "silver",
-                    "unlocked_at": datetime.now(timezone.utc).isoformat(),
-                    "reward_claimed": False
-                })
-        
-        # Badge Or: 5 contributions + 3 parrainages
-        if contributions >= 5 and referrals >= 3:
-            existing_gold = await db.user_badges.find_one({"user_id": user_id, "badge_type": "gold"})
-            if not existing_gold:
-                await db.user_badges.insert_one({
-                    "user_id": user_id,
-                    "badge_type": "gold",
-                    "unlocked_at": datetime.now(timezone.utc).isoformat(),
-                    "reward_claimed": False
-                })
+                badges_unlocked.append(badge_type)
     
     return {
         "success": True,
         "status": status,
-        "reward_points": reward_points,
-        "badge_unlocked": badge_unlocked,
+        "contribution_credit": contribution_credit,
+        "badges_unlocked": badges_unlocked,
     }
 
 # ==================== MESSAGES ====================

@@ -63,8 +63,8 @@ test("scanner exposes community proposal actions with canonical AI status", () =
   assert.match(scanner, /propose-search-food-/);
   assert.match(aiScanner, /Proposer cet aliment à la communauté/);
   assert.match(aiScanner, /result\.safe_for_pregnancy/);
-  assert.match(aiScanner, /20 points/);
-  assert.match(aiScanner, /Maman Contributrice/);
+  assert.match(aiScanner, /comptera comme une contribution/);
+  assert.doesNotMatch(aiScanner, /20 points|Maman Contributrice/);
   const badges = readFileSync(
     join(root, "src/components/solidarity/BadgesCard.jsx"),
     "utf8",
@@ -73,7 +73,7 @@ test("scanner exposes community proposal actions with canonical AI status", () =
     join(root, "src/components/admin/FoodsTab.jsx"),
     "utf8",
   );
-  assert.match(badges, /maman_contributrice/);
-  assert.match(badges, /Maman Contributrice/);
-  assert.match(moderation, /reward_points/);
+  assert.doesNotMatch(badges, /maman_contributrice/);
+  assert.match(badges, /2 contributions \+ 1 parrainage/);
+  assert.match(moderation, /contribution_credit/);
 });

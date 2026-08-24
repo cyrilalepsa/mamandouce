@@ -11,25 +11,11 @@ import uuid
 
 from core.database import db
 from core.security import get_current_user, get_admin_user
+from core.gamification import BADGE_NAMES, BADGE_THRESHOLDS
 from models.schemas import User, ContributionSubmit
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["contributions"])
-
-# ==================== BADGE THRESHOLDS ====================
-BADGE_THRESHOLDS = {
-    "bronze": {"contributions": 3, "referrals": 0},
-    "silver": {"contributions": 2, "referrals": 1},  # 1 parrainage + 2 contributions
-    "gold": {"contributions": 5, "referrals": 3}    # 3 parrainages + 5 contributions = Marraine Or
-}
-
-BADGE_NAMES = {
-    "maman_contributrice": "Maman Contributrice",
-    "bronze": "Contributrice Bronze",
-    "silver": "Contributrice Argent", 
-    "gold": "Marraine Or"
-}
-
 
 # ==================== GAMIFICATION OPT-IN ====================
 
@@ -139,13 +125,10 @@ async def get_badge_progress(current_user: User = Depends(get_current_user)):
         contributions_validated + foods_approved,
         int(progress_doc.get("contributions_validated", 0) or 0),
     )
-    contribution_points = int(
-        progress_doc.get("contribution_points", 0) or 0
-    )
     
     # Get referrals count
     referrals_completed = await db.referrals.count_documents({
-        "referrer_id": current_user.id,
+        "sponsor_id": current_user.id,
         "status": "completed"
     })
     
@@ -162,11 +145,6 @@ async def get_badge_progress(current_user: User = Depends(get_current_user)):
         "contributions_validated": contributions_validated,
         "referrals_completed": referrals_completed,
         "badges_earned": current_badges,
-        "contribution_points": contribution_points,
-        "maman_contributrice": {
-            "earned": "maman_contributrice" in current_badges,
-            "points": contribution_points,
-        },
         "bronze": {
             "earned": "bronze" in current_badges,
             "progress_contributions": min(contributions_validated, 3),
@@ -281,7 +259,7 @@ async def check_gift_eligibility(current_user: User = Depends(get_current_user))
     
     # Count completed referrals
     referrals_completed = await db.referrals.count_documents({
-        "referrer_id": current_user.id,
+        "sponsor_id": current_user.id,
         "status": "completed"
     })
     
@@ -323,7 +301,7 @@ async def claim_free_postpartum(current_user: User = Depends(get_current_user)):
     from routes.push_notifications import send_push_notification
     
     referrals_completed = await db.referrals.count_documents({
-        "referrer_id": current_user.id,
+        "sponsor_id": current_user.id,
         "status": "completed"
     })
     

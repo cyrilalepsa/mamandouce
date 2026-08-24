@@ -156,7 +156,9 @@ export function SolidaritySection() {
           </div>
           <p className={`text-xs font-medium ${hasSilver ? 'text-slate-600' : 'text-slate-400'}`}>Argent</p>
           {!hasSilver && (
-            <p className="text-[10px] text-slate-400">{badgeProgress.contributions_validated || 0}/5</p>
+            <p className="text-[10px] text-slate-400">
+              {badgeProgress.contributions_validated || 0}/2 • {badgeProgress.referrals_completed || 0}/1
+            </p>
           )}
         </div>
         

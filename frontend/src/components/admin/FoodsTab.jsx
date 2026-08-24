@@ -8,9 +8,12 @@ export function FoodsTab({ pendingFoods, foodStats, loadPendingFoods }) {
   const handleFoodAction = async (foodId, action) => {
     try {
       const response = await api.admin.updateFoodStatus(foodId, action);
+      const unlocked = response.data?.badges_unlocked || [];
       toast.success(
         action === 'approved'
-          ? `Aliment approuvé ! +${response.data?.reward_points || 20} points • Maman Contributrice`
+          ? `Aliment approuvé ! +${response.data?.contribution_credit || 1} contribution validée${
+              unlocked.length ? ` • Badge ${unlocked.join(', ')}` : ''
+            }`
           : 'Aliment rejeté',
       );
       loadPendingFoods();
