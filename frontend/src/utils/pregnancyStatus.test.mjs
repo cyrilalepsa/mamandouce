@@ -60,3 +60,31 @@ test("dashboard and profile tracking enforce pregnancy guards", () => {
   assert.match(tracking, /data-testid="pregnancy-tracking-active"/);
   assert.match(tracking, /if \(!initialLoading && isPregnant\)/);
 });
+
+test("recent dashboard memos cannot access declarations in the TDZ", () => {
+  const toggle = read("src/components/cycle/PregnancyToggle.jsx");
+  const usersTab = read("src/components/admin/UsersTab.jsx");
+  const subscriptionGate = read("src/components/SubscriptionGate.jsx");
+
+  assert.doesNotMatch(
+    toggle,
+    /useMemo\s*\(/,
+    "dynamic card calculations are cheap and must remain outside useMemo",
+  );
+  assert.ok(
+    toggle.indexOf("function resolvePregnancyInfo") < toggle.indexOf("function PregnancyToggle"),
+    "pregnancy helper must be initialized before the component consumes it",
+  );
+  assert.ok(
+    usersTab.indexOf("const groupUsersByDate") < usersTab.indexOf("useMemo("),
+    "UsersTab grouping helper must precede its memo",
+  );
+  assert.ok(
+    usersTab.indexOf("const safeUsers") < usersTab.indexOf("const filteredUsers = useMemo"),
+    "UsersTab memo dependencies must be initialized first",
+  );
+  assert.ok(
+    subscriptionGate.indexOf("const refreshStatus") < subscriptionGate.indexOf("const contextValue = useMemo"),
+    "SubscriptionGate memo dependencies must be initialized first",
+  );
+});
