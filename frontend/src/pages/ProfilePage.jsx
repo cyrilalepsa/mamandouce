@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
-import { ArrowLeft, User, Baby, Settings, MessageSquare, Trophy, Heart, Calendar, Crown } from 'lucide-react';
+import { ArrowLeft, User, Settings, MessageSquare, Trophy, Crown } from 'lucide-react';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import { applySuperadminOverlay } from '../utils/superadmin';
@@ -11,15 +11,11 @@ import { isBiometricEnabled, checkBiometricSupport, isPinEnabled } from '../util
 import { AccountStatusSection } from '../components/settings';
 import { BadgesCard } from '../components/solidarity';
 import { Card } from '../components/ui/card';
-import { PregnancyToggle } from '../components/cycle/PregnancyToggle';
-import { isPregnancyActive } from '../utils/pregnancyStatus';
 import {
   SubscriptionStatusCards,
   UserInfoCard,
-  PregnancyCard,
   NotificationsCard,
   QuickLoginCard,
-  FertilityRemindersCard,
   CollapsibleSection,
   MessagingSection,
   ProfileEditCard
@@ -44,7 +40,6 @@ function ProfilePage() {
   const { t } = useTranslation();
   const { ingestUser } = useAuth();
   const [user, setUser] = useState(null);
-  const [pregnancyProfile, setPregnancyProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [unreadMessages, setUnreadMessages] = useState(0);
   
@@ -58,35 +53,18 @@ function ProfilePage() {
   const [biometricSupported, setBiometricSupported] = useState(false);
   const [pinEnabled, setPinEnabled] = useState(false);
   
-  // Fertility reminders
-  const [fertilityRemindersEnabled, setFertilityRemindersEnabled] = useState(false);
-  const [fertilityRemindersLoading, setFertilityRemindersLoading] = useState(false);
-  
-  // Cycle watchdog status
-  const [cycleStatus, setCycleStatus] = useState(null);
-  
   // Subscription status
   const [subscriptionStatus, setSubscriptionStatus] = useState('free');
   const [fullStatus, setFullStatus] = useState(null);
-  const [isPregnant, setIsPregnant] = useState(
-    () => isPregnancyActive({
-      storedPregnant: localStorage.getItem('mamandouce_pregnant'),
-    })
-  );
-  const [dueDate, setDueDate] = useState(
-    () => localStorage.getItem('mamandouce_due_date') || ''
-  );
 
   useEffect(() => {
     loadUserData();
     checkNotificationStatus();
     setBiometricEnabled(isBiometricEnabled());
     setPinEnabled(isPinEnabled());
-    loadFertilityRemindersStatus();
     loadSubscriptionStatus();
     loadFullSubscriptionStatus();
     loadUnreadMessages();
-    loadCycleStatus();
     
     const checkSupport = async () => {
       const support = await checkBiometricSupport();
@@ -95,42 +73,12 @@ function ProfilePage() {
     checkSupport();
   }, []);
 
-  const loadCycleStatus = async () => {
-    if (isPregnant) {
-      setCycleStatus(null);
-      return;
-    }
-    try {
-      const res = await api.cycle.status();
-      setCycleStatus(res.data);
-    } catch (error) {
-      // Silent fail - not critical
-    }
-  };
-
   const loadUserData = async () => {
     try {
       const userRes = await api.auth.getMe();
       const me = applySuperadminOverlay(userRes.data);
       ingestUser?.(me);
       setUser(me);
-      setIsPregnant(isPregnancyActive({
-        user: me,
-        storedPregnant: localStorage.getItem('mamandouce_pregnant'),
-      }));
-      
-      const profileRes = await api.pregnancy.getProfile();
-      const profile = profileRes.data;
-      setPregnancyProfile(profile);
-      const active = isPregnancyActive({
-        profile,
-        user: me,
-        storedPregnant: localStorage.getItem('mamandouce_pregnant'),
-      });
-      setIsPregnant(active);
-      if (active && profile?.estimated_due_date) {
-        setDueDate(profile.estimated_due_date);
-      }
     } catch (error) {
       console.error('Erreur chargement profil:', error);
     } finally {
@@ -176,41 +124,6 @@ function ProfilePage() {
       } catch (error) {
         console.error('Error checking notification status:', error);
       }
-    }
-  };
-
-  const loadFertilityRemindersStatus = async () => {
-    try {
-      const response = await api.pregnancy.getFertilityRemindersStatus();
-      setFertilityRemindersEnabled(response.data.enabled);
-    } catch (error) {
-      console.error('Error loading fertility reminders status:', error);
-    }
-  };
-
-  const toggleFertilityReminders = async () => {
-    if (isPregnant) return;
-    setFertilityRemindersLoading(true);
-    try {
-      const newStatus = !fertilityRemindersEnabled;
-      await api.pregnancy.toggleFertilityReminders(newStatus);
-      setFertilityRemindersEnabled(newStatus);
-      
-      if (newStatus) {
-        const windowCheck = await api.pregnancy.checkFertilityWindow();
-        if (windowCheck.data.in_fertile_window) {
-          toast.success('Rappels activés ! Vous êtes actuellement dans votre période fertile.');
-        } else {
-          toast.success('Rappels de fertilité activés !');
-        }
-      } else {
-        toast.success('Rappels de fertilité désactivés');
-      }
-    } catch (error) {
-      console.error('Error toggling fertility reminders:', error);
-      toast.error('Erreur lors de la modification');
-    } finally {
-      setFertilityRemindersLoading(false);
     }
   };
 
@@ -311,29 +224,6 @@ function ProfilePage() {
               onUpdate={(updatedUser) => setUser(prev => ({ ...prev, ...updatedUser }))}
             />
 
-            <PregnancyToggle
-              mode="profile"
-              isPregnant={isPregnant}
-              dueDate={dueDate}
-              lastPeriodDate={pregnancyProfile?.last_period_date}
-              cycleLength={pregnancyProfile?.cycle_length || 28}
-              currentWeek={pregnancyProfile?.current_week}
-              trimester={pregnancyProfile?.trimester}
-              onPregnant={async (dpaStr, periodDate) => {
-                setIsPregnant(true);
-                setDueDate(dpaStr);
-                try {
-                  await api.pregnancy.calculate({
-                    last_period_date: periodDate,
-                    cycle_length: pregnancyProfile?.cycle_length || 28,
-                  });
-                  await loadUserData();
-                } catch (error) {
-                  console.error('Erreur activation grossesse:', error);
-                }
-              }}
-            />
-            
             {/* Section Mon Compte */}
             <CollapsibleSection
               title="Mon compte"
@@ -351,7 +241,7 @@ function ProfilePage() {
               <AccountStatusSection />
             </CollapsibleSection>
 
-            {/* Section Messagerie - Entre Mon compte et Grossesse */}
+            {/* Section Messagerie */}
             <CollapsibleSection
               title="Messagerie"
               icon={MessageSquare}
@@ -376,76 +266,9 @@ function ProfilePage() {
               <BadgesCard />
             </CollapsibleSection>
 
-            {/* Section Grossesse */}
-            <CollapsibleSection
-              title="Grossesse & Fertilité"
-              icon={Baby}
-              defaultOpen={true}
-              iconBg="bg-gradient-to-br from-pink-100 to-rose-100"
-              iconColor="text-pink-600"
-              data-testid="pregnancy-section"
-            >
-              {/* Cycle Watchdog Widget */}
-              {!isPregnant && cycleStatus && cycleStatus.status !== 'no_data' && (
-                <Card className={`mb-4 p-4 rounded-2xl border-2 animate-fade-in ${
-                  cycleStatus.status === 'potential_pregnancy' 
-                    ? 'bg-gradient-to-r from-pink-100 to-rose-100 border-pink-300' 
-                    : cycleStatus.status === 'late'
-                    ? 'bg-gradient-to-r from-amber-100 to-yellow-100 border-amber-300'
-                    : 'bg-gradient-to-r from-sky-100 to-blue-100 border-sky-300'
-                }`} data-testid="cycle-watchdog-widget">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                      cycleStatus.status === 'potential_pregnancy' 
-                        ? 'bg-pink-500' 
-                        : cycleStatus.status === 'late'
-                        ? 'bg-amber-500'
-                        : 'bg-sky-500'
-                    }`}>
-                      {cycleStatus.status === 'potential_pregnancy' ? (
-                        <Heart className="w-6 h-6 text-white animate-pulse" />
-                      ) : (
-                        <Calendar className="w-6 h-6 text-white" />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className={`font-bold ${
-                        cycleStatus.status === 'potential_pregnancy' 
-                          ? 'text-pink-700' 
-                          : cycleStatus.status === 'late'
-                          ? 'text-amber-700'
-                          : 'text-sky-700'
-                      }`}>
-                        {cycleStatus.message}
-                      </h4>
-                      {cycleStatus.suggestion && (
-                        <p className="text-sm text-pink-600 mt-1">{cycleStatus.suggestion}</p>
-                      )}
-                    </div>
-                  </div>
-                </Card>
-              )}
-              
-              {isPregnant ? (
-                <PregnancyCard
-                  pregnancyProfile={pregnancyProfile}
-                  subscriptionStatus={subscriptionStatus}
-                  setSubscriptionStatus={setSubscriptionStatus}
-                  onLoadFullStatus={loadFullSubscriptionStatus}
-                  formatDate={formatDate}
-                />
-              ) : (
-                <FertilityRemindersCard
-                  pregnancyProfile={pregnancyProfile}
-                  fertilityRemindersEnabled={fertilityRemindersEnabled}
-                  fertilityRemindersLoading={fertilityRemindersLoading}
-                  onToggle={toggleFertilityReminders}
-                />
-              )}
-              
-              {/* Marraine Or Moderation Access */}
-              {user?.gold_status && (
-                <Card className="mt-4 p-4 rounded-2xl bg-gradient-to-r from-amber-100 to-yellow-100 border-2 border-amber-300">
+            {/* Marraine Or Moderation Access */}
+            {user?.gold_status && (
+                <Card className="p-4 rounded-2xl bg-gradient-to-r from-amber-100 to-yellow-100 border-2 border-amber-300">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center">
                       <Crown className="w-6 h-6 text-white" />
@@ -463,8 +286,7 @@ function ProfilePage() {
                     </Button>
                   </div>
                 </Card>
-              )}
-            </CollapsibleSection>
+            )}
 
             {/* Section Paramètres */}
             <CollapsibleSection

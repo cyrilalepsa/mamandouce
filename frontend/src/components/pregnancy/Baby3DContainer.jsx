@@ -25,11 +25,25 @@ export default function Baby3DContainer({
 }) {
   const { isDarkMode } = useTheme();
   const [, setCdnTick] = useState(0);
+  const [imageFailed, setImageFailed] = useState(false);
+  const [fallbackIndex, setFallbackIndex] = useState(0);
   useEffect(() => subscribeCloudinary(() => setCdnTick((n) => n + 1)), []);
   
   const imageSrc = getFetusImageUrl(week);
   const localWeek = localFetusPath(FETUS_WEEK_FILES[week] || 'week-22.png');
   const fallbackSrc = getDefaultFetusImageUrl() || DEFAULT_FETUS_IMAGE;
+  const imageCandidates = [...new Set([
+    imageSrc,
+    localWeek,
+    fallbackSrc,
+    DEFAULT_FETUS_IMAGE,
+  ].filter(Boolean))];
+  const activeImageSrc = imageCandidates[fallbackIndex];
+
+  useEffect(() => {
+    setImageFailed(false);
+    setFallbackIndex(0);
+  }, [week]);
 
   // Couleurs des halos - PASTEL LUMINEUX
   const glowOuter = isDarkMode 
@@ -85,20 +99,15 @@ export default function Baby3DContainer({
       />
       
       {/* Image hyperréaliste du bébé */}
-      <img 
-        src={imageSrc}
+      {!imageFailed ? <img
+        src={activeImageSrc}
         alt="Votre bébé"
         className="relative z-10"
-        onError={(e) => {
-          const step = e.target.dataset.fallbackApplied || '0';
-          if (step === '0') {
-            e.target.dataset.fallbackApplied = '1';
-            e.target.src = localWeek;
-            return;
-          }
-          if (step === '1') {
-            e.target.dataset.fallbackApplied = '2';
-            e.target.src = fallbackSrc === imageSrc ? DEFAULT_FETUS_IMAGE : fallbackSrc;
+        onError={() => {
+          if (fallbackIndex + 1 < imageCandidates.length) {
+            setFallbackIndex((index) => index + 1);
+          } else {
+            setImageFailed(true);
           }
         }}
         style={{
@@ -112,7 +121,19 @@ export default function Baby3DContainer({
             : 'drop-shadow(0 6px 20px rgba(236, 72, 153, 0.15)) drop-shadow(0 0 50px rgba(255, 200, 220, 0.4))',
           animation: 'floatBaby 6s ease-in-out infinite'
         }}
-      />
+      /> : (
+        <div
+          className="relative z-10 w-48 h-48 rounded-full flex flex-col items-center justify-center text-center px-6"
+          style={{
+            background: 'radial-gradient(circle, rgba(255,255,255,0.9), rgba(252,231,243,0.65))',
+            border: '1px solid rgba(244,114,182,0.25)',
+          }}
+          data-testid="baby-image-fallback"
+        >
+          <span className="text-5xl" aria-hidden="true">👶</span>
+          <span className="text-xs text-pink-600 mt-2">Illustration bientôt disponible</span>
+        </div>
+      )}
       
       <style>{`
         @keyframes floatBaby {

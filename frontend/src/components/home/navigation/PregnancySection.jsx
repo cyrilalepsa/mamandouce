@@ -30,6 +30,25 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
       defaultOpen={false}
       sectionId="pregnancy"
     >
+      <PastelPillCard
+        color="pink"
+        onClick={() => navigate('/pregnancy-fertility')}
+        testId="pregnancy-fertility-nav"
+        className="mb-4"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-pink-100/70 flex-shrink-0">
+            <CalendarHeart className="w-6 h-6 text-pink-500" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-base font-bold text-slate-700">Grossesse & Fertilité</h3>
+            <p className="text-xs text-slate-500">
+              Statut, cycle et informations essentielles
+            </p>
+          </div>
+          <ChevronRight className="w-5 h-5 text-pink-400" />
+        </div>
+      </PastelPillCard>
 
       {/* Scanner, Bibliothèque, Favoris, Historique */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">

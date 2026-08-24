@@ -154,9 +154,6 @@ function ReferralPage() {
           }}
         >
           {/* Reflet */}
-          {!isDarkMode && (
-            {/* Voile blanc supprimé */}
-          )}
           
           <div className="relative">
             <div className="flex items-center justify-between mb-4">
@@ -222,9 +219,6 @@ function ReferralPage() {
             border: isDarkMode ? '1px solid rgba(100,116,139,0.3)' : 'none'
           }}
         >
-          {!isDarkMode && (
-            {/* Voile blanc supprimé */}
-          )}
           
           <div className="relative">
             <div className="flex items-center gap-3 mb-4">

@@ -8,7 +8,13 @@ import uuid
 
 from core.database import db
 from core.security import get_current_user
-from models.schemas import User, AppointmentNote
+from models.schemas import (
+    User,
+    AppointmentNote,
+    ReminderCreate,
+    ReminderResponse,
+    RemindersResponse,
+)
 
 router = APIRouter(tags=["medical"])
 
@@ -269,6 +275,68 @@ async def get_health_summary(current_user: User = Depends(get_current_user)):
 
 
 # ==================== SCHEDULED REMINDERS ====================
+
+def _reminder_response(document: dict) -> ReminderResponse:
+    raw_datetime = document.get("datetime") or document.get("reminder_datetime")
+    if isinstance(raw_datetime, datetime):
+        raw_datetime = raw_datetime.isoformat()
+    return ReminderResponse(
+        id=str(document.get("id") or document.get("_id") or ""),
+        title=str(document.get("title") or document.get("appointment_title") or "Rappel"),
+        datetime=str(raw_datetime or ""),
+        type=str(document.get("type") or ("appointment" if document.get("appointment_id") else "rdv")),
+        reminder_type=str(document.get("reminder_type") or "push"),
+        sent=bool(document.get("sent")),
+    )
+
+
+@router.get("/v1/reminders", response_model=RemindersResponse)
+async def list_user_reminders(current_user: User = Depends(get_current_user)):
+    """Canonical reminders contract used by the MamanDouce form."""
+    documents = await db.appointment_reminders.find(
+        {"user_id": current_user.id},
+    ).sort("reminder_datetime", 1).to_list(100)
+    reminders = [_reminder_response(document) for document in documents]
+    return RemindersResponse(reminders=[item for item in reminders if item.id and item.datetime])
+
+
+@router.post("/v1/reminders", response_model=ReminderResponse)
+async def create_user_reminder(
+    reminder: ReminderCreate,
+    current_user: User = Depends(get_current_user),
+):
+    reminder_id = str(uuid.uuid4())
+    reminder_datetime = reminder.datetime
+    if reminder_datetime.tzinfo is None:
+        reminder_datetime = reminder_datetime.replace(tzinfo=timezone.utc)
+    document = {
+        "id": reminder_id,
+        "user_id": current_user.id,
+        "user_email": current_user.email,
+        "title": reminder.title,
+        "type": reminder.type,
+        "reminder_datetime": reminder_datetime.isoformat(),
+        "reminder_type": reminder.reminder_type,
+        "sent": False,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.appointment_reminders.insert_one(document)
+    return _reminder_response(document)
+
+
+@router.delete("/v1/reminders/{reminder_id}")
+async def delete_user_reminder(
+    reminder_id: str,
+    current_user: User = Depends(get_current_user),
+):
+    result = await db.appointment_reminders.delete_one({
+        "user_id": current_user.id,
+        "id": reminder_id,
+    })
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Rappel non trouvé")
+    return {"success": True, "id": reminder_id}
 
 @router.get("/medical/scheduled-reminders")
 async def get_scheduled_reminders(current_user: User = Depends(get_current_user)):

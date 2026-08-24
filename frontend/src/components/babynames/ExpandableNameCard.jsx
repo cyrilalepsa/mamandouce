@@ -57,9 +57,6 @@ export default function ExpandableNameCard({
         }}
       >
         {/* Effet de reflet bombé glossy */}
-        {!isDarkMode && (
-          {/* Voile blanc supprimé */}
-        )}
         
         <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${style.iconBg} backdrop-blur-sm relative`}
           style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}

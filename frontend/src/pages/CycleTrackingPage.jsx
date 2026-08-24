@@ -98,7 +98,6 @@ useEffect(() => {
         ]);
       } else {
         setShowIrregularBanner(false);
-        setShowCalendar(false);
       }
     };
     initialize();
@@ -556,15 +555,51 @@ useEffect(() => {
                 Accouchement prévu le {new Date(dueDate).toLocaleDateString('fr-FR')}
               </p>
             )}
-            <Button
-              onClick={() => navigate('/tracking')}
-              className="mt-5 bg-white text-pink-600 hover:bg-pink-50 rounded-full px-6"
-              data-testid="open-pregnancy-tracking"
-            >
-              Ouvrir le suivi de grossesse
-            </Button>
           </Card>
+
+          <Card
+            className="mt-4 p-5 rounded-3xl border-2 border-pink-200 bg-gradient-to-r from-pink-50 via-rose-50 to-amber-50 text-center"
+            data-testid="pregnancy-encouragement-card"
+          >
+            <Heart className="w-8 h-8 text-pink-500 mx-auto mb-2" />
+            <h2 className="font-bold text-pink-700 text-lg">Félicitations !</h2>
+            <p className="text-sm text-pink-600 mt-1">
+              Cette première escale est achevée. Toute l’équipe MamanDouce vous souhaite
+              une belle grossesse et beaucoup de courage pour la suite !
+            </p>
+          </Card>
+
+          <div className="grid grid-cols-2 gap-3 mt-4" data-testid="pregnant-cycle-tabs">
+            <Button
+              onClick={() => navigate('/calculator')}
+              className="rounded-2xl py-6 bg-white text-purple-600 border border-purple-100"
+              data-testid="pregnant-calculation-tab"
+            >
+              <CalendarDays className="w-5 h-5 mr-2" />
+              Calcul
+            </Button>
+            <Button
+              onClick={() => setShowCalendar(true)}
+              className="rounded-2xl py-6 bg-white text-pink-600 border border-pink-100"
+              data-testid="pregnant-calendar-tab"
+            >
+              <CalendarRange className="w-5 h-5 mr-2" />
+              Calendrier
+            </Button>
+          </div>
         </div>
+
+        <FertilityCalendar
+          isOpen={showCalendar}
+          onClose={() => {
+            setShowCalendar(false);
+            if (searchParams.get('calendar') === 'true') navigate('/');
+          }}
+          agendaData={agendaData}
+          rapportDates={[]}
+          onAddRapport={() => {}}
+          onRemoveRapport={() => {}}
+        />
       </div>
     );
   }

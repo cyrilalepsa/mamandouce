@@ -7,6 +7,11 @@ import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import api from '../utils/api';
 import { toast } from 'sonner';
+import {
+  buildReminderPayload,
+  formatReminderDate,
+  normalizeRemindersResponse,
+} from '../utils/reminders';
 
 function RemindersPage() {
   const navigate = useNavigate();
@@ -29,9 +34,8 @@ function RemindersPage() {
   const loadReminders = async () => {
     try {
       setLoading(true);
-      const response = await api.medical.getScheduledReminders();
-      // L'API retourne {reminders: [...]}
-      setReminders(response.data?.reminders || []);
+      const response = await api.reminders.list();
+      setReminders(normalizeRemindersResponse(response));
     } catch (error) {
       console.error('Erreur chargement rappels:', error);
       setReminders([]);
@@ -47,40 +51,30 @@ function RemindersPage() {
     }
     
     try {
-      const reminderDatetime = `${newReminder.date}T${newReminder.time}:00`;
-      await api.medical.scheduleReminder(null, reminderDatetime, 'push');
+      const payload = buildReminderPayload(newReminder);
+      await api.reminders.create(payload);
       toast.success('Rappel ajouté !');
       setNewReminder({ title: '', date: '', time: '09:00', type: 'rdv' });
       setShowAddForm(false);
       loadReminders();
     } catch (error) {
-      toast.error('Erreur lors de l\'ajout du rappel');
+      toast.error(error?.response?.data?.detail || error?.message || 'Erreur lors de l\'ajout du rappel');
     }
   };
 
   const handleDeleteReminder = async (reminderId) => {
     try {
-      await api.medical.deleteReminder(reminderId);
+      await api.reminders.delete(reminderId);
       toast.success('Rappel supprimé');
       loadReminders();
     } catch (error) {
-      toast.error('Erreur lors de la suppression');
+      toast.error(error?.response?.data?.detail || 'Erreur lors de la suppression');
     }
   };
 
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('fr-FR', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
   const isUpcoming = (dateStr) => {
-    return new Date(dateStr) > new Date();
+    const date = new Date(dateStr);
+    return !Number.isNaN(date.getTime()) && date > new Date();
   };
 
   return (
@@ -106,6 +100,7 @@ function RemindersPage() {
           </div>
           <Button
             onClick={() => setShowAddForm(!showAddForm)}
+            data-testid="add-reminder-open"
             className="rounded-full w-10 h-10 p-0 bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg"
           >
             <Plus className="w-5 h-5" />
@@ -162,6 +157,7 @@ function RemindersPage() {
                 </Button>
                 <Button
                   onClick={handleAddReminder}
+                  data-testid="add-reminder-submit"
                   className="flex-1 rounded-xl text-white font-semibold"
                   style={{
                     background: 'linear-gradient(145deg, #fda4af 0%, #fb7185 40%, #f43f5e 100%)',
@@ -234,6 +230,7 @@ function RemindersPage() {
             {reminders.map((reminder, index) => (
               <Card 
                 key={reminder.id || index}
+                data-testid={`reminder-card-${reminder.id || index}`}
                 className={`p-4 rounded-2xl border transition-all ${
                   isUpcoming(reminder.datetime) 
                     ? 'bg-white border-amber-100' 
@@ -258,11 +255,12 @@ function RemindersPage() {
                     </p>
                     <p className="text-sm text-slate-500 flex items-center gap-1 mt-1">
                       <Clock className="w-3.5 h-3.5" />
-                      {formatDate(reminder.datetime)}
+                      {formatReminderDate(reminder.datetime)}
                     </p>
                   </div>
                   <button
                     onClick={() => handleDeleteReminder(reminder.id)}
+                    data-testid={`delete-reminder-${reminder.id}`}
                     className="p-2 text-slate-400 hover:text-red-500 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
