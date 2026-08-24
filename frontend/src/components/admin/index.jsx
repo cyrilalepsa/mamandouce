@@ -13,3 +13,4 @@ export { StatsKPIWidget } from './StatsKPIWidget';
 export { CityMapWidget } from './CityMapWidget';
 export { EvolutionChart } from './EvolutionChart';
 export { default as NeriaCorpScannerTab } from './NeriaCorpScannerTab';
+export { default as FetusVisualsTab } from './FetusVisualsTab';

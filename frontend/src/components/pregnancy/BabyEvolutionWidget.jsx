@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Baby } from 'lucide-react';
-import { getFetusImageUrl, localFetusPath, FETUS_WEEK_FILES, subscribeCloudinary, DEFAULT_FETUS_IMAGE } from '../../utils/fetusAssets';
+import { getFetusImageUrl, hydrateCloudinaryFromApi, localFetusPath, FETUS_WEEK_FILES, subscribeCloudinary, DEFAULT_FETUS_IMAGE } from '../../utils/fetusAssets';
+import api from '../../utils/api';
 
 // Données d'évolution du bébé par semaine
 const weeklyData = {
@@ -192,8 +193,16 @@ const BabyEvolutionWidget = () => {
   const [selectedWeek, setSelectedWeek] = useState(12);
   const [data, setData] = useState(weeklyData[12]);
   const [, setCdnTick] = useState(0);
+  const [fetusImages, setFetusImages] = useState({});
 
-  useEffect(() => subscribeCloudinary(() => setCdnTick((n) => n + 1)), []);
+  useEffect(() => {
+    const unsubscribe = subscribeCloudinary(() => setCdnTick((n) => n + 1));
+    hydrateCloudinaryFromApi();
+    api.get('/pregnancy/fetus-visuals')
+      .then((response) => setFetusImages(response.data?.images || {}))
+      .catch(() => setFetusImages({}));
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     // Charger la semaine actuelle de grossesse si disponible
@@ -304,7 +313,7 @@ const BabyEvolutionWidget = () => {
         {/* Image du bébé 3D */}
         <div className="relative">
           <img
-            src={getFetuImage(selectedWeek)}
+            src={fetusImages[String(selectedWeek)] || getFetuImage(selectedWeek)}
             alt={`Bébé semaine ${selectedWeek}`}
             className="w-48 h-48 object-contain"
             style={{

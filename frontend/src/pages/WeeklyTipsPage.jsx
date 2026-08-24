@@ -33,6 +33,7 @@ function WeeklyTipsPage() {
   const [currentTip, setCurrentTip] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState(1);
   const [touched3D, setTouched3D] = useState(false);
+  const [fetusImages, setFetusImages] = useState({});
   const carouselRef = useRef(null);
   
   // Langue actuelle
@@ -68,6 +69,9 @@ function WeeklyTipsPage() {
 
   useEffect(() => {
     loadPregnancyProfile();
+    api.get('/pregnancy/fetus-visuals')
+      .then((response) => setFetusImages(response.data?.images || {}))
+      .catch(() => setFetusImages({}));
   }, []);
 
   useEffect(() => {
@@ -382,6 +386,7 @@ function WeeklyTipsPage() {
                   <Baby3DContainer 
                     week={selectedWeek}
                     height="340px"
+                    imageUrl={fetusImages[String(selectedWeek)] || null}
                   />
                 </Suspense>
                 

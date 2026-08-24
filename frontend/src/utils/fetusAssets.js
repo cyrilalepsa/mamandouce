@@ -11,7 +11,7 @@
  * Les <img> gardent un onError → fichier local.
  */
 
-import { apiUrl } from './backendUrl';
+import { apiUrl } from './backendUrl.js';
 
 export const CLOUDINARY_CDN_HOST = 'https://res.cloudinary.com';
 export const DEFAULT_FETUS_IMAGE = '/assets/bebe-foetus.png';
@@ -78,6 +78,7 @@ function readVite(name, fallback = '') {
 let cloudName = readVite('VITE_CLOUDINARY_CLOUD_NAME', '');
 let fetusFolder = readVite('VITE_CLOUDINARY_FETUS_FOLDER', 'mamandouce/fetus');
 let transforms = readVite('VITE_CLOUDINARY_TRANSFORMS', 'f_auto,q_auto');
+let fetusWeekUrls = {};
 
 const cloudinaryListeners = new Set();
 
@@ -107,6 +108,7 @@ export function getCloudinaryConfig() {
     folder: fetusFolder,
     transforms,
     enabled: isCloudinaryEnabled(),
+    fetusWeekUrls: { ...fetusWeekUrls },
   };
 }
 
@@ -147,6 +149,8 @@ export function closestAvailableWeek(week) {
 
 /** URL image fœtus pour une semaine de grossesse (1–42). */
 export function getFetusImageUrl(week) {
+  const override = fetusWeekUrls[String(Number(week))];
+  if (override) return override;
   const file = FETUS_WEEK_FILES[week];
   if (file) {
     return resolveMediaUrl(file, localFetusPath(file));
@@ -165,6 +169,7 @@ export function getDefaultFetusImageUrl() {
  * Appelé au boot — permet le CDN live sans rebuild frontend.
  */
 export async function hydrateCloudinaryFromApi() {
+  let changed = false;
   try {
     const res = await fetch(apiUrl('/api/neriacorp/media'));
     if (!res.ok) return getCloudinaryConfig();
@@ -173,10 +178,23 @@ export async function hydrateCloudinaryFromApi() {
       cloudName = String(data.cloud_name).trim();
       if (data.folder) fetusFolder = data.folder;
       if (data.transforms) transforms = data.transforms;
-      notifyCloudinary();
+      changed = true;
     }
   } catch {
     /* offline / CORS : rester sur env Vite ou local */
   }
+  try {
+    const visualsResponse = await fetch(apiUrl('/api/pregnancy/fetus-visuals'));
+    if (visualsResponse.ok) {
+      const visuals = await visualsResponse.json();
+      if (visuals?.images && typeof visuals.images === 'object') {
+        fetusWeekUrls = { ...visuals.images };
+        changed = true;
+      }
+    }
+  } catch {
+    /* mapping absent : conserver le fallback Cloudinary/local */
+  }
+  if (changed) notifyCloudinary();
   return getCloudinaryConfig();
 }
