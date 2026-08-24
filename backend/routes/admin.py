@@ -12,7 +12,7 @@ from core.config import RESEND_API_KEY, SENDER_EMAIL, VAPID_PRIVATE_KEY, VAPID_C
 from core.security import get_admin_user
 from models.schemas import (
     User, PromoCode, AdminMessage, ContactMessageRequest, AdminReplyRequest,
-    SubscribeRequest
+    SubscribeRequest, RegisteredUserResponse, RegisteredUsersResponse
 )
 
 # Optional imports
@@ -81,38 +81,52 @@ def is_test_user(email: str) -> bool:
         return True
     return False
 
-@router.get("/admin/users")
+@router.get("/admin/users", response_model=RegisteredUsersResponse)
 async def get_admin_users(admin: User = Depends(get_admin_user)):
-    """Get all registered users with their status"""
-    users = await db.users.find({}, {"_id": 0, "hashed_password": 0}).sort("created_at", -1).to_list(1000)
+    """Get registered users using the stable admin-list response contract."""
+    # Keep Mongo's _id: RegisteredUserResponse turns it into a string `id`
+    # for historical documents that predate the application-level UUID.
+    users = await db.users.find(
+        {},
+        {
+            "hashed_password": 0,
+            "password": 0,
+            "password_hash": 0,
+            "reset_token": 0,
+            "reset_token_expires": 0,
+        },
+    ).sort("created_at", -1).to_list(1000)
     
     real_users = []
     test_users = []
     
     for user in users:
-        sub_status = user.get("subscription_status", "free")
-        premium_source = user.get("premium_source", "")
-        email = user.get("email", "")
+        sub_status = str(user.get("subscription_status") or "free").lower()
+        premium_source = str(user.get("premium_source") or "")
+        email = str(user.get("email") or "")
         
         if sub_status == "premium":
             user["display_status"] = "beta_tester" if premium_source == "promo_code" else "premium"
+        elif sub_status == "trial":
+            user["display_status"] = "trial"
         else:
             user["display_status"] = "free"
         
         # Separate test users from real users
         if is_test_user(email):
             user["is_test_user"] = True
-            test_users.append(user)
+            test_users.append(RegisteredUserResponse.model_validate(user))
         else:
             user["is_test_user"] = False
-            real_users.append(user)
+            real_users.append(RegisteredUserResponse.model_validate(user))
     
     # Stats only count real users
     stats = {
         "total": len(real_users),
-        "premium": len([u for u in real_users if u.get("display_status") == "premium"]),
-        "beta_tester": len([u for u in real_users if u.get("display_status") == "beta_tester"]),
-        "free": len([u for u in real_users if u.get("display_status") == "free"]),
+        "premium": len([u for u in real_users if u.display_status == "premium"]),
+        "beta_tester": len([u for u in real_users if u.display_status == "beta_tester"]),
+        "trial": len([u for u in real_users if u.display_status == "trial"]),
+        "free": len([u for u in real_users if u.display_status == "free"]),
         "test_users_count": len(test_users)
     }
     
