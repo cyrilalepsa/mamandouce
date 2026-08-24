@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "node scripts/spa-proxy.mjs",
-    "test": "node src/utils/backendUrl.standalone.test.mjs && node --test src/utils/pwa-verify.test.mjs src/utils/cycleForm.test.mjs src/utils/postLogin.test.mjs src/utils/apiPayload.test.mjs src/utils/dashboardFetch.test.mjs src/utils/registeredUsers.test.mjs scripts/spa-proxy.test.mjs"
+    "test": "node src/utils/backendUrl.standalone.test.mjs && node --test src/utils/pwa-verify.test.mjs src/utils/cycleForm.test.mjs src/utils/postLogin.test.mjs src/utils/apiPayload.test.mjs src/utils/dashboardFetch.test.mjs src/utils/registeredUsers.test.mjs src/utils/pregnancyStatus.test.mjs scripts/spa-proxy.test.mjs"
   },
   "dependencies": {
     "@capacitor/android": "5",

@@ -2,6 +2,8 @@ import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti';
 import NameOfTheDay from '../NameOfTheDay';
+import api from '../../utils/api';
+import { calculateCycleSummary, pregnancyProgress } from '../../utils/pregnancyStatus';
 
 function makeHeartShape() {
   try {
@@ -93,10 +95,25 @@ export function persistPregnant(dpaStr) {
 /**
  * Composant Caméléon PregnancyToggle — feux d'artifice + carte SA
  */
-export function PregnancyToggle({ isPregnant, dueDate, lastPeriodDate, onPregnant, mode = 'home' }) {
+export function PregnancyToggle({
+  isPregnant,
+  dueDate,
+  lastPeriodDate,
+  cycleLength = 28,
+  currentWeek,
+  trimester,
+  onPregnant,
+  mode = 'home',
+}) {
   const navigate = useNavigate();
 
   const pregnancyInfo = useMemo(() => {
+    if (currentWeek) {
+      return pregnancyProgress(
+        { current_week: currentWeek, trimester, estimated_due_date: dueDate },
+        dueDate,
+      );
+    }
     const startStr = lastPeriodDate || (dueDate ? addDaysYmd(dueDate, -280) : null);
     if (!startStr) return { week: 1, trimester: 1 };
     const start = new Date(startStr);
@@ -107,16 +124,27 @@ export function PregnancyToggle({ isPregnant, dueDate, lastPeriodDate, onPregnan
     if (currentWeek > 14 && currentWeek <= 28) trimester = 2;
     if (currentWeek > 28) trimester = 3;
     return { week: currentWeek, trimester };
-  }, [lastPeriodDate, dueDate]);
+  }, [currentWeek, trimester, lastPeriodDate, dueDate]);
 
-  const handleClick = () => {
+  const cycleSummary = useMemo(
+    () => calculateCycleSummary(lastPeriodDate, cycleLength),
+    [lastPeriodDate, cycleLength],
+  );
+
+  const handleClick = async () => {
     firePregnancyConfetti();
 
     const period = lastPeriodDate || todayYmd();
     const dpaStr = addDaysYmd(period, 280);
     persistPregnant(dpaStr);
+    // Persist the status used by /auth/me, /pregnancy/profile and cycle alerts.
+    try {
+      await api.cycle.announcePregnancy();
+    } catch (error) {
+      console.warn('Statut grossesse non synchronisé :', error?.response?.status || error?.message);
+    }
     if (onPregnant) {
-      onPregnant(dpaStr, period);
+      await onPregnant(dpaStr, period);
     }
   };
 
@@ -161,7 +189,7 @@ export function PregnancyToggle({ isPregnant, dueDate, lastPeriodDate, onPregnan
   );
 
   if (mode === 'cycle' || mode === 'profile') {
-    if (isPregnant && dueDate) {
+    if (isPregnant) {
       return <div className={mode === 'profile' ? 'w-full' : 'w-full mt-4'}>{pregnantConfirmed}</div>;
     }
     return (
@@ -180,38 +208,44 @@ export function PregnancyToggle({ isPregnant, dueDate, lastPeriodDate, onPregnan
   }
 
   if (mode === 'home') {
-    if (isPregnant && dueDate) {
-      return (
-        <div className="w-full mt-2 animate-fade-in">
-          <div className="grid grid-cols-2 gap-3 w-full">
-            <button
-              type="button"
-              onClick={() => navigate('/cycle-tracking')}
-              className="relative overflow-hidden flex flex-col justify-between items-center text-center w-full p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none card-glass-interactive glass-sa-week rounded-[20px]"
-              style={{
-                height: '112px',
-                minHeight: '112px',
-              }}
-              data-testid="sa-week-card"
-            >
-              <span className="relative z-10 text-[10px] text-[#2C2C2C]/80 uppercase tracking-wider font-semibold">
-                Vous êtes à la
-              </span>
-              <span className="relative z-10 text-lg font-bold text-pink-600 my-0.5">
-                Semaine {pregnancyInfo.week}
-              </span>
-              <span className="relative z-10 text-[10px] text-[#2C2C2C] font-medium bg-white/55 px-2.5 py-0.5 rounded-full shadow-sm">
-                Trimestre {pregnancyInfo.trimester} • SA
-              </span>
-            </button>
-            <NameOfTheDay compact={true} />
-          </div>
-        </div>
-      );
-    }
     return (
-      <div className="w-full mt-2 animate-fade-in" style={{ width: '100%' }}>
-        <NameOfTheDay compact={false} fullWidth={true} />
+      <div className="w-full mt-2 animate-fade-in">
+        <div className="grid grid-cols-2 gap-3 w-full">
+          <button
+            type="button"
+            onClick={() => navigate(isPregnant ? '/tracking' : '/cycle-tracking')}
+            className="relative overflow-hidden flex flex-col justify-between items-center text-center w-full p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none card-glass-interactive glass-sa-week rounded-[20px]"
+            style={{ height: '112px', minHeight: '112px' }}
+            data-testid={isPregnant ? 'pregnancy-progress-card' : 'cycle-summary-card'}
+          >
+            {isPregnant ? (
+              <>
+                <span className="relative z-10 text-[10px] text-[#2C2C2C]/80 uppercase tracking-wider font-semibold">
+                  Votre grossesse
+                </span>
+                <span className="relative z-10 text-lg font-bold text-pink-600 my-0.5">
+                  Semaine {pregnancyInfo.week}
+                </span>
+                <span className="relative z-10 text-[10px] text-[#2C2C2C] font-medium bg-white/55 px-2.5 py-0.5 rounded-full shadow-sm">
+                  Trimestre {pregnancyInfo.trimester} • SA
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="relative z-10 text-[10px] text-[#2C2C2C]/80 uppercase tracking-wider font-semibold">
+                  Votre cycle
+                </span>
+                <span className="relative z-10 text-sm font-bold text-purple-700 my-0.5 leading-tight">
+                  {cycleSummary.label}
+                </span>
+                <span className="relative z-10 text-[10px] text-[#2C2C2C] font-medium bg-white/55 px-2.5 py-0.5 rounded-full shadow-sm">
+                  {cycleSummary.dayOfCycle ? `Jour ${cycleSummary.dayOfCycle} du cycle` : 'Suivi de cycles'}
+                </span>
+              </>
+            )}
+          </button>
+          <NameOfTheDay compact={true} />
+        </div>
       </div>
     );
   }

@@ -23,6 +23,7 @@ import {
   parseHabitualLength,
   toYearMonthDay,
 } from '../utils/cycleForm';
+import { isPregnancyActive, pregnancyProgress } from '../utils/pregnancyStatus';
 import confetti from 'canvas-confetti';
 
 function CycleTrackingPage() {
@@ -47,6 +48,8 @@ function CycleTrackingPage() {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [isPregnant, setIsPregnant] = useState(() => localStorage.getItem('mamandouce_pregnant') === 'true');
   const [dueDate, setDueDate] = useState(() => localStorage.getItem('mamandouce_due_date') || '');
+  const [pregnancyWeek, setPregnancyWeek] = useState(null);
+  const [pregnancyTrimester, setPregnancyTrimester] = useState(null);
   const [todaySymptoms, setTodaySymptoms] = useState([]);
   const [todayMood, setTodayMood] = useState(null);
   const [todayTemp, setTodayTemp] = useState('');
@@ -85,18 +88,40 @@ useEffect(() => {
       setShowCalendar(true);
     }
 
-    // Toujours charger les données cycle (sinon calendrier sans couleurs/légende utile)
-    loadCycleData();
-    loadCycleAnalysis();
-    checkBannerStatus();
-    loadRapportDates();
+    const initialize = async () => {
+      const pregnancyActive = await loadCycleData();
+      if (!pregnancyActive) {
+        await Promise.allSettled([
+          loadCycleAnalysis(),
+          checkBannerStatus(),
+          loadRapportDates(),
+        ]);
+      } else {
+        setShowIrregularBanner(false);
+        setShowCalendar(false);
+      }
+    };
+    initialize();
   }, []);
 
   // 🔥 NOM CORRIGÉ : "loadCycleData" pour correspondre au useEffect
   const loadCycleData = async () => {
+    let pregnancyActive = isPregnancyActive({
+      storedPregnant: localStorage.getItem('mamandouce_pregnant'),
+    });
     try {
       const profileRes = await api.pregnancy.getProfile();
       const profile = profileRes.data;
+      pregnancyActive = isPregnancyActive({
+        profile,
+        storedPregnant: localStorage.getItem('mamandouce_pregnant'),
+      });
+      setIsPregnant(pregnancyActive);
+      if (pregnancyActive) {
+        setDueDate(profile?.estimated_due_date || localStorage.getItem('mamandouce_due_date') || '');
+        setPregnancyWeek(profile?.current_week || null);
+        setPregnancyTrimester(profile?.trimester || null);
+      }
       if (profile && profile.last_period_date) {
         const ymd = toYearMonthDay(profile.last_period_date);
         const length = parseHabitualLength(profile.cycle_length, 28);
@@ -109,6 +134,7 @@ useEffect(() => {
     } finally {
       setInitialLoading(false);
     }
+    return pregnancyActive;
   };
   
   // Charger l'analyse IA des cycles
@@ -490,6 +516,59 @@ useEffect(() => {
     const total = cycleHistory.reduce((sum, c) => sum + c.cycleLength, 0);
     return Math.round(total / cycleHistory.length);
   };
+
+  if (!initialLoading && isPregnant) {
+    const progress = pregnancyProgress(
+      {
+        current_week: pregnancyWeek,
+        trimester: pregnancyTrimester,
+        estimated_due_date: dueDate,
+      },
+      dueDate,
+    );
+    return (
+      <div className="min-h-screen gradient-bg" data-testid="pregnancy-tracking-active">
+        <div className="max-w-2xl mx-auto p-4 sm:p-6">
+          <div className="flex items-center gap-4 mb-6">
+            <Button
+              onClick={() => navigate('/')}
+              variant="ghost"
+              className={`p-2 rounded-full ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-white/50'}`}
+              data-testid="back-button"
+            >
+              <ArrowLeft className={`w-6 h-6 ${textSecondary}`} />
+            </Button>
+            <div className="flex-1">
+              <h1 className={`text-2xl font-bold ${textPrimary}`}>Suivi de grossesse</h1>
+              <p className={`text-sm ${textMuted}`}>Votre grossesse est active</p>
+            </div>
+          </div>
+
+          <Card className="card_nacre rounded-3xl p-6 text-center">
+            <Baby className="w-10 h-10 text-pink-200 mx-auto mb-3" />
+            <p className="text-sm text-white/80 uppercase tracking-wider">Avancement</p>
+            <p className="text-3xl font-bold text-white mt-2">Semaine {progress.week}</p>
+            <p className="text-sm font-semibold text-white/90 mt-2">
+              Trimestre {progress.trimester} • SA
+            </p>
+            {dueDate && (
+              <p className="text-xs text-white/75 mt-3">
+                Accouchement prévu le {new Date(dueDate).toLocaleDateString('fr-FR')}
+              </p>
+            )}
+            <Button
+              onClick={() => navigate('/tracking')}
+              className="mt-5 bg-white text-pink-600 hover:bg-pink-50 rounded-full px-6"
+              data-testid="open-pregnancy-tracking"
+            >
+              Ouvrir le suivi de grossesse
+            </Button>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
 return (
     <div className="min-h-screen gradient-bg">
       <div className="max-w-2xl mx-auto p-4 sm:p-6">

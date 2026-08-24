@@ -10,6 +10,7 @@ import PremiumSunAvatar from '../components/profile/PremiumSunAvatar';
 import { isNameCelebratedToday, getSaintOfTheDay } from '../data/saintsCalendar';
 import CustomizableHome from '../components/home/CustomizableHome';
 import { PREGNANT_EVENT, PregnancyToggle } from '../components/cycle/PregnancyToggle';
+import { isPregnancyActive } from '../utils/pregnancyStatus';
 import {
   TopBar,
   TutorialPopup,
@@ -46,7 +47,10 @@ function HomePage() {
   const [currentPageType, setCurrentPageType] = useState('default');
   const [earnedTrophy, setEarnedTrophy] = useState(null);
   const [isPregnantHome, setIsPregnantHome] = useState(
-    () => localStorage.getItem('mamandouce_pregnant') === 'true'
+    () => isPregnancyActive({
+      user: authUser,
+      storedPregnant: localStorage.getItem('mamandouce_pregnant'),
+    })
   );
   const [dueDateHome, setDueDateHome] = useState(
     () => localStorage.getItem('mamandouce_due_date') || ''
@@ -76,8 +80,16 @@ function HomePage() {
   // Resync cartes grossesse à chaque retour sur l'accueil
   useEffect(() => {
     const syncPregnant = () => {
-      setIsPregnantHome(localStorage.getItem('mamandouce_pregnant') === 'true');
-      setDueDateHome(localStorage.getItem('mamandouce_due_date') || '');
+      setIsPregnantHome(isPregnancyActive({
+        profile: pregnancyProfile,
+        user: authUser,
+        storedPregnant: localStorage.getItem('mamandouce_pregnant'),
+      }));
+      setDueDateHome(
+        pregnancyProfile?.estimated_due_date
+        || localStorage.getItem('mamandouce_due_date')
+        || '',
+      );
     };
     syncPregnant();
     window.addEventListener('focus', syncPregnant);
@@ -88,7 +100,7 @@ function HomePage() {
       window.removeEventListener('storage', syncPregnant);
       window.removeEventListener(PREGNANT_EVENT, syncPregnant);
     };
-  }, []);
+  }, [authUser, pregnancyProfile]);
 
   const loadUserData = useCallback(async ({ cancelled = () => false } = {}) => {
     try {
@@ -236,7 +248,7 @@ function HomePage() {
     || isSuperAdmin(userEmail || authUser?.email, userRole || authUser?.role)
   );
   const hasPregnancyProfile = Boolean(
-    isPregnantHome || (pregnancyProfile && pregnancyProfile.current_week)
+    isPregnantHome
   );
 
   return (
@@ -329,6 +341,9 @@ function HomePage() {
                     isPregnant={isPregnantHome}
                     dueDate={dueDateHome}
                     lastPeriodDate={pregnancyProfile?.last_period_date}
+                    cycleLength={pregnancyProfile?.cycle_length || pregnancyProfile?.cycle_duration || 28}
+                    currentWeek={pregnancyProfile?.current_week}
+                    trimester={pregnancyProfile?.trimester}
                     onPregnant={(dpaStr) => {
                       setIsPregnantHome(true);
                       setDueDateHome(dpaStr);

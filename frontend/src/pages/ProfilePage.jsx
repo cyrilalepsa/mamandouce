@@ -12,6 +12,7 @@ import { AccountStatusSection } from '../components/settings';
 import { BadgesCard } from '../components/solidarity';
 import { Card } from '../components/ui/card';
 import { PregnancyToggle } from '../components/cycle/PregnancyToggle';
+import { isPregnancyActive } from '../utils/pregnancyStatus';
 import {
   SubscriptionStatusCards,
   UserInfoCard,
@@ -68,7 +69,9 @@ function ProfilePage() {
   const [subscriptionStatus, setSubscriptionStatus] = useState('free');
   const [fullStatus, setFullStatus] = useState(null);
   const [isPregnant, setIsPregnant] = useState(
-    () => localStorage.getItem('mamandouce_pregnant') === 'true'
+    () => isPregnancyActive({
+      storedPregnant: localStorage.getItem('mamandouce_pregnant'),
+    })
   );
   const [dueDate, setDueDate] = useState(
     () => localStorage.getItem('mamandouce_due_date') || ''
@@ -93,6 +96,10 @@ function ProfilePage() {
   }, []);
 
   const loadCycleStatus = async () => {
+    if (isPregnant) {
+      setCycleStatus(null);
+      return;
+    }
     try {
       const res = await api.cycle.status();
       setCycleStatus(res.data);
@@ -107,9 +114,23 @@ function ProfilePage() {
       const me = applySuperadminOverlay(userRes.data);
       ingestUser?.(me);
       setUser(me);
+      setIsPregnant(isPregnancyActive({
+        user: me,
+        storedPregnant: localStorage.getItem('mamandouce_pregnant'),
+      }));
       
       const profileRes = await api.pregnancy.getProfile();
-      setPregnancyProfile(profileRes.data);
+      const profile = profileRes.data;
+      setPregnancyProfile(profile);
+      const active = isPregnancyActive({
+        profile,
+        user: me,
+        storedPregnant: localStorage.getItem('mamandouce_pregnant'),
+      });
+      setIsPregnant(active);
+      if (active && profile?.estimated_due_date) {
+        setDueDate(profile.estimated_due_date);
+      }
     } catch (error) {
       console.error('Erreur chargement profil:', error);
     } finally {
@@ -168,6 +189,7 @@ function ProfilePage() {
   };
 
   const toggleFertilityReminders = async () => {
+    if (isPregnant) return;
     setFertilityRemindersLoading(true);
     try {
       const newStatus = !fertilityRemindersEnabled;
@@ -294,6 +316,9 @@ function ProfilePage() {
               isPregnant={isPregnant}
               dueDate={dueDate}
               lastPeriodDate={pregnancyProfile?.last_period_date}
+              cycleLength={pregnancyProfile?.cycle_length || 28}
+              currentWeek={pregnancyProfile?.current_week}
+              trimester={pregnancyProfile?.trimester}
               onPregnant={async (dpaStr, periodDate) => {
                 setIsPregnant(true);
                 setDueDate(dpaStr);
@@ -361,7 +386,7 @@ function ProfilePage() {
               data-testid="pregnancy-section"
             >
               {/* Cycle Watchdog Widget */}
-              {cycleStatus && cycleStatus.status !== 'no_data' && (
+              {!isPregnant && cycleStatus && cycleStatus.status !== 'no_data' && (
                 <Card className={`mb-4 p-4 rounded-2xl border-2 animate-fade-in ${
                   cycleStatus.status === 'potential_pregnancy' 
                     ? 'bg-gradient-to-r from-pink-100 to-rose-100 border-pink-300' 
@@ -401,19 +426,22 @@ function ProfilePage() {
                 </Card>
               )}
               
-              <PregnancyCard
-                pregnancyProfile={pregnancyProfile}
-                subscriptionStatus={subscriptionStatus}
-                setSubscriptionStatus={setSubscriptionStatus}
-                onLoadFullStatus={loadFullSubscriptionStatus}
-                formatDate={formatDate}
-              />
-              <FertilityRemindersCard
-                pregnancyProfile={pregnancyProfile}
-                fertilityRemindersEnabled={fertilityRemindersEnabled}
-                fertilityRemindersLoading={fertilityRemindersLoading}
-                onToggle={toggleFertilityReminders}
-              />
+              {isPregnant ? (
+                <PregnancyCard
+                  pregnancyProfile={pregnancyProfile}
+                  subscriptionStatus={subscriptionStatus}
+                  setSubscriptionStatus={setSubscriptionStatus}
+                  onLoadFullStatus={loadFullSubscriptionStatus}
+                  formatDate={formatDate}
+                />
+              ) : (
+                <FertilityRemindersCard
+                  pregnancyProfile={pregnancyProfile}
+                  fertilityRemindersEnabled={fertilityRemindersEnabled}
+                  fertilityRemindersLoading={fertilityRemindersLoading}
+                  onToggle={toggleFertilityReminders}
+                />
+              )}
               
               {/* Marraine Or Moderation Access */}
               {user?.gold_status && (
