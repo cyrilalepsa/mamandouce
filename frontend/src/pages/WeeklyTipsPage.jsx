@@ -21,8 +21,7 @@ import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useTheme } from '../contexts/ThemeContext';
 import { normalizeWeeklyTip } from '../utils/weeklyTips';
 
-// Lazy load des composants 3D pour performance
-const Fetus3D = lazy(() => import('../components/pregnancy/Fetus3D'));
+// Lazy load du visuel pour performance
 const Baby3DContainer = lazy(() => import('../components/pregnancy/Baby3DContainer'));
 
 function WeeklyTipsPage() {
@@ -43,7 +42,14 @@ function WeeklyTipsPage() {
   const { translated: translatedTip, isLoading: isTranslating } = useAutoTranslate(
     currentTip,
     {
-      fields: ['title', 'description', 'development', 'fruit_comparison', 'symptoms', 'advice'],
+      fields: [
+        'title',
+        'description',
+        'development',
+        'fruit_comparison',
+        'embryo_size',
+        'embryo_weight',
+      ],
       enabled: currentLang !== 'fr'
     }
   );
