@@ -1,7 +1,7 @@
 """
 Pydantic models/schemas for MamanDouce
 """
-from pydantic import BaseModel, Field, ConfigDict, EmailStr, field_validator
+from pydantic import BaseModel, Field, ConfigDict, EmailStr, field_validator, model_validator
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
 import uuid
@@ -53,6 +53,77 @@ class User(BaseModel):
     referrals_completed: Optional[int] = 0  # Nombre de parrainages réussis
     postpartum_free_unlocked: Optional[bool] = False  # Post-partum gratuit via 2 parrainages
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class RegisteredUserResponse(BaseModel):
+    """Stable public contract for one row in the admin registered-users list."""
+
+    model_config = ConfigDict(extra="ignore", populate_by_name=True)
+
+    id: str
+    email: str = ""
+    name: str = ""
+    created_at: Optional[str] = None
+    role: str = "user"
+    subscription_status: str = "free"
+    premium_source: str = ""
+    display_status: str = "free"
+    is_test_user: bool = False
+    postpartum_purchased: bool = False
+    postpartum_free_via_referral: bool = False
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_mongo_document(cls, value):
+        """Convert Mongo ObjectId/datetimes and tolerate historical null fields."""
+        if not isinstance(value, dict):
+            return value
+        data = dict(value)
+        raw_id = data.get("id") or data.get("_id")
+        if raw_id is not None:
+            data["id"] = str(raw_id)
+        created_at = data.get("created_at")
+        if isinstance(created_at, datetime):
+            data["created_at"] = created_at.isoformat()
+        elif created_at is not None:
+            data["created_at"] = str(created_at)
+        string_defaults = {
+            "email": "",
+            "name": "",
+            "role": "user",
+            "subscription_status": "free",
+            "premium_source": "",
+            "display_status": "free",
+        }
+        for field_name, default in string_defaults.items():
+            if data.get(field_name) is None:
+                data[field_name] = default
+        for field_name in (
+            "is_test_user",
+            "postpartum_purchased",
+            "postpartum_free_via_referral",
+        ):
+            if data.get(field_name) is None:
+                data[field_name] = False
+        data.pop("_id", None)
+        return data
+
+
+class RegisteredUsersStats(BaseModel):
+    total: int = 0
+    premium: int = 0
+    beta_tester: int = 0
+    trial: int = 0
+    free: int = 0
+    test_users_count: int = 0
+
+
+class RegisteredUsersResponse(BaseModel):
+    """Exact wrapper consumed by AdminPage/UsersTab."""
+
+    users: List[RegisteredUserResponse] = Field(default_factory=list)
+    test_users: List[RegisteredUserResponse] = Field(default_factory=list)
+    stats: RegisteredUsersStats = Field(default_factory=RegisteredUsersStats)
 
 
 class ProfileUpdate(BaseModel):

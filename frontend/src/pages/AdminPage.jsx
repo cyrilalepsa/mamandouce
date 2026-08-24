@@ -9,6 +9,10 @@ import PageHeader from '../components/PageHeader';
 import { toast } from 'sonner';
 import { isSuperAdmin, applySuperadminOverlay, ADMIN_EMAILS } from '../utils/superadmin';
 import {
+  EMPTY_REGISTERED_USERS_STATS,
+  normalizeRegisteredUsersResponse,
+} from '../utils/registeredUsers';
+import {
   DashboardTab,
   UsersTab,
   MessagesTab,
@@ -52,7 +56,7 @@ function AdminPage() {
   // Utilisateurs
   const [users, setUsers] = useState([]);
   const [testUsers, setTestUsers] = useState([]);
-  const [userStats, setUserStats] = useState({ total: 0, premium: 0, beta_tester: 0, free: 0 });
+  const [userStats, setUserStats] = useState(() => ({ ...EMPTY_REGISTERED_USERS_STATS }));
 
   // Messages
   const [messages, setMessages] = useState([]);
@@ -166,11 +170,16 @@ function AdminPage() {
   const loadUsers = async () => {
     try {
       const response = await api.admin.getUsers();
-      setUsers(response.data.users || []);
-      setTestUsers(response.data.test_users || []);
-      setUserStats(response.data.stats || { total: 0, premium: 0, beta_tester: 0, free: 0 });
+      const normalized = normalizeRegisteredUsersResponse(response);
+      setUsers(normalized.users);
+      setTestUsers(normalized.test_users);
+      setUserStats(normalized.stats);
     } catch (error) {
       console.error('Erreur chargement utilisateurs:', error);
+      // Preserve a valid array/object shape without scheduling another fetch.
+      setUsers([]);
+      setTestUsers([]);
+      setUserStats({ ...EMPTY_REGISTERED_USERS_STATS });
     }
   };
 
