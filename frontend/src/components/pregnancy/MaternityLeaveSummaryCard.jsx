@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CalendarHeart, Baby } from 'lucide-react';
+import { CalendarHeart, Baby, ChevronDown } from 'lucide-react';
 import api from '../../utils/api';
 import { useAuth } from '../../contexts/AuthContext';
 import {
@@ -12,6 +12,7 @@ export function MaternityLeaveSummaryCard({ className = '' }) {
   const { user } = useAuth();
   const [dueDate, setDueDate] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -41,17 +42,23 @@ export function MaternityLeaveSummaryCard({ className = '' }) {
 
   return (
     <div
-      className={`col-span-2 sm:col-span-3 rounded-3xl p-4 border-2 ${className}`}
+      className={`col-span-2 sm:col-span-3 rounded-3xl border-2 ${className}`}
       data-testid="maternity-leave-summary-card"
       style={{
         background:
           'linear-gradient(160deg, #ffffff 0%, #faf5ff 30%, #f3e8ff 65%, #ede9fe 100%)',
         borderColor: 'rgba(167, 139, 250, 0.45)',
         boxShadow:
-          '0 8px 24px -4px rgba(124, 58, 237, 0.18), inset 0 1px 0 rgba(255,255,255,0.9)',
+          '0 8px 24px -4px rgba(124, 58, 237, 0.18), inset 0 1px 0 rgba(255,255,255, 0.9)',
       }}
     >
-      <div className="flex items-start gap-3">
+      <button
+        type="button"
+        onClick={() => setIsOpen((open) => !open)}
+        className="w-full p-4 flex items-start gap-3 text-left"
+        aria-expanded={isOpen}
+        data-testid="maternity-leave-summary-toggle"
+      >
         <div
           className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0"
           style={{
@@ -67,48 +74,66 @@ export function MaternityLeaveSummaryCard({ className = '' }) {
             <Baby className="w-3.5 h-3.5" />
             Enfant(s) à charge : {childrenAtHome}
           </p>
+          {!isOpen && leave && (
+            <p className="text-xs text-violet-700/70 mt-1">
+              Début prénatal : {formatFrenchDate(leave.prenatalStart)}
+            </p>
+          )}
         </div>
-      </div>
+        <ChevronDown
+          className={`w-5 h-5 text-violet-500 flex-shrink-0 transition-transform duration-200 ${
+            isOpen ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
 
-      {loading ? (
-        <p className="text-sm text-violet-700/70 mt-3">Calcul des dates…</p>
-      ) : !leave ? (
-        <p className="text-sm text-violet-700/80 mt-3">
-          Indiquez votre date prévue d&apos;accouchement dans le suivi de grossesse pour estimer
-          votre congé maternité.
-        </p>
-      ) : (
-        <div className="mt-3 space-y-2">
-          <p className="text-xs text-violet-700/75">{getScenarioLabel(leave.scenario)}</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-            <div
-              className="rounded-2xl px-3 py-2 bg-white/70 border border-violet-100"
-              data-testid="maternity-leave-prenatal"
-            >
-              <p className="text-[11px] uppercase tracking-wide text-violet-600 font-semibold">
-                Début prénatal
+      {isOpen && (
+        <div className="px-4 pb-4 border-t border-violet-100/80">
+          {loading ? (
+            <p className="text-sm text-violet-700/70 mt-3">Calcul des dates…</p>
+          ) : !leave ? (
+            <p className="text-sm text-violet-700/80 mt-3">
+              Indiquez votre date prévue d&apos;accouchement dans le suivi de grossesse pour
+              estimer votre congé maternité.
+            </p>
+          ) : (
+            <div className="mt-3 space-y-2">
+              <p className="text-xs text-violet-700/75">{getScenarioLabel(leave.scenario)}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                <div
+                  className="rounded-2xl px-3 py-2 bg-white/70 border border-violet-100"
+                  data-testid="maternity-leave-prenatal"
+                >
+                  <p className="text-[11px] uppercase tracking-wide text-violet-600 font-semibold">
+                    Début prénatal
+                  </p>
+                  <p className="text-sm font-bold text-violet-900">
+                    {formatFrenchDate(leave.prenatalStart)}
+                  </p>
+                  <p className="text-xs text-violet-700/70">
+                    {leave.prenatalWeeks} sem. avant la DPA
+                  </p>
+                </div>
+                <div
+                  className="rounded-2xl px-3 py-2 bg-white/70 border border-violet-100"
+                  data-testid="maternity-leave-postnatal"
+                >
+                  <p className="text-[11px] uppercase tracking-wide text-violet-600 font-semibold">
+                    Fin postnatal
+                  </p>
+                  <p className="text-sm font-bold text-violet-900">
+                    {formatFrenchDate(leave.postnatalEnd)}
+                  </p>
+                  <p className="text-xs text-violet-700/70">
+                    {leave.postnatalWeeks} sem. après la DPA
+                  </p>
+                </div>
+              </div>
+              <p className="text-[11px] text-violet-700/65 mt-2">
+                DPA : {formatFrenchDate(leave.dueDate)}
               </p>
-              <p className="text-sm font-bold text-violet-900">
-                {formatFrenchDate(leave.prenatalStart)}
-              </p>
-              <p className="text-xs text-violet-700/70">{leave.prenatalWeeks} sem. avant la DPA</p>
             </div>
-            <div
-              className="rounded-2xl px-3 py-2 bg-white/70 border border-violet-100"
-              data-testid="maternity-leave-postnatal"
-            >
-              <p className="text-[11px] uppercase tracking-wide text-violet-600 font-semibold">
-                Fin postnatal
-              </p>
-              <p className="text-sm font-bold text-violet-900">
-                {formatFrenchDate(leave.postnatalEnd)}
-              </p>
-              <p className="text-xs text-violet-700/70">{leave.postnatalWeeks} sem. après la DPA</p>
-            </div>
-          </div>
-          <p className="text-[11px] text-violet-700/65 mt-2">
-            DPA : {formatFrenchDate(leave.dueDate)}
-          </p>
+          )}
         </div>
       )}
     </div>
