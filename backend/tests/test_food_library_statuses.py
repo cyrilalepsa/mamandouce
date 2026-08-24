@@ -5,7 +5,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from data.food_database import FOOD_SAFETY_DATABASE
+from data.food_database import FOOD_CATEGORIES, FOOD_SAFETY_DATABASE
 from models.schemas import User
 from routes.food import (
     FOOD_SAFETY_STATUSES,
@@ -50,7 +50,10 @@ def test_library_has_only_canonical_statuses_and_unique_names():
     foods = normalized_food_library(FOOD_SAFETY_DATABASE)
     names = [food["name"].strip().casefold() for food in foods]
     assert len(names) == len(set(names))
+    assert len(foods) >= 300
+    assert all(str(food.get("reason") or "").strip() for food in foods)
     assert {food["safe_for_pregnancy"] for food in foods} == FOOD_SAFETY_STATUSES
+    assert {food["category"] for food in foods}.issubset(set(FOOD_CATEGORIES))
 
 
 def test_each_status_filter_is_exact_before_pagination():

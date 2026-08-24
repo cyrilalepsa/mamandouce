@@ -204,9 +204,22 @@ async def get_badges(current_user: User = Depends(get_current_user)):
         await db.user_badges.insert_one(badge)
         new_badges.append(BadgeType.GOLD)
     
+    progress_payload = progress.dict()
+    progress_payload["has_maman_contributrice"] = (
+        "maman_contributrice" in badge_types
+    )
+    progress_payload["maman_contributrice_progress"] = (
+        100 if progress_payload["has_maman_contributrice"] else 0
+    )
+    progress_payload["contribution_points"] = int(
+        (badge_progress_doc or {}).get(
+            "contribution_points", progress_contributions * 20
+        ) or 0
+    )
+
     return {
         "badges": badges,
-        "progress": progress.dict(),
+        "progress": progress_payload,
         "new_badges": new_badges
     }
 

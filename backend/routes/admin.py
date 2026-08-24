@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from datetime import datetime, timezone, timedelta
 import logging
 import json
+import uuid
 
 from core.database import db
 from core.config import RESEND_API_KEY, SENDER_EMAIL, VAPID_PRIVATE_KEY, VAPID_CLAIMS_EMAIL, app_public_url, email_brand_footer
@@ -887,21 +888,44 @@ async def update_food_status(food_id: str, status: str, admin: User = Depends(ge
     food = await db.user_added_foods.find_one({"id": food_id}, {"_id": 0})
     if not food:
         raise HTTPException(status_code=404, detail="Aliment non trouvé")
+    if food.get("status") == status:
+        return {
+            "success": True,
+            "status": status,
+            "reward_points": 0,
+            "badge_unlocked": None,
+            "message": "Statut déjà appliqué",
+        }
     
-    result = await db.user_added_foods.update_one(
+    await db.user_added_foods.update_one(
         {"id": food_id},
-        {"$set": {"status": status, "reviewed_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {
+            "status": status,
+            "reviewed_at": datetime.now(timezone.utc).isoformat(),
+            "reviewed_by": admin.email,
+        }}
     )
     
     # Si approuvé, incrémenter les contributions validées de l'utilisateur pour les badges
+    reward_points = 0
+    badge_unlocked = None
     if status == "approved" and food.get("user_id"):
         user_id = food["user_id"]
+        reward_points = 20
+
+        await db.users.update_one(
+            {"id": user_id},
+            {"$inc": {"contribution_points": reward_points}},
+        )
         
         # Incrémenter le compteur de contributions validées
         await db.badge_progress.update_one(
             {"user_id": user_id},
             {
-                "$inc": {"contributions_validated": 1},
+                "$inc": {
+                    "contributions_validated": 1,
+                    "contribution_points": reward_points,
+                },
                 "$setOnInsert": {
                     "user_id": user_id,
                     "referrals_completed": 0,
@@ -910,6 +934,30 @@ async def update_food_status(food_id: str, status: str, admin: User = Depends(ge
             },
             upsert=True
         )
+
+        contributor_badge = await db.user_badges.find_one({
+            "user_id": user_id,
+            "badge_type": "maman_contributrice",
+        })
+        if not contributor_badge:
+            await db.user_badges.insert_one({
+                "user_id": user_id,
+                "badge_type": "maman_contributrice",
+                "badge_name": "Maman Contributrice",
+                "unlocked_at": datetime.now(timezone.utc).isoformat(),
+                "reward_claimed": True,
+                "source": "food_validation",
+            })
+            badge_unlocked = "Maman Contributrice"
+
+        await db.contribution_rewards.insert_one({
+            "id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "food_id": food_id,
+            "points": reward_points,
+            "reason": "Aliment validé par la modération",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        })
         
         # Vérifier et attribuer les badges
         progress = await db.badge_progress.find_one({"user_id": user_id}, {"_id": 0})
@@ -949,7 +997,12 @@ async def update_food_status(food_id: str, status: str, admin: User = Depends(ge
                     "reward_claimed": False
                 })
     
-    return {"success": True, "status": status}
+    return {
+        "success": True,
+        "status": status,
+        "reward_points": reward_points,
+        "badge_unlocked": badge_unlocked,
+    }
 
 # ==================== MESSAGES ====================
 

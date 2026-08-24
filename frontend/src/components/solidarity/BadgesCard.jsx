@@ -12,6 +12,16 @@ import { toast } from 'sonner';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const BADGE_CONFIG = {
+  maman_contributrice: {
+    icon: Award,
+    label: 'Maman Contributrice',
+    color: 'from-pink-400 to-purple-500',
+    bgColor: 'bg-pink-50',
+    darkBgColor: 'dark:bg-pink-900/30',
+    textColor: 'text-pink-600',
+    darkTextColor: 'dark:text-pink-400',
+    requirement: '1 aliment proposé et validé',
+  },
   bronze: {
     icon: Award,
     label: 'Bronze',

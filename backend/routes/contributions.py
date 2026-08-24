@@ -24,6 +24,7 @@ BADGE_THRESHOLDS = {
 }
 
 BADGE_NAMES = {
+    "maman_contributrice": "Maman Contributrice",
     "bronze": "Contributrice Bronze",
     "silver": "Contributrice Argent", 
     "gold": "Marraine Or"
@@ -127,6 +128,20 @@ async def get_badge_progress(current_user: User = Depends(get_current_user)):
         "user_id": current_user.id,
         "status": "approved"
     })
+    foods_approved = await db.user_added_foods.count_documents({
+        "user_id": current_user.id,
+        "status": "approved",
+    })
+    progress_doc = await db.badge_progress.find_one(
+        {"user_id": current_user.id}, {"_id": 0}
+    ) or {}
+    contributions_validated = max(
+        contributions_validated + foods_approved,
+        int(progress_doc.get("contributions_validated", 0) or 0),
+    )
+    contribution_points = int(
+        progress_doc.get("contribution_points", 0) or 0
+    )
     
     # Get referrals count
     referrals_completed = await db.referrals.count_documents({
@@ -147,6 +162,11 @@ async def get_badge_progress(current_user: User = Depends(get_current_user)):
         "contributions_validated": contributions_validated,
         "referrals_completed": referrals_completed,
         "badges_earned": current_badges,
+        "contribution_points": contribution_points,
+        "maman_contributrice": {
+            "earned": "maman_contributrice" in current_badges,
+            "points": contribution_points,
+        },
         "bronze": {
             "earned": "bronze" in current_badges,
             "progress_contributions": min(contributions_validated, 3),

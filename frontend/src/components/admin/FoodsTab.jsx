@@ -7,8 +7,12 @@ import { toast } from 'sonner';
 export function FoodsTab({ pendingFoods, foodStats, loadPendingFoods }) {
   const handleFoodAction = async (foodId, action) => {
     try {
-      await api.admin.updateFoodStatus(foodId, action);
-      toast.success(action === 'approved' ? 'Aliment approuvé !' : 'Aliment rejeté');
+      const response = await api.admin.updateFoodStatus(foodId, action);
+      toast.success(
+        action === 'approved'
+          ? `Aliment approuvé ! +${response.data?.reward_points || 20} points • Maman Contributrice`
+          : 'Aliment rejeté',
+      );
       loadPendingFoods();
     } catch (error) {
       toast.error('Erreur');

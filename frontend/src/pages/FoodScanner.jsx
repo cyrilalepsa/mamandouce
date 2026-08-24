@@ -263,6 +263,28 @@ function FoodScanner() {
     }
   };
 
+  const proposeAnalyzedFood = async (food) => {
+    if (!food?.name || proposingFood) return;
+    setProposingFood(true);
+    try {
+      const safetyLevel = food.safe_for_pregnancy || 'caution';
+      const response = await api.foodLibrary.addFood({
+        name: food.name,
+        barcode: food.barcode || null,
+        category: food.category || 'Analyse dynamique',
+        is_safe: safetyLevel === 'safe',
+        safety_level: safetyLevel,
+        notes: food.reason || 'Analyse dynamique soumise à la communauté.',
+      });
+      setSubmittedFoods(prev => new Set([...prev, food.name]));
+      toast.success(response.data?.message || 'Proposition envoyée !');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erreur lors de la proposition');
+    } finally {
+      setProposingFood(false);
+    }
+  };
+
   const getSafetyIcon = (status) => {
     switch (status) {
       case 'safe':
@@ -297,6 +319,8 @@ function FoodScanner() {
   const [newFoodData, setNewFoodData] = useState({ name: '', barcode: '', category: '', notes: '' });
   const [addingFood, setAddingFood] = useState(false);
   const [notFound, setNotFound] = useState(false);
+  const [proposingFood, setProposingFood] = useState(false);
+  const [submittedFoods, setSubmittedFoods] = useState(new Set());
 
   return (
     <div className="min-h-screen gradient-bg p-6">
@@ -483,6 +507,16 @@ function FoodScanner() {
                 {result.reason && (
                   <p className="mt-3 text-sm text-slate-600 bg-slate-50 p-3 rounded-xl">{result.reason}</p>
                 )}
+                {(result.can_contribute || result.is_unknown) && !submittedFoods.has(result.name) && (
+                  <Button
+                    onClick={() => proposeAnalyzedFood(result)}
+                    disabled={proposingFood}
+                    className="mt-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full"
+                    data-testid="propose-scanned-food"
+                  >
+                    Proposer cet aliment à la communauté
+                  </Button>
+                )}
               </div>
             </div>
           </Card>
@@ -514,6 +548,16 @@ function FoodScanner() {
                     </button>
                   </div>
                 </div>
+                {(item.can_contribute || item.is_unknown) && !submittedFoods.has(item.name) && (
+                  <Button
+                    onClick={() => proposeAnalyzedFood(item)}
+                    disabled={proposingFood}
+                    className="mt-3 w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full"
+                    data-testid={`propose-search-food-${index}`}
+                  >
+                    Proposer cet aliment à la communauté
+                  </Button>
+                )}
               </Card>
             ))}
           </div>
