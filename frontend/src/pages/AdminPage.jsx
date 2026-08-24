@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, HandCoins, Eye, Crown, Baby, ChevronDown, Bell, Smartphone, Shield, HandHeart, Calculator, CheckCircle, Brain } from 'lucide-react';
+import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, HandCoins, Eye, Crown, Baby, ChevronDown, Bell, Smartphone, Shield, HandHeart, Calculator, CheckCircle, Brain, Image as ImageIcon } from 'lucide-react';
 import api from '../utils/api';
 import PageHeader from '../components/PageHeader';
 import { toast } from 'sonner';
@@ -23,7 +23,8 @@ import {
   AndroidExportTab,
   GuardianTab,
   GuardianStatusIndicator,
-  SolidarityTab
+  SolidarityTab,
+  FetusVisualsTab,
 } from '../components/admin';
 import AccountingDashboard from '../components/admin/AccountingDashboard';
 import ContributionsManager from '../components/admin/ContributionsManager';
@@ -427,6 +428,9 @@ function AdminPage() {
           </SubDrawer>
           <SubDrawer id="foods" label="Aliments à valider" icon={Apple}>
             <FoodsTab pendingFoods={pendingFoods} foodStats={foodStats} loadPendingFoods={loadPendingFoods} />
+          </SubDrawer>
+          <SubDrawer id="fetus-visuals" label="Gestion des Visuels Fœtus (40 Semaines)" icon={ImageIcon}>
+            <FetusVisualsTab />
           </SubDrawer>
         </DrawerTile>
 

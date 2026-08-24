@@ -2,10 +2,11 @@
 Admin routes for MamanDouce
 Handles: Users management, Promo codes, Food validation, Messages
 """
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, File, UploadFile
 from datetime import datetime, timezone, timedelta
 import logging
 import json
+import asyncio
 
 from core.database import db
 from core.config import RESEND_API_KEY, SENDER_EMAIL, VAPID_PRIVATE_KEY, VAPID_CLAIMS_EMAIL, app_public_url, email_brand_footer
@@ -973,6 +974,102 @@ async def update_food_status(food_id: str, status: str, admin: User = Depends(ge
         "contribution_credit": contribution_credit,
         "badges_unlocked": badges_unlocked,
     }
+
+
+# ==================== FETUS VISUALS ====================
+
+FETUS_VISUAL_MIMES = {"image/jpeg", "image/jpg", "image/png", "image/webp"}
+MAX_FETUS_VISUAL_BYTES = 10 * 1024 * 1024
+
+
+def _fetus_visual_row(week: int, document: dict | None = None) -> dict:
+    document = document or {}
+    return {
+        "week": week,
+        "image_url": document.get("image_url"),
+        "public_id": document.get("public_id"),
+        "width": document.get("width"),
+        "height": document.get("height"),
+        "format": document.get("format"),
+        "updated_at": document.get("updated_at"),
+        "updated_by": document.get("updated_by"),
+    }
+
+
+@router.get("/admin/fetus-visuals")
+async def get_fetus_visuals(admin: User = Depends(get_admin_user)):
+    documents = await db.fetus_visuals.find(
+        {"week": {"$gte": 1, "$lte": 40}},
+        {"_id": 0},
+    ).to_list(40)
+    by_week = {int(document["week"]): document for document in documents}
+    return {
+        "folder": "mamandouce/foetus",
+        "visuals": [
+            _fetus_visual_row(week, by_week.get(week))
+            for week in range(1, 41)
+        ],
+    }
+
+
+@router.post("/admin/fetus-visuals/{week}")
+async def upload_fetus_visual(
+    week: int,
+    file: UploadFile = File(...),
+    admin: User = Depends(get_admin_user),
+):
+    if week < 1 or week > 40:
+        raise HTTPException(status_code=422, detail="Semaine comprise entre 1 et 40")
+    mime = (file.content_type or "").lower().split(";")[0]
+    if mime not in FETUS_VISUAL_MIMES:
+        raise HTTPException(
+            status_code=400,
+            detail="Format accepté : JPEG, PNG ou WebP",
+        )
+    content = await file.read()
+    if not content:
+        raise HTTPException(status_code=400, detail="Image vide")
+    if len(content) > MAX_FETUS_VISUAL_BYTES:
+        raise HTTPException(status_code=413, detail="Image trop volumineuse (max 10 Mo)")
+
+    from services.cloudinary_upload import upload_fetus_visual as cloudinary_upload
+
+    try:
+        uploaded = await asyncio.to_thread(
+            cloudinary_upload,
+            content,
+            filename=file.filename or f"week-{week:02d}.jpg",
+            content_type=mime,
+            week=week,
+        )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    now = datetime.now(timezone.utc).isoformat()
+    document = {
+        "week": week,
+        **uploaded,
+        "updated_at": now,
+        "updated_by": admin.email,
+    }
+    await db.fetus_visuals.update_one(
+        {"week": week},
+        {"$set": document},
+        upsert=True,
+    )
+    return _fetus_visual_row(week, document)
+
+
+@router.delete("/admin/fetus-visuals/{week}")
+async def delete_fetus_visual(
+    week: int,
+    admin: User = Depends(get_admin_user),
+):
+    if week < 1 or week > 40:
+        raise HTTPException(status_code=422, detail="Semaine comprise entre 1 et 40")
+    result = await db.fetus_visuals.delete_one({"week": week})
+    return {"success": True, "deleted": bool(result.deleted_count), "week": week}
+
 
 # ==================== MESSAGES ====================
 

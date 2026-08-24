@@ -18,6 +18,33 @@ logger = logging.getLogger("mamandouce.cycle")
 router = APIRouter(tags=["pregnancy"])
 
 
+@router.get("/pregnancy/fetus-visuals")
+async def get_public_fetus_visuals():
+    """Public week→Cloudinary URL mapping; contains no credentials."""
+    try:
+        documents = await db.fetus_visuals.find(
+            {
+                "week": {"$gte": 1, "$lte": 40},
+                "image_url": {"$type": "string"},
+            },
+            {"_id": 0, "week": 1, "image_url": 1, "updated_at": 1},
+        ).to_list(40)
+    except Exception as exc:
+        logger.warning("fetus visual mapping unavailable: %s", exc)
+        documents = []
+    return {
+        "images": {
+            str(document["week"]): document["image_url"]
+            for document in documents
+            if document.get("image_url")
+        },
+        "updated_at": max(
+            (document.get("updated_at") or "" for document in documents),
+            default=None,
+        ),
+    }
+
+
 def calculate_pregnancy_dates(last_period: datetime, cycle_duration: int):
     """
     Calculate all pregnancy-related dates with medical precision.

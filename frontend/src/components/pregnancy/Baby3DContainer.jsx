@@ -14,6 +14,7 @@ import {
   getDefaultFetusImageUrl,
   DEFAULT_FETUS_IMAGE,
   FETUS_WEEK_FILES,
+  hydrateCloudinaryFromApi,
   localFetusPath,
   subscribeCloudinary,
 } from '../../utils/fetusAssets';
@@ -21,15 +22,22 @@ import {
 export default function Baby3DContainer({ 
   week = 22,
   height = '340px',
-  className = ''
+  className = '',
+  imageUrl = null,
 }) {
   const { isDarkMode } = useTheme();
   const [, setCdnTick] = useState(0);
   const [imageFailed, setImageFailed] = useState(false);
   const [fallbackIndex, setFallbackIndex] = useState(0);
-  useEffect(() => subscribeCloudinary(() => setCdnTick((n) => n + 1)), []);
+  useEffect(() => {
+    const unsubscribe = subscribeCloudinary(() => setCdnTick((n) => n + 1));
+    // The component is lazy-loaded and can mount after the app-level
+    // hydration notification, so refresh once while subscribed.
+    hydrateCloudinaryFromApi();
+    return unsubscribe;
+  }, []);
   
-  const imageSrc = getFetusImageUrl(week);
+  const imageSrc = imageUrl || getFetusImageUrl(week);
   const localWeek = localFetusPath(FETUS_WEEK_FILES[week] || 'week-22.png');
   const fallbackSrc = getDefaultFetusImageUrl() || DEFAULT_FETUS_IMAGE;
   const imageCandidates = [...new Set([

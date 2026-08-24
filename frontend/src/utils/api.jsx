@@ -333,6 +333,21 @@ export const api = {
     // Business Kit
     getBusinessKitInfo: () => axios.get(`${API()}/admin/business-kit/info`, getAuthHeaders()),
     sendBusinessKitEmail: () => axios.post(`${API()}/admin/business-kit/send-email`, {}, getAuthHeaders()),
+    getFetusVisuals: () => axios.get(`${API()}/admin/fetus-visuals`, getAuthHeaders()),
+    uploadFetusVisual: (week, formData) => axios.post(
+      `${API()}/admin/fetus-visuals/${week}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    ),
+    deleteFetusVisual: (week) => axios.delete(
+      `${API()}/admin/fetus-visuals/${week}`,
+      getAuthHeaders(),
+    ),
     // News Notifications
     sendNewsNotification: (data) => axios.post(`${API()}/admin/send-news-notification`, data, getAuthHeaders()),
     getNewsNotifications: () => axios.get(`${API()}/admin/news-notifications`, getAuthHeaders()),
