@@ -172,10 +172,15 @@ export const api = {
     getSearch: () => axios.get(`${API()}/food/history/search`, getAuthHeaders()),
   },
   favorites: {
-    add: (data) => axios.post(`${API()}/food/favorites`, data, getAuthHeaders()),
-    getAll: () => axios.get(`${API()}/food/favorites`, getAuthHeaders()),
-    remove: (foodName) => axios.delete(`${API()}/food/favorites/${encodeURIComponent(foodName)}`, getAuthHeaders()),
-    check: (foodName) => axios.get(`${API()}/food/favorites/check/${encodeURIComponent(foodName)}`, getAuthHeaders()),
+    add: (food) => axios.post(`${API()}/v1/food/favorites`, {
+      food_name: food.food_name || food.name,
+      safety_level: food.safety_level || food.status || 'caution',
+      notes: food.notes || food.reason || '',
+      category: food.category || null,
+    }, getAuthHeaders()),
+    getAll: () => axios.get(`${API()}/v1/food/favorites`, getAuthHeaders()),
+    remove: (foodName) => axios.delete(`${API()}/v1/food/favorites/${encodeURIComponent(foodName)}`, getAuthHeaders()),
+    check: (foodName) => axios.get(`${API()}/v1/food/favorites/check/${encodeURIComponent(foodName)}`, getAuthHeaders()),
   },
   alerts: {
     getPersonalized: () => axios.get(`${API()}/alerts/personalized`, getAuthHeaders()),

@@ -76,6 +76,7 @@ api_router = APIRouter(prefix="/api")
 from routes.auth import router as auth_router
 from routes.pregnancy import router as pregnancy_router
 from routes.food import router as food_router
+from routes.food import favorites_router as food_favorites_router
 from routes.medical import router as medical_router
 from routes.birth_list import router as birth_list_router
 from routes.admin import router as admin_router
@@ -103,6 +104,7 @@ from routes.babynames import router as babynames_router
 api_router.include_router(auth_router)
 api_router.include_router(pregnancy_router)
 api_router.include_router(food_router)
+api_router.include_router(food_favorites_router)
 api_router.include_router(medical_router)
 api_router.include_router(birth_list_router)
 api_router.include_router(admin_router)

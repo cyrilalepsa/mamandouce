@@ -15,6 +15,7 @@ from models.schemas import User, UserAddedFood, AddFoodRequest, Favorite, AddFav
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/food", tags=["food"])
+favorites_router = APIRouter(prefix="/v1/food", tags=["food"])
 
 # Import food database
 from data.food_database import FOOD_SAFETY_DATABASE as FOOD_DATABASE
@@ -415,7 +416,20 @@ async def get_search_history(current_user: User = Depends(get_current_user)):
 
 # ==================== FAVORITES ====================
 
+def _favorite_public(document: dict) -> dict:
+    favorite = dict(document)
+    favorite.pop("_id", None)
+    return {
+        **favorite,
+        "name": str(favorite.get("food_name") or ""),
+        "status": normalize_food_status(favorite.get("safety_level")),
+        "reason": str(favorite.get("notes") or ""),
+        "category": str(favorite.get("category") or ""),
+    }
+
+
 @router.post("/favorites")
+@favorites_router.post("/favorites")
 async def add_favorite(request: AddFavoriteRequest, current_user: User = Depends(get_current_user)):
     """Add a food to favorites"""
     existing = await db.favorites.find_one({
@@ -430,25 +444,32 @@ async def add_favorite(request: AddFavoriteRequest, current_user: User = Depends
         user_id=current_user.id,
         food_name=request.food_name,
         safety_level=request.safety_level,
-        notes=request.notes
+        notes=request.notes,
+        category=request.category,
     )
     
     fav_dict = favorite.model_dump()
     fav_dict["created_at"] = fav_dict["created_at"].isoformat()
     await db.favorites.insert_one(fav_dict)
     
-    return {"success": True, "message": "Ajouté aux favoris", "favorite": fav_dict}
+    return {
+        "success": True,
+        "message": "Ajouté aux favoris",
+        "favorite": _favorite_public(fav_dict),
+    }
 
 @router.get("/favorites")
+@favorites_router.get("/favorites")
 async def get_favorites(current_user: User = Depends(get_current_user)):
     """Get user's favorite foods"""
     favorites = await db.favorites.find(
         {"user_id": current_user.id},
         {"_id": 0}
     ).sort("created_at", -1).to_list(100)
-    return favorites
+    return [_favorite_public(favorite) for favorite in favorites]
 
 @router.delete("/favorites/{food_name}")
+@favorites_router.delete("/favorites/{food_name}")
 async def remove_favorite(food_name: str, current_user: User = Depends(get_current_user)):
     """Remove a food from favorites"""
     result = await db.favorites.delete_one({
@@ -462,6 +483,7 @@ async def remove_favorite(food_name: str, current_user: User = Depends(get_curre
     return {"success": True, "message": "Retiré des favoris"}
 
 @router.get("/favorites/check/{food_name}")
+@favorites_router.get("/favorites/check/{food_name}")
 async def check_favorite(food_name: str, current_user: User = Depends(get_current_user)):
     """Check if a food is in favorites"""
     favorite = await db.favorites.find_one({
