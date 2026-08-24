@@ -29,7 +29,6 @@ function FoodLibraryPage() {
   const [categories, setCategories] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
   const [favorites, setFavorites] = useState(new Set());
   const [showScanner, setShowScanner] = useState(false);
   const requestIdRef = useRef(0);
@@ -76,7 +75,6 @@ function FoodLibraryPage() {
       }));
       setFoods(normalizedFoods);
       setTotalPages(response.data.pages || 1);
-      setTotal(response.data.total || 0);
       setCategories(response.data.categories || []);
     } catch (error) {
       if (requestId !== requestIdRef.current) return;
@@ -164,9 +162,11 @@ function FoodLibraryPage() {
             </div>
             <div>
               <h2 className="text-2xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                {total} {t('library.foodsReferenced', 'aliments référencés')}
+                {t('library.everydayGuide', 'Vos aliments du quotidien')}
               </h2>
-              <p className="text-slate-600">{t('library.sortedAlphabetically', 'Triés par ordre alphabétique')}</p>
+              <p className="text-slate-600">
+                {t('library.foodGuideSubtitle', 'Le guide de votre alimentation pendant la grossesse')}
+              </p>
             </div>
           </div>
         </Card>

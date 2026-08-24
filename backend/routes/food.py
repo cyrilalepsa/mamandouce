@@ -63,6 +63,11 @@ class SearchHistoryItem(BaseModel):
     result_type: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+
+class FoodTextAnalysisRequest(BaseModel):
+    name: str
+    ingredients: Optional[str] = None
+
 # ==================== SCAN & SEARCH ====================
 
 @router.post("/scan/barcode")
@@ -111,6 +116,25 @@ async def scan_barcode(barcode: str, current_user: User = Depends(get_current_us
                             "safe_for_pregnancy": "unknown"
                         }
         
+        if not product_info or normalize_food_status(
+            product_info.get("safe_for_pregnancy")
+        ) not in FOOD_SAFETY_STATUSES:
+            from services.food_scanner_ai import food_scanner
+
+            fallback = await food_scanner.analyze_food_text(
+                (product_info or {}).get("name") or f"Produit code-barres {barcode}",
+                (product_info or {}).get("ingredients"),
+            )
+            product_info = {
+                **(product_info or {"barcode": barcode}),
+                "name": fallback.food_name,
+                "safe_for_pregnancy": fallback.safe_for_pregnancy,
+                "reason": fallback.explanation,
+                "is_unknown": fallback.is_unknown,
+                "can_contribute": fallback.can_contribute,
+                "analysis_source": fallback.analysis_source,
+            }
+
         if product_info:
             # Enregistrer le scan
             await db.food_scans.insert_one({
@@ -128,12 +152,20 @@ async def scan_barcode(barcode: str, current_user: User = Depends(get_current_us
             history_dict["created_at"] = history_dict["created_at"].isoformat()
             await db.search_history.insert_one(history_dict)
         
-        return product_info or {"barcode": barcode, "name": "Produit non trouvé", "safe_for_pregnancy": "unknown"}
+        return product_info
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Erreur scan barcode: {str(e)}")
-        return {"barcode": barcode, "name": "Erreur lors du scan", "safe_for_pregnancy": "unknown"}
+        return {
+            "barcode": barcode,
+            "name": "Produit à vérifier",
+            "safe_for_pregnancy": "caution",
+            "reason": "Analyse indisponible : vérifier la composition avant consommation.",
+            "is_unknown": True,
+            "can_contribute": True,
+            "analysis_source": "error_fallback",
+        }
 
 @router.post("/scan/search")
 async def search_food(query: str, current_user: User = Depends(get_current_user)):
@@ -180,7 +212,41 @@ async def search_food(query: str, current_user: User = Depends(get_current_user)
         history_dict["created_at"] = history_dict["created_at"].isoformat()
         await db.search_history.insert_one(history_dict)
     
-    return results[:10]
+        return results[:10]
+
+    from services.food_scanner_ai import food_scanner
+
+    fallback = await food_scanner.analyze_food_text(query)
+    await db.food_scans.insert_one({
+        "user_id": current_user.id,
+        "query": query,
+        "scanned_at": datetime.now(timezone.utc).isoformat(),
+        "analysis_source": fallback.analysis_source,
+    })
+    return [{
+        "name": fallback.food_name,
+        "safe_for_pregnancy": fallback.safe_for_pregnancy,
+        "category": "Analyse dynamique",
+        "reason": fallback.explanation,
+        "is_unknown": True,
+        "can_contribute": True,
+        "analysis_source": fallback.analysis_source,
+        "confidence": fallback.confidence,
+    }]
+
+
+@router.post("/scan/analyze-text")
+async def analyze_food_text(
+    request: FoodTextAnalysisRequest,
+    current_user: User = Depends(get_current_user),
+):
+    """Analyze a food absent from the curated database using name/composition."""
+    from services.food_scanner_ai import food_scanner
+
+    result = await food_scanner.analyze_food_text(
+        request.name, request.ingredients
+    )
+    return _food_scan_payload(result)
 
 @router.get("/foods/safe")
 async def get_safe_foods(current_user: User = Depends(get_current_user)):
@@ -268,13 +334,17 @@ async def add_user_food(food_data: AddFoodRequest, current_user: User = Depends(
             detail="Cet aliment a déjà été soumis par un utilisateur"
         )
     
+    proposed_status = normalize_food_status(food_data.safety_level)
+    if proposed_status not in FOOD_SAFETY_STATUSES:
+        proposed_status = "caution"
+
     user_food = UserAddedFood(
         user_id=current_user.id,
         name=food_data.name.strip(),
         barcode=food_data.barcode,
         status="pending",
-        safety_level="unknown",
-        is_safe=False,
+        safety_level=proposed_status,
+        is_safe=proposed_status == "safe",
         category=food_data.category,
         notes=food_data.notes
     )
@@ -286,11 +356,15 @@ async def add_user_food(food_data: AddFoodRequest, current_user: User = Depends(
     
     return {
         "success": True,
-        "message": f"L'aliment '{food_data.name}' a été soumis pour vérification",
+        "message": "Proposition envoyée !",
+        "pending_food": True,
+        "potential_reward_points": 20,
+        "potential_badge": "Maman Contributrice",
         "food": {
             "id": user_food.id,
             "name": user_food.name,
-            "status": user_food.status
+            "status": user_food.status,
+            "safety_level": user_food.safety_level,
         }
     }
 
@@ -440,6 +514,9 @@ def _food_scan_payload(result) -> dict:
         "extracted_text": result.packaging_text or result.explanation,
         "confidence": result.confidence,
         "is_unknown": result.is_unknown,
+        "safe_for_pregnancy": result.safe_for_pregnancy,
+        "analysis_source": result.analysis_source,
+        "can_contribute": result.can_contribute,
     }
     return {
         "success": True,
@@ -495,7 +572,7 @@ async def _execute_food_image_scan(
             query=f"[IA] {result.food_name}",
             result_type="ai_scan",
         )
-        await db.search_history.insert_one(history_item.dict())
+        await db.search_history.insert_one(history_item.model_dump())
         logger.info(
             "[FoodScanner] User %s scanned: %s -> %s",
             current_user.id,

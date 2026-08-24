@@ -18,7 +18,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 const VERDICT_CONFIG = {
   autorise: {
     color: 'green',
-    bgColor: 'bg-green-500',
+    bgColor: 'bg-emerald-600',
     bgLight: 'bg-green-50 dark:bg-green-900/30',
     textColor: 'text-green-600 dark:text-green-400',
     borderColor: 'border-green-300 dark:border-green-700',
@@ -33,18 +33,18 @@ const VERDICT_CONFIG = {
     textColor: 'text-amber-600 dark:text-amber-400',
     borderColor: 'border-amber-300 dark:border-amber-700',
     icon: AlertTriangle,
-    label: 'LIMITÉ',
+    label: 'AVEC PRÉCAUTION',
     emoji: '⚠️'
   },
   deconseille: {
     color: 'red',
-    bgColor: 'bg-red-500',
+    bgColor: 'bg-red-600',
     bgLight: 'bg-red-50 dark:bg-red-900/30',
     textColor: 'text-red-600 dark:text-red-400',
     borderColor: 'border-red-300 dark:border-red-700',
     icon: XCircle,
-    label: 'DÉCONSEILLÉ',
-    emoji: '❌'
+    label: 'INTERDIT',
+    emoji: '🚫'
   }
 };
 
@@ -221,22 +221,23 @@ export default function FoodScannerAI({ isOpen, onClose }) {
     setSubmittingContribution(true);
     
     try {
-      // Créer une contribution avec l'image
-      const formData = new FormData();
-      formData.append('name', result.food_name || 'Aliment à identifier');
-      formData.append('category', 'À déterminer');
-      formData.append('is_safe', 'false');
-      formData.append('safety_level', 'unknown');
-      formData.append('notes', 'Soumis via le scanner IA - En attente de validation');
-      
-      // Envoyer la contribution
-      await api.foodLibrary.addFood({
+      const proposedStatus = result.safe_for_pregnancy || (
+        result.verdict === 'autorise'
+          ? 'safe'
+          : result.verdict === 'deconseille' ? 'unsafe' : 'caution'
+      );
+      const response = await api.foodLibrary.addFood({
         name: result.food_name || 'Aliment à identifier',
-        category: 'À déterminer',
-        is_safe: false,
-        safety_level: 'unknown',
-        notes: 'Soumis via le scanner IA - En attente de validation par un expert'
+        category: 'Analyse IA',
+        is_safe: proposedStatus === 'safe',
+        safety_level: proposedStatus,
+        notes: [
+          'Soumis via le scanner IA.',
+          result.explanation,
+          result.ingredients ? `Composition : ${result.ingredients}` : '',
+        ].filter(Boolean).join(' '),
       });
+      toast.success(response.data?.message || 'Proposition envoyée !');
       
       // Notification pastel de félicitations
       toast.custom((t) => (
@@ -495,7 +496,7 @@ export default function FoodScannerAI({ isOpen, onClose }) {
               )}
               
               {/* Bouton contribution pour aliments inconnus */}
-              {result.is_unknown && !result.contributionSubmitted && (
+              {(result.can_contribute || result.is_unknown) && !result.contributionSubmitted && (
                 <div 
                   className="p-4 rounded-2xl border-2 border-dashed border-pink-300"
                   style={{
@@ -509,7 +510,7 @@ export default function FoodScannerAI({ isOpen, onClose }) {
                     <div>
                       <p className="font-semibold text-pink-600 text-sm">Tu peux nous aider !</p>
                       <p className="text-xs text-purple-500 mt-1">
-                        Envoie cet aliment pour qu'un expert l'analyse. Tu gagneras des N20 pour faire progresser ton badge !
+                        Propose cet aliment à la communauté. Après validation, tu gagneras 20 points et le badge Maman Contributrice.
                       </p>
                     </div>
                   </div>
@@ -527,7 +528,7 @@ export default function FoodScannerAI({ isOpen, onClose }) {
                     ) : (
                       <>
                         <Send className="w-4 h-4 mr-2" />
-                        Envoyer pour analyse
+                        Proposer cet aliment à la communauté
                       </>
                     )}
                   </Button>
@@ -549,7 +550,7 @@ export default function FoodScannerAI({ isOpen, onClose }) {
                     <div>
                       <p className="font-semibold text-green-600 text-sm">Merci pour ta contribution !</p>
                       <p className="text-xs text-emerald-500 mt-1">
-                        Un expert va analyser cet aliment. Ta jauge de badge progresse !
+                        Proposition envoyée ! Elle sera vérifiée avant l'attribution des 20 points.
                       </p>
                     </div>
                   </div>

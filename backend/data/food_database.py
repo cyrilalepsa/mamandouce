@@ -240,6 +240,15 @@ FOOD_SAFETY_DATABASE = {
     
 }
 
+from .additional_food_database import ADDITIONAL_FOOD_SAFETY_DATABASE
+
+_duplicate_keys = set(FOOD_SAFETY_DATABASE).intersection(
+    ADDITIONAL_FOOD_SAFETY_DATABASE
+)
+if _duplicate_keys:
+    raise ValueError(f"Clés aliments dupliquées: {sorted(_duplicate_keys)}")
+FOOD_SAFETY_DATABASE.update(ADDITIONAL_FOOD_SAFETY_DATABASE)
+
 # Liste des catégories disponibles
 FOOD_CATEGORIES = [
     "Fruits",
@@ -251,6 +260,10 @@ FOOD_CATEGORIES = [
     "Fromages",
     "Œufs",
     "Céréales",
+    "Féculents",
+    "Conserves",
+    "Graines",
+    "Tisanes",
     "Légumineuses",
     "Charcuterie",
     "Boissons",

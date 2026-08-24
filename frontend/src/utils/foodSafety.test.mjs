@@ -49,4 +49,31 @@ test("FoodLibrary renders canonical status, never legacy yes", () => {
   assert.match(page, /food-status-\$\{badge\.status\}/);
   assert.match(page, /setPage\(1\)/);
   assert.match(page, /requestIdRef/);
+  assert.match(page, /Vos aliments du quotidien/);
+  assert.doesNotMatch(page, /\{total\}.*aliments référencés/);
+});
+
+test("scanner exposes community proposal actions with canonical AI status", () => {
+  const scanner = readFileSync(join(root, "src/pages/FoodScanner.jsx"), "utf8");
+  const aiScanner = readFileSync(
+    join(root, "src/components/food/FoodScannerAI.jsx"),
+    "utf8",
+  );
+  assert.match(scanner, /Proposer cet aliment à la communauté/);
+  assert.match(scanner, /propose-search-food-/);
+  assert.match(aiScanner, /Proposer cet aliment à la communauté/);
+  assert.match(aiScanner, /result\.safe_for_pregnancy/);
+  assert.match(aiScanner, /20 points/);
+  assert.match(aiScanner, /Maman Contributrice/);
+  const badges = readFileSync(
+    join(root, "src/components/solidarity/BadgesCard.jsx"),
+    "utf8",
+  );
+  const moderation = readFileSync(
+    join(root, "src/components/admin/FoodsTab.jsx"),
+    "utf8",
+  );
+  assert.match(badges, /maman_contributrice/);
+  assert.match(badges, /Maman Contributrice/);
+  assert.match(moderation, /reward_points/);
 });
