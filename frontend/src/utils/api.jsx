@@ -122,6 +122,11 @@ export const api = {
     status: () => axios.get(`${API()}/emotional/cycle-status`, getAuthHeaders()),
     announcePregnancy: () => axios.post(`${API()}/emotional/pregnancy-announced`, {}, getAuthHeaders()),
   },
+  reminders: {
+    list: () => axios.get(`${API()}/v1/reminders`, getAuthHeaders()),
+    create: (data) => axios.post(`${API()}/v1/reminders`, data, getAuthHeaders()),
+    delete: (reminderId) => axios.delete(`${API()}/v1/reminders/${encodeURIComponent(reminderId)}`, getAuthHeaders()),
+  },
   scan: {
     barcode: (barcode) => axios.post(`${API()}/food/scan/barcode?barcode=${barcode}`, {}, getAuthHeaders()),
     search: (query) => axios.post(`${API()}/food/scan/search?query=${query}`, {}, getAuthHeaders()),

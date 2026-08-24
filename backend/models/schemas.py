@@ -248,6 +248,42 @@ class AppointmentNoteRequest(BaseModel):
     baby_heart_rate: Optional[int] = None
     notes: Optional[str] = None
 
+
+class ReminderCreate(BaseModel):
+    title: str = Field(min_length=1, max_length=160)
+    datetime: datetime
+    type: str = "rdv"
+    reminder_type: str = "push"
+
+    @field_validator("title")
+    @classmethod
+    def clean_reminder_title(cls, value: str) -> str:
+        cleaned = value.strip()
+        if not cleaned:
+            raise ValueError("Le titre est requis")
+        return cleaned
+
+    @field_validator("reminder_type")
+    @classmethod
+    def validate_reminder_type(cls, value: str) -> str:
+        if value not in {"push", "email", "both"}:
+            raise ValueError("reminder_type doit être push, email ou both")
+        return value
+
+
+class ReminderResponse(BaseModel):
+    id: str
+    title: str
+    datetime: str
+    type: str = "rdv"
+    reminder_type: str = "push"
+    sent: bool = False
+
+
+class RemindersResponse(BaseModel):
+    reminders: List[ReminderResponse] = Field(default_factory=list)
+
+
 # ==================== NOTIFICATIONS ====================
 class Notification(BaseModel):
     model_config = ConfigDict(extra="ignore")

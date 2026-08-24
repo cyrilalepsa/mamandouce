@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import { useSubscription } from '../components/SubscriptionGate';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useTheme } from '../contexts/ThemeContext';
+import { normalizeWeeklyTip } from '../utils/weeklyTips';
 
 // Lazy load des composants 3D pour performance
 const Fetus3D = lazy(() => import('../components/pregnancy/Fetus3D'));
@@ -48,7 +49,10 @@ function WeeklyTipsPage() {
   );
   
   // Utiliser le contenu traduit ou original
-  const displayTip = currentLang !== 'fr' && translatedTip ? translatedTip : currentTip;
+  const displayTip = normalizeWeeklyTip(
+    currentLang !== 'fr' && translatedTip ? translatedTip : currentTip,
+    selectedWeek,
+  );
   
   // Semaines gratuites (1-4)
   const FREE_WEEKS = [1, 2, 3, 4];
@@ -96,7 +100,7 @@ function WeeklyTipsPage() {
   const loadWeeklyTip = async (week) => {
     try {
       const response = await api.tips.getWeekly(week);
-      setCurrentTip(response.data);
+      setCurrentTip(normalizeWeeklyTip(response.data, week));
     } catch (error) {
       console.error('Erreur chargement conseil:', error);
     }
@@ -269,10 +273,6 @@ function WeeklyTipsPage() {
                     border: isDarkMode ? '1px solid rgba(100,116,139,0.3)' : '1px solid rgba(251,182,206,0.5)'
                   }}
                 >
-                  {/* Effet de reflet bombé */}
-                  {!isLocked && (
-                    {/* Voile blanc supprimé */}
-                  )}
                   <span className="relative z-10">{week}</span>
                   {isLocked && (
                     <Lock className="absolute top-1 right-1 w-2.5 h-2.5 text-slate-400" />
@@ -363,11 +363,6 @@ function WeeklyTipsPage() {
                 border: isDarkMode ? '1px solid rgba(100,116,139,0.3)' : '2px solid rgba(251,182,206,0.4)'
               }}
             >
-              {/* Effet de reflet bombé */}
-              {!isDarkMode && (
-                {/* Voile blanc supprimé */}
-              )}
-              
               {/* Zone 3D - Model Viewer (Google) */}
               <div className="relative pt-2">
                 <Suspense fallback={
@@ -457,9 +452,6 @@ function WeeklyTipsPage() {
                 border: isDarkMode ? '1px solid rgba(100,116,139,0.3)' : '1px solid rgba(226,232,240,0.8)'
               }}
             >
-              {!isDarkMode && (
-                {/* Voile blanc supprimé */}
-              )}
               <p className={`relative ${isDarkMode ? 'text-slate-300' : 'text-slate-600'} leading-relaxed`} style={textShadow}>
                 {displayTip.description}
               </p>
@@ -477,9 +469,6 @@ function WeeklyTipsPage() {
                   border: isDarkMode ? '1px solid rgba(236,72,153,0.2)' : '2px solid rgba(244,114,182,0.25)'
                 }}
               >
-                {!isDarkMode && (
-                  {/* Voile blanc supprimé */}
-                )}
                 <h4 className={`relative font-bold ${isDarkMode ? 'text-pink-300' : 'text-pink-600'} mb-2 flex items-center gap-2`} style={textShadow}>
                   <Sparkles className="w-5 h-5" />
                   Développement cette semaine
@@ -500,9 +489,6 @@ function WeeklyTipsPage() {
                   border: isDarkMode ? '1px solid rgba(245,158,11,0.3)' : '2px solid rgba(251,191,36,0.4)'
                 }}
               >
-                {!isDarkMode && (
-                  {/* Voile blanc supprimé */}
-                )}
                 <div className="relative flex items-start gap-4">
                   <div 
                     className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -539,9 +525,6 @@ function WeeklyTipsPage() {
                 border: isDarkMode ? '1px solid rgba(34,197,94,0.3)' : '2px solid rgba(74,222,128,0.35)'
               }}
             >
-              {!isDarkMode && (
-                {/* Voile blanc supprimé */}
-              )}
               <div className="relative flex items-start gap-4">
                 <div 
                   className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -580,9 +563,6 @@ function WeeklyTipsPage() {
                 border: isDarkMode ? '1px solid rgba(239,68,68,0.3)' : '2px solid rgba(248,113,113,0.3)'
               }}
             >
-              {!isDarkMode && (
-                {/* Voile blanc supprimé */}
-              )}
               <div className="relative flex items-start gap-3">
                 <AlertTriangle className={`w-6 h-6 ${isDarkMode ? 'text-red-400' : 'text-rose-500'} flex-shrink-0`} />
                 <div>
