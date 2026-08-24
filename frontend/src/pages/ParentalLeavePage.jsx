@@ -33,7 +33,7 @@ function ParentalLeavePage() {
                 {t('parentalLeave.title', 'Congés parentaux')}
               </h1>
             </div>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-sm text-slate-600 leading-relaxed mt-1.5">
               {t('parentalLeave.subtitle', 'Vos droits en France - Mise à jour 2024')}
             </p>
           </div>
@@ -41,14 +41,14 @@ function ParentalLeavePage() {
         </div>
 
         {/* Alerte nouvelle loi */}
-        <Card className="bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-2xl p-4 mb-4">
+        <Card className="bg-gradient-to-br from-sky-100 via-blue-100 to-indigo-100 text-slate-700 border border-sky-200 rounded-3xl p-5 mb-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            <Info className="w-6 h-6 flex-shrink-0 mt-0.5 text-sky-600" />
             <div>
-              <h3 className="font-bold text-sm">
+              <h3 className="font-bold text-base">
                 {t('parentalLeave.newLaw', 'Nouvelle loi 2024')}
               </h3>
-              <p className="text-xs opacity-90 mt-1">
+              <p className="text-sm text-slate-600 leading-relaxed mt-1.5">
                 {t('parentalLeave.newLawDesc', 'Le congé paternité est passé de 11 à 25 jours (+3 jours naissance). Applicable depuis juillet 2021.')}
               </p>
             </div>
@@ -56,14 +56,14 @@ function ParentalLeavePage() {
         </Card>
 
         {/* NOUVEAU : Congé supplémentaire de naissance 2026 */}
-        <Card className="bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-2xl p-4 mb-6">
+        <Card className="bg-gradient-to-br from-violet-100 via-purple-100 to-pink-100 text-slate-700 border border-violet-200 rounded-3xl p-5 mb-6 shadow-sm">
           <div className="flex items-start gap-3">
-            <Gift className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            <Gift className="w-6 h-6 flex-shrink-0 mt-0.5 text-violet-600" />
             <div>
-              <h3 className="font-bold text-sm">
+              <h3 className="font-bold text-base">
                 {t('parentalLeave.newLaw2026', 'Réforme 2026 : Congé supplémentaire de naissance')}
               </h3>
-              <p className="text-xs opacity-90 mt-1">
+              <p className="text-sm text-slate-600 leading-relaxed mt-1.5">
                 {t('parentalLeave.newLaw2026Desc', 'Nouveau dispositif adopté dans la Loi de financement de la Sécurité sociale pour 2026. Période plus courte mais beaucoup mieux rémunérée.')}
               </p>
             </div>
@@ -72,7 +72,7 @@ function ParentalLeavePage() {
 
         {/* Détails du congé supplémentaire de naissance - Style bombé pill */}
         <div 
-          className="relative overflow-hidden rounded-full mb-4"
+          className="relative overflow-hidden rounded-3xl mb-4"
           style={{
             background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%)',
             boxShadow: '0 6px 18px -4px rgba(0,0,0,0.08), 0 3px 8px -2px rgba(0,0,0,0.04), inset -4px -4px 10px rgba(0,0,0,0.04), inset 4px 4px 10px rgba(255,255,255,0.9)',
@@ -84,7 +84,7 @@ function ParentalLeavePage() {
           
           <button 
             onClick={() => toggleSection('supplementary')}
-            className="relative w-full flex items-center justify-between p-4"
+            className="relative w-full flex items-center justify-between px-5 py-4"
           >
             <div className="flex items-center gap-3">
               <div 
@@ -112,7 +112,7 @@ function ParentalLeavePage() {
           </button>
           
           {expandedSection === 'supplementary' && (
-            <div className="mt-4 pt-4 border-t border-violet-100 space-y-4">
+            <div className="px-5 pb-5 pt-4 border-t border-violet-100 space-y-4 text-left">
               <div className="bg-violet-50 rounded-xl p-3">
                 <p className="text-xs text-violet-700">
                   <strong>Contrairement à l'ancien congé parental</strong> (qui pouvait durer jusqu'à 3 ans mais était très peu indemnisé), ce nouveau dispositif vise à offrir une période plus courte mais beaucoup mieux rémunérée.
@@ -123,7 +123,7 @@ function ParentalLeavePage() {
                 <Calendar className="w-4 h-4 text-violet-500 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">1. Durée et Flexibilité</p>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-sm text-slate-600 leading-relaxed mt-1.5">
                     • <strong>Durée :</strong> Chaque parent peut bénéficier de <strong>1 ou 2 mois</strong> de congé supplémentaire
                     <br />• <strong>Cumul :</strong> Si les deux parents le prennent, cela représente jusqu'à <strong>4 mois de présence parentale</strong> en plus des congés maternité et paternité classiques
                     <br />• <strong>Fractionnement :</strong> Le congé peut être pris en une seule fois ou fractionné en deux périodes d'un mois chacune
@@ -136,7 +136,7 @@ function ParentalLeavePage() {
                 <Euro className="w-4 h-4 text-violet-500 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">2. Indemnisation (mieux rémunéré)</p>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-sm text-slate-600 leading-relaxed mt-1.5">
                     • L'indemnisation sera <strong>bien supérieure</strong> à l'ancienne PreParE
                     <br />• Basée sur un pourcentage du salaire (détails à confirmer par décret)
                     <br />• Objectif : permettre aux parents de rester auprès de leur enfant sans perte de revenus significative
@@ -148,7 +148,7 @@ function ParentalLeavePage() {
                 <Users className="w-4 h-4 text-violet-500 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">3. Bénéficiaires</p>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-sm text-slate-600 leading-relaxed mt-1.5">
                     • Les deux parents peuvent en bénéficier (mère ET père/second parent)
                     <br />• Applicable aux salariés du secteur privé
                     <br />• Conditions d'ancienneté à préciser par décret
@@ -160,7 +160,7 @@ function ParentalLeavePage() {
                 <Clock className="w-4 h-4 text-violet-500 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">4. Entrée en vigueur</p>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-sm text-slate-600 leading-relaxed mt-1.5">
                     • <strong>2026</strong> - Date exacte à confirmer par décret d'application
                     <br />• Remplace progressivement l'ancien congé parental d'éducation
                   </p>
@@ -178,7 +178,7 @@ function ParentalLeavePage() {
 
         {/* Congé de naissance - Style bombé pill */}
         <div 
-          className="relative overflow-hidden rounded-full mb-4"
+          className="relative overflow-hidden rounded-3xl mb-4"
           style={{
             background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%)',
             boxShadow: '0 6px 18px -4px rgba(0,0,0,0.08), 0 3px 8px -2px rgba(0,0,0,0.04), inset -4px -4px 10px rgba(0,0,0,0.04), inset 4px 4px 10px rgba(255,255,255,0.9)',
@@ -190,7 +190,7 @@ function ParentalLeavePage() {
           
           <button 
             onClick={() => toggleSection('birth')}
-            className="relative w-full flex items-center justify-between p-4"
+            className="relative w-full flex items-center justify-between px-5 py-4"
           >
             <div className="flex items-center gap-3">
               <div 
@@ -218,12 +218,12 @@ function ParentalLeavePage() {
           </button>
           
           {expandedSection === 'birth' && (
-            <div className="mt-4 pt-4 border-t border-emerald-100 space-y-3">
+            <div className="px-5 pb-5 pt-4 border-t border-emerald-100 space-y-4 text-left">
               <div className="flex items-start gap-2">
                 <Calendar className="w-4 h-4 text-emerald-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">Durée</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     • <strong>3 jours ouvrables</strong> pour chaque naissance
                     <br />• Peut aller jusqu'à <strong>4 jours</strong> selon les conventions collectives
                     <br />• S'ajoute au congé paternité (non cumulable avec les 4 jours obligatoires)
@@ -234,7 +234,7 @@ function ParentalLeavePage() {
                 <Clock className="w-4 h-4 text-emerald-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">Quand le prendre ?</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     • À prendre <strong>immédiatement</strong> après la naissance
                     <br />• Dans un délai maximum de <strong>15 jours</strong> autour de la naissance
                     <br />• Jours consécutifs (sauf accord de l'employeur)
@@ -245,7 +245,7 @@ function ParentalLeavePage() {
                 <Euro className="w-4 h-4 text-emerald-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">Indemnisation</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     • <strong>100% du salaire</strong> maintenu
                     <br />• Payé directement par l'employeur (pas la Sécu)
                     <br />• Aucune condition d'ancienneté requise
@@ -256,7 +256,7 @@ function ParentalLeavePage() {
                 <Users className="w-4 h-4 text-emerald-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">Qui peut en bénéficier ?</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     • Le père de l'enfant
                     <br />• Le/la conjoint(e), concubin(e) ou partenaire PACS de la mère
                     <br />• Applicable aux salariés du secteur privé et public
@@ -269,7 +269,7 @@ function ParentalLeavePage() {
 
         {/* Congés supplémentaires pour événements familiaux - Style bombé pill */}
         <div 
-          className="relative overflow-hidden rounded-full mb-4"
+          className="relative overflow-hidden rounded-3xl mb-4"
           style={{
             background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%)',
             boxShadow: '0 6px 18px -4px rgba(0,0,0,0.08), 0 3px 8px -2px rgba(0,0,0,0.04), inset -4px -4px 10px rgba(0,0,0,0.04), inset 4px 4px 10px rgba(255,255,255,0.9)',
@@ -281,7 +281,7 @@ function ParentalLeavePage() {
           
           <button 
             onClick={() => toggleSection('family')}
-            className="relative w-full flex items-center justify-between p-4"
+            className="relative w-full flex items-center justify-between px-5 py-4"
           >
             <div className="flex items-center gap-3">
               <div 
@@ -309,12 +309,12 @@ function ParentalLeavePage() {
           </button>
           
           {expandedSection === 'family' && (
-            <div className="mt-4 pt-4 border-t border-amber-100 space-y-3">
+            <div className="px-5 pb-5 pt-4 border-t border-amber-100 space-y-4 text-left">
               <div className="flex items-start gap-2">
                 <Gift className="w-4 h-4 text-amber-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">Mariage / PACS</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     • Mariage du salarié : <strong>4 jours</strong>
                     <br />• PACS : <strong>4 jours</strong>
                     <br />• Mariage d'un enfant : <strong>1 jour</strong>
@@ -325,7 +325,7 @@ function ParentalLeavePage() {
                 <Baby className="w-4 h-4 text-amber-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">Adoption</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     • Arrivée d'un enfant adopté : <strong>3 jours</strong> (congé naissance)
                     <br />• Congé d'adoption : <strong>16 semaines</strong> (partageable entre les parents)
                   </p>
@@ -335,7 +335,7 @@ function ParentalLeavePage() {
                 <Stethoscope className="w-4 h-4 text-amber-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">Enfant malade</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     • <strong>3 jours/an</strong> par enfant de moins de 16 ans
                     <br />• <strong>5 jours/an</strong> si enfant de moins de 1 an ou si 3 enfants ou plus
                     <br />• Non rémunérés (sauf convention collective plus favorable)
@@ -346,7 +346,7 @@ function ParentalLeavePage() {
                 <Calendar className="w-4 h-4 text-amber-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">Annonce handicap</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     • Annonce du handicap d'un enfant : <strong>5 jours</strong> (nouvelle loi 2024)
                     <br />• Annonce d'une maladie chronique : <strong>2 jours</strong>
                   </p>
@@ -358,7 +358,7 @@ function ParentalLeavePage() {
 
         {/* Congé maternité - Style bombé pill */}
         <div 
-          className="relative overflow-hidden rounded-full mb-4"
+          className="relative overflow-hidden rounded-3xl mb-4"
           style={{
             background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%)',
             boxShadow: '0 6px 18px -4px rgba(0,0,0,0.08), 0 3px 8px -2px rgba(0,0,0,0.04), inset -4px -4px 10px rgba(0,0,0,0.04), inset 4px 4px 10px rgba(255,255,255,0.9)',
@@ -370,7 +370,7 @@ function ParentalLeavePage() {
           
           <button 
             onClick={() => toggleSection('maternity')}
-            className="relative w-full flex items-center justify-between p-4"
+            className="relative w-full flex items-center justify-between px-5 py-4"
           >
             <div className="flex items-center gap-3">
               <div 
@@ -398,12 +398,12 @@ function ParentalLeavePage() {
           </button>
           
           {expandedSection === 'maternity' && (
-            <div className="mt-4 pt-4 border-t border-pink-100 space-y-3">
+            <div className="px-5 pb-5 pt-4 border-t border-pink-100 space-y-4 text-left">
               <div className="flex items-start gap-2">
                 <Calendar className="w-4 h-4 text-pink-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">Durée</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     • 1er ou 2ème enfant : <strong>16 semaines</strong> (6 avant + 10 après)
                     <br />• 3ème enfant ou + : <strong>26 semaines</strong> (8 avant + 18 après)
                     <br />• Jumeaux : <strong>34 semaines</strong>
@@ -415,7 +415,7 @@ function ParentalLeavePage() {
                 <Euro className="w-4 h-4 text-pink-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">Indemnisation</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     Indemnités journalières versées par la Sécurité sociale = salaire journalier de base (plafonné à 100,36€/jour en 2024)
                   </p>
                 </div>
@@ -424,7 +424,7 @@ function ParentalLeavePage() {
                 <FileText className="w-4 h-4 text-pink-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">Conditions</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     Être salariée et avoir travaillé au moins 150h au cours des 3 mois précédents
                   </p>
                 </div>
@@ -435,7 +435,7 @@ function ParentalLeavePage() {
 
         {/* Congé paternité - Style bombé pill */}
         <div 
-          className="relative overflow-hidden rounded-full mb-4"
+          className="relative overflow-hidden rounded-3xl mb-4"
           style={{
             background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%)',
             boxShadow: '0 6px 18px -4px rgba(0,0,0,0.08), 0 3px 8px -2px rgba(0,0,0,0.04), inset -4px -4px 10px rgba(0,0,0,0.04), inset 4px 4px 10px rgba(255,255,255,0.9)',
@@ -447,7 +447,7 @@ function ParentalLeavePage() {
           
           <button 
             onClick={() => toggleSection('paternity')}
-            className="relative w-full flex items-center justify-between p-4"
+            className="relative w-full flex items-center justify-between px-5 py-4"
           >
             <div className="flex items-center gap-3">
               <div 
@@ -475,12 +475,12 @@ function ParentalLeavePage() {
           </button>
           
           {expandedSection === 'paternity' && (
-            <div className="mt-4 pt-4 border-t border-sky-100 space-y-3 px-4 pb-4">
+            <div className="px-5 pb-5 pt-4 border-t border-sky-100 space-y-4 text-left">
               <div className="flex items-start gap-2">
                 <Calendar className="w-4 h-4 text-sky-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">Durée totale : 28 jours</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     • <strong>3 jours</strong> de congé naissance (obligatoires, à prendre immédiatement)
                     <br />• <strong>4 jours</strong> obligatoires après la naissance
                     <br />• <strong>21 jours</strong> facultatifs (fractionnables en 2 périodes)
@@ -492,7 +492,7 @@ function ParentalLeavePage() {
                 <Clock className="w-4 h-4 text-sky-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">Délai</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     Les 21 jours facultatifs doivent être pris dans les <strong>6 mois</strong> suivant la naissance
                   </p>
                 </div>
@@ -501,7 +501,7 @@ function ParentalLeavePage() {
                 <Euro className="w-4 h-4 text-sky-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">Indemnisation</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     Indemnités journalières de la Sécurité sociale (même calcul que le congé maternité)
                   </p>
                 </div>
@@ -512,7 +512,7 @@ function ParentalLeavePage() {
 
         {/* Congé parental d'éducation - Style bombé pill */}
         <div 
-          className="relative overflow-hidden rounded-full mb-4"
+          className="relative overflow-hidden rounded-3xl mb-4"
           style={{
             background: 'linear-gradient(160deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%)',
             boxShadow: '0 6px 18px -4px rgba(0,0,0,0.08), 0 3px 8px -2px rgba(0,0,0,0.04), inset -4px -4px 10px rgba(0,0,0,0.04), inset 4px 4px 10px rgba(255,255,255,0.9)',
@@ -524,7 +524,7 @@ function ParentalLeavePage() {
           
           <button 
             onClick={() => toggleSection('parental')}
-            className="relative w-full flex items-center justify-between p-4"
+            className="relative w-full flex items-center justify-between px-5 py-4"
           >
             <div className="flex items-center gap-3">
               <div 
@@ -552,12 +552,12 @@ function ParentalLeavePage() {
           </button>
           
           {expandedSection === 'parental' && (
-            <div className="mt-4 pt-4 border-t border-purple-100 space-y-3">
+            <div className="px-5 pb-5 pt-4 border-t border-purple-100 space-y-4 text-left">
               <div className="flex items-start gap-2">
                 <Calendar className="w-4 h-4 text-purple-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">Durée</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     • Temps complet ou temps partiel (min. 16h/semaine)
                     <br />• 1er enfant : max 1 an
                     <br />• À partir du 2ème : jusqu'aux 3 ans de l'enfant
@@ -569,7 +569,7 @@ function ParentalLeavePage() {
                 <Euro className="w-4 h-4 text-purple-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">PreParE (CAF)</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     • Temps complet : ~428€/mois
                     <br />• Mi-temps : ~277€/mois
                     <br />• Temps partiel (50-80%) : ~160€/mois
@@ -580,7 +580,7 @@ function ParentalLeavePage() {
                 <FileText className="w-4 h-4 text-purple-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">Conditions</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     1 an d'ancienneté minimum dans l'entreprise à la date de naissance
                   </p>
                 </div>

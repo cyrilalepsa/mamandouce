@@ -493,10 +493,16 @@ function FoodScanner() {
                   <button
                     onClick={() => toggleFavorite(result)}
                     data-testid="favorite-button"
-                    className="p-2 rounded-full hover:bg-pink-50 transition-colors"
+                    className="p-2 rounded-full transition-transform hover:scale-110 active:scale-95"
+                    aria-label={favorites.has(result.name) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
                   >
                     <Heart 
-                      className={`w-6 h-6 ${favorites.has(result.name) ? 'fill-pink-500 text-pink-500' : 'text-slate-300'}`} 
+                      className={`w-7 h-7 drop-shadow-md ${
+                        favorites.has(result.name)
+                          ? 'fill-rose-500 text-rose-500'
+                          : 'fill-white text-slate-300'
+                      }`}
+                      strokeWidth={1.75}
                     />
                   </button>
                 </div>
@@ -540,10 +546,16 @@ function FoodScanner() {
                     <button
                       onClick={() => toggleFavorite(item)}
                       data-testid={`favorite-button-${index}`}
-                      className="p-2 rounded-full hover:bg-pink-50 transition-colors"
+                      className="p-2 rounded-full transition-transform hover:scale-110 active:scale-95"
+                      aria-label={favorites.has(item.name) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
                     >
                       <Heart 
-                        className={`w-5 h-5 ${favorites.has(item.name) ? 'fill-pink-500 text-pink-500' : 'text-slate-300'}`} 
+                        className={`w-6 h-6 drop-shadow-md ${
+                          favorites.has(item.name)
+                            ? 'fill-rose-500 text-rose-500'
+                            : 'fill-white text-slate-300'
+                        }`}
+                        strokeWidth={1.75}
                       />
                     </button>
                   </div>

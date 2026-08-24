@@ -303,22 +303,30 @@ function FoodLibraryPage() {
                           </div>
                           <button
                             onClick={() => toggleFavorite(foods[index])}
-                            className="p-1.5 rounded-full hover:bg-pink-100/60 transition-colors flex-shrink-0"
-                            style={{ background: 'rgba(255,255,255,0.8)' }}
+                            className="p-1.5 rounded-full transition-transform hover:scale-110 active:scale-95 flex-shrink-0"
                             data-testid={`favorite-${index}`}
+                            aria-label={favorites.has(foods[index]?.name) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
                           >
                             <Heart
-                              className={`w-5 h-5 ${favorites.has(foods[index]?.name) ? 'fill-red-500 text-red-500' : 'text-white'}`}
-                              style={{ stroke: favorites.has(foods[index]?.name) ? '#ef4444' : '#cbd5e1' }}
+                              className={`w-6 h-6 drop-shadow-md transition-colors ${
+                                favorites.has(foods[index]?.name)
+                                  ? 'fill-rose-500 text-rose-500'
+                                  : 'fill-white text-slate-300'
+                              }`}
+                              strokeWidth={1.75}
                             />
                           </button>
                         </div>
                         <span
-                          className={`inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-full border text-xs shadow-sm ${badge.className}`}
+                          className={`relative overflow-hidden inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-full border text-xs shadow-sm ${badge.className}`}
                           data-testid={`food-status-${badge.status}`}
                         >
-                          <span aria-hidden="true">{badge.icon}</span>
-                          {badge.text}
+                          <span
+                            className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none"
+                            aria-hidden="true"
+                          />
+                          <span className="relative z-10" aria-hidden="true">{badge.icon}</span>
+                          <span className="relative z-10">{badge.text}</span>
                         </span>
                         {food.reason && (
                           <p className="mt-2 text-xs text-slate-600 line-clamp-2">{food.reason}</p>

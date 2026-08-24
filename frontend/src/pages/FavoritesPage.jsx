@@ -135,7 +135,7 @@ function FavoritesPage() {
             <h3 className="text-xl font-bold text-slate-600 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>Aucun favori</h3>
             <p className="text-slate-500 mb-4">Appuyez sur le coeur d'un aliment pour l'ajouter en favori</p>
             <Button
-              onClick={() => navigate('/food-library')}
+              onClick={() => navigate('/library')}
               data-testid="go-library-button"
               className="rounded-full px-6 py-2"
               style={{
