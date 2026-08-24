@@ -120,6 +120,7 @@ export const api = {
     saveInitialHistory: (period_dates) => axios.post(`${API()}/cycle/history/initial`, { period_dates }, getAuthHeaders()),
     report: (currentCycleLength) => axios.get(`${API()}/cycle/report?current_cycle_length=${currentCycleLength}`, getAuthHeaders()),
     status: () => axios.get(`${API()}/emotional/cycle-status`, getAuthHeaders()),
+    announcePregnancy: () => axios.post(`${API()}/emotional/pregnancy-announced`, {}, getAuthHeaders()),
   },
   scan: {
     barcode: (barcode) => axios.post(`${API()}/food/scan/barcode?barcode=${barcode}`, {}, getAuthHeaders()),

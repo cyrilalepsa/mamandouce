@@ -41,6 +41,8 @@ class User(BaseModel):
     city: Optional[str] = None  # Ville de l'utilisatrice
     birth_date: Optional[str] = None  # Date de naissance format YYYY-MM-DD
     status: Optional[str] = None  # 'envie_bebe' ou 'enceinte'
+    is_pregnant: Optional[bool] = None
+    pregnancy_status: Optional[str] = None
     role: str = "user"  # "user" or "admin"
     subscription_status: Optional[str] = "free"  # "free", "trial", "premium"
     is_superadmin: Optional[bool] = False

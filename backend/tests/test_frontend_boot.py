@@ -267,14 +267,17 @@ def test_cycle_tracking_shows_ovulation_and_nidation():
     assert "fertileWindow" in agenda
 
 
-def test_profile_pregnant_card_and_home_sa_week():
+def test_profile_and_home_use_dynamic_pregnancy_cycle_card():
     profile = (FRONTEND / "src" / "pages" / "ProfilePage.jsx").read_text(encoding="utf-8")
     home = (FRONTEND / "src" / "pages" / "HomePage.jsx").read_text(encoding="utf-8")
     toggle = (FRONTEND / "src" / "components" / "cycle" / "PregnancyToggle.jsx").read_text(encoding="utf-8")
     assert "PregnancyToggle" in profile
     assert 'mode="profile"' in profile
     assert "pregnant-button" in toggle
-    assert "sa-week-card" in toggle
+    assert "pregnancy-progress-card" in toggle
+    assert "cycle-summary-card" in toggle
+    assert "isPregnancyActive" in home
+    assert "'/tracking' : '/cycle-tracking'" in toggle
     assert "canvas-confetti" in toggle or "from 'canvas-confetti'" in toggle
     assert 'mode="home"' in home
     assign = next(line for line in home.splitlines() if "hasPregnancyProfile =" in line)

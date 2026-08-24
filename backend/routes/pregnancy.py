@@ -209,6 +209,25 @@ async def get_pregnancy_profile(current_user: User = Depends(get_current_user)):
     profile = await load_cycle_profile(str(current_user.id))
     if not profile:
         return None
+
+    user_doc = await db.users.find_one(
+        {"id": str(current_user.id)},
+        {"_id": 0, "status": 1, "is_pregnant": 1, "pregnancy_status": 1},
+    ) or {}
+    raw_status = str(
+        user_doc.get("pregnancy_status") or user_doc.get("status") or ""
+    ).strip().lower()
+    if user_doc.get("is_pregnant") is True or raw_status in {
+        "pregnant", "pregnancy", "enceinte", "active", "confirmed",
+    }:
+        profile["is_pregnant"] = True
+        profile["pregnancy_status"] = "pregnant"
+    elif user_doc.get("is_pregnant") is False or raw_status in {
+        "not_pregnant", "non_enceinte", "trying", "trying_to_conceive",
+        "envie_bebe", "cycle",
+    }:
+        profile["is_pregnant"] = False
+        profile["pregnancy_status"] = "not_pregnant"
     
     # Recalculate current week and days
     if profile.get("last_period_date"):

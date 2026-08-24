@@ -10,10 +10,22 @@ import logging
 from core.database import db
 from core.security import get_current_user
 from core.cycle_dates import as_naive_utc, parse_last_period_datetime
+from core.cycle_store import pregnancy_user_query
 from models.schemas import User
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["emotional"])
+
+
+def _pregnancy_is_active(document: dict) -> bool:
+    explicit = document.get("is_pregnant")
+    if isinstance(explicit, bool):
+        return explicit
+    status = str(
+        document.get("pregnancy_status") or document.get("status") or ""
+    ).strip().lower()
+    return status in {"pregnant", "pregnancy", "enceinte", "active", "confirmed"}
+
 
 # ==================== CYCLE WATCHDOG ====================
 
@@ -22,6 +34,15 @@ async def get_cycle_status(current_user: User = Depends(get_current_user)):
     """Check cycle status and return alerts for J+15 (potential pregnancy)"""
     
     user_doc = await db.users.find_one({"id": current_user.id}, {"_id": 0}) or {}
+
+    # A confirmed pregnancy makes late-period/test alerts medically incoherent.
+    if _pregnancy_is_active(user_doc):
+        return {
+            "status": "pregnant",
+            "message": "Grossesse en cours",
+            "show_alert": False,
+            "is_pregnant": True,
+        }
     
     # Get last period date from user's cycle data (colonnes optionnelles)
     last_period = user_doc.get("last_period_date")
@@ -91,9 +112,22 @@ async def announce_pregnancy(current_user: User = Depends(get_current_user)):
         {"id": current_user.id},
         {"$set": {
             "status": "enceinte",
+            "is_pregnant": True,
+            "pregnancy_status": "pregnant",
             "pregnancy_announced_at": datetime.now(timezone.utc).isoformat(),
             "pregnancy_confirmation_celebrated": True
         }}
+    )
+    await db.pregnancy_profiles.update_one(
+        pregnancy_user_query(current_user.id),
+        {
+            "$set": {
+                "is_pregnant": True,
+                "pregnancy_status": "pregnant",
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+            }
+        },
+        upsert=False,
     )
     
     # Log the special event
