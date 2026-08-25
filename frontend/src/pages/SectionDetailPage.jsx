@@ -18,7 +18,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { MaternityLeaveSummaryCard } from '../components/pregnancy/MaternityLeaveSummaryCard';
 import { useAuth } from '../contexts/AuthContext';
 import { getLocalizedServices, resolveCountryFromCity } from '../utils/pregnancyDateUtils';
-import { accentFromBgColor, softClayCardClasses } from '../utils/accentTokens';
+import { accentFromBgColor, cardSoftClayClasses } from '../utils/accentTokens';
 import { IconWell } from '../components/ui/IconWell';
 
 // Métadonnées des sections
@@ -73,11 +73,11 @@ const SECTION_ITEMS = {
     { id: 'preparation-advice', icon: Lightbulb, iconColor: 'text-red-600', bgColor: 'red', title: 'Préparation et conseils', titleKey: 'preconception.preparationAdvice', desc: 'Acide folique, nutrition...', descKey: 'preconception.preparationDesc', route: '/preconception-tips' },
   ],
   'pregnancy': [
-    // Partie Alimentation (4 premières cartes) - ORANGE PÊCHE avec effet bombé
-    { id: 'food-scanner', icon: ScanBarcode, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'Scanner', titleKey: 'pregnancy.scanner', desc: 'Aliments', descKey: 'pregnancy.foods', route: '/scanner' },
-    { id: 'food-library', icon: Apple, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'Bibliothèque', titleKey: 'pregnancy.library', desc: 'Aliments', descKey: 'pregnancy.foods', route: '/library' },
-    { id: 'favorites', icon: Heart, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'Favoris', titleKey: 'pregnancy.favorites', desc: 'Sauvegardés', descKey: 'pregnancy.saved', route: '/favorites' },
-    { id: 'history', icon: History, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'Historique', titleKey: 'pregnancy.history', desc: 'Recherches', descKey: 'pregnancy.searches', route: '/history' },
+    // Partie Alimentation — pêche / jaune solaire
+    { id: 'food-scanner', icon: ScanBarcode, iconColor: 'text-yellow-500', bgColor: 'peach', title: 'Scanner', titleKey: 'pregnancy.scanner', desc: 'Aliments', descKey: 'pregnancy.foods', route: '/scanner' },
+    { id: 'food-library', icon: Apple, iconColor: 'text-yellow-500', bgColor: 'peach', title: 'Bibliothèque', titleKey: 'pregnancy.library', desc: 'Aliments', descKey: 'pregnancy.foods', route: '/library' },
+    { id: 'favorites', icon: Heart, iconColor: 'text-yellow-500', bgColor: 'peach', title: 'Favoris', titleKey: 'pregnancy.favorites', desc: 'Sauvegardés', descKey: 'pregnancy.saved', route: '/favorites' },
+    { id: 'history', icon: History, iconColor: 'text-yellow-500', bgColor: 'peach', title: 'Historique', titleKey: 'pregnancy.history', desc: 'Recherches', descKey: 'pregnancy.searches', route: '/history' },
     // Séparateur : Liste des Prénoms (carte large) - BLEU
     { id: 'baby-names', icon: Users, iconColor: 'text-blue-600', bgColor: 'blue', title: 'Liste des Prénoms', titleKey: 'pregnancy.babyNames', desc: 'Europe & Amérique - Signification et personnalité', descKey: 'pregnancy.namesDescFull', route: '/baby-names', premium: 'partial', wide: true },
     // Partie Médicale et Suivi (4 cartes) - ROUGE
@@ -269,8 +269,8 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
     return (
       <div 
         className={`
-          relative overflow-hidden soft-clay-premium soft-clay-from-accent soft-clay-text-flat
-          ${softClayCardClasses(accent, { pill: true })}
+          relative overflow-hidden
+          ${cardSoftClayClasses(accent, { pill: true })}
           px-3 py-1.5 select-none
           cursor-pointer transition-all col-span-2 sm:col-span-3
           hover:scale-[1.01] active:scale-[0.99]
@@ -330,8 +330,8 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
   return (
     <div 
       className={`
-        relative overflow-hidden soft-clay-premium soft-clay-from-accent soft-clay-text-flat rounded-[24px]
-        ${softClayCardClasses(accent)}
+        relative overflow-hidden
+        ${cardSoftClayClasses(accent, { level: 2 })}
         p-1.5 select-none
         cursor-pointer transition-all text-center
         hover:scale-[1.02] active:scale-[0.98]

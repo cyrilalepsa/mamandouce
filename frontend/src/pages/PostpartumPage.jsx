@@ -323,7 +323,7 @@ export default function PostpartumPage() {
       label: 'Alimentation', 
       desc: 'Allaitement, biberons, diversification',
       icon: Utensils, 
-      color: 'orange',
+      color: 'peach',
       route: '/postpartum/alimentation'
     },
     { 
@@ -331,7 +331,7 @@ export default function PostpartumPage() {
       label: 'Soins quotidiens', 
       desc: 'Coucher, change, portage',
       icon: Baby, 
-      color: 'sky',
+      color: 'blue',
       route: '/postpartum/soins'
     },
     { 
@@ -339,7 +339,7 @@ export default function PostpartumPage() {
       label: 'Sécurité', 
       desc: 'Difficultés, précautions',
       icon: Shield, 
-      color: 'violet',
+      color: 'red',
       route: '/postpartum/securite'
     },
     { 
@@ -347,7 +347,7 @@ export default function PostpartumPage() {
       label: 'RDV médicaux', 
       desc: 'Suivi post-accouchement',
       icon: Calendar, 
-      color: 'pink',
+      color: 'green',
       route: '/postpartum/rdv'
     },
   ];
@@ -769,6 +769,7 @@ export default function PostpartumPage() {
             return (
               <CategoryDetailTile
                 key={category.id}
+                accent={category.color}
                 index={index}
                 title={category.label}
                 subtitle={category.desc}

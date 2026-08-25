@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Card } from '../../ui/card';
 import { Lock, ChevronDown, Pin, PinOff } from 'lucide-react';
 import { toast } from 'sonner';
-import { normalizeAccent, softClayCardClasses } from '../../../utils/accentTokens';
+import { normalizeAccent, softClayCardClasses, cardSoftClayClasses } from '../../../utils/accentTokens';
 
 export { IconWell } from '../../ui/IconWell';
 export const PASTEL_STYLES = {
@@ -33,7 +33,7 @@ export function PastelMosaicCard({ color = 'pink', onClick, children, className 
       onClick={onClick}
       data-testid={testId}
       data-accent={accent}
-      className={`soft-clay-premium soft-clay-from-accent soft-clay-text-flat ${softClayCardClasses(accent)} soft-clay-text-flat relative overflow-hidden rounded-[24px] p-3 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-center shadow ${className}`}
+      className={`${cardSoftClayClasses(accent)} relative overflow-hidden p-3 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-center shadow ${className}`}
       style={{ color: '#2C2C2C' }}
     >
       <div className="relative z-[2]" style={{ color: '#2C2C2C' }}>
@@ -51,7 +51,7 @@ export function PastelPillCard({ color = 'purple', onClick, children, className 
       onClick={onClick}
       data-testid={testId}
       data-accent={accent}
-      className={`soft-clay-premium soft-clay-from-accent ${softClayCardClasses(accent, { pill: true })} soft-clay-text-flat relative overflow-hidden rounded-full px-4 py-2.5 cursor-pointer transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] shadow ${className}`}
+      className={`${cardSoftClayClasses(accent, { pill: true })} relative overflow-hidden px-4 py-2.5 cursor-pointer transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] shadow ${className}`}
       style={{ color: '#2C2C2C' }}
     >
       <div className="relative z-[2]" style={{ color: '#2C2C2C' }}>
