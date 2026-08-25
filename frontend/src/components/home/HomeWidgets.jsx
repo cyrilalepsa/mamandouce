@@ -30,7 +30,7 @@ export function WeekDisplayWidget({ pregnancyProfile, t, compact = false, naviga
           WebkitBackfaceVisibility: 'hidden',
           contain: 'layout paint size'
         }}
-        onClick={() => navigate && navigate('/cycle-tracking')}
+        onClick={() => navigate && navigate('/section/pregnancy?focus=maternity-leave')}
         data-testid="week-display-card"
       >
         <p className="relative text-[10px] font-semibold uppercase tracking-wide leading-none mb-1 text-rose-200">

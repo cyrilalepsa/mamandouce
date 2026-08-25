@@ -17,9 +17,10 @@ test('MaternityLeaveSummaryCard is a collapsed drawer by default', () => {
     join(root, 'src/components/pregnancy/MaternityLeaveSummaryCard.jsx'),
     'utf8'
   );
-  assert.match(src, /useState\(false\)/);
+  assert.match(src, /useState\(defaultOpen \|\| focusMaternityLeave\)/);
   assert.match(src, /maternity-leave-summary-toggle/);
   assert.match(src, /\{isOpen &&/);
+  assert.match(src, /searchParams\.get\('focus'\) === 'maternity-leave'/);
 });
 
 test('home navigation CollapsibleSections default to closed', () => {

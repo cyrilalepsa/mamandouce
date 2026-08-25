@@ -13,8 +13,8 @@ from integrations.neriacorp.nucleus_client import (
 from integrations.neriacorp.adapters import APP_REGISTRY
 
 
-def test_hysia_registered_in_adapters():
-    assert "Hysia" in APP_REGISTRY
+def test_heritia_registered_in_adapters():
+    assert "Heritia" in APP_REGISTRY
 
 
 def test_cross_app_entitlements_for_premium_user():
@@ -27,8 +27,8 @@ def test_cross_app_entitlements_for_premium_user():
     }
     ent = build_cross_app_entitlements(user, wallet_balance=5.0)
     assert ent["heritia"]["active"] is True
-    assert ent["hysia"]["free_access"] is True
-    assert ent["hysia"]["scans_unlocked_via_n2o"] is True
+    assert ent["heritia"]["days_remaining"] >= 89
+    assert "hysia" not in ent
     assert ent["mamandouce"]["n2o_balance"] == 5.0
 
 
