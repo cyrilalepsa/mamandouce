@@ -11,7 +11,7 @@ import {
 import { useSubscription } from '../../SubscriptionGate';
 import { toast } from 'sonner';
 import api from '../../../utils/api';
-import { PastelMosaicCard, PastelPillCard, CollapsibleSection, usePinnedSections, PASTEL_STYLES } from './_shared';
+import { PastelMosaicCard, PastelPillCard, CollapsibleSection, usePinnedSections, PASTEL_STYLES, IconWell } from './_shared';
 
 export function PostpartumSection() {
   const navigate = useNavigate();

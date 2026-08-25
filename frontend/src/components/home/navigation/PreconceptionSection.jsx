@@ -11,7 +11,7 @@ import {
 import { useSubscription } from '../../SubscriptionGate';
 import { toast } from 'sonner';
 import api from '../../../utils/api';
-import { PastelMosaicCard, PastelPillCard, CollapsibleSection, usePinnedSections, PASTEL_STYLES } from './_shared';
+import { PastelMosaicCard, PastelPillCard, CollapsibleSection, usePinnedSections, PASTEL_STYLES, IconWell } from './_shared';
 
 export function PreconceptionSection() {
   const navigate = useNavigate();
@@ -32,11 +32,9 @@ export function PreconceptionSection() {
           onClick={() => navigate('/cycle-tracking')}
           testId="cycle-tracking-nav"
         >
-          <div className="w-9 h-9 rounded-xl mx-auto mb-1.5 flex items-center justify-center bg-pink-100/60 backdrop-blur-sm"
-            style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-          >
-            <CalendarHeart className="w-5 h-5 text-pink-500" />
-          </div>
+          <IconWell accent="pink" size="md" className="mx-auto mb-1.5">
+            <CalendarHeart className="w-5 h-5 text-white" />
+          </IconWell>
           <h3 className="text-sm font-bold text-slate-700">{t('home.cycleTracking', 'Suivi de cycles')}</h3>
           <p className="text-xs text-slate-500 mt-0.5">{t('fertility.trackYourCycle', 'Calendrier fertilité')}</p>
         </PastelMosaicCard>
@@ -46,11 +44,9 @@ export function PreconceptionSection() {
           onClick={() => navigate('/calculator')}
           testId="calculator-nav"
         >
-          <div className="w-9 h-9 rounded-xl mx-auto mb-1.5 flex items-center justify-center bg-sky-100/60 backdrop-blur-sm"
-            style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-          >
-            <CalendarHeart className="w-5 h-5 text-sky-400" />
-          </div>
+          <IconWell accent="sky" size="md" className="mx-auto mb-1.5">
+            <CalendarHeart className="w-5 h-5 text-white" />
+          </IconWell>
           <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.calculator', 'Calculateur')}</h3>
           <p className="text-xs text-slate-500 mt-0.5">{t('pregnancy.ovulationAndDates', 'Ovulation et dates clés')}</p>
         </PastelMosaicCard>
@@ -63,11 +59,9 @@ export function PreconceptionSection() {
           className="col-span-2"
         >
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-purple-100/60 backdrop-blur-sm flex-shrink-0"
-              style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-            >
-              <Heart className="w-5 h-5 text-purple-400" />
-            </div>
+            <IconWell accent="violet" size="md" className="flex-shrink-0">
+              <Heart className="w-5 h-5 text-white" />
+            </IconWell>
             <div className="text-left">
               <h3 className="text-sm font-bold text-slate-700">
                 {t('pregnancy.after35', 'Grossesse après 35 ans')}

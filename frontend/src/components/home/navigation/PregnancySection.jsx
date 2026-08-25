@@ -11,7 +11,7 @@ import {
 import { useSubscription } from '../../SubscriptionGate';
 import { toast } from 'sonner';
 import api from '../../../utils/api';
-import { PastelMosaicCard, PastelPillCard, CollapsibleSection, usePinnedSections, PASTEL_STYLES } from './_shared';
+import { PastelMosaicCard, PastelPillCard, CollapsibleSection, usePinnedSections, PASTEL_STYLES, IconWell } from './_shared';
 
 export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
   const navigate = useNavigate();
@@ -37,9 +37,9 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
         className="mb-4"
       >
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-pink-100/70 flex-shrink-0">
-            <CalendarHeart className="w-6 h-6 text-pink-500" />
-          </div>
+          <IconWell accent="pink" size="lg" className="flex-shrink-0">
+            <CalendarHeart className="w-6 h-6 text-white" />
+          </IconWell>
           <div className="flex-1">
             <h3 className="text-base font-bold text-slate-700">Grossesse & Fertilité</h3>
             <p className="text-xs text-slate-500">
@@ -53,11 +53,9 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
       {/* Scanner, Bibliothèque, Favoris, Historique */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <PastelMosaicCard color="green" onClick={() => navigate('/scanner')} testId="scanner-nav">
-          <div className="w-8 h-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center bg-green-100/60 backdrop-blur-sm"
-            style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-          >
-            <ScanBarcode className="w-4 h-4 text-green-500" />
-          </div>
+          <IconWell accent="green" size="sm" className="mx-auto mb-1.5">
+            <ScanBarcode className="w-4 h-4 text-white" />
+          </IconWell>
           <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.scanner', 'Scanner')}</h3>
           <p className="text-xs text-slate-500">{t('pregnancy.foods', 'Aliments')}</p>
         </PastelMosaicCard>
@@ -99,11 +97,9 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
       {/* Liste des prénoms - Partiellement gratuit - style pill */}
       <PastelPillCard color="violet" onClick={() => navigate('/baby-names')} testId="baby-names-nav" className="mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-violet-100/60 backdrop-blur-sm flex-shrink-0"
-            style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-          >
-            <Users className="w-5 h-5 text-violet-500" />
-          </div>
+          <IconWell accent="violet" size="md" className="flex-shrink-0">
+            <Users className="w-5 h-5 text-white" />
+          </IconWell>
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-bold text-slate-700">
@@ -129,11 +125,9 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
       {/* Widget Évolution 3D - Pill pleine largeur avec mise en valeur */}
       <PastelPillCard color="pink" onClick={() => navigate('/baby-evolution')} testId="baby-evolution-nav" className="mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-pink-100 to-rose-200 flex-shrink-0"
-            style={{ boxShadow: 'inset 0 2px 6px rgba(255,255,255,0.9), 0 4px 12px rgba(255, 183, 197, 0.3)' }}
-          >
-            <Baby className="w-6 h-6 text-pink-500" />
-          </div>
+          <IconWell accent="pink" size="xl" className="flex-shrink-0">
+            <Baby className="w-6 h-6 text-white" />
+          </IconWell>
           <div className="flex-1">
             <h3 className="text-base font-bold text-slate-700 flex items-center gap-2">
               {t('pregnancy.babyEvolution3D', 'Évolution de votre bébé en 3D')}
