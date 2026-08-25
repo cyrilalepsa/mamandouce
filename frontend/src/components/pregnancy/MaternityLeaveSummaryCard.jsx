@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { CalendarHeart, Baby, ChevronDown } from 'lucide-react';
 import api from '../../utils/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { IconWell } from '../ui/IconWell';
 import {
   calculateMaternityLeaveDates,
   formatFrenchDate,
@@ -56,8 +57,9 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
   return (
     <div
       ref={cardRef}
-      className={`col-span-2 sm:col-span-3 soft-clay-premium soft-clay-tint-violet soft-clay-text-flat rounded-[24px] ${className}`}
+      className={`col-span-2 sm:col-span-3 soft-clay-premium soft-clay-from-accent soft-clay-from-accent-violet soft-clay-text-flat rounded-[24px] ${className}`}
       data-testid="maternity-leave-summary-card"
+      data-accent="violet"
     >
       <button
         type="button"
@@ -66,14 +68,9 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
         aria-expanded={isOpen}
         data-testid="maternity-leave-summary-toggle"
       >
-        <div
-          className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 soft-clay-icon-well"
-          style={{
-            background: 'linear-gradient(145deg, #a78bfa, #7c3aed)',
-          }}
-        >
+        <IconWell accent="violet" size="lg">
           <CalendarHeart className="w-5 h-5 text-white" />
-        </div>
+        </IconWell>
         <div className="flex-1 min-w-0">
           <h3 className="text-base font-bold text-violet-900">Mon congé maternité</h3>
           <p className="text-sm text-violet-800/80 mt-0.5 flex items-center gap-1.5">

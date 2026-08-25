@@ -18,6 +18,8 @@ import { useTheme } from '../contexts/ThemeContext';
 import { MaternityLeaveSummaryCard } from '../components/pregnancy/MaternityLeaveSummaryCard';
 import { useAuth } from '../contexts/AuthContext';
 import { getLocalizedServices, resolveCountryFromCity } from '../utils/pregnancyDateUtils';
+import { accentFromBgColor, softClayCardClasses } from '../utils/accentTokens';
+import { IconWell } from '../components/ui/IconWell';
 
 // Métadonnées des sections
 const SECTION_META = {
@@ -235,55 +237,7 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
   const textColorTitle = 'text-black';
   const textColorDesc = 'text-black';
   
-  // Déterminer la couleur principale de l'item à partir de bgColor
-  const getColorFromBgColor = () => {
-    if (!item.bgColor) return { color: 'slate', rgb: '148,163,184' };
-    // Couleurs vives pour effet bombé pastel nuage
-    if (item.bgColor === 'yellow') return { color: 'yellow', rgb: '234,179,8' }; // Jaune vif
-    if (item.bgColor === 'blue') return { color: 'blue', rgb: '59,130,246' }; // Bleu vif
-    if (item.bgColor === 'pink') return { color: 'pink', rgb: '236,72,153' }; // Rose vif
-    if (item.bgColor === 'green') return { color: 'green', rgb: '34,197,94' }; // Vert vif
-    if (item.bgColor === 'red') return { color: 'red', rgb: '239,68,68' }; // Rouge vif
-    if (item.bgColor === 'emerald') return { color: 'emerald', rgb: '16,185,129' }; // Émeraude vif
-    if (item.bgColor === 'amber') return { color: 'amber', rgb: '245,158,11' }; // Ambre vif
-    if (item.bgColor === 'sky') return { color: 'sky', rgb: '14,165,233' }; // Bleu ciel vif
-    if (item.bgColor === 'rose') return { color: 'rose', rgb: '244,63,94' }; // Rose vif
-    // Anciennes couleurs (gradient strings)
-    if (item.bgColor.includes('pink') || item.bgColor.includes('rose')) return { color: 'pink', rgb: '236,72,153' };
-    if (item.bgColor.includes('sky') || item.bgColor.includes('blue')) return { color: 'sky', rgb: '14,165,233' };
-    if (item.bgColor.includes('emerald') || item.bgColor.includes('green')) return { color: 'green', rgb: '34,197,94' };
-    if (item.bgColor.includes('violet') || item.bgColor.includes('purple')) return { color: 'violet', rgb: '139,92,246' };
-    if (item.bgColor.includes('amber') || item.bgColor.includes('yellow') || item.bgColor.includes('orange')) return { color: 'amber', rgb: '245,158,11' };
-    if (item.bgColor.includes('red')) return { color: 'red', rgb: '239,68,68' };
-    if (item.bgColor.includes('teal') || item.bgColor.includes('cyan')) return { color: 'teal', rgb: '20,184,166' };
-    if (item.bgColor.includes('indigo')) return { color: 'indigo', rgb: '99,102,241' };
-    return { color: 'slate', rgb: '148,163,184' };
-  };
-  
-  const colorInfo = getColorFromBgColor();
-  
-  // Gradient coloré plein pour la bulle de logo
-  const getBubbleGradient = () => {
-    switch(item.bgColor) {
-      case 'yellow': case 'amber': return 'linear-gradient(145deg, #fbbf24, #f59e0b)';
-      case 'blue': case 'sky': return 'linear-gradient(145deg, #60a5fa, #3b82f6)';
-      case 'green': case 'emerald': return 'linear-gradient(145deg, #4ade80, #22c55e)';
-      case 'red': case 'rose': case 'pink': return 'linear-gradient(145deg, #f87171, #ef4444)';
-      case 'violet': case 'purple': return 'linear-gradient(145deg, #a78bfa, #8b5cf6)';
-      default: return 'linear-gradient(145deg, #94a3b8, #64748b)';
-    }
-  };
-
-  const getTierClayClass = () => {
-    switch (item.bgColor) {
-      case 'yellow': case 'amber': return 'soft-clay-tier-yellow';
-      case 'blue': case 'sky': return 'soft-clay-tier-blue';
-      case 'green': case 'emerald': return 'soft-clay-tier-green';
-      case 'red': case 'rose': case 'pink': return 'soft-clay-tier-red';
-      case 'violet': case 'purple': return 'soft-clay-tier-violet';
-      default: return 'soft-clay-nacre';
-    }
-  };
+  const accent = accentFromBgColor(item.bgColor);
   
   const handleTouchStart = (e) => {
     isLongPress.current = false;
@@ -315,8 +269,8 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
     return (
       <div 
         className={`
-          relative overflow-hidden soft-clay-premium soft-clay-pill soft-clay-text-flat
-          ${getTierClayClass()}
+          relative overflow-hidden soft-clay-premium soft-clay-from-accent soft-clay-text-flat
+          ${softClayCardClasses(accent, { pill: true })}
           px-3 py-1.5 select-none
           cursor-pointer transition-all col-span-2 sm:col-span-3
           hover:scale-[1.01] active:scale-[0.99]
@@ -336,19 +290,15 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
         onMouseLeave={() => clearTimeout(longPressTimer.current)}
         onContextMenu={(e) => e.preventDefault()}
         data-testid={`item-card-${item.id}`}
+        data-accent={accent}
       >
         {/* Voile blanc supprimé */}
         
         <div className="relative flex items-center gap-2">
           {/* Icône dans bulle COLORÉE pleine + icône blanche */}
-          <div 
-            className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 soft-clay-icon-well"
-            style={{
-              background: getBubbleGradient(),
-            }}
-          >
+          <IconWell accent={accent} size="xs">
             <Icon className="w-3.5 h-3.5 text-white" />
-          </div>
+          </IconWell>
           <div className="flex-1 text-left">
             <div className="flex items-center gap-2">
               <h3 className={`text-base font-semibold ${textColorTitle}`}>
@@ -380,8 +330,8 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
   return (
     <div 
       className={`
-        relative overflow-hidden soft-clay-premium soft-clay-text-flat rounded-[24px]
-        ${getTierClayClass()}
+        relative overflow-hidden soft-clay-premium soft-clay-from-accent soft-clay-text-flat rounded-[24px]
+        ${softClayCardClasses(accent)}
         p-1.5 select-none
         cursor-pointer transition-all text-center
         hover:scale-[1.02] active:scale-[0.98]
@@ -400,8 +350,9 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
       onMouseUp={handleTouchEnd}
       onMouseLeave={() => clearTimeout(longPressTimer.current)}
       onContextMenu={(e) => e.preventDefault()}
-      data-testid={`item-card-${item.id}`}
-    >
+        data-testid={`item-card-${item.id}`}
+        data-accent={accent}
+      >
       {/* Voile blanc supprimé */}
       
       {/* Badge premium */}
@@ -435,14 +386,9 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
       )}
       
       {/* Icône dans bulle COLORÉE pleine + icône blanche */}
-      <div 
-        className="w-9 h-9 rounded-lg flex items-center justify-center mx-auto mb-1 soft-clay-icon-well"
-        style={{
-          background: getBubbleGradient(),
-        }}
-      >
+      <IconWell accent={accent} size="sm" className="mx-auto mb-1">
         <Icon className="w-4 h-4 text-white" />
-      </div>
+      </IconWell>
       <h3 className={`text-sm font-semibold ${textColorTitle} leading-tight relative z-10`}>
         {t(item.titleKey, item.title)}
       </h3>

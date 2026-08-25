@@ -8,6 +8,8 @@ import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
 import { useHomeLayout } from '../contexts/HomeLayoutContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { accentFromBgColor, accentFromSectionId, softClayCardClasses } from '../utils/accentTokens';
+import { IconWell } from '../components/ui/IconWell';
 
 // Métadonnées des sections
 // Métadonnées des sections - Dégradés accentués vers le blanc + bonbon pastel
@@ -238,6 +240,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
   const Icon = meta.icon;
   const longPressTimer = useRef(null);
   const isLongPress = useRef(false);
+  const sectionAccent = accentFromSectionId(sectionId);
   const items = SECTION_ITEMS[sectionId] || [];
   
   // Couleurs de texte conditionnelles pour le mode sombre
@@ -332,7 +335,8 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
       <div 
         className={`
           relative overflow-hidden cursor-pointer select-none section-card
-          soft-clay-premium soft-clay-section-${sectionId} soft-clay-text-flat
+          soft-clay-premium soft-clay-from-accent soft-clay-section-${sectionId} soft-clay-text-flat
+          ${softClayCardClasses(sectionAccent)}
           rounded-[24px] px-5 py-2.5
           transition-all duration-300
           ${!isPinned ? 'hover:scale-[1.02] active:scale-[0.98]' : ''}
@@ -357,6 +361,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
         onMouseLeave={() => clearTimeout(longPressTimer.current)}
         onContextMenu={(e) => e.preventDefault()}
         data-testid={`section-card-${sectionId}`}
+        data-accent={sectionAccent}
       >
         {/* Voile blanc supprimé — Zéro voile sur les cartes */}
         
@@ -369,18 +374,9 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
         
         <div className="relative flex items-center gap-4 pr-4">
           {/* Icône dans bulle COLORÉE pleine + icône blanche */}
-          <div 
-            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 soft-clay-icon-well"
-            style={{
-              background: sectionId === 'preconception' ? 'linear-gradient(145deg, #fbbf24, #f59e0b)'
-                : sectionId === 'pregnancy' ? 'linear-gradient(145deg, #60a5fa, #3b82f6)'
-                : sectionId === 'baby-preparation' ? 'linear-gradient(145deg, #f87171, #ef4444)'
-                : sectionId === 'postpartum' ? 'linear-gradient(145deg, #4ade80, #22c55e)'
-                : 'linear-gradient(145deg, #a78bfa, #8b5cf6)',
-            }}
-          >
+          <IconWell accent={sectionAccent} size="md">
             <Icon className="w-5 h-5 text-white" />
-          </div>
+          </IconWell>
           
           {/* Texte */}
           <div className="flex-1 min-w-0">
@@ -417,11 +413,13 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
         <div className="mt-2 mx-0.5 animate-in slide-in-from-top-2 duration-200">
           <div className="grid grid-cols-3 gap-1.5">
             {items.slice(0, 6).map((item, index) => {
+              const itemAccent = accentFromBgColor(item.color || sectionAccent);
               return (
                 <button
                   key={item.id}
                   onClick={() => handleItemClick(item.route, item.external)}
-                  className="relative flex flex-col items-center gap-1 p-3 rounded-[24px] soft-clay-premium soft-clay-nacre soft-clay-text-flat transition-all active:scale-95"
+                  data-accent={itemAccent}
+                  className={`relative flex flex-col items-center gap-1 p-3 rounded-[24px] soft-clay-premium soft-clay-from-accent soft-clay-text-flat ${softClayCardClasses(itemAccent)} transition-all active:scale-95`}
                   style={{ 
                     background: isDarkMode ? 'rgba(30,41,59,0.9)' : undefined,
                     border: isDarkMode ? '1px solid rgba(71,85,105,0.5)' : undefined,
