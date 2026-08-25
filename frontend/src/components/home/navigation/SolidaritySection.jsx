@@ -11,7 +11,7 @@ import {
 import { useSubscription } from '../../SubscriptionGate';
 import { toast } from 'sonner';
 import api from '../../../utils/api';
-import { PastelMosaicCard, PastelPillCard, CollapsibleSection, usePinnedSections, PASTEL_STYLES } from './_shared';
+import { PastelMosaicCard, PastelPillCard, CollapsibleSection, usePinnedSections, PASTEL_STYLES, IconWell } from './_shared';
 import { N20Amount } from '../../N20Icon';
 
 export function SolidaritySection() {
@@ -183,11 +183,9 @@ export function SolidaritySection() {
       {/* Relais Maman info */}
       <PastelPillCard color="purple" onClick={() => navigate('/referral')} testId="relais-maman-nav">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-purple-100/60 backdrop-blur-sm flex-shrink-0"
-            style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-          >
-            <HandHeart className="w-5 h-5 text-purple-500" />
-          </div>
+          <IconWell accent="violet" size="md" className="flex-shrink-0">
+            <HandHeart className="w-5 h-5 text-white" />
+          </IconWell>
           <div className="flex-1">
             <h3 className="text-sm font-bold text-slate-700">Le Relais Maman</h3>
             <p className="text-xs text-slate-500">Parrainez et aidez d'autres mamans</p>

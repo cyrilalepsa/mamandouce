@@ -6,8 +6,8 @@
   --glass-text: var(--md-text-anthracite, #2C2C2C);
   --glass-blur: blur(12px);
   --glass-border: 1px solid rgba(255, 255, 255, 0.6);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
-  --glass-shadow-hover: 0 10px 36px 0 rgba(0, 0, 0, 0.07);
+  --glass-shadow: var(--clay-shadow-full);
+  --glass-shadow-hover: var(--clay-shadow-hover);
   --glass-radius: 24px;
 }
 
@@ -38,6 +38,7 @@ button.card-glass-interactive,
 .nacre-bombe:not(.fixed):not(.card-flat):hover,
 [class*="cursor-pointer"][class*="rounded-"][class*="shadow"]:not(.admin-drawer):not(.fertility-calendar):not(.fixed):not(.card-flat):hover {
   box-shadow: var(--glass-shadow-hover) !important;
+  transform: translateY(-1px);
 }
 
 /* Pas de reflets spéculaires / arc-en-ciel */
@@ -57,7 +58,7 @@ button.card-glass-interactive,
 .soft-clay-premium.card-soft-clay {
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05) !important;
+  box-shadow: var(--clay-shadow-full) !important;
   border: 1px solid rgba(255, 255, 255, 0.6) !important;
   color: var(--soft-clay-text, var(--glass-text)) !important;
   -webkit-text-fill-color: var(--soft-clay-text, var(--glass-text));
@@ -188,7 +189,7 @@ button.card-glass-interactive,
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
   border: 1px solid rgba(255, 255, 255, 0.6) !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05) !important;
+  box-shadow: var(--clay-shadow-full) !important;
 }
 
 .card-glass-modal::before,

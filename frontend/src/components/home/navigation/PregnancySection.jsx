@@ -61,31 +61,25 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
         </PastelMosaicCard>
 
         <PastelMosaicCard color="red" onClick={() => navigate('/library')} testId="library-nav">
-          <div className="w-8 h-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center bg-red-100/60 backdrop-blur-sm"
-            style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-          >
-            <Apple className="w-4 h-4 text-red-400" />
-          </div>
+          <IconWell accent="red" size="sm" className="mx-auto mb-1.5">
+            <Apple className="w-4 h-4 text-white" />
+          </IconWell>
           <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.library', 'Bibliothèque')}</h3>
           <p className="text-xs text-slate-500">{t('pregnancy.foods', 'Aliments')}</p>
         </PastelMosaicCard>
 
         <PastelMosaicCard color="pink" onClick={() => navigate('/favorites')} testId="favorites-nav">
-          <div className="w-8 h-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center bg-pink-100/60 backdrop-blur-sm"
-            style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-          >
-            <Heart className="w-4 h-4 text-pink-400" />
-          </div>
+          <IconWell accent="pink" size="sm" className="mx-auto mb-1.5">
+            <Heart className="w-4 h-4 text-white" />
+          </IconWell>
           <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.favorites', 'Favoris')}</h3>
           <p className="text-xs text-slate-500">{t('pregnancy.saved', 'Sauvegardés')}</p>
         </PastelMosaicCard>
 
         <PastelMosaicCard color="purple" onClick={() => navigate('/history')} testId="history-nav">
-          <div className="w-8 h-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center bg-purple-100/60 backdrop-blur-sm"
-            style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-          >
-            <History className="w-4 h-4 text-purple-400" />
-          </div>
+          <IconWell accent="violet" size="sm" className="mx-auto mb-1.5">
+            <History className="w-4 h-4 text-white" />
+          </IconWell>
           <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.history', 'Historique')}</h3>
           <p className="text-xs text-slate-500">{t('pregnancy.searches', 'Recherches')}</p>
         </PastelMosaicCard>
@@ -145,11 +139,9 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {/* Évolution et conseils - format carré comme les autres */}
         <PastelMosaicCard color="pink" onClick={() => navigate('/tips')} testId="tips-nav">
-          <div className="w-8 h-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center bg-pink-100/60 backdrop-blur-sm"
-            style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-          >
-            <BookHeart className="w-4 h-4 text-pink-500" />
-          </div>
+          <IconWell accent="pink" size="sm" className="mx-auto mb-1.5">
+            <BookHeart className="w-4 h-4 text-white" />
+          </IconWell>
           <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.tipsAndEvolution', 'Évolution et conseils')}</h3>
           <p className="text-xs text-slate-500">{t('pregnancy.weekByWeek', 'Semaine par semaine')}</p>
         </PastelMosaicCard>
@@ -157,11 +149,9 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
         {/* RDV - Gratuit au 1er trimestre, Premium après */}
         {isPremium || isFirstTrimester ? (
           <PastelMosaicCard color="sky" onClick={() => navigate('/medical')} testId="medical-nav">
-            <div className="w-8 h-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center bg-sky-100/60 backdrop-blur-sm"
-              style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-            >
-              <Stethoscope className="w-4 h-4 text-sky-500" />
-            </div>
+            <IconWell accent="sky" size="sm" className="mx-auto mb-1.5">
+              <Stethoscope className="w-4 h-4 text-white" />
+            </IconWell>
             <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.appointments', 'Rendez-vous')}</h3>
             <p className="text-xs text-slate-500">{isPremium ? t('pregnancy.medicalFollowUp', 'Suivi médical') : t('pregnancy.firstTrimester', '1er trimestre')}</p>
           </PastelMosaicCard>
@@ -170,11 +160,9 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
             <div className="absolute top-1.5 right-1.5 z-10">
               <Crown className="w-3.5 h-3.5 text-amber-500" />
             </div>
-            <div className="w-8 h-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center bg-slate-100/60 backdrop-blur-sm"
-              style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-            >
-              <Stethoscope className="w-4 h-4 text-slate-400" />
-            </div>
+            <IconWell accent="slate" size="sm" className="mx-auto mb-1.5">
+              <Stethoscope className="w-4 h-4 text-white" />
+            </IconWell>
             <h3 className="text-sm font-bold text-slate-500">{t('pregnancy.appointments', 'Rendez-vous')}</h3>
             <p className="text-xs text-slate-400 flex items-center justify-center gap-1">
               <Lock className="w-3 h-3" /> 2e & 3e trimestre
@@ -185,11 +173,9 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
         {/* Suivi grossesse - Premium uniquement */}
         {isPremium ? (
           <PastelMosaicCard color="pink" onClick={() => navigate('/tracking')} testId="tracking-nav">
-            <div className="w-8 h-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center bg-pink-100/60 backdrop-blur-sm"
-              style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-            >
-              <LineChart className="w-4 h-4 text-pink-500" />
-            </div>
+            <IconWell accent="pink" size="sm" className="mx-auto mb-1.5">
+              <LineChart className="w-4 h-4 text-white" />
+            </IconWell>
             <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.pregnancyTracking', 'Suivi grossesse')}</h3>
             <p className="text-xs text-slate-500">{t('pregnancy.momAndBaby', 'Maman & Bébé')}</p>
           </PastelMosaicCard>
@@ -198,11 +184,9 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
             <div className="absolute top-1.5 right-1.5 z-10">
               <Crown className="w-3.5 h-3.5 text-amber-500" />
             </div>
-            <div className="w-8 h-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center bg-slate-100/60 backdrop-blur-sm"
-              style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-            >
-              <LineChart className="w-4 h-4 text-slate-400" />
-            </div>
+            <IconWell accent="slate" size="sm" className="mx-auto mb-1.5">
+              <LineChart className="w-4 h-4 text-white" />
+            </IconWell>
             <h3 className="text-sm font-bold text-slate-500">{t('pregnancy.pregnancyTracking', 'Suivi grossesse')}</h3>
             <p className="text-xs text-slate-400 flex items-center justify-center gap-1">
               <Lock className="w-3 h-3" /> {t('premium.title', 'Premium')}
@@ -211,11 +195,9 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
         )}
 
         <PastelMosaicCard color="amber" onClick={() => navigate('/notifications')} testId="notifications-nav">
-          <div className="w-8 h-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center bg-amber-100/60 backdrop-blur-sm"
-            style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-          >
-            <Bell className="w-4 h-4 text-amber-400" />
-          </div>
+          <IconWell accent="yellow" size="sm" className="mx-auto mb-1.5">
+            <Bell className="w-4 h-4 text-white" />
+          </IconWell>
           <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.reminders', 'Rappels')}</h3>
           <p className="text-xs text-slate-500">{t('pregnancy.notifications', 'Notifications')}</p>
         </PastelMosaicCard>
