@@ -68,16 +68,16 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
           <p className="text-xs text-slate-500">{t('pregnancy.foods', 'Aliments')}</p>
         </PastelMosaicCard>
 
-        <PastelMosaicCard color="pink" onClick={() => navigate('/favorites')} testId="favorites-nav">
-          <IconWell accent="pink" size="sm" className="mx-auto mb-1.5">
+        <PastelMosaicCard color="yellow" onClick={() => navigate('/favorites')} testId="favorites-nav">
+          <IconWell accent="yellow" size="sm" className="mx-auto mb-1.5">
             <Heart className="w-4 h-4 text-white" />
           </IconWell>
           <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.favorites', 'Favoris')}</h3>
           <p className="text-xs text-slate-500">{t('pregnancy.saved', 'Sauvegardés')}</p>
         </PastelMosaicCard>
 
-        <PastelMosaicCard color="purple" onClick={() => navigate('/history')} testId="history-nav">
-          <IconWell accent="violet" size="sm" className="mx-auto mb-1.5">
+        <PastelMosaicCard color="red" onClick={() => navigate('/history')} testId="history-nav">
+          <IconWell accent="red" size="sm" className="mx-auto mb-1.5">
             <History className="w-4 h-4 text-white" />
           </IconWell>
           <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.history', 'Historique')}</h3>

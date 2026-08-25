@@ -4,7 +4,7 @@ import { CalendarHeart, Baby, ChevronDown } from 'lucide-react';
 import api from '../../utils/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { IconWell } from '../ui/IconWell';
-import { cardSoftClayClasses } from '../../utils/accentTokens';
+import { cardSoftClayClasses, cardInnerCreamClasses } from '../../utils/accentTokens';
 import {
   calculateMaternityLeaveDates,
   formatFrenchDate,
@@ -105,7 +105,7 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
               <p className="text-xs text-violet-700/75">{getScenarioLabel(leave.scenario)}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                 <div
-                  className={`rounded-[20px] px-3 py-2 ${cardSoftClayClasses('violet', { level: 4 })}`}
+                  className={`px-3 py-2 ${cardInnerCreamClasses('', { level: 4 })}`}
                   data-testid="maternity-leave-prenatal"
                 >
                   <p className="text-[11px] uppercase tracking-wide text-violet-600 font-semibold">
@@ -119,7 +119,7 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
                   </p>
                 </div>
                 <div
-                  className={`rounded-[20px] px-3 py-2 ${cardSoftClayClasses('violet', { level: 4 })}`}
+                  className={`px-3 py-2 ${cardInnerCreamClasses('', { level: 4 })}`}
                   data-testid="maternity-leave-postnatal"
                 >
                   <p className="text-[11px] uppercase tracking-wide text-violet-600 font-semibold">

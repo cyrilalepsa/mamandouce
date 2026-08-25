@@ -4,6 +4,7 @@ import { IconWell } from './IconWell';
 import {
   cardSoftClayClasses,
   cycleAccentByIndex,
+  cardInnerCreamClasses,
   normalizeAccent,
 } from '../../utils/accentTokens';
 
@@ -163,7 +164,7 @@ export function SubCard({
   );
 }
 
-/** Niveau 4 — ligne d'article / widget indicateur */
+/** Niveau 4 — ligne d'article / widget indicateur (blanc crème interne) */
 export function ListItemCard({
   accent,
   index = 0,
@@ -172,17 +173,21 @@ export function ListItemCard({
   onClick,
   level = 4,
   testId,
+  cream = true,
   ...props
 }) {
   const name = resolveAccent(accent, index);
+  const surfaceClasses = cream
+    ? cardInnerCreamClasses(className, { level })
+    : cardSoftClayClasses(name, { level });
   return (
     <div
-      data-accent={name}
+      data-accent={cream ? undefined : name}
       data-testid={testId}
       onClick={onClick}
-      className={`${cardSoftClayClasses(name, { level })} p-2.5 ${
+      className={`${surfaceClasses} p-2.5 ${
         onClick ? 'cursor-pointer hover:brightness-[1.02] active:scale-[0.99]' : ''
-      } ${className}`}
+      }`}
       {...props}
     >
       <div className="relative z-[2]">{children}</div>
