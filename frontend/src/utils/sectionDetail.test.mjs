@@ -11,3 +11,29 @@ test('SectionDetailPage imports useTheme from ThemeContext', () => {
   assert.match(src, /import \{ useTheme \} from '\.\.\/contexts\/ThemeContext'/);
   assert.match(src, /useTheme\(\)/);
 });
+
+test('MaternityLeaveSummaryCard is a collapsed drawer by default', () => {
+  const src = readFileSync(
+    join(root, 'src/components/pregnancy/MaternityLeaveSummaryCard.jsx'),
+    'utf8'
+  );
+  assert.match(src, /useState\(false\)/);
+  assert.match(src, /maternity-leave-summary-toggle/);
+  assert.match(src, /\{isOpen &&/);
+});
+
+test('home navigation CollapsibleSections default to closed', () => {
+  for (const rel of [
+    'src/components/home/navigation/PregnancySection.jsx',
+    'src/components/home/navigation/PreconceptionSection.jsx',
+    'src/components/home/navigation/BabyPreparationSection.jsx',
+    'src/components/home/navigation/PostpartumSection.jsx',
+    'src/components/home/navigation/ServicesSection.jsx',
+    'src/components/home/navigation/SolidaritySection.jsx',
+    'src/components/home/navigation/FaqBabySection.jsx',
+  ]) {
+    const src = readFileSync(join(root, rel), 'utf8');
+    assert.doesNotMatch(src, /defaultOpen=\{true\}/, rel);
+    assert.match(src, /defaultOpen=\{false\}/, rel);
+  }
+});
