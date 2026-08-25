@@ -323,7 +323,7 @@ export default function PostpartumPage() {
       label: 'Alimentation', 
       desc: 'Allaitement, biberons, diversification',
       icon: Utensils, 
-      color: 'peach',
+      color: 'yellow',
       route: '/postpartum/alimentation'
     },
     { 
@@ -360,7 +360,7 @@ export default function PostpartumPage() {
     { id: 'formula', label: t('postpartumPage.sections.formula'), icon: Baby, color: 'sky' },
     { id: 'diapers', label: t('postpartumPage.sections.diapers'), icon: Droplets, color: 'cyan' },
     { id: 'babywearing', label: t('postpartumPage.sections.babywearing'), icon: HandHeart, color: 'violet' },
-    { id: 'diversification', label: t('postpartumPage.sections.diversification'), icon: Utensils, color: 'orange' },
+    { id: 'diversification', label: t('postpartumPage.sections.diversification'), icon: Utensils, color: 'red' },
     { id: 'recipes', label: t('postpartumPage.sections.recipes'), icon: Sparkles, color: 'emerald', badge: content?.recipes?.length || 0 },
     { id: 'precautions', label: t('postpartumPage.sections.precautions'), icon: Shield, color: 'slate' },
   ];

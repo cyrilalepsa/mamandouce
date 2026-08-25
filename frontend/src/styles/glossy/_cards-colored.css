@@ -74,8 +74,8 @@
 }
 
 .glossy-card-orange {
-  background-color: var(--accent-peach-glass, #FDBA74) !important;
-  border-color: var(--accent-peach-border, #F97316) !important;
+  background-color: var(--accent-red-glass, #FECACA) !important;
+  border-color: var(--accent-red-border, #EF4444) !important;
 }
 
 .glossy-card-red {

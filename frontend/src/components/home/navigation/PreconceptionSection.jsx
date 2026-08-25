@@ -28,11 +28,11 @@ export function PreconceptionSection() {
       <div className="grid grid-cols-2 gap-4">
         {/* Suivi de cycles - carte carrée ROSE */}
         <PastelMosaicCard
-          color="pink"
+          color="yellow"
           onClick={() => navigate('/cycle-tracking')}
           testId="cycle-tracking-nav"
         >
-          <IconWell accent="pink" size="md" className="mx-auto mb-1.5">
+          <IconWell accent="yellow" size="md" className="mx-auto mb-1.5">
             <CalendarHeart className="w-5 h-5 text-white" />
           </IconWell>
           <h3 className="text-sm font-bold text-slate-700">{t('home.cycleTracking', 'Suivi de cycles')}</h3>
@@ -40,11 +40,11 @@ export function PreconceptionSection() {
         </PastelMosaicCard>
 
         <PastelMosaicCard
-          color="sky"
+          color="blue"
           onClick={() => navigate('/calculator')}
           testId="calculator-nav"
         >
-          <IconWell accent="sky" size="md" className="mx-auto mb-1.5">
+          <IconWell accent="blue" size="md" className="mx-auto mb-1.5">
             <CalendarHeart className="w-5 h-5 text-white" />
           </IconWell>
           <h3 className="text-sm font-bold text-slate-700">{t('pregnancy.calculator', 'Calculateur')}</h3>
@@ -53,13 +53,13 @@ export function PreconceptionSection() {
 
         {/* Grossesse après 35 ans - version compacte pleine largeur */}
         <PastelPillCard
-          color="purple"
+          color="red"
           onClick={() => navigate('/pregnancy-after-35')}
           testId="pregnancy-after-35-nav"
           className="col-span-2"
         >
           <div className="flex items-center gap-3">
-            <IconWell accent="violet" size="md" className="flex-shrink-0">
+            <IconWell accent="red" size="md" className="flex-shrink-0">
               <Heart className="w-5 h-5 text-white" />
             </IconWell>
             <div className="text-left">

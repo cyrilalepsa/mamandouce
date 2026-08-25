@@ -21,7 +21,7 @@ export function BabyPreparationSection() {
   // Header personnalisé pour cette section (avec badge Premium)
   const CustomHeader = () => (
     <div className="flex items-center gap-2">
-      <Gift className="w-5 h-5 text-purple-500" />
+      <Gift className="w-5 h-5 text-red-500" />
       <span className="whitespace-nowrap">{t('sections.babyPreparation', 'Préparer l\'arrivée de bébé')}</span>
       {!isPremium && (
         <span className="ml-2 w-6 h-6 bg-amber-400 rounded-full flex items-center justify-center">
@@ -45,11 +45,11 @@ export function BabyPreparationSection() {
         {/* Aperçu des cartes avec effet de flou partiel */}
         <div className="grid grid-cols-2 gap-4 relative">
           {/* Liste de naissance - aperçu */}
-          <PastelMosaicCard color="pink" onClick={() => navigate('/pricing')} locked>
+          <PastelMosaicCard color="yellow" onClick={() => navigate('/pricing')} locked>
             <div className="absolute top-1.5 right-1.5 z-10">
-              <Lock className="w-3.5 h-3.5 text-purple-400" />
+              <Lock className="w-3.5 h-3.5 text-red-400" />
             </div>
-            <IconWell accent="pink" size="md" className="mx-auto mb-1.5">
+            <IconWell accent="yellow" size="md" className="mx-auto mb-1.5">
               <ClipboardList className="w-5 h-5 text-white" />
             </IconWell>
             <h3 className="text-sm font-bold text-slate-700">{t('babyPrep.birthList', 'Liste de naissance')}</h3>
@@ -57,11 +57,11 @@ export function BabyPreparationSection() {
           </PastelMosaicCard>
 
           {/* Sac de maternité - aperçu */}
-          <PastelMosaicCard color="purple" onClick={() => navigate('/pricing')} locked>
+          <PastelMosaicCard color="blue" onClick={() => navigate('/pricing')} locked>
             <div className="absolute top-1.5 right-1.5 z-10">
-              <Lock className="w-3.5 h-3.5 text-purple-400" />
+              <Lock className="w-3.5 h-3.5 text-red-400" />
             </div>
-            <IconWell accent="violet" size="md" className="mx-auto mb-1.5">
+            <IconWell accent="blue" size="md" className="mx-auto mb-1.5">
               <Briefcase className="w-5 h-5 text-white" />
             </IconWell>
             <h3 className="text-sm font-bold text-slate-700">{t('babyPrep.maternityBag', 'Sac de maternité')}</h3>
@@ -71,7 +71,7 @@ export function BabyPreparationSection() {
           {/* Vidéos - aperçu */}
           <PastelMosaicCard color="red" onClick={() => navigate('/pricing')} locked>
             <div className="absolute top-1.5 right-1.5 z-10">
-              <Lock className="w-3.5 h-3.5 text-purple-400" />
+              <Lock className="w-3.5 h-3.5 text-red-400" />
             </div>
             <IconWell accent="red" size="md" className="mx-auto mb-1.5">
               <Video className="w-5 h-5 text-white" />
@@ -81,11 +81,11 @@ export function BabyPreparationSection() {
           </PastelMosaicCard>
 
           {/* Les Maternelles - aperçu */}
-          <PastelMosaicCard color="red" onClick={() => navigate('/pricing')} locked>
+          <PastelMosaicCard color="green" onClick={() => navigate('/pricing')} locked>
             <div className="absolute top-1.5 right-1.5 z-10">
-              <Lock className="w-3.5 h-3.5 text-purple-400" />
+              <Lock className="w-3.5 h-3.5 text-red-400" />
             </div>
-            <IconWell accent="red" size="md" className="mx-auto mb-1.5">
+            <IconWell accent="green" size="md" className="mx-auto mb-1.5">
               <Youtube className="w-5 h-5 text-white" />
             </IconWell>
             <h3 className="text-sm font-bold text-slate-700">{t('babyPrep.maternelles', 'Les Maternelles')}</h3>
@@ -93,12 +93,12 @@ export function BabyPreparationSection() {
           </PastelMosaicCard>
 
           {/* Livres - aperçu pleine largeur */}
-          <PastelPillCard color="amber" onClick={() => navigate('/pricing')} className="col-span-2">
+          <PastelPillCard color="violet" onClick={() => navigate('/pricing')} className="col-span-2">
             <div className="absolute top-2 right-3 z-10">
-              <Lock className="w-3.5 h-3.5 text-purple-400" />
+              <Lock className="w-3.5 h-3.5 text-red-400" />
             </div>
             <div className="flex items-center gap-3">
-              <IconWell accent="yellow" size="md" className="flex-shrink-0">
+              <IconWell accent="violet" size="md" className="flex-shrink-0">
                 <Book className="w-5 h-5 text-white" />
               </IconWell>
               <div className="text-left">
@@ -127,21 +127,21 @@ export function BabyPreparationSection() {
     <CollapsibleSection 
       title={t('sections.babyPreparation', 'Préparer l\'arrivée de bébé')}
       icon={Gift} 
-      iconColor="text-purple-500"
+      iconColor="text-red-500"
       defaultOpen={false}
       sectionId="baby-preparation"
     >
       <div className="grid grid-cols-2 gap-4">
-        <PastelMosaicCard color="pink" onClick={() => navigate('/birth-list')} testId="birthlist-nav">
-          <IconWell accent="pink" size="md" className="mx-auto mb-1.5">
+        <PastelMosaicCard color="yellow" onClick={() => navigate('/birth-list')} testId="birthlist-nav">
+          <IconWell accent="yellow" size="md" className="mx-auto mb-1.5">
             <ClipboardList className="w-5 h-5 text-white" />
           </IconWell>
           <h3 className="text-sm font-bold text-slate-700">{t('babyPrep.birthList', 'Liste de naissance')}</h3>
           <p className="text-xs text-slate-500 mt-0.5">{t('babyPrep.toShare', 'À partager')}</p>
         </PastelMosaicCard>
 
-        <PastelMosaicCard color="purple" onClick={() => navigate('/maternity-bag')} testId="maternity-bag-nav">
-          <IconWell accent="violet" size="md" className="mx-auto mb-1.5">
+        <PastelMosaicCard color="blue" onClick={() => navigate('/maternity-bag')} testId="maternity-bag-nav">
+          <IconWell accent="blue" size="md" className="mx-auto mb-1.5">
             <Briefcase className="w-5 h-5 text-white" />
           </IconWell>
           <h3 className="text-sm font-bold text-slate-700">{t('babyPrep.maternityBag', 'Sac de maternité')}</h3>
@@ -169,8 +169,8 @@ export function BabyPreparationSection() {
           rel="noopener noreferrer"
           className="no-underline"
         >
-          <PastelMosaicCard color="red" testId="maternelles-nav" className="h-full">
-            <IconWell accent="red" size="md" className="mx-auto mb-1.5">
+          <PastelMosaicCard color="green" testId="maternelles-nav" className="h-full">
+            <IconWell accent="green" size="md" className="mx-auto mb-1.5">
               <Youtube className="w-5 h-5 text-white" />
             </IconWell>
             <h3 className="text-sm font-bold text-slate-700">{t('babyPrep.maternelles', 'Les Maternelles')}</h3>
@@ -184,9 +184,9 @@ export function BabyPreparationSection() {
           rel="noopener noreferrer"
           className="no-underline col-span-2"
         >
-          <PastelPillCard color="amber" testId="books-nav" className="h-full">
+          <PastelPillCard color="violet" testId="books-nav" className="h-full">
             <div className="flex items-center gap-3">
-              <IconWell accent="yellow" size="md" className="flex-shrink-0">
+              <IconWell accent="violet" size="md" className="flex-shrink-0">
                 <Book className="w-5 h-5 text-white" />
               </IconWell>
               <div className="text-left">

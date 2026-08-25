@@ -199,13 +199,13 @@ export function UserSectionCard({ item, onRemove, pregnancyProfile, hasPregnancy
   };
   
   const SECTION_META = {
-    'preconception': { bgGradient: 'from-amber-50/80 to-yellow-50/80', borderColor: 'border-amber-200/50' },
-    'pregnancy': { bgGradient: 'from-pink-50/80 to-rose-50/80', borderColor: 'border-pink-200/50' },
-    'baby-preparation': { bgGradient: 'from-purple-50/80 to-violet-50/80', borderColor: 'border-purple-200/50' },
-    'postpartum': { bgGradient: 'from-rose-50/80 to-pink-50/80', borderColor: 'border-rose-200/50' },
-    'services': { bgGradient: 'from-slate-50/80 to-gray-50/80', borderColor: 'border-slate-200/50' },
-    'faq-baby': { bgGradient: 'from-amber-50/80 to-yellow-50/80', borderColor: 'border-amber-200/50' },
-    'solidarity': { bgGradient: 'from-purple-50/80 to-pink-50/80', borderColor: 'border-purple-200/50' },
+    'preconception': { bgGradient: 'from-yellow-50 to-amber-50', borderColor: 'border-yellow-200/80' },
+    'pregnancy': { bgGradient: 'from-sky-50 to-blue-50', borderColor: 'border-blue-200/80' },
+    'baby-preparation': { bgGradient: 'from-red-50 to-rose-50', borderColor: 'border-red-200/80' },
+    'postpartum': { bgGradient: 'from-green-50 to-emerald-50', borderColor: 'border-green-200/80' },
+    'services': { bgGradient: 'from-violet-50 to-purple-50', borderColor: 'border-violet-200/80' },
+    'faq-baby': { bgGradient: 'from-yellow-50 to-amber-50', borderColor: 'border-yellow-200/80' },
+    'solidarity': { bgGradient: 'from-violet-50 to-purple-50', borderColor: 'border-violet-200/80' },
   };
   
   const meta = SECTION_META[item.id];

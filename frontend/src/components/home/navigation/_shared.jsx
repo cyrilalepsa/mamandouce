@@ -17,7 +17,8 @@ export const PASTEL_STYLES = {
   slate: { accent: 'slate' },
   yellow: { accent: 'yellow' },
   blue: { accent: 'blue' },
-  peach: { accent: 'peach' },
+  peach: { accent: 'red' },
+  orange: { accent: 'red' },
 };
 
 function resolveAccent(color, locked) {

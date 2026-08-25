@@ -11,8 +11,8 @@ export const ACCENT_ALIASES = {
   red: 'red',
   rose: 'red',
   pink: 'pink',
-  peach: 'peach',
-  orange: 'peach',
+  peach: 'red',
+  orange: 'red',
   green: 'green',
   emerald: 'green',
   violet: 'violet',
@@ -23,7 +23,7 @@ export const ACCENT_ALIASES = {
 export const SECTION_ACCENT = {
   preconception: 'yellow',
   pregnancy: 'blue',
-  'baby-preparation': 'peach',
+  'baby-preparation': 'red',
   postpartum: 'green',
   services: 'violet',
 };

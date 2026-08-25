@@ -74,10 +74,10 @@ const SECTION_ITEMS = {
   ],
   'pregnancy': [
     // Partie Alimentation — pêche / jaune solaire
-    { id: 'food-scanner', icon: ScanBarcode, iconColor: 'text-yellow-500', bgColor: 'peach', title: 'Scanner', titleKey: 'pregnancy.scanner', desc: 'Aliments', descKey: 'pregnancy.foods', route: '/scanner' },
-    { id: 'food-library', icon: Apple, iconColor: 'text-yellow-500', bgColor: 'peach', title: 'Bibliothèque', titleKey: 'pregnancy.library', desc: 'Aliments', descKey: 'pregnancy.foods', route: '/library' },
-    { id: 'favorites', icon: Heart, iconColor: 'text-yellow-500', bgColor: 'peach', title: 'Favoris', titleKey: 'pregnancy.favorites', desc: 'Sauvegardés', descKey: 'pregnancy.saved', route: '/favorites' },
-    { id: 'history', icon: History, iconColor: 'text-yellow-500', bgColor: 'peach', title: 'Historique', titleKey: 'pregnancy.history', desc: 'Recherches', descKey: 'pregnancy.searches', route: '/history' },
+    { id: 'food-scanner', icon: ScanBarcode, iconColor: 'text-yellow-600', bgColor: 'yellow', title: 'Scanner', titleKey: 'pregnancy.scanner', desc: 'Aliments', descKey: 'pregnancy.foods', route: '/scanner' },
+    { id: 'food-library', icon: Apple, iconColor: 'text-blue-600', bgColor: 'blue', title: 'Bibliothèque', titleKey: 'pregnancy.library', desc: 'Aliments', descKey: 'pregnancy.foods', route: '/library' },
+    { id: 'favorites', icon: Heart, iconColor: 'text-red-600', bgColor: 'red', title: 'Favoris', titleKey: 'pregnancy.favorites', desc: 'Sauvegardés', descKey: 'pregnancy.saved', route: '/favorites' },
+    { id: 'history', icon: History, iconColor: 'text-green-600', bgColor: 'green', title: 'Historique', titleKey: 'pregnancy.history', desc: 'Recherches', descKey: 'pregnancy.searches', route: '/history' },
     // Séparateur : Liste des Prénoms (carte large) - BLEU
     { id: 'baby-names', icon: Users, iconColor: 'text-blue-600', bgColor: 'blue', title: 'Liste des Prénoms', titleKey: 'pregnancy.babyNames', desc: 'Europe & Amérique - Signification et personnalité', descKey: 'pregnancy.namesDescFull', route: '/baby-names', premium: 'partial', wide: true },
     // Partie Médicale et Suivi (4 cartes) - ROUGE
