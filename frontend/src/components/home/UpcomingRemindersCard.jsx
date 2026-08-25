@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Bell, Calendar, ChevronRight, Clock, X } from 'lucide-react';
 import { Card } from '../ui/card';
 import api from '../../utils/api';
+import { IconWell } from '../ui/IconWell';
+import { cardSoftClayClasses, normalizeAccent } from '../../utils/accentTokens';
 
 // Calcule la différence en jours
 const getDaysUntil = (dateString) => {
@@ -145,33 +147,18 @@ export function UpcomingRemindersCard() {
     return t('reminders.inDays', 'Dans {{days}} jours', { days: daysUntil });
   };
 
-  const colorClasses = {
-    pink: {
-      bg: 'bg-gradient-to-r from-pink-50 to-rose-50',
-      border: 'border-pink-200',
-      badge: 'bg-pink-500',
-      text: 'text-pink-600',
-      accent: 'text-pink-500'
-    },
-    amber: {
-      bg: 'bg-gradient-to-r from-amber-50 to-orange-50',
-      border: 'border-amber-200',
-      badge: 'bg-amber-500',
-      text: 'text-amber-600',
-      accent: 'text-amber-500'
-    }
-  };
-
-  const colors = colorClasses[item.color] || colorClasses.pink;
+  const accent = normalizeAccent(item.color);
+  const clayClasses = cardSoftClayClasses(accent);
 
   return (
-    <Card 
-      className={`relative overflow-hidden ${colors.bg} ${colors.border} border rounded-2xl p-4 mb-4 cursor-pointer hover:shadow-md transition-all`}
+    <Card
+      className={`relative overflow-hidden ${clayClasses} p-4 mb-4 border-0 shadow-none cursor-pointer hover:brightness-[1.02] transition-all`}
       onClick={() => navigate(item.route)}
+      data-accent={accent}
     >
       {/* Badge "Bientôt" */}
       {item.daysUntil <= 2 && (
-        <div className={`absolute top-2 right-10 ${colors.badge} text-white text-[9px] font-bold px-2 py-0.5 rounded-full animate-pulse`}>
+        <div className="absolute top-2 right-10 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full animate-pulse z-[3]">
           {item.daysUntil === 0 ? "AUJOURD'HUI" : 'BIENTÔT'}
         </div>
       )}
@@ -182,26 +169,26 @@ export function UpcomingRemindersCard() {
           e.stopPropagation();
           handleDismiss(item.id);
         }}
-        className="absolute top-2 right-2 w-6 h-6 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-sm"
+        className="absolute top-2 right-2 w-6 h-6 bg-white/50 hover:bg-white/70 rounded-full flex items-center justify-center shadow-sm z-[3]"
       >
-        <X className="w-3.5 h-3.5 text-slate-400" />
+        <X className="w-3.5 h-3.5 text-slate-500" />
       </button>
 
-      <div className="flex items-center gap-3">
+      <div className="relative z-[2] flex items-center gap-3">
         {/* Icône */}
-        <div className={`w-12 h-12 ${colors.badge} rounded-xl flex items-center justify-center shadow-md`}>
+        <IconWell accent={accent} size="lg">
           <span className="text-xl">{item.icon}</span>
-        </div>
+        </IconWell>
 
         {/* Contenu */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <Bell className={`w-3.5 h-3.5 ${colors.accent}`} />
-            <span className={`text-xs font-bold ${colors.text}`}>
+            <Bell className="w-3.5 h-3.5 text-slate-600" />
+            <span className="text-xs font-bold text-slate-700">
               {getTimeLabel(item.daysUntil)}
             </span>
           </div>
-          <h3 className="font-bold text-slate-700 text-sm truncate">
+          <h3 className="font-bold text-slate-800 text-sm truncate">
             {item.title || (
               item.type === 'appointment'
                 ? t('medical.appointment', 'Rendez-vous médical')
@@ -209,15 +196,13 @@ export function UpcomingRemindersCard() {
             )}
           </h3>
           <div className="flex items-center gap-1 mt-0.5">
-            <Calendar className="w-3 h-3 text-slate-400" />
-            <p className="text-xs text-slate-500">
-              {formatDate(item.date)}
-            </p>
+            <Calendar className="w-3 h-3 text-slate-500" />
+            <p className="text-xs text-slate-600">{formatDate(item.date)}</p>
           </div>
         </div>
 
         {/* Flèche */}
-        <ChevronRight className={`w-5 h-5 ${colors.accent}`} />
+        <ChevronRight className="w-5 h-5 text-slate-600" />
       </div>
 
       {/* Nombre d'autres rappels */}

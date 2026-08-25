@@ -9,15 +9,9 @@ import { getStoresForLanguage } from '../data/storesByCountry';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import { exportBirthListToPDF } from './birthlist/birthListPdf';
+import { AccordionCard, ListItemCard } from '../components/ui/SoftClayCards';
 
-// Couleurs cycle J→B→R→V→Vi
-const CYCLE_COLORS = [
-  'from-yellow-400 to-amber-500',
-  'from-blue-400 to-sky-500',
-  'from-red-400 to-rose-500',
-  'from-green-400 to-emerald-500',
-  'from-violet-400 to-purple-500',
-];
+// Couleurs cycle J→B→R→V→Vi (legacy — accents canoniques)
 
 // Liste de référence exhaustive par catégories
 const REFERENCE_LIST = [
@@ -184,60 +178,51 @@ function BirthListPage() {
   const renderItemList = (categories, showAllItems = true) => (
     <div className="space-y-3">
       {categories.map((cat, catIndex) => {
-        const logoColor = CYCLE_COLORS[catIndex % CYCLE_COLORS.length];
-        const isExpanded = expandedCategories[cat.category] !== false; // open by default
+        const isExpanded = expandedCategories[cat.category] !== false;
         const items = showAllItems ? cat.items : cat.items;
 
         return (
-          <div key={cat.category} className="rounded-2xl overflow-hidden" style={{
-            background: 'linear-gradient(160deg, #ffffff 0%, #ffffff 20%, #fefefe 50%, #fafafa 80%, #f5f5f7 100%)',
-            boxShadow: '0 6px 18px -4px rgba(0,0,0,0.08), inset -4px -4px 10px rgba(0,0,0,0.03), inset 4px 4px 10px rgba(255,255,255,0.95)',
-            border: '1px solid rgba(255,255,255,0.95)',
-          }}>
-            <button
-              onClick={() => toggleCategory(cat.category)}
-              className="w-full p-3.5 flex items-center gap-3 text-left"
-            >
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br ${logoColor}`}
-                style={{ boxShadow: '0 3px 8px -1px rgba(0,0,0,0.2)' }}
-              >
-                <span className="text-lg">{cat.icon}</span>
-              </div>
-              <span className="font-bold text-black flex-1">{cat.category}</span>
-              <span className="text-xs text-slate-400">{items.length}</span>
-              {isExpanded ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-            </button>
-
-            {isExpanded && (
-              <div className="px-3 pb-3 space-y-1.5">
-                {items.map((item) => (
-                  <div key={item.id} className="flex items-center gap-2 p-2.5 rounded-xl" style={{
-                    background: 'linear-gradient(160deg, #ffffff 0%, #ffffff 40%, #fefefe 100%)',
-                    border: '1px solid rgba(240,240,242,0.6)',
-                  }}>
-                    <button
-                      onClick={() => toggleFavorite(item.id)}
-                      className="p-1 flex-shrink-0"
-                      data-testid={`fav-${item.id}`}
-                    >
-                      <Heart className={`w-5 h-5 transition-all ${
+          <AccordionCard
+            key={cat.category}
+            index={catIndex}
+            title={cat.category}
+            icon={cat.icon}
+            open={isExpanded}
+            onToggle={() => toggleCategory(cat.category)}
+            className="!mb-0"
+          >
+            <div className="space-y-1.5">
+              {items.map((item, itemIndex) => (
+                <ListItemCard key={item.id} index={itemIndex} className="flex items-center gap-2">
+                  <button
+                    onClick={() => toggleFavorite(item.id)}
+                    className="p-1 flex-shrink-0"
+                    data-testid={`fav-${item.id}`}
+                  >
+                    <Heart
+                      className={`w-5 h-5 transition-all ${
                         favorites.includes(item.id) ? 'fill-red-500 text-red-500 scale-110' : 'text-slate-300'
-                      }`} style={{ stroke: favorites.includes(item.id) ? '#ef4444' : '#cbd5e1' }} />
-                    </button>
-                    <span className="flex-1 text-sm text-black font-medium">{item.name}</span>
-                    {item.essential && <span className="text-[10px] bg-pink-100 text-pink-600 px-1.5 py-0.5 rounded-full font-semibold">Essentiel</span>}
-                    <button
-                      onClick={() => setShowStorePopup(item.id)}
-                      className="p-1 flex-shrink-0"
-                      data-testid={`shop-${item.id}`}
-                    >
-                      <ExternalLink className="w-4 h-4 text-slate-400" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+                      }`}
+                      style={{ stroke: favorites.includes(item.id) ? '#ef4444' : '#cbd5e1' }}
+                    />
+                  </button>
+                  <span className="flex-1 text-sm text-slate-800 font-medium">{item.name}</span>
+                  {item.essential && (
+                    <span className="text-[10px] bg-pink-200/60 text-pink-700 px-1.5 py-0.5 rounded-full font-semibold">
+                      Essentiel
+                    </span>
+                  )}
+                  <button
+                    onClick={() => setShowStorePopup(item.id)}
+                    className="p-1 flex-shrink-0"
+                    data-testid={`shop-${item.id}`}
+                  >
+                    <ExternalLink className="w-4 h-4 text-slate-500" />
+                  </button>
+                </ListItemCard>
+              ))}
+            </div>
+          </AccordionCard>
         );
       })}
     </div>

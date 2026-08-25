@@ -10,6 +10,8 @@ import PageHeader from '../components/PageHeader';
 import { useSubscription } from '../components/SubscriptionGate';
 import { useAuth } from '../contexts/AuthContext';
 import { MultiplePregnancyModal } from '../components/pregnancy/MultiplePregnancyModal';
+import { cardSoftClayClasses } from '../utils/accentTokens';
+import { IconWell } from '../components/ui/IconWell';
 
 const MORPHO_ECHO_APPOINTMENT_ID = 'apt_6';
 
@@ -392,77 +394,28 @@ function MedicalAppointmentsPage() {
             {[1, 2, 3].map((trimester) => {
               const stats = getTrimesterStats(trimester);
               const isExpanded = expandedTrimesters[trimester];
-              const trimesterColor = trimester === 1 ? 'sky' : trimester === 2 ? 'purple' : 'pink';
+              const trimesterAccent = trimester === 1 ? 'yellow' : trimester === 2 ? 'sky' : 'red';
               const isLocked = !isPremium && trimester > 1;
-              
-              // Couleurs pastels par trimestre — Jaune / Bleu / Rouge
-              const colorStyles = {
-                1: {
-                  bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,249,195,0.95) 30%, rgba(253,230,138,0.85) 60%, rgba(251,191,36,0.7) 100%)',
-                  shadow: 'rgba(245,158,11,0.25)',
-                  border: 'rgba(245,158,11,0.35)',
-                  iconBg: 'bg-amber-400',
-                  text: 'text-amber-600'
-                },
-                2: {
-                  bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(224,242,254,0.95) 30%, rgba(186,230,253,0.85) 60%, rgba(125,211,252,0.7) 100%)',
-                  shadow: 'rgba(56,189,248,0.25)',
-                  border: 'rgba(56,189,248,0.35)',
-                  iconBg: 'bg-sky-400',
-                  text: 'text-sky-600'
-                },
-                3: {
-                  bg: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(254,226,226,0.95) 30%, rgba(254,202,202,0.85) 60%, rgba(252,165,165,0.7) 100%)',
-                  shadow: 'rgba(239,68,68,0.25)',
-                  border: 'rgba(239,68,68,0.35)',
-                  iconBg: 'bg-red-400',
-                  text: 'text-red-600'
-                }
-              };
-              
-              const style = colorStyles[trimester];
-              
+
               return trimesters[trimester].length > 0 && (
                 <div key={trimester}>
-                  {/* Collapsible Trimester Header - Style bombé */}
                   <button
                     onClick={() => isLocked ? navigate('/pricing') : toggleTrimester(trimester)}
-                    className={`relative overflow-hidden w-full flex items-center gap-3 mb-3 p-4 rounded-3xl transition-all hover:scale-[1.01] active:scale-[0.99] ${isLocked ? 'opacity-80' : ''}`}
-                    style={{
-                      background: isLocked 
-                        ? 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(241,245,249,0.95) 50%, rgba(226,232,240,0.85) 100%)'
-                        : style.bg,
-                      boxShadow: `
-                        0 8px 24px -4px ${isLocked ? 'rgba(100,116,139,0.15)' : style.shadow},
-                        0 4px 8px -2px ${isLocked ? 'rgba(100,116,139,0.1)' : style.shadow},
-                        inset 0 2px 4px rgba(255,255,255,0.9),
-                        inset 0 -2px 4px ${isLocked ? 'rgba(100,116,139,0.05)' : style.shadow}
-                      `,
-                      border: `2px solid ${isLocked ? 'rgba(148,163,184,0.25)' : style.border}`
-                    }}
+                    className={`relative overflow-hidden w-full flex items-center gap-3 mb-3 p-4 transition-all hover:scale-[1.01] active:scale-[0.99] ${isLocked ? 'opacity-80' : ''} ${cardSoftClayClasses(trimesterAccent, { level: 3 })}`}
                     data-testid={`toggle-trimestre-${trimester}`}
+                    data-accent={trimesterAccent}
                   >
-                    {/* Effet de reflet bombé */}
-                    {/* Voile blanc supprimé */}
-                    
-                    {/* Icône avec bulle quasi-transparente */}
-                    <div 
-                      className="relative w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold"
-                      style={{
-                        background: isLocked 
-                          ? 'linear-gradient(135deg, rgba(148,163,184,0.3) 0%, rgba(148,163,184,0.15) 100%)'
-                          : 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.08) 100%)',
-                        backdropFilter: 'none',
-                        border: '1px solid rgba(255,255,255,0.4)',
-                        boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.5)'
-                      }}
-                    >
-                      {isLocked ? <Lock className={`w-5 h-5 ${isLocked ? 'text-slate-500' : style.text}`} /> : <span className={style.text}>T{trimester}</span>}
-                    </div>
-                    
+                    <IconWell accent={isLocked ? 'slate' : trimesterAccent} size="md">
+                      {isLocked ? (
+                        <Lock className="w-5 h-5 text-white" />
+                      ) : (
+                        <span className="text-white text-sm font-bold">T{trimester}</span>
+                      )}
+                    </IconWell>
+
                     <div className="relative flex-1 text-left">
                       <div className="flex items-center gap-2">
-                        <h2 className={`text-lg font-bold ${isLocked ? 'text-slate-500' : style.text}`}>
+                        <h2 className={`text-lg font-bold ${isLocked ? 'text-slate-500' : 'text-slate-800'}`}>
                           {trimester === 1 ? '1er' : `${trimester}ème`} trimestre
                         </h2>
                         {isLocked && (
@@ -502,7 +455,7 @@ function MedicalAppointmentsPage() {
                               : 'rgba(255,255,255,0.3)',
                           }}
                         >
-                          {isExpanded ? <ChevronUp className={`w-5 h-5 ${style.text}`} /> : <ChevronDown className="w-5 h-5 text-slate-500" />}
+                          {isExpanded ? <ChevronUp className="w-5 h-5 text-slate-600" /> : <ChevronDown className="w-5 h-5 text-slate-500" />}
                         </div>
                       </div>
                     )}
