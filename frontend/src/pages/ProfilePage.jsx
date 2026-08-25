@@ -9,6 +9,7 @@ import { applySuperadminOverlay } from '../utils/superadmin';
 import { useAuth } from '../contexts/AuthContext';
 import { isBiometricEnabled, checkBiometricSupport, isPinEnabled } from '../utils/biometricAuth';
 import { AccountStatusSection } from '../components/settings';
+import { PersonalFamilyInfoSection } from '../components/settings/PersonalFamilyInfoSection';
 import { BadgesCard } from '../components/solidarity';
 import { Card } from '../components/ui/card';
 import {
@@ -221,8 +222,25 @@ function ProfilePage() {
             {/* Carte d'édition du profil (Avatar + Nom) */}
             <ProfileEditCard 
               user={user} 
-              onUpdate={(updatedUser) => setUser(prev => ({ ...prev, ...updatedUser }))}
+              onUpdate={(updatedUser) => {
+                setUser((prev) => ({ ...prev, ...updatedUser }));
+                ingestUser?.({ ...user, ...updatedUser });
+              }}
             />
+
+            <CollapsibleSection
+              title="Informations personnelles & Familiales"
+              icon={User}
+              defaultOpen={false}
+              iconBg="bg-gradient-to-br from-violet-100 to-purple-100"
+              iconColor="text-violet-600"
+              data-testid="personal-family-section"
+            >
+              <PersonalFamilyInfoSection
+                userInfo={user}
+                onReloadUserInfo={loadUserData}
+              />
+            </CollapsibleSection>
 
             {/* Section Mon Compte */}
             <CollapsibleSection

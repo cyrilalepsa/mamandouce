@@ -16,17 +16,30 @@ export function RegisterForm({
   return (
     <>
       <form onSubmit={onSubmit} className="space-y-5">
-        <div>
-          <Label htmlFor="name" className="text-slate-600 font-semibold">Nom</Label>
-          <Input
-            id="name"
-            data-testid="name-input"
-            type="text"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full rounded-2xl border-slate-200 bg-white/80 px-4 py-3 text-slate-600 focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
-            required
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <Label htmlFor="first_name" className="text-slate-600 font-semibold">Prénom</Label>
+            <Input
+              id="first_name"
+              data-testid="first-name-input"
+              type="text"
+              value={formData.first_name || ''}
+              onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+              className="w-full rounded-2xl border-slate-200 bg-white/80 px-4 py-3 text-slate-600 focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="last_name" className="text-slate-600 font-semibold">Nom</Label>
+            <Input
+              id="last_name"
+              data-testid="last-name-input"
+              type="text"
+              value={formData.last_name || ''}
+              onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+              className="w-full rounded-2xl border-slate-200 bg-white/80 px-4 py-3 text-slate-600 focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
+            />
+          </div>
         </div>
         <div>
           <Label htmlFor="email" className="text-slate-600 font-semibold">Email</Label>

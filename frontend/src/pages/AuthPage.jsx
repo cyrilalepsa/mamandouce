@@ -38,7 +38,8 @@ function AuthPage({ setIsAuthenticated }) {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    name: '',
+    first_name: '',
+    last_name: '',
     city: '',
     children_at_home: 0,
   });

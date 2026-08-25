@@ -17,15 +17,42 @@ def normalize_multiple_pregnancy(value: Optional[str]) -> str:
     return "none"
 
 
+def build_full_name(first_name: Optional[str], last_name: Optional[str]) -> str:
+    return " ".join(
+        part for part in [str(first_name or "").strip(), str(last_name or "").strip()] if part
+    )
+
+
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
-    name: str
+    first_name: str = ""
+    last_name: str = ""
+    name: Optional[str] = None
     city: Optional[str] = None
     birth_date: Optional[str] = None  # Date de naissance format YYYY-MM-DD
     status: Optional[str] = None  # 'envie_bebe' ou 'enceinte'
     children_at_home: int = 0
     multiple_pregnancy: str = "none"
+
+    @model_validator(mode="after")
+    def normalize_registration_names(self):
+        first = self.first_name.strip()
+        last = self.last_name.strip()
+        legacy_name = (self.name or "").strip()
+        if not first and not last and legacy_name:
+            parts = legacy_name.split(None, 1)
+            first = parts[0]
+            last = parts[1] if len(parts) > 1 else ""
+        if not first:
+            raise ValueError("first_name is required")
+        self.first_name = first
+        self.last_name = last
+        if not legacy_name:
+            self.name = build_full_name(first, last)
+        else:
+            self.name = legacy_name
+        return self
 
     @field_validator("children_at_home", mode="before")
     @classmethod
@@ -65,6 +92,8 @@ class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     email: str
     name: str
+    first_name: Optional[str] = ""
+    last_name: Optional[str] = ""
     display_name: Optional[str] = None  # Nom personnalisé pour l'affichage
     avatar: Optional[str] = None  # URL ou base64 de l'avatar
     avatar_config: Optional[dict] = None  # Configuration de l'avatar personnalisé
@@ -179,11 +208,20 @@ class RegisteredUsersResponse(BaseModel):
 class ProfileUpdate(BaseModel):
     """Modèle pour la mise à jour du profil utilisateur"""
     display_name: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     avatar: Optional[str] = None  # Base64 encoded image
     avatar_config: Optional[dict] = None  # Configuration de l'avatar personnalisé
     city: Optional[str] = None  # Ville de l'utilisatrice
     children_at_home: Optional[int] = None
     multiple_pregnancy: Optional[str] = None
+
+    @field_validator("first_name", "last_name", mode="before")
+    @classmethod
+    def strip_name_parts(cls, value):
+        if value is None:
+            return None
+        return str(value).strip()
 
     @field_validator("children_at_home", mode="before")
     @classmethod
