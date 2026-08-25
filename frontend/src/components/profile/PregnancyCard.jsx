@@ -1,73 +1,83 @@
+import { CalendarHeart, Sparkles, Baby } from 'lucide-react';
 import { PregnancyInfoSection } from '../settings';
+import { IconWell } from '../ui/IconWell';
+import { softClayCardClasses } from '../../utils/accentTokens';
 
-export function PregnancyCard({ 
-  pregnancyProfile, 
-  subscriptionStatus, 
-  setSubscriptionStatus, 
-  onLoadFullStatus, 
-  formatDate 
+function InfoTile({ accent, label, value, testId }) {
+  return (
+    <div
+      data-accent={accent}
+      data-testid={testId}
+      className={`soft-clay-premium soft-clay-from-accent soft-clay-text-flat rounded-[24px] p-2.5 ${softClayCardClasses(accent)}`}
+    >
+      <p className="text-xs text-slate-600 font-semibold">{label}</p>
+      <p className="text-sm font-bold text-slate-800 mt-0.5">{value}</p>
+    </div>
+  );
+}
+
+export function PregnancyCard({
+  pregnancyProfile,
+  subscriptionStatus,
+  setSubscriptionStatus,
+  onLoadFullStatus,
+  formatDate,
 }) {
   if (!pregnancyProfile) return null;
 
   return (
-    <div 
-      className="rounded-2xl p-5 relative overflow-hidden"
-      style={{
-        background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(252,231,243,0.95) 30%, rgba(251,207,232,0.85) 70%, rgba(249,168,212,0.75) 100%)',
-        boxShadow: '0 6px 16px -4px rgba(236,72,153,0.2), 0 3px 6px -2px rgba(236,72,153,0.1), inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(236,72,153,0.08)'
-      }}
+    <div
+      className={`soft-clay-premium soft-clay-from-accent soft-clay-text-flat rounded-[24px] p-5 relative overflow-hidden ${softClayCardClasses('pink')}`}
       data-testid="pregnancy-info-card"
+      data-accent="pink"
     >
-      {/* Voile blanc supprimé */}
-<div className="relative">
-        <h3 className="text-lg font-bold text-slate-700 mb-4">Informations de grossesse</h3>
-        
+      <div className="relative z-[2]">
+        <div className="flex items-center gap-3 mb-4">
+          <IconWell accent="pink" size="md">
+            <Baby className="w-5 h-5 text-white" />
+          </IconWell>
+          <h3 className="text-lg font-bold text-slate-800">Informations de grossesse</h3>
+        </div>
+
         <div className="space-y-2">
           <div className="grid grid-cols-2 gap-2">
-            <div className="bg-white/60 backdrop-blur-sm rounded-xl p-2.5"
-              style={{ boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.8)' }}
-            >
-              <p className="text-xs text-slate-500 font-semibold">Dernières règles</p>
-              <p className="text-sm font-bold text-slate-700">{formatDate(pregnancyProfile.last_period_date)}</p>
-            </div>
-            <div className="bg-white/60 backdrop-blur-sm rounded-xl p-2.5"
-              style={{ boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.8)' }}
-            >
-              <p className="text-xs text-slate-500 font-semibold">Conception estimée</p>
-              <p className="text-sm font-bold text-pink-600">{formatDate(pregnancyProfile.estimated_conception_date)}</p>
-            </div>
+            <InfoTile
+              accent="sky"
+              label="Dernières règles"
+              value={formatDate(pregnancyProfile.last_period_date)}
+              testId="pregnancy-last-period"
+            />
+            <InfoTile
+              accent="pink"
+              label="Conception estimée"
+              value={formatDate(pregnancyProfile.estimated_conception_date)}
+              testId="pregnancy-conception-date"
+            />
           </div>
-          
+
           <div className="grid grid-cols-2 gap-2">
-            <div className="bg-white/60 backdrop-blur-sm rounded-xl p-2.5"
-              style={{ boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.8)' }}
-            >
-              <p className="text-xs text-slate-500 font-semibold">Accouchement prévu</p>
-              <p className="text-sm font-bold text-rose-600">{formatDate(pregnancyProfile.estimated_due_date)}</p>
-            </div>
-            <div 
-              className="rounded-xl p-2.5"
-              style={{
-                background: 'linear-gradient(145deg, rgba(224,242,254,0.8) 0%, rgba(252,231,243,0.8) 100%)',
-                boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.8)'
-              }}
-            >
-              <p className="text-xs text-slate-600 font-semibold">Semaine actuelle</p>
-              <p className="text-lg font-bold text-slate-700">{pregnancyProfile.current_week} sem.</p>
-            </div>
+            <InfoTile
+              accent="red"
+              label="Accouchement prévu"
+              value={formatDate(pregnancyProfile.estimated_due_date)}
+              testId="pregnancy-due-date"
+            />
+            <InfoTile
+              accent="blue"
+              label="Semaine actuelle"
+              value={`${pregnancyProfile.current_week ?? '—'} sem.`}
+              testId="pregnancy-current-week"
+            />
           </div>
-          
-          {/* Section J'ai accouché intégrée */}
-          {subscriptionStatus === 'premium' && (
-            <div className="mt-3 pt-3 border-t border-pink-200/50">
-              <PregnancyInfoSection
-                subscriptionStatus={subscriptionStatus}
-                setSubscriptionStatus={setSubscriptionStatus}
-                onLoadFullStatus={onLoadFullStatus}
-                embedded={true}
-              />
-            </div>
-          )}
+
+          <div className="mt-3 pt-3 border-t border-pink-200/40">
+            <PregnancyInfoSection
+              subscriptionStatus={subscriptionStatus}
+              setSubscriptionStatus={setSubscriptionStatus}
+              onLoadFullStatus={onLoadFullStatus}
+              embedded={true}
+            />
+          </div>
         </div>
       </div>
     </div>

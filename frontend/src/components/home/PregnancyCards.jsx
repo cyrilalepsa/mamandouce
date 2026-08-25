@@ -20,7 +20,7 @@ export function PregnancyStatusCard({ pregnancyProfile }) {
         `,
         border: '2px solid rgba(244,114,182,0.3)'
       }}
-      onClick={() => navigate('/section/pregnancy?focus=maternity-leave')}
+      onClick={() => navigate('/pregnancy-fertility')}
       data-testid="pregnancy-status-card"
     >
       {/* Voile blanc supprimé */}

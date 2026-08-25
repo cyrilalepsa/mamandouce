@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Baby, Calendar, Heart } from 'lucide-react';
+import { ArrowLeft, Heart } from 'lucide-react';
 import api from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { PregnancyToggle } from '../components/cycle/PregnancyToggle';
 import { FertilityRemindersCard, PregnancyCard } from '../components/profile';
+import { MaternityLeaveSummaryCard } from '../components/pregnancy/MaternityLeaveSummaryCard';
 import { isPregnancyActive } from '../utils/pregnancyStatus';
 
 export default function PregnancyFertilityPage() {
@@ -69,6 +70,7 @@ export default function PregnancyFertilityPage() {
   };
 
   const formatDate = (value) => {
+    if (!value) return 'Non renseignée';
     const date = new Date(value);
     return Number.isNaN(date.getTime())
       ? 'Non renseignée'
@@ -76,58 +78,55 @@ export default function PregnancyFertilityPage() {
   };
 
   return (
-    <div className="min-h-screen gradient-bg">
+    <div className="min-h-screen gradient-bg" data-testid="pregnancy-fertility-page">
       <div className="max-w-2xl mx-auto p-4 sm:p-6 space-y-4">
         <div className="flex items-center gap-4 mb-2">
           <Button onClick={() => navigate(-1)} variant="ghost" className="p-2 rounded-full">
             <ArrowLeft className="w-6 h-6 text-slate-600" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-slate-700">Grossesse & Fertilité</h1>
-            <p className="text-sm text-slate-500">
+            <h1 className="text-2xl font-bold text-slate-800">Grossesse & Fertilité</h1>
+            <p className="text-sm text-slate-600">
               {isPregnant ? 'Votre parcours grossesse' : 'Votre cycle et votre projet bébé'}
             </p>
           </div>
         </div>
 
         {loading ? (
-          <Card className="p-8 text-center rounded-3xl">Chargement...</Card>
+          <Card className="p-8 text-center rounded-[24px] soft-clay-text-flat">Chargement...</Card>
         ) : (
           <>
-            <PregnancyToggle
-              mode="profile"
-              isPregnant={isPregnant}
-              dueDate={dueDate}
-              lastPeriodDate={profile?.last_period_date}
-              cycleLength={profile?.cycle_length || 28}
-              currentWeek={profile?.current_week}
-              trimester={profile?.trimester}
-              onPregnant={async (_dpa, periodDate) => {
-                await api.pregnancy.calculate({
-                  last_period_date: periodDate,
-                  cycle_length: profile?.cycle_length || 28,
-                });
-                await refreshMe();
-                await loadData();
-              }}
-            />
+            {!isPregnant && (
+              <PregnancyToggle
+                mode="profile"
+                isPregnant={isPregnant}
+                dueDate={dueDate}
+                lastPeriodDate={profile?.last_period_date}
+                cycleLength={profile?.cycle_length || 28}
+                currentWeek={profile?.current_week}
+                trimester={profile?.trimester}
+                onPregnant={async (_dpa, periodDate) => {
+                  await api.pregnancy.calculate({
+                    last_period_date: periodDate,
+                    cycle_length: profile?.cycle_length || 28,
+                  });
+                  await refreshMe();
+                  await loadData();
+                }}
+              />
+            )}
 
             {!isPregnant && cycleStatus?.show_alert && (
-              <Card className="p-4 rounded-2xl border-2 border-amber-200 bg-amber-50">
-                <div className="flex gap-3">
-                  <Calendar className="w-6 h-6 text-amber-500 flex-shrink-0" />
-                  <div>
-                    <p className="font-bold text-amber-800">{cycleStatus?.message || 'Suivi du cycle'}</p>
-                    {cycleStatus?.suggestion && (
-                      <p className="text-sm text-amber-700">{cycleStatus.suggestion}</p>
-                    )}
-                  </div>
-                </div>
+              <Card className="p-4 rounded-[24px] border-2 border-amber-200 bg-amber-50 soft-clay-text-flat">
+                <p className="font-bold text-amber-800">{cycleStatus?.message || 'Suivi du cycle'}</p>
+                {cycleStatus?.suggestion && (
+                  <p className="text-sm text-amber-700 mt-1">{cycleStatus.suggestion}</p>
+                )}
               </Card>
             )}
 
             {isPregnant ? (
-              <>
+              <div className="space-y-4" data-testid="pregnancy-fertility-pregnant-panel">
                 <PregnancyCard
                   pregnancyProfile={profile}
                   subscriptionStatus={subscriptionStatus}
@@ -135,16 +134,8 @@ export default function PregnancyFertilityPage() {
                   onLoadFullStatus={loadData}
                   formatDate={formatDate}
                 />
-                <Card className="p-5 rounded-2xl bg-gradient-to-r from-pink-50 to-rose-50 border-pink-200">
-                  <div className="flex items-center gap-3">
-                    <Baby className="w-8 h-8 text-pink-500" />
-                    <div>
-                      <p className="font-bold text-pink-700">Votre grossesse est en cours</p>
-                      <p className="text-sm text-pink-600">Retrouvez ici vos informations essentielles.</p>
-                    </div>
-                  </div>
-                </Card>
-              </>
+                <MaternityLeaveSummaryCard defaultOpen className="!col-span-1 w-full" />
+              </div>
             ) : (
               <FertilityRemindersCard
                 pregnancyProfile={profile}
@@ -154,13 +145,15 @@ export default function PregnancyFertilityPage() {
               />
             )}
 
-            <Button
-              onClick={() => navigate(isPregnant ? '/tracking' : '/cycle-tracking')}
-              className="w-full rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white"
-            >
-              <Heart className="w-4 h-4 mr-2" />
-              {isPregnant ? 'Ouvrir le suivi grossesse' : 'Ouvrir le suivi de cycle'}
-            </Button>
+            {!isPregnant && (
+              <Button
+                onClick={() => navigate('/cycle-tracking')}
+                className="w-full rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white"
+              >
+                <Heart className="w-4 h-4 mr-2" />
+                Ouvrir le suivi de cycle
+              </Button>
+            )}
           </>
         )}
       </div>
