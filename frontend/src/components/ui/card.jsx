@@ -31,7 +31,7 @@ const Card = React.forwardRef(({ className, glossy, glossyColor, variant = 'defa
     return (
       <div
         ref={ref}
-        className={cn("rounded-xl border bg-card text-card-foreground card-flat", className)}
+        className={cn("rounded-[24px] border bg-card text-card-foreground card-flat soft-clay-text-flat", className)}
         {...props}
       >
         {children}
@@ -44,7 +44,7 @@ const Card = React.forwardRef(({ className, glossy, glossyColor, variant = 'defa
       <div
         ref={ref}
         className={cn(
-          "rounded-xl relative overflow-hidden card-glass-interactive cursor-pointer",
+          "rounded-[24px] relative overflow-hidden card-glass-interactive soft-clay-premium soft-clay-text-flat cursor-pointer",
           glossyColor && `glossy-card-${glossyColor}`,
           className
         )}
@@ -61,7 +61,7 @@ const Card = React.forwardRef(({ className, glossy, glossyColor, variant = 'defa
     return (
       <div
         ref={ref}
-        className={cn("rounded-xl relative overflow-hidden", glossyColor && `glossy-card-${glossyColor}`, className)}
+        className={cn("rounded-[24px] relative overflow-hidden", glossyColor && `glossy-card-${glossyColor}`, className)}
         {...props}
       >
         <GlossyReflect />
@@ -75,7 +75,7 @@ const Card = React.forwardRef(({ className, glossy, glossyColor, variant = 'defa
   return (
     <div
       ref={ref}
-      className={cn("rounded-xl border bg-card text-card-foreground shadow card-flat", className)}
+      className={cn("rounded-[24px] border bg-card text-card-foreground shadow card-flat soft-clay-text-flat", className)}
       {...props}
     >
       {children}

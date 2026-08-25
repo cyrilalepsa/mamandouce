@@ -56,15 +56,8 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
   return (
     <div
       ref={cardRef}
-      className={`col-span-2 sm:col-span-3 rounded-3xl border-2 ${className}`}
+      className={`col-span-2 sm:col-span-3 soft-clay-premium soft-clay-tint-violet soft-clay-text-flat rounded-[24px] ${className}`}
       data-testid="maternity-leave-summary-card"
-      style={{
-        background:
-          'linear-gradient(160deg, #ffffff 0%, #faf5ff 30%, #f3e8ff 65%, #ede9fe 100%)',
-        borderColor: 'rgba(167, 139, 250, 0.45)',
-        boxShadow:
-          '0 8px 24px -4px rgba(124, 58, 237, 0.18), inset 0 1px 0 rgba(255,255,255, 0.9)',
-      }}
     >
       <button
         type="button"
@@ -74,10 +67,9 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
         data-testid="maternity-leave-summary-toggle"
       >
         <div
-          className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0"
+          className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 soft-clay-icon-well"
           style={{
             background: 'linear-gradient(145deg, #a78bfa, #7c3aed)',
-            boxShadow: '0 4px 12px rgba(124, 58, 237, 0.35)',
           }}
         >
           <CalendarHeart className="w-5 h-5 text-white" />

@@ -247,7 +247,7 @@ export function PregnancyToggle({
           <button
             type="button"
             onClick={() => navigate(isPregnant ? '/section/pregnancy?focus=maternity-leave' : '/cycle-tracking')}
-            className="relative overflow-hidden flex flex-col justify-between items-center text-center w-full p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none card-glass-interactive glass-sa-week rounded-[20px]"
+            className="relative overflow-hidden flex flex-col justify-between items-center text-center w-full p-3 box-border transition-all active:scale-95 cursor-pointer focus:outline-none card-glass-interactive glass-sa-week rounded-[24px]"
             style={{ height: '112px', minHeight: '112px' }}
             data-testid={isPregnant ? 'pregnancy-progress-card' : 'cycle-summary-card'}
           >

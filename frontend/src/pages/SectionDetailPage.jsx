@@ -273,17 +273,17 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
       default: return 'linear-gradient(145deg, #94a3b8, #64748b)';
     }
   };
-  
-  // Générer les styles de fond — BLANC INTENSE NACRÉ 3D BOMBÉ
-  const getVibrantBackground = () => {
-    return {
-      bg: 'linear-gradient(160deg, #ffffff 0%, #fefefe 20%, #fafafa 50%, #f5f5f7 80%, #f0f0f2 100%)',
-      border: 'rgba(255,255,255,0.9)',
-      shadow: '0,0,0'
-    };
+
+  const getTierClayClass = () => {
+    switch (item.bgColor) {
+      case 'yellow': case 'amber': return 'soft-clay-tier-yellow';
+      case 'blue': case 'sky': return 'soft-clay-tier-blue';
+      case 'green': case 'emerald': return 'soft-clay-tier-green';
+      case 'red': case 'rose': case 'pink': return 'soft-clay-tier-red';
+      case 'violet': case 'purple': return 'soft-clay-tier-violet';
+      default: return 'soft-clay-nacre';
+    }
   };
-  
-  const vibrantStyle = getVibrantBackground();
   
   const handleTouchStart = (e) => {
     isLongPress.current = false;
@@ -315,17 +315,15 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
     return (
       <div 
         className={`
-          relative overflow-hidden
-          rounded-full px-3 py-1.5 select-none
+          relative overflow-hidden soft-clay-premium soft-clay-pill soft-clay-text-flat
+          ${getTierClayClass()}
+          px-3 py-1.5 select-none
           cursor-pointer transition-all col-span-2 sm:col-span-3
           hover:scale-[1.01] active:scale-[0.99]
           ${isLocked ? 'opacity-60' : ''}
           ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''}
         `}
         style={{ 
-          background: vibrantStyle.bg,
-          border: `2px solid ${vibrantStyle.border}`,
-          boxShadow: `0 6px 18px -2px rgba(0,0,0,0.12), 0 3px 8px -1px rgba(0,0,0,0.06), inset -4px -4px 10px rgba(0,0,0,0.06), inset 4px 4px 10px rgba(255,255,255,0.9)`,
           WebkitUserSelect: 'none', 
           WebkitTouchCallout: 'none' 
         }}
@@ -344,11 +342,9 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
         <div className="relative flex items-center gap-2">
           {/* Icône dans bulle COLORÉE pleine + icône blanche */}
           <div 
-            className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
+            className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 soft-clay-icon-well"
             style={{
               background: getBubbleGradient(),
-              boxShadow: '0 3px 8px -1px rgba(0,0,0,0.15), inset 0 1px 3px rgba(255,255,255,0.3)',
-              border: 'none',
             }}
           >
             <Icon className="w-3.5 h-3.5 text-white" />
@@ -384,17 +380,15 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
   return (
     <div 
       className={`
-        relative overflow-hidden
-        rounded-xl p-1.5 select-none
+        relative overflow-hidden soft-clay-premium soft-clay-text-flat rounded-[24px]
+        ${getTierClayClass()}
+        p-1.5 select-none
         cursor-pointer transition-all text-center
         hover:scale-[1.02] active:scale-[0.98]
         ${isLocked ? 'opacity-60' : ''}
         ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''}
       `}
       style={{ 
-        background: vibrantStyle.bg,
-        border: `1px solid ${vibrantStyle.border}`,
-        boxShadow: `0 5px 14px -2px rgba(0,0,0,0.1), 0 2px 6px -1px rgba(0,0,0,0.05), inset -3px -3px 8px rgba(0,0,0,0.06), inset 3px 3px 8px rgba(255,255,255,0.9)`,
         WebkitUserSelect: 'none', 
         WebkitTouchCallout: 'none' 
       }}
@@ -442,11 +436,9 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
       
       {/* Icône dans bulle COLORÉE pleine + icône blanche */}
       <div 
-        className="w-9 h-9 rounded-lg flex items-center justify-center mx-auto mb-1"
+        className="w-9 h-9 rounded-lg flex items-center justify-center mx-auto mb-1 soft-clay-icon-well"
         style={{
           background: getBubbleGradient(),
-          boxShadow: '0 3px 8px -1px rgba(0,0,0,0.15), inset 0 1px 3px rgba(255,255,255,0.3)',
-          border: 'none',
         }}
       >
         <Icon className="w-4 h-4 text-white" />

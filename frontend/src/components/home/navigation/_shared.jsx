@@ -24,8 +24,8 @@ export function PastelMosaicCard({ color = 'pink', onClick, children, className 
       onClick={onClick}
       data-testid={testId}
       data-accent={accent}
-      className={`card-glass-interactive glass-accent-${accent} relative overflow-hidden rounded-2xl p-3 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-center shadow ${className}`}
-      style={{ borderRadius: '20px', color: '#2C2C2C' }}
+      className={`card-glass-interactive glass-accent-${accent} soft-clay-premium soft-clay-text-flat relative overflow-hidden rounded-[24px] p-3 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-center shadow ${className}`}
+      style={{ color: '#2C2C2C' }}
     >
       <div className="relative z-[2]" style={{ color: '#2C2C2C' }}>
         {children}
@@ -42,7 +42,7 @@ export function PastelPillCard({ color = 'purple', onClick, children, className 
       onClick={onClick}
       data-testid={testId}
       data-accent={accent}
-      className={`card-glass-interactive glass-accent-${accent} relative overflow-hidden rounded-full px-4 py-2.5 cursor-pointer transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] shadow ${className}`}
+      className={`card-glass-interactive glass-accent-${accent} soft-clay-premium soft-clay-pill soft-clay-text-flat relative overflow-hidden rounded-full px-4 py-2.5 cursor-pointer transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] shadow ${className}`}
       style={{ color: '#2C2C2C' }}
     >
       <div className="relative z-[2]" style={{ color: '#2C2C2C' }}>
