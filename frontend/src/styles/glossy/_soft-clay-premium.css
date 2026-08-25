@@ -8,8 +8,8 @@
   --soft-clay-radius-pill: 9999px;
   --soft-clay-glass-blur: blur(12px);
   --soft-clay-glass-border: 1px solid rgba(255, 255, 255, 0.6);
-  --soft-clay-glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
-  --soft-clay-glass-shadow-hover: 0 10px 36px 0 rgba(0, 0, 0, 0.07);
+  --soft-clay-glass-shadow: var(--clay-shadow-full);
+  --soft-clay-glass-shadow-hover: var(--clay-shadow-hover);
   --soft-clay-text: var(--md-text-anthracite, #2c2c2c);
 
   /* Bulles d'icônes — dégradé vif (hors surface carte) */
@@ -83,6 +83,7 @@
 .soft-clay-premium:hover:not(:disabled),
 .soft-clay-card:hover:not(:disabled) {
   box-shadow: var(--soft-clay-glass-shadow-hover);
+  transform: translateY(-1px);
 }
 
 .soft-clay-text-flat,
@@ -95,9 +96,11 @@
   color: inherit;
 }
 
-.soft-clay-icon-well {
+.soft-clay-icon-well,
+.soft-clay-icon-from-accent,
+[class*='soft-clay-icon-from-accent'] {
   border: 1px solid rgba(255, 255, 255, 0.55);
-  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--clay-icon-shadow-full);
 }
 
 /* Teintes section (journey hubs) */
@@ -264,4 +267,50 @@
 .card-soft-clay {
   border-radius: var(--soft-clay-radius);
   border: var(--soft-clay-glass-border) !important;
+}
+
+/* Creux interne teinté selon accent (volume 3D sans irisé) */
+.soft-clay-from-accent[data-accent='yellow'],
+.soft-clay-from-accent-yellow {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(234, 179, 8, 0.12) !important;
+}
+.soft-clay-from-accent[data-accent='blue'],
+.soft-clay-from-accent-blue {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(59, 130, 246, 0.12) !important;
+}
+.soft-clay-from-accent[data-accent='sky'],
+.soft-clay-from-accent-sky {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(14, 165, 233, 0.12) !important;
+}
+.soft-clay-from-accent[data-accent='red'],
+.soft-clay-from-accent-red {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(239, 68, 68, 0.12) !important;
+}
+.soft-clay-from-accent[data-accent='peach'],
+.soft-clay-from-accent-peach {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(251, 146, 60, 0.12) !important;
+}
+.soft-clay-from-accent[data-accent='pink'],
+.soft-clay-from-accent-pink {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(236, 72, 153, 0.12) !important;
+}
+.soft-clay-from-accent[data-accent='green'],
+.soft-clay-from-accent-green {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(34, 197, 94, 0.12) !important;
+}
+.soft-clay-from-accent[data-accent='violet'],
+.soft-clay-from-accent-violet {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(124, 58, 237, 0.12) !important;
+}
+.soft-clay-from-accent[data-accent='slate'],
+.soft-clay-from-accent-slate {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(100, 116, 139, 0.12) !important;
+}
+
+.card-glass-modal-violet {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(124, 58, 237, 0.12) !important;
+}
+
+.card-glass-modal-pink {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(236, 72, 153, 0.12) !important;
 }

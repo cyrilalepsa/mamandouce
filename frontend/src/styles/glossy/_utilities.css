@@ -8,7 +8,7 @@
   background-image: none !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: var(--clay-shadow-full);
   border: 1px solid rgba(255, 255, 255, 0.6);
   position: relative;
   overflow: hidden;
@@ -27,7 +27,7 @@
   background-image: none !important;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.06) !important;
+  box-shadow: var(--clay-icon-shadow-full) !important;
   border: 1px solid rgba(255, 255, 255, 0.6) !important;
 }
 
@@ -53,7 +53,7 @@
 .neumorphic-card:hover,
 .card-glass-interactive:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 36px 0 rgba(0, 0, 0, 0.07) !important;
+  box-shadow: var(--clay-shadow-hover) !important;
 }
 
 /* Transition douce */

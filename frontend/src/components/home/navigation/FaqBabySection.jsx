@@ -32,11 +32,9 @@ export function FaqBabySection() {
         className="py-4"
       >
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-amber-100/60 backdrop-blur-sm flex-shrink-0"
-            style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-          >
-            <HelpCircle className="w-6 h-6 text-amber-500" />
-          </div>
+          <IconWell accent="yellow" size="xl" className="flex-shrink-0">
+            <HelpCircle className="w-6 h-6 text-white" />
+          </IconWell>
           <div className="flex-1">
             <h3 className="text-base font-bold text-slate-700">{t('faq.title', 'FAQ 0-6 mois')}</h3>
             <p className="text-xs text-slate-500 mt-0.5">{t('faq.desc', 'Coliques, sommeil, eczéma... les réponses aux questions fréquentes')}</p>

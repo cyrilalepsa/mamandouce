@@ -16,7 +16,7 @@
 [class*="Card"]:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe):not(.card-glass-interactive):not(.card-flat):not(.soft-clay-premium):not(.card-soft-clay):not(.fixed) {
   background: rgba(255, 255, 255, 0.35) !important;
   background-image: none !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05) !important;
+  box-shadow: var(--clay-shadow-full) !important;
   border-radius: 20px !important;
   border: 1px solid rgba(255, 255, 255, 0.6) !important;
   position: relative;
