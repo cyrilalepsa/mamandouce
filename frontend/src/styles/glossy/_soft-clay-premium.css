@@ -10,36 +10,36 @@
 
   /* Accents — bulle vive + carte pastel assortie */
   --accent-yellow-bubble: linear-gradient(145deg, #fbbf24, #f59e0b);
-  --accent-yellow-card: linear-gradient(160deg, rgba(255, 255, 255, 0.92) 0%, rgba(254, 240, 138, 0.42) 100%);
-  --accent-yellow-border: rgba(234, 179, 8, 0.42);
+  --accent-yellow-card: linear-gradient(160deg, rgba(254, 249, 195, 0.72) 0%, rgba(254, 240, 138, 0.52) 52%, rgba(253, 224, 71, 0.4) 100%);
+  --accent-yellow-border: rgba(234, 179, 8, 0.48);
 
   --accent-blue-bubble: linear-gradient(145deg, #60a5fa, #3b82f6);
-  --accent-blue-card: linear-gradient(160deg, rgba(255, 255, 255, 0.92) 0%, rgba(191, 219, 254, 0.4) 100%);
-  --accent-blue-border: rgba(59, 130, 246, 0.4);
+  --accent-blue-card: linear-gradient(160deg, rgba(219, 234, 254, 0.72) 0%, rgba(191, 219, 254, 0.52) 52%, rgba(147, 197, 253, 0.4) 100%);
+  --accent-blue-border: rgba(59, 130, 246, 0.45);
 
   --accent-sky-bubble: linear-gradient(145deg, #38bdf8, #0ea5e9);
-  --accent-sky-card: linear-gradient(160deg, rgba(255, 255, 255, 0.92) 0%, rgba(186, 230, 253, 0.4) 100%);
-  --accent-sky-border: rgba(14, 165, 233, 0.4);
+  --accent-sky-card: linear-gradient(160deg, rgba(224, 242, 254, 0.72) 0%, rgba(186, 230, 253, 0.52) 52%, rgba(125, 211, 252, 0.4) 100%);
+  --accent-sky-border: rgba(14, 165, 233, 0.45);
 
   --accent-red-bubble: linear-gradient(145deg, #f87171, #ef4444);
-  --accent-red-card: linear-gradient(160deg, rgba(255, 255, 255, 0.92) 0%, rgba(254, 202, 202, 0.38) 100%);
-  --accent-red-border: rgba(239, 68, 68, 0.4);
+  --accent-red-card: linear-gradient(160deg, rgba(254, 226, 226, 0.72) 0%, rgba(254, 202, 202, 0.5) 52%, rgba(252, 165, 165, 0.38) 100%);
+  --accent-red-border: rgba(239, 68, 68, 0.45);
 
   --accent-peach-bubble: linear-gradient(145deg, #fdba74, #f97316);
-  --accent-peach-card: linear-gradient(160deg, rgba(255, 255, 255, 0.92) 0%, rgba(254, 215, 170, 0.4) 100%);
-  --accent-peach-border: rgba(251, 146, 60, 0.42);
+  --accent-peach-card: linear-gradient(160deg, rgba(255, 237, 213, 0.72) 0%, rgba(254, 215, 170, 0.52) 52%, rgba(251, 146, 60, 0.4) 100%);
+  --accent-peach-border: rgba(251, 146, 60, 0.48);
 
   --accent-pink-bubble: linear-gradient(145deg, #f472b6, #ec4899);
-  --accent-pink-card: linear-gradient(160deg, rgba(255, 255, 255, 0.9) 0%, rgba(252, 231, 243, 0.52) 100%);
-  --accent-pink-border: rgba(236, 72, 153, 0.4);
+  --accent-pink-card: linear-gradient(160deg, rgba(252, 231, 243, 0.75) 0%, rgba(251, 207, 232, 0.55) 52%, rgba(244, 114, 182, 0.38) 100%);
+  --accent-pink-border: rgba(236, 72, 153, 0.45);
 
   --accent-green-bubble: linear-gradient(145deg, #4ade80, #22c55e);
-  --accent-green-card: linear-gradient(160deg, rgba(255, 255, 255, 0.92) 0%, rgba(187, 247, 208, 0.4) 100%);
-  --accent-green-border: rgba(34, 197, 94, 0.4);
+  --accent-green-card: linear-gradient(160deg, rgba(220, 252, 231, 0.72) 0%, rgba(187, 247, 208, 0.52) 52%, rgba(134, 239, 172, 0.4) 100%);
+  --accent-green-border: rgba(34, 197, 94, 0.45);
 
   --accent-violet-bubble: linear-gradient(145deg, #a78bfa, #7c3aed);
-  --accent-violet-card: linear-gradient(160deg, rgba(255, 255, 255, 0.92) 0%, rgba(221, 214, 254, 0.4) 100%);
-  --accent-violet-border: rgba(124, 58, 237, 0.4);
+  --accent-violet-card: linear-gradient(160deg, rgba(237, 233, 254, 0.72) 0%, rgba(221, 214, 254, 0.52) 52%, rgba(196, 181, 253, 0.4) 100%);
+  --accent-violet-border: rgba(124, 58, 237, 0.45);
 
   --accent-slate-bubble: linear-gradient(145deg, #94a3b8, #64748b);
   --accent-slate-card: var(--soft-clay-nacre-bg);
@@ -202,59 +202,68 @@
 /* Carte pastel assortie à l'accent de l'icône */
 .soft-clay-from-accent[data-accent='yellow'],
 .soft-clay-from-accent-yellow {
-  background-image: var(--accent-yellow-card);
+  background-color: transparent !important;
+  background-image: var(--accent-yellow-card) !important;
   border-color: var(--accent-yellow-border) !important;
 }
 .soft-clay-from-accent[data-accent='blue'],
 .soft-clay-from-accent-blue,
 .soft-clay-tier-blue {
-  background-image: var(--accent-blue-card);
+  background-color: transparent !important;
+  background-image: var(--accent-blue-card) !important;
   border-color: var(--accent-blue-border) !important;
 }
 .soft-clay-from-accent[data-accent='sky'],
 .soft-clay-from-accent-sky {
-  background-image: var(--accent-sky-card);
+  background-color: transparent !important;
+  background-image: var(--accent-sky-card) !important;
   border-color: var(--accent-sky-border) !important;
 }
 .soft-clay-from-accent[data-accent='red'],
 .soft-clay-from-accent-red,
 .soft-clay-tier-red {
-  background-image: var(--accent-red-card);
+  background-color: transparent !important;
+  background-image: var(--accent-red-card) !important;
   border-color: var(--accent-red-border) !important;
 }
 .soft-clay-from-accent[data-accent='peach'],
 .soft-clay-from-accent-peach {
-  background-image: var(--accent-peach-card);
+  background-color: transparent !important;
+  background-image: var(--accent-peach-card) !important;
   border-color: var(--accent-peach-border) !important;
 }
 .soft-clay-from-accent[data-accent='pink'],
 .soft-clay-from-accent-pink {
-  background-image: var(--accent-pink-card);
+  background-color: transparent !important;
+  background-image: var(--accent-pink-card) !important;
   border-color: var(--accent-pink-border) !important;
 }
 .soft-clay-from-accent[data-accent='green'],
 .soft-clay-from-accent-green,
 .soft-clay-tier-green {
-  background-image: var(--accent-green-card);
+  background-color: transparent !important;
+  background-image: var(--accent-green-card) !important;
   border-color: var(--accent-green-border) !important;
 }
 .soft-clay-from-accent[data-accent='violet'],
 .soft-clay-from-accent-violet,
 .soft-clay-tier-violet,
 .soft-clay-tint-violet {
-  background-image: var(--accent-violet-card);
+  background-color: transparent !important;
+  background-image: var(--accent-violet-card) !important;
   border-color: var(--accent-violet-border) !important;
 }
 .soft-clay-from-accent[data-accent='slate'],
 .soft-clay-from-accent-slate {
-  background: var(--accent-slate-card);
+  background: var(--accent-slate-card) !important;
   border-color: var(--accent-slate-border) !important;
 }
 
 .soft-clay-from-accent[data-accent='yellow'],
 .soft-clay-from-accent-yellow,
 .soft-clay-tier-yellow {
-  background-image: var(--accent-yellow-card);
+  background-color: transparent !important;
+  background-image: var(--accent-yellow-card) !important;
   border-color: var(--accent-yellow-border) !important;
 }
 

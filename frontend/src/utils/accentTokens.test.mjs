@@ -40,7 +40,7 @@ test('PastelMosaicCard uses soft-clay-from-accent from color prop', () => {
     join(root, 'src/components/home/navigation/_shared.jsx'),
     'utf8'
   );
-  assert.match(src, /soft-clay-from-accent/);
+  assert.match(src, /cardSoftClayClasses/);
   assert.match(src, /data-accent=\{accent\}/);
 });
 
