@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import api from '../../utils/api';
+import api from '../utils/api';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Heart, Sparkles } from 'lucide-react';
