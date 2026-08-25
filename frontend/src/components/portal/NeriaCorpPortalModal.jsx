@@ -25,7 +25,7 @@ export function NeriaCorpPortalModal({ open, onClose, status, onLinked }) {
     : 'Félicitations — vous avez gagné des N2O !';
 
   const subtitle = trigger === 'referral'
-    ? 'Votre parrainage ouvre l\'accès au portail NeriaCorp : un seul compte pour MamanDouce, Héritia et Hysia.'
+    ? 'Votre parrainage ouvre l\'accès au portail NeriaCorp : un seul compte pour MamanDouce et Héritia.'
     : 'Créez ou liez votre compte NeriaCorp pour centraliser vos avantages et vos N2O.';
 
   const handleLink = async () => {
@@ -85,8 +85,7 @@ export function NeriaCorpPortalModal({ open, onClose, status, onLinked }) {
             </p>
             <ul className="space-y-1 text-slate-600 dark:text-slate-300">
               <li>• Héritia : durée restante MamanDouce transférée ({crossApp.heritia?.days_remaining || 0} j.)</li>
-              <li>• Hysia : accès gratuit pendant votre abonnement actif</li>
-              <li>• Scans Hysia débloqués via vos N2O</li>
+              <li>• Un seul compte NeriaCorp pour vos applications B2C</li>
             </ul>
           </div>
 

@@ -1,5 +1,5 @@
 """
-NeriaCorp Noyau central — sync profil B2C et entitlements cross-app (Héritia / Hysia).
+NeriaCorp Noyau central — sync profil B2C et entitlements cross-app (Héritia).
 """
 from __future__ import annotations
 
@@ -89,15 +89,6 @@ def build_cross_app_entitlements(user_doc: dict, wallet_balance: float = 0.0) ->
             "benefit": "subscription_transfer",
             "description": "Durée restante MamanDouce transférée vers Héritia",
         },
-        "hysia": {
-            "active": active,
-            "days_remaining": days,
-            "until": until,
-            "free_access": active,
-            "scans_unlocked_via_n2o": wallet_balance > 0,
-            "benefit": "free_hysia_during_mamandouce",
-            "description": "Accès Hysia gratuit pendant l'abonnement MamanDouce actif",
-        },
     }
 
 
@@ -150,7 +141,7 @@ async def sync_b2c_profile(user_doc: dict) -> Dict[str, Any]:
 
 
 async def push_cross_app_entitlements(user_doc: dict, wallet_balance: float = 0.0) -> Dict[str, Any]:
-    """Transmet les droits MamanDouce vers Héritia et Hysia via les adaptateurs NeriaCorp."""
+    """Transmet les droits MamanDouce vers Héritia via les adaptateurs NeriaCorp."""
     entitlements = build_cross_app_entitlements(user_doc, wallet_balance)
     inject_payload = {
         "type": "cross_app_entitlement",
@@ -162,7 +153,7 @@ async def push_cross_app_entitlements(user_doc: dict, wallet_balance: float = 0.
     }
 
     results: Dict[str, Any] = {}
-    for app_name in ("Heritia", "Hysia"):
+    for app_name in ("Heritia",):
         try:
             results[app_name] = await publish_to_app(
                 app_name,

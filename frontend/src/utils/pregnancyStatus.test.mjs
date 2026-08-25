@@ -54,7 +54,7 @@ test("dashboard and pregnancy module enforce pregnancy guards", () => {
 
   assert.match(toggle, /cycle-summary-card/);
   assert.match(toggle, /pregnancy-progress-card/);
-  assert.match(toggle, /navigate\(isPregnant \? '\/pregnancy-fertility' : '\/cycle-tracking'\)/);
+  assert.match(toggle, /navigate\(isPregnant \? '\/section\/pregnancy\?focus=maternity-leave' : '\/cycle-tracking'\)/);
   assert.match(pregnancyPage, /!isPregnant && cycleStatus/);
   assert.match(pregnancyPage, /isPregnant \? \(/);
   assert.match(tracking, /data-testid="pregnancy-tracking-active"/);

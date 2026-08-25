@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { CalendarHeart, Baby, ChevronDown } from 'lucide-react';
 import api from '../../utils/api';
 import { useAuth } from '../../contexts/AuthContext';
@@ -8,11 +9,14 @@ import {
   getScenarioLabel,
 } from '../../utils/maternityLeave';
 
-export function MaternityLeaveSummaryCard({ className = '' }) {
+export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false }) {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const focusMaternityLeave = searchParams.get('focus') === 'maternity-leave';
+  const cardRef = useRef(null);
   const [dueDate, setDueDate] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(defaultOpen || focusMaternityLeave);
 
   useEffect(() => {
     let cancelled = false;
@@ -36,12 +40,22 @@ export function MaternityLeaveSummaryCard({ className = '' }) {
     };
   }, [user?.children_at_home, user?.multiple_pregnancy]);
 
+  useEffect(() => {
+    if (focusMaternityLeave) {
+      setIsOpen(true);
+      requestAnimationFrame(() => {
+        cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    }
+  }, [focusMaternityLeave]);
+
   const childrenAtHome = user?.children_at_home ?? 0;
   const multiplePregnancy = user?.multiple_pregnancy ?? 'none';
   const leave = calculateMaternityLeaveDates(dueDate, childrenAtHome, multiplePregnancy);
 
   return (
     <div
+      ref={cardRef}
       className={`col-span-2 sm:col-span-3 rounded-3xl border-2 ${className}`}
       data-testid="maternity-leave-summary-card"
       style={{

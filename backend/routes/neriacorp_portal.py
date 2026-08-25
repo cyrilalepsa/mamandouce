@@ -61,7 +61,7 @@ async def neriacorp_onboarding_status(current_user: User = Depends(get_current_u
         "cross_app": entitlements,
         "sso": sso,
         "gdpr_notice": (
-            "Votre compte NeriaCorp centralise vos applications B2C (MamanDouce, Héritia, Hysia). "
+            "Votre compte NeriaCorp centralise vos applications B2C (MamanDouce, Héritia). "
             "Nous partageons uniquement email, nom et statut d'abonnement. "
             "Vous pouvez refuser ou supprimer votre compte depuis le portail."
         ),
@@ -114,7 +114,7 @@ async def neriacorp_onboarding_ack(
 
 @router.get("/neriacorp/cross-app/entitlements")
 async def neriacorp_cross_app_entitlements(current_user: User = Depends(get_current_user)):
-    """Droits cross-app (Héritia / Hysia) dérivés de l'abonnement MamanDouce."""
+    """Droits cross-app (Héritia) dérivés de l'abonnement MamanDouce."""
     user_doc = await db.users.find_one({"id": current_user.id}, {"_id": 0}) or {}
     wallet = await db.wallets.find_one({"user_id": current_user.id}, {"_id": 0, "balance": 1})
     balance = float(wallet.get("balance", 0) if wallet else 0)
