@@ -252,9 +252,9 @@ export function AgendaCard({
 
           {/* Nidation prévue (ovulation + 6 à 12 j, pic J+9) — toujours visible */}
           {ovulationBasedLikely && (
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-200" data-testid="expected-nidation-card">
+            <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-2xl p-4 border border-yellow-200" data-testid="expected-nidation-card">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-400 rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-amber-400 rounded-xl flex items-center justify-center">
                   <Baby className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1">
@@ -284,9 +284,9 @@ export function AgendaCard({
             if (!isInFertileWindow) return null;
 
             return (
-              <div className="bg-gradient-to-r from-orange-50 to-rose-50 rounded-2xl p-4 border border-orange-200" data-testid="rapport-nidation-card">
+              <div className="bg-gradient-to-r from-red-50 to-rose-50 rounded-2xl p-4 border border-red-200" data-testid="rapport-nidation-card">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-rose-400 to-orange-400 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gradient-to-br from-red-400 to-rose-400 rounded-xl flex items-center justify-center">
                     <Baby className="w-5 h-5 text-white" />
                   </div>
                   <div className="flex-1">

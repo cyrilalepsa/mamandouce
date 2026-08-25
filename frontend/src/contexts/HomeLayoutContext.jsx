@@ -17,7 +17,7 @@ const PASTEL_COLORS = [
   '#ddd6fe', // violet
   '#fbcfe8', // pink
   '#99f6e4', // teal
-  '#fed7aa', // orange
+  '#fecaca', // rouge clair
   '#bfdbfe', // bleu
 ];
 

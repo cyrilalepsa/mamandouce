@@ -17,35 +17,35 @@
   --accent-blue-bubble: linear-gradient(145deg, #60a5fa, #3b82f6);
   --accent-sky-bubble: linear-gradient(145deg, #38bdf8, #0ea5e9);
   --accent-red-bubble: linear-gradient(145deg, #f87171, #ef4444);
-  --accent-peach-bubble: linear-gradient(145deg, #fdba74, #f97316);
+  --accent-peach-bubble: linear-gradient(145deg, #f87171, #ef4444);
   --accent-pink-bubble: linear-gradient(145deg, #f472b6, #ec4899);
   --accent-green-bubble: linear-gradient(145deg, #4ade80, #22c55e);
   --accent-violet-bubble: linear-gradient(145deg, #a78bfa, #7c3aed);
   --accent-slate-bubble: linear-gradient(145deg, #94a3b8, #64748b);
 
-  /* Fonds pastel opaques 100% — saturation pleine */
-  --accent-yellow-glass: #FDE047;
+  /* Fonds pastel opaques 100% — teintes éclaircies (+10–15% luminosité) */
+  --accent-yellow-glass: #FEF08A;
   --accent-yellow-border: #EAB308;
 
-  --accent-blue-glass: #93C5FD;
+  --accent-blue-glass: #BFDBFE;
   --accent-blue-border: #3B82F6;
 
-  --accent-sky-glass: #7DD3FC;
+  --accent-sky-glass: #BAE6FD;
   --accent-sky-border: #0EA5E9;
 
-  --accent-red-glass: #FCA5A5;
+  --accent-red-glass: #FECACA;
   --accent-red-border: #EF4444;
 
-  --accent-peach-glass: #FDBA74;
-  --accent-peach-border: #F97316;
+  --accent-peach-glass: #FECACA;
+  --accent-peach-border: #EF4444;
 
-  --accent-pink-glass: #F9A8D4;
+  --accent-pink-glass: #FBCFE8;
   --accent-pink-border: #EC4899;
 
-  --accent-green-glass: #86EFAC;
+  --accent-green-glass: #BBF7D0;
   --accent-green-border: #22C55E;
 
-  --accent-violet-glass: #C4B5FD;
+  --accent-violet-glass: #DDD6FE;
   --accent-violet-border: #7C3AED;
 
   --accent-slate-glass: #E2E8F0;
@@ -291,7 +291,7 @@
 }
 .soft-clay-from-accent[data-accent='peach'],
 .soft-clay-from-accent-peach {
-  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(251, 146, 60, 0.12) !important;
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(239, 68, 68, 0.12) !important;
 }
 .soft-clay-from-accent[data-accent='pink'],
 .soft-clay-from-accent-pink {

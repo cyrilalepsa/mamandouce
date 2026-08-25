@@ -64,5 +64,5 @@ export const PASTEL_COLORS = {
   violet: { accent: 'violet' },
   rose: { accent: 'red' },
   cyan: { accent: 'sky' },
-  orange: { accent: 'peach' },
+  orange: { accent: 'red' },
 };
