@@ -332,18 +332,18 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
       <div 
         className={`
           relative overflow-hidden cursor-pointer select-none section-card
-          rounded-full px-5 py-2.5
+          soft-clay-premium soft-clay-section-${sectionId} soft-clay-text-flat
+          rounded-[24px] px-5 py-2.5
           transition-all duration-300
           ${!isPinned ? 'hover:scale-[1.02] active:scale-[0.98]' : ''}
           ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''}
         `}
         style={{ 
-          background: getCardBackground(sectionId),
-          border: getCardBorder(sectionId),
-          boxShadow: getCardShadow(sectionId),
+          background: isDarkMode ? getCardBackground(sectionId) : undefined,
+          border: isDarkMode ? getCardBorder(sectionId) : undefined,
+          boxShadow: isDarkMode ? getCardShadow(sectionId) : undefined,
           backdropFilter: 'none',
           WebkitBackdropFilter: 'none',
-          borderRadius: '20px',
           color: '#000000',
           WebkitUserSelect: 'none', 
           WebkitTouchCallout: 'none' 
@@ -370,15 +370,13 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
         <div className="relative flex items-center gap-4 pr-4">
           {/* Icône dans bulle COLORÉE pleine + icône blanche */}
           <div 
-            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 soft-clay-icon-well"
             style={{
               background: sectionId === 'preconception' ? 'linear-gradient(145deg, #fbbf24, #f59e0b)'
                 : sectionId === 'pregnancy' ? 'linear-gradient(145deg, #60a5fa, #3b82f6)'
                 : sectionId === 'baby-preparation' ? 'linear-gradient(145deg, #f87171, #ef4444)'
                 : sectionId === 'postpartum' ? 'linear-gradient(145deg, #4ade80, #22c55e)'
                 : 'linear-gradient(145deg, #a78bfa, #8b5cf6)',
-              boxShadow: '0 4px 10px -2px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.3)',
-              border: 'none',
             }}
           >
             <Icon className="w-5 h-5 text-white" />
@@ -423,11 +421,11 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
                 <button
                   key={item.id}
                   onClick={() => handleItemClick(item.route, item.external)}
-                  className="relative flex flex-col items-center gap-1 p-3 rounded-xl transition-all active:scale-95"
+                  className="relative flex flex-col items-center gap-1 p-3 rounded-[24px] soft-clay-premium soft-clay-nacre soft-clay-text-flat transition-all active:scale-95"
                   style={{ 
-                    background: isDarkMode ? 'rgba(30,41,59,0.9)' : 'linear-gradient(160deg, #ffffff 0%, #fefefe 25%, #fafafa 55%, #f5f5f7 100%)',
-                    border: isDarkMode ? '1px solid rgba(71,85,105,0.5)' : '1px solid rgba(255,255,255,0.9)',
-                    boxShadow: isDarkMode ? '0 2px 8px rgba(0,0,0,0.06)' : '0 4px 12px -2px rgba(0,0,0,0.08), inset -2px -2px 6px rgba(0,0,0,0.04), inset 2px 2px 6px rgba(255,255,255,0.9)',
+                    background: isDarkMode ? 'rgba(30,41,59,0.9)' : undefined,
+                    border: isDarkMode ? '1px solid rgba(71,85,105,0.5)' : undefined,
+                    boxShadow: isDarkMode ? '0 2px 8px rgba(0,0,0,0.06)' : undefined,
                     animationDelay: `${index * 30}ms` 
                   }}
                 >
