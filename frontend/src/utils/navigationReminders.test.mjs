@@ -48,7 +48,7 @@ test("navigation moves Grossesse & Fertilité out of Profile", () => {
   const nameDay = read("src/components/NameOfTheDay.jsx");
   const cycle = read("src/pages/CycleTrackingPage.jsx");
 
-  assert.match(toggle, /isPregnant \? '\/section\/pregnancy\?focus=maternity-leave' : '\/cycle-tracking'/);
+  assert.match(toggle, /isPregnant \? '\/pregnancy-fertility' : '\/cycle-tracking'/);
   assert.match(section, /pregnancy-fertility-nav/);
   assert.doesNotMatch(profile, /title="Grossesse & Fertilité"/);
   assert.match(nameDay, /\/cycle-tracking\?calendar=true/);

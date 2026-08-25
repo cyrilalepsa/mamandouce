@@ -56,8 +56,8 @@ export function PregnancyInfoSection({
     setBabyName('');
   };
 
-  // Ne pas afficher si pas premium
-  if (subscriptionStatus !== 'premium') return null;
+  // Mode standalone (avec sa propre carte) — premium uniquement hors panneau grossesse
+  if (!embedded && subscriptionStatus !== 'premium') return null;
 
   // Contenu principal
   const mainContent = (
