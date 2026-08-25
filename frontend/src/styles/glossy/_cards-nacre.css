@@ -16,15 +16,15 @@
 [data-testid*="card"]:not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.nacre-bombe):not(.card-glass-interactive):not(.card-flat):not(.soft-clay-premium):not(.card-soft-clay):not(.soft-clay-from-accent):not(.fixed),
 .Card:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe):not(.card-glass-interactive):not(.card-flat):not(.soft-clay-premium):not(.card-soft-clay):not(.fixed),
 [class*="Card"]:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe):not(.card-glass-interactive):not(.card-flat):not(.soft-clay-premium):not(.card-soft-clay):not(.fixed) {
-  /* Plat : fond doux sans volume bombé ni blur */
-  background: linear-gradient(135deg, #ffffff 0%, #fefefe 15%, #fafafa 40%, #f5f5f7 65%, #f0f0f2 100%) !important;
-  box-shadow: none !important;
+  background: rgba(255, 255, 255, 0.35) !important;
+  background-image: none !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05) !important;
   border-radius: 20px !important;
-  border: 1px solid rgba(226, 232, 240, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
   position: relative;
   overflow: hidden;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
   color: var(--md-text-anthracite, #2C2C2C) !important;
 }
 
@@ -41,80 +41,20 @@
   display: none !important;
 }
 
-/* === REFLETS CONTEXTUELS (Position Écran) ===
-   Haut : Blanc → Gris Bleuté (froid)
-   Milieu : Blanc → Gris Neutre
-   Bas : Blanc → Gris Rosé/Perlé (chaud)
-   ============================================ */
+/* Reflets contextuels irisés supprimés — glass pur */
 [class*="rounded-"][class*="bg-white"]:not(.admin-drawer):not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::after,
 .glossy-card::after,
 .Card:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::after,
-[class*="Card"]:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(100, 160, 220, 0.06) 0%,
-    rgba(100, 160, 220, 0.03) 15%,
-    transparent 35%,
-    transparent 65%,
-    rgba(220, 160, 180, 0.03) 85%,
-    rgba(220, 160, 180, 0.06) 100%
-  );
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 0;
+[class*="Card"]:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar)::after,
+.card-soft-clay::after,
+.soft-clay-from-accent::after,
+.soft-clay-premium::after {
+  display: none !important;
+  content: none !important;
 }
 
 /* SUPPRESSION GLOBALE du voile blanc inline */
 .glossy-reflect,
 .glossy-reflect-pill {
   display: none !important;
-}
-/* ============================================
-   CHARTE N2 / NERIACORP : LA BULLE DE SAVON PRODUCTION
-   ============================================ */
-.bulle-savon-test {
-  /* 1. Fond Translucide Nacré (Fusionne avec ton Aurore Boréale #7CD6FF et #FFD1DC) */
-  background: radial-gradient(circle at 20% 20%, 
-    rgba(255, 255, 255, 0.45) 0%, 
-    rgba(255, 255, 255, 0.15) 35%, 
-    rgba(245, 247, 250, 0.05) 65%, 
-    rgba(235, 242, 255, 0.22) 100%
-  ) !important;
-
-  /* 2. Irisation Tridimensionnelle (Le film de savon arc-en-ciel) */
-  box-shadow: 
-    0 8px 32px 0 rgba(15, 23, 42, 0.04),
-    inset 0 4px 12px 0 rgba(255, 255, 255, 0.75),            /* Brillance Haute */
-    inset -6px -6px 14px 0 rgba(255, 140, 159, 0.16),         /* Reflet Rose Corail MamanDouce */
-    inset 6px -6px 14px 0 rgba(124, 214, 255, 0.16) !important; /* Reflet Bleu Aurore */
-
-  /* 3. Contour en verre trempé ultra-fin */
-  border: 1px solid rgba(255, 255, 255, 0.55) !important;
-  border-radius: 24px !important;
-  
-  /* 4. Effet Flou Verre (Sécurisé pour éviter les glitchs graphiques) */
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-  
-  position: relative !important;
-  overflow: hidden !important;
-}
-
-/* Le point de brillance spéculaire (Le coup d'éclat du soleil sur la sphère) */
-.bulle-savon-test::before {
-  content: "" !important;
-  display: block !important;
-  position: absolute !important;
-  top: 6px !important;
-  left: 14px !important;
-  width: 16px !important;
-  height: 6px !important;
-  background: rgba(255, 255, 255, 0.9) !important;
-  border-radius: 50% !important;
-  transform: rotate(-15deg) !important;
-  pointer-events: none !important;
-  z-index: 10 !important;
 }
