@@ -4,6 +4,13 @@ import confetti from 'canvas-confetti';
 import NameOfTheDay from '../NameOfTheDay';
 import api from '../../utils/api';
 import { calculateCycleSummary, pregnancyProgress } from '../../utils/pregnancyStatus';
+import {
+  calculateDpa,
+  ddgFromDpa,
+  parseYmd,
+  resolveCountryFromCity,
+  toYmd,
+} from '../../utils/pregnancyDateUtils';
 
 function makeHeartShape() {
   try {
@@ -102,14 +109,22 @@ export function resolvePregnancyInfo({
   trimester,
   dueDate,
   lastPeriodDate,
+  city,
+  cycleLength = 28,
 }) {
   if (currentWeek) {
     return pregnancyProgress(
       { current_week: currentWeek, trimester, estimated_due_date: dueDate },
       dueDate,
+      lastPeriodDate,
+      cycleLength,
+      city,
     );
   }
-  const startStr = lastPeriodDate || (dueDate ? addDaysYmd(dueDate, -280) : null);
+  const country = resolveCountryFromCity(city);
+  const startStr = lastPeriodDate || (dueDate
+    ? toYmd(ddgFromDpa(parseYmd(dueDate), country, cycleLength))
+    : null);
   if (!startStr) return { week: 1, trimester: 1 };
   const start = new Date(startStr);
   const today = new Date();
@@ -131,6 +146,7 @@ export function PregnancyToggle({
   cycleLength = 28,
   currentWeek,
   trimester,
+  city,
   onPregnant,
   mode = 'home',
 }) {
@@ -141,6 +157,8 @@ export function PregnancyToggle({
     trimester,
     dueDate,
     lastPeriodDate,
+    city,
+    cycleLength,
   });
   const cycleSummary = calculateCycleSummary(lastPeriodDate, cycleLength);
 
@@ -148,7 +166,9 @@ export function PregnancyToggle({
     firePregnancyConfetti();
 
     const period = lastPeriodDate || todayYmd();
-    const dpaStr = addDaysYmd(period, 280);
+    const ddg = parseYmd(period);
+    const country = resolveCountryFromCity(city);
+    const dpaStr = ddg ? toYmd(calculateDpa(ddg, country, cycleLength)) : addDaysYmd(period, 280);
     persistPregnant(dpaStr);
     // Persist the status used by /auth/me, /pregnancy/profile and cycle alerts.
     try {

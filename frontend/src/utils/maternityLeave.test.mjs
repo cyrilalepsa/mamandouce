@@ -36,9 +36,21 @@ test('triplets use 24 weeks prenatal', () => {
   assert.equal(weeks.postnatalWeeks, 22);
 });
 
-test('calculateMaternityLeaveDates offsets from DPA', () => {
-  const result = calculateMaternityLeaveDates('2026-06-01', 0, 'none');
+test('calculateMaternityLeaveDates offsets from DPA (CPAM inclusive end)', () => {
+  const result = calculateMaternityLeaveDates('2027-01-01', 0, 'none');
   assert.ok(result);
-  assert.equal(result.prenatalStart.toISOString().slice(0, 10), '2026-04-20');
-  assert.equal(result.postnatalEnd.toISOString().slice(0, 10), '2026-08-10');
+  assert.equal(result.prenatalStart.toISOString().slice(0, 10), '2026-11-20');
+  assert.equal(result.postnatalEnd.toISOString().slice(0, 10), '2027-03-11');
+});
+
+test('third child CPAM maternity leave for DPA 2027-01-01', () => {
+  const result = calculateMaternityLeaveDates('2027-01-01', 2, 'none');
+  assert.equal(result.prenatalStart.toISOString().slice(0, 10), '2026-11-06');
+  assert.equal(result.postnatalEnd.toISOString().slice(0, 10), '2027-05-06');
+});
+
+test('twins CPAM maternity leave for DPA 2027-01-01', () => {
+  const result = calculateMaternityLeaveDates('2027-01-01', 0, 'twins');
+  assert.equal(result.prenatalStart.toISOString().slice(0, 10), '2026-10-09');
+  assert.equal(result.postnatalEnd.toISOString().slice(0, 10), '2027-06-03');
 });

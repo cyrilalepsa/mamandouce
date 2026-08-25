@@ -38,7 +38,7 @@ export function calculateMaternityLeaveDates(dueDateIso, childrenAtHome, multipl
   prenatalStart.setDate(prenatalStart.getDate() - prenatalWeeks * 7);
 
   const postnatalEnd = new Date(due);
-  postnatalEnd.setDate(postnatalEnd.getDate() + postnatalWeeks * 7);
+  postnatalEnd.setDate(postnatalEnd.getDate() + postnatalWeeks * 7 - 1);
 
   return {
     dueDate: dueDateIso,

@@ -8,6 +8,12 @@ import uuid
 
 from core.database import db
 from core.security import get_current_user
+from core.pregnancy_dates import (
+    build_medical_appointments,
+    current_gestational_week,
+    parse_date,
+    resolve_pregnancy_country,
+)
 from models.schemas import (
     User,
     AppointmentNote,
@@ -18,32 +24,17 @@ from models.schemas import (
 
 router = APIRouter(tags=["medical"])
 
-# Medical appointments data
-MEDICAL_APPOINTMENTS = [
-    {"id": "apt_1", "week_start": 5, "week_end": 8, "title": "1ère consultation prénatale", "description": "Confirmation de grossesse, prise de sang, examens de base", "type": "mandatory", "professional": "Gynécologue/Sage-femme"},
-    {"id": "apt_2", "week_start": 11, "week_end": 13, "title": "Échographie T1 (Datation)", "description": "Datation de la grossesse, dépistage trisomie 21, mesure clarté nucale", "type": "mandatory", "professional": "Échographiste"},
-    {"id": "apt_3", "week_start": 12, "week_end": 14, "title": "Consultation 2ème mois", "description": "Suivi de grossesse, résultats des examens", "type": "mandatory", "professional": "Gynécologue/Sage-femme"},
-    {"id": "apt_4", "week_start": 16, "week_end": 18, "title": "Consultation 4ème mois", "description": "Suivi, écoute du cœur fœtal", "type": "mandatory", "professional": "Gynécologue/Sage-femme"},
-    {"id": "apt_5", "week_start": 20, "week_end": 22, "title": "Consultation 5ème mois", "description": "Suivi de grossesse", "type": "mandatory", "professional": "Gynécologue/Sage-femme"},
-    {"id": "apt_6", "week_start": 21, "week_end": 23, "title": "Échographie T2 (Morphologique)", "description": "Examen détaillé des organes du bébé, sexe si souhaité", "type": "mandatory", "professional": "Échographiste"},
-    {"id": "apt_7", "week_start": 24, "week_end": 26, "title": "Consultation 6ème mois", "description": "Suivi, test de glucose (O'Sullivan)", "type": "mandatory", "professional": "Gynécologue/Sage-femme"},
-    {"id": "apt_8", "week_start": 26, "week_end": 28, "title": "Inscription maternité", "description": "Visite de la maternité, constitution du dossier", "type": "recommended", "professional": "Maternité"},
-    {"id": "apt_9", "week_start": 28, "week_end": 30, "title": "Consultation 7ème mois", "description": "Suivi, 3ème prise de sang", "type": "mandatory", "professional": "Gynécologue/Sage-femme"},
-    {"id": "apt_10", "week_start": 31, "week_end": 33, "title": "Échographie T3 (Croissance)", "description": "Croissance du bébé, position, liquide amniotique", "type": "mandatory", "professional": "Échographiste"},
-    {"id": "apt_11", "week_start": 32, "week_end": 34, "title": "Consultation 8ème mois (1)", "description": "Suivi de grossesse", "type": "mandatory", "professional": "Gynécologue/Sage-femme"},
-    {"id": "apt_12", "week_start": 34, "week_end": 36, "title": "Consultation 8ème mois (2)", "description": "Suivi, monitoring si nécessaire", "type": "mandatory", "professional": "Gynécologue/Sage-femme"},
-    {"id": "apt_13", "week_start": 35, "week_end": 37, "title": "Consultation anesthésiste", "description": "Rendez-vous obligatoire pour péridurale éventuelle", "type": "mandatory", "professional": "Anesthésiste"},
-    {"id": "apt_14", "week_start": 35, "week_end": 37, "title": "Prélèvement vaginal", "description": "Dépistage streptocoque B", "type": "mandatory", "professional": "Laboratoire"},
-    {"id": "apt_15", "week_start": 36, "week_end": 38, "title": "Consultation 9ème mois (1)", "description": "Suivi de grossesse", "type": "mandatory", "professional": "Gynécologue/Sage-femme"},
-    {"id": "apt_16", "week_start": 37, "week_end": 38, "title": "Valise maternité", "description": "Préparer la valise pour la maternité", "type": "recommended", "professional": "À domicile"},
-    {"id": "apt_17", "week_start": 38, "week_end": 39, "title": "Consultation 9ème mois (2)", "description": "Suivi, vérification position bébé", "type": "mandatory", "professional": "Gynécologue/Sage-femme"},
-    {"id": "apt_18", "week_start": 39, "week_end": 40, "title": "Consultation 9ème mois (3)", "description": "Suivi pré-accouchement", "type": "mandatory", "professional": "Gynécologue/Sage-femme"},
-    {"id": "apt_19", "week_start": 40, "week_end": 41, "title": "Surveillance terme", "description": "Monitoring, vérification bien-être bébé", "type": "mandatory", "professional": "Maternité"},
-    {"id": "apt_20", "week_start": 41, "week_end": 42, "title": "Dépassement de terme", "description": "Surveillance renforcée, déclenchement possible", "type": "mandatory", "professional": "Maternité"},
-]
 
-async def get_medical_appointments():
-    return MEDICAL_APPOINTMENTS
+async def _user_pregnancy_country(user_id: str) -> str:
+    user_doc = await db.users.find_one({"id": str(user_id)}, {"_id": 0, "city": 1}) or {}
+    return resolve_pregnancy_country(user_doc.get("city"))
+
+
+async def get_medical_appointments_for_user(user_id: str, last_period_iso: str):
+    country = await _user_pregnancy_country(user_id)
+    ddg = parse_date(last_period_iso)
+    appointments = build_medical_appointments(ddg, country)
+    return appointments, country
 
 # ==================== APPOINTMENTS ====================
 
@@ -55,10 +46,10 @@ async def get_user_medical_appointments(current_user: User = Depends(get_current
     if not profile or not profile.get("last_period_date"):
         return {"appointments": [], "message": "Veuillez d'abord configurer votre profil de grossesse"}
     
-    current_week = profile.get("current_week", 1)
-    last_period = datetime.fromisoformat(profile["last_period_date"])
-    
-    all_appointments = await get_medical_appointments()
+    last_period = profile["last_period_date"]
+    all_appointments, country = await get_medical_appointments_for_user(current_user.id, last_period)
+    ddg = parse_date(last_period)
+    current_week = current_gestational_week(ddg)
     
     completed = await db.completed_appointments.find(
         {"user_id": current_user.id},
@@ -68,8 +59,8 @@ async def get_user_medical_appointments(current_user: User = Depends(get_current
     
     appointments = []
     for apt in all_appointments:
-        start_date = last_period + timedelta(weeks=apt["week_start"])
-        end_date = last_period + timedelta(weeks=apt["week_end"])
+        start_date = apt["start_date"]
+        end_date = apt["end_date"]
         
         status = "completed" if apt["id"] in completed_ids else (
             "current" if apt["week_start"] <= current_week <= apt["week_end"] else (
@@ -89,6 +80,7 @@ async def get_user_medical_appointments(current_user: User = Depends(get_current
     
     return {
         "current_week": current_week,
+        "pregnancy_country": country,
         "appointments": appointments
     }
 
@@ -100,10 +92,10 @@ async def get_upcoming_appointments(current_user: User = Depends(get_current_use
     if not profile or not profile.get("last_period_date"):
         return {"appointments": []}
     
-    current_week = profile.get("current_week", 1)
-    last_period = datetime.fromisoformat(profile["last_period_date"])
-    
-    all_appointments = await get_medical_appointments()
+    last_period = profile["last_period_date"]
+    all_appointments, country = await get_medical_appointments_for_user(current_user.id, last_period)
+    ddg = parse_date(last_period)
+    current_week = current_gestational_week(ddg)
     
     completed = await db.completed_appointments.find(
         {"user_id": current_user.id},
@@ -117,8 +109,8 @@ async def get_upcoming_appointments(current_user: User = Depends(get_current_use
             continue
             
         if apt["week_start"] <= current_week + 4 and apt["week_end"] >= current_week:
-            start_date = last_period + timedelta(weeks=apt["week_start"])
-            end_date = last_period + timedelta(weeks=apt["week_end"])
+            start_date = apt["start_date"]
+            end_date = apt["end_date"]
             
             is_urgent = apt["week_start"] <= current_week <= apt["week_end"]
             
@@ -132,7 +124,7 @@ async def get_upcoming_appointments(current_user: User = Depends(get_current_use
     
     upcoming.sort(key=lambda x: (not x["is_urgent"], x["week_start"]))
     
-    return {"appointments": upcoming[:5]}
+    return {"appointments": upcoming[:5], "pregnancy_country": country}
 
 @router.post("/medical/complete/{appointment_id}")
 async def mark_appointment_completed(appointment_id: str, current_user: User = Depends(get_current_user)):
@@ -361,8 +353,14 @@ async def schedule_appointment_reminder(
     if not appointment_id or not reminder_datetime:
         raise HTTPException(status_code=400, detail="appointment_id et reminder_datetime requis")
     
-    # Validate the appointment exists
-    all_appointments = await get_medical_appointments()
+    # Validate the appointment exists for this user's calendar
+    profile = await db.pregnancy_profiles.find_one({"user_id": current_user.id}, {"_id": 0, "last_period_date": 1})
+    if not profile or not profile.get("last_period_date"):
+        raise HTTPException(status_code=404, detail="Profil de grossesse non configuré")
+    all_appointments, _ = await get_medical_appointments_for_user(
+        current_user.id,
+        profile["last_period_date"],
+    )
     apt = next((a for a in all_appointments if a["id"] == appointment_id), None)
     if not apt:
         raise HTTPException(status_code=404, detail="Rendez-vous non trouvé")
