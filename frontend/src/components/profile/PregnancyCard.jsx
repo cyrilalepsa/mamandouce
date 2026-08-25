@@ -3,12 +3,13 @@ import { PregnancyInfoSection } from '../settings';
 import { IconWell } from '../ui/IconWell';
 import { softClayCardClasses } from '../../utils/accentTokens';
 
-function InfoTile({ accent, label, value, testId }) {
+import { cardInnerCreamClasses } from '../../utils/accentTokens';
+
+function InfoTile({ label, value, testId }) {
   return (
     <div
-      data-accent={accent}
       data-testid={testId}
-      className={`soft-clay-premium soft-clay-from-accent soft-clay-text-flat rounded-[24px] p-2.5 ${softClayCardClasses(accent)}`}
+      className={`${cardInnerCreamClasses('', { level: 4 })} p-2.5`}
     >
       <p className="text-xs text-slate-600 font-semibold">{label}</p>
       <p className="text-sm font-bold text-slate-800 mt-0.5">{value}</p>
@@ -42,13 +43,11 @@ export function PregnancyCard({
         <div className="space-y-2">
           <div className="grid grid-cols-2 gap-2">
             <InfoTile
-              accent="sky"
               label="Dernières règles"
               value={formatDate(pregnancyProfile.last_period_date)}
               testId="pregnancy-last-period"
             />
             <InfoTile
-              accent="pink"
               label="Conception estimée"
               value={formatDate(pregnancyProfile.estimated_conception_date)}
               testId="pregnancy-conception-date"
@@ -57,13 +56,11 @@ export function PregnancyCard({
 
           <div className="grid grid-cols-2 gap-2">
             <InfoTile
-              accent="red"
               label="Accouchement prévu"
               value={formatDate(pregnancyProfile.estimated_due_date)}
               testId="pregnancy-due-date"
             />
             <InfoTile
-              accent="blue"
               label="Semaine actuelle"
               value={`${pregnancyProfile.current_week ?? '—'} sem.`}
               testId="pregnancy-current-week"

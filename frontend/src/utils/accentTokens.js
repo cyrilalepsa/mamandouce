@@ -87,6 +87,20 @@ export function cardSoftClayClasses(accent, { pill = false, level = 2 } = {}) {
     .join(' ');
 }
 
+export function cardInnerCreamClasses(className = '', { level = 4, pill = false } = {}) {
+  const radius = pill ? '' : LEVEL_RADIUS[level] || LEVEL_RADIUS[4];
+  return [
+    'card-inner-cream',
+    'soft-clay-inner-cream',
+    'soft-clay-text-flat',
+    radius,
+    pill ? 'soft-clay-pill' : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
 export function softClayIconWellClasses(accent, className = '') {
   const name = normalizeAccent(accent);
   return [`soft-clay-icon-well`, `soft-clay-icon-from-accent-${name}`, className]

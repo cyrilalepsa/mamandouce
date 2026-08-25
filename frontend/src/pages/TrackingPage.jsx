@@ -210,7 +210,7 @@ function TrackingPage() {
           </h2>
 
           {/* Container unique Maman : Stats + Graphique + bouton + intégré */}
-          <Card className={`${cardSoftClayClasses('pink')} p-5 border-0 shadow-none`} data-testid="weight-chart">
+          <Card className={`${cardSoftClayClasses('pink')} p-5 border-0`} data-testid="weight-chart">
             {/* Stats Poids actuel + Prise de poids (intégrées) */}
             <div className="grid grid-cols-2 gap-3 mb-4">
               <ListItemCard accent="pink" className="flex items-center gap-3">
@@ -262,7 +262,7 @@ function TrackingPage() {
 
           {/* Formulaire ajout poids */}
           {showAddWeight && (
-            <div className="bg-pink-50 rounded-2xl p-4 mb-4 space-y-3">
+            <div className="card-inner-cream rounded-2xl p-4 mb-4 space-y-3">
               <div>
                 <Label className="text-slate-600 text-sm">Votre poids (kg)</Label>
                 <Input
@@ -348,7 +348,7 @@ function TrackingPage() {
           </h2>
 
           {/* Container unique Bébé : Stats + Graphique + bouton + intégré */}
-          <Card className={`${cardSoftClayClasses('sky')} p-5 border-0 shadow-none`} data-testid="baby-chart">
+          <Card className={`${cardSoftClayClasses('sky')} p-5 border-0`} data-testid="baby-chart">
             {/* Stats Poids estimé + Taille (intégrées) */}
             <div className="grid grid-cols-2 gap-3 mb-4">
               <ListItemCard accent="sky" className="flex items-center gap-3">
@@ -400,7 +400,7 @@ function TrackingPage() {
 
           {/* Formulaire ajout mesures bébé */}
           {showAddBaby && (
-            <div className="bg-sky-50 rounded-2xl p-4 mb-4 space-y-3">
+            <div className="card-inner-cream rounded-2xl p-4 mb-4 space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label className="text-slate-600 text-sm">Poids estimé (g)</Label>
@@ -505,14 +505,14 @@ function TrackingPage() {
         </div>
 
         {/* Info sur les mesures */}
-        <Card className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-200">
+        <Card className={`${cardSoftClayClasses('yellow')} p-4 border-0`}>
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 bg-amber-400 rounded-lg flex items-center justify-center flex-shrink-0">
+            <IconWell accent="yellow" size="sm" className="flex-shrink-0">
               <Activity className="w-4 h-4 text-white" />
-            </div>
+            </IconWell>
             <div>
-              <p className="font-semibold text-amber-800 text-sm">Conseil</p>
-              <p className="text-amber-700 text-xs mt-1">
+              <p className="font-semibold text-slate-800 text-sm">Conseil</p>
+              <p className="text-slate-600 text-xs mt-1">
                 Pesez-vous toujours dans les mêmes conditions (le matin, à jeun) pour des mesures cohérentes.
                 Les mesures du bébé proviennent des échographies et sont des estimations.
               </p>
