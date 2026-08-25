@@ -7,65 +7,6 @@ import { ResourceCard } from '../components/ui/SoftClayCards';
 import { IconWell } from '../components/ui/IconWell';
 import { cycleAccentByIndex } from '../utils/accentTokens';
 
-// Styles glossy 3D nuage
-const glossyStyles = {
-  pink: {
-    bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(252,231,243,0.9) 45%, rgba(251,207,232,0.75) 70%, rgba(249,168,212,0.55) 100%)',
-    shadow: '0 10px 28px -6px rgba(244,114,182,0.25), 0 6px 12px -4px rgba(244,114,182,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(244,114,182,0.1)',
-    border: '2px solid rgba(244,114,182,0.25)'
-  },
-  blue: {
-    bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(224,242,254,0.9) 45%, rgba(186,230,253,0.75) 70%, rgba(125,211,252,0.55) 100%)',
-    shadow: '0 10px 28px -6px rgba(56,189,248,0.25), 0 6px 12px -4px rgba(56,189,248,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(56,189,248,0.1)',
-    border: '2px solid rgba(125,211,252,0.3)'
-  },
-  purple: {
-    bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(243,232,255,0.9) 45%, rgba(233,213,255,0.75) 70%, rgba(216,180,254,0.55) 100%)',
-    shadow: '0 10px 28px -6px rgba(168,85,247,0.25), 0 6px 12px -4px rgba(168,85,247,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(168,85,247,0.1)',
-    border: '2px solid rgba(216,180,254,0.3)'
-  },
-  amber: {
-    bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(254,243,199,0.9) 45%, rgba(253,230,138,0.75) 70%, rgba(251,191,36,0.5) 100%)',
-    shadow: '0 10px 28px -6px rgba(245,158,11,0.25), 0 6px 12px -4px rgba(245,158,11,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(245,158,11,0.1)',
-    border: '2px solid rgba(251,191,36,0.3)'
-  },
-  teal: {
-    bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(204,251,241,0.9) 45%, rgba(153,246,228,0.75) 70%, rgba(94,234,212,0.55) 100%)',
-    shadow: '0 10px 28px -6px rgba(20,184,166,0.25), 0 6px 12px -4px rgba(20,184,166,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(20,184,166,0.1)',
-    border: '2px solid rgba(94,234,212,0.3)'
-  },
-  green: {
-    bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(220,252,231,0.9) 45%, rgba(187,247,208,0.75) 70%, rgba(134,239,172,0.55) 100%)',
-    shadow: '0 10px 28px -6px rgba(34,197,94,0.25), 0 6px 12px -4px rgba(34,197,94,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(34,197,94,0.1)',
-    border: '2px solid rgba(134,239,172,0.3)'
-  },
-  red: {
-    bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(254,226,226,0.9) 45%, rgba(254,202,202,0.75) 70%, rgba(252,165,165,0.55) 100%)',
-    shadow: '0 10px 28px -6px rgba(239,68,68,0.25), 0 6px 12px -4px rgba(239,68,68,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(239,68,68,0.1)',
-    border: '2px solid rgba(252,165,165,0.3)'
-  },
-  sky: {
-    bg: 'linear-gradient(145deg, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.97) 20%, rgba(224,247,250,0.9) 45%, rgba(186,242,250,0.75) 70%, rgba(125,225,252,0.55) 100%)',
-    shadow: '0 10px 28px -6px rgba(14,165,233,0.25), 0 6px 12px -4px rgba(14,165,233,0.15), inset 0 2px 6px rgba(255,255,255,0.98), inset 0 -3px 6px rgba(14,165,233,0.1)',
-    border: '2px solid rgba(125,225,252,0.3)'
-  }
-};
-
-// Map couleur vidéo -> style glossy
-const videoGlossyMap = {
-  'maternelles': 'amber',
-  'papa-positive': 'blue',
-  'anna-roy': 'red',
-  'mpedia': 'green',
-  'haptonomie': 'purple',
-  'preparation-accouchement': 'amber',
-  'allaitement': 'blue',
-  'soins-bebe': 'red'
-};
-
-// Reflet glossy SUPPRIMÉ — Zéro voile blanc
-const GlossyReflect = () => null;
-
 const VIDEO_RESOURCES = [
   {
     id: 'maternelles',

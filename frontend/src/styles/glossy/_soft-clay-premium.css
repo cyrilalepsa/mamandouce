@@ -1,121 +1,90 @@
 /* ============================================
-   SOFT-CLAY / NEUMORPHISM PREMIUM
-   Harmonisation globale — couleurs thème conservées
+   CARTES GLASS — teinte pastel + verre dépoli
+   (alias legacy : soft-clay / card-soft-clay)
    ============================================ */
 
 :root {
   --soft-clay-radius: 24px;
   --soft-clay-radius-pill: 9999px;
-  --soft-clay-border: 1px solid rgba(255, 255, 255, 0.75);
-
-  /* Accents — bulle vive + carte pastel assortie */
-  --accent-yellow-bubble: linear-gradient(145deg, #fbbf24, #f59e0b);
-  --accent-yellow-card: linear-gradient(160deg, rgba(254, 249, 195, 0.72) 0%, rgba(254, 240, 138, 0.52) 52%, rgba(253, 224, 71, 0.4) 100%);
-  --accent-yellow-border: rgba(234, 179, 8, 0.48);
-
-  --accent-blue-bubble: linear-gradient(145deg, #60a5fa, #3b82f6);
-  --accent-blue-card: linear-gradient(160deg, rgba(219, 234, 254, 0.72) 0%, rgba(191, 219, 254, 0.52) 52%, rgba(147, 197, 253, 0.4) 100%);
-  --accent-blue-border: rgba(59, 130, 246, 0.45);
-
-  --accent-sky-bubble: linear-gradient(145deg, #38bdf8, #0ea5e9);
-  --accent-sky-card: linear-gradient(160deg, rgba(224, 242, 254, 0.72) 0%, rgba(186, 230, 253, 0.52) 52%, rgba(125, 211, 252, 0.4) 100%);
-  --accent-sky-border: rgba(14, 165, 233, 0.45);
-
-  --accent-red-bubble: linear-gradient(145deg, #f87171, #ef4444);
-  --accent-red-card: linear-gradient(160deg, rgba(254, 226, 226, 0.72) 0%, rgba(254, 202, 202, 0.5) 52%, rgba(252, 165, 165, 0.38) 100%);
-  --accent-red-border: rgba(239, 68, 68, 0.45);
-
-  --accent-peach-bubble: linear-gradient(145deg, #fdba74, #f97316);
-  --accent-peach-card: linear-gradient(160deg, rgba(255, 237, 213, 0.72) 0%, rgba(254, 215, 170, 0.52) 52%, rgba(251, 146, 60, 0.4) 100%);
-  --accent-peach-border: rgba(251, 146, 60, 0.48);
-
-  --accent-pink-bubble: linear-gradient(145deg, #f472b6, #ec4899);
-  --accent-pink-card: linear-gradient(160deg, rgba(252, 231, 243, 0.75) 0%, rgba(251, 207, 232, 0.55) 52%, rgba(244, 114, 182, 0.38) 100%);
-  --accent-pink-border: rgba(236, 72, 153, 0.45);
-
-  --accent-green-bubble: linear-gradient(145deg, #4ade80, #22c55e);
-  --accent-green-card: linear-gradient(160deg, rgba(220, 252, 231, 0.72) 0%, rgba(187, 247, 208, 0.52) 52%, rgba(134, 239, 172, 0.4) 100%);
-  --accent-green-border: rgba(34, 197, 94, 0.45);
-
-  --accent-violet-bubble: linear-gradient(145deg, #a78bfa, #7c3aed);
-  --accent-violet-card: linear-gradient(160deg, rgba(237, 233, 254, 0.72) 0%, rgba(221, 214, 254, 0.52) 52%, rgba(196, 181, 253, 0.4) 100%);
-  --accent-violet-border: rgba(124, 58, 237, 0.45);
-
-  --accent-slate-bubble: linear-gradient(145deg, #94a3b8, #64748b);
-  --accent-slate-card: var(--soft-clay-nacre-bg);
-  --accent-slate-border: rgba(148, 163, 184, 0.35);
+  --soft-clay-glass-blur: blur(12px);
+  --soft-clay-glass-border: 1px solid rgba(255, 255, 255, 0.6);
+  --soft-clay-glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+  --soft-clay-glass-shadow-hover: 0 10px 36px 0 rgba(0, 0, 0, 0.07);
   --soft-clay-text: var(--md-text-anthracite, #2c2c2c);
 
-  --soft-clay-shadow-outer:
-    0 10px 28px -8px rgba(15, 23, 42, 0.14),
-    0 4px 14px -4px rgba(15, 23, 42, 0.07);
+  /* Bulles d'icônes — dégradé vif (hors surface carte) */
+  --accent-yellow-bubble: linear-gradient(145deg, #fbbf24, #f59e0b);
+  --accent-blue-bubble: linear-gradient(145deg, #60a5fa, #3b82f6);
+  --accent-sky-bubble: linear-gradient(145deg, #38bdf8, #0ea5e9);
+  --accent-red-bubble: linear-gradient(145deg, #f87171, #ef4444);
+  --accent-peach-bubble: linear-gradient(145deg, #fdba74, #f97316);
+  --accent-pink-bubble: linear-gradient(145deg, #f472b6, #ec4899);
+  --accent-green-bubble: linear-gradient(145deg, #4ade80, #22c55e);
+  --accent-violet-bubble: linear-gradient(145deg, #a78bfa, #7c3aed);
+  --accent-slate-bubble: linear-gradient(145deg, #94a3b8, #64748b);
 
-  --soft-clay-shadow-inset:
-    inset 3px 3px 10px rgba(255, 255, 255, 0.88),
-    inset -3px -3px 10px rgba(15, 23, 42, 0.05);
+  /* Fonds glass teintés — rgba pastel 0.35 */
+  --accent-yellow-glass: rgba(253, 224, 71, 0.35);
+  --accent-yellow-border: rgba(234, 179, 8, 0.35);
 
-  --soft-clay-shadow-hover:
-    0 14px 32px -8px rgba(15, 23, 42, 0.16),
-    0 6px 16px -4px rgba(15, 23, 42, 0.08);
+  --accent-blue-glass: rgba(147, 197, 253, 0.35);
+  --accent-blue-border: rgba(59, 130, 246, 0.35);
 
-  --soft-clay-nacre-bg:
-    linear-gradient(
-      160deg,
-      #ffffff 0%,
-      #fefefe 22%,
-      #fafafa 52%,
-      #f5f5f7 82%,
-      #f0f0f2 100%
-    );
+  --accent-sky-glass: rgba(125, 211, 252, 0.35);
+  --accent-sky-border: rgba(14, 165, 233, 0.35);
+
+  --accent-red-glass: rgba(252, 165, 165, 0.35);
+  --accent-red-border: rgba(239, 68, 68, 0.35);
+
+  --accent-peach-glass: rgba(251, 146, 60, 0.35);
+  --accent-peach-border: rgba(251, 146, 60, 0.35);
+
+  --accent-pink-glass: rgba(244, 114, 182, 0.35);
+  --accent-pink-border: rgba(236, 72, 153, 0.35);
+
+  --accent-green-glass: rgba(134, 239, 172, 0.35);
+  --accent-green-border: rgba(34, 197, 94, 0.35);
+
+  --accent-violet-glass: rgba(196, 181, 253, 0.35);
+  --accent-violet-border: rgba(124, 58, 237, 0.35);
+
+  --accent-slate-glass: rgba(226, 232, 240, 0.35);
+  --accent-slate-border: rgba(148, 163, 184, 0.35);
 }
 
-/* --- Base surface --- */
+/* --- Surface glass de base --- */
 .card-soft-clay,
 .soft-clay-premium,
 .soft-clay-card {
   border-radius: var(--soft-clay-radius);
-  border: var(--soft-clay-border);
-  box-shadow: var(--soft-clay-shadow-outer), var(--soft-clay-shadow-inset);
+  border: var(--soft-clay-glass-border);
+  box-shadow: var(--soft-clay-glass-shadow);
+  backdrop-filter: var(--soft-clay-glass-blur);
+  -webkit-backdrop-filter: var(--soft-clay-glass-blur);
   position: relative;
   overflow: hidden;
   transition:
     box-shadow 0.22s ease,
-    transform 0.2s ease,
-    filter 0.22s ease;
+    transform 0.2s ease;
 }
 
+/* Pas de reflet spéculaire / irisé */
+.card-soft-clay::before,
+.card-soft-clay::after,
 .soft-clay-premium::before,
+.soft-clay-premium::after,
 .soft-clay-card::before,
-.card-soft-clay::before {
-  content: '';
-  position: absolute;
-  top: 4px;
-  left: 10%;
-  right: 10%;
-  height: 30%;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.62) 0%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 1;
+.soft-clay-card::after {
+  display: none !important;
+  content: none !important;
 }
 
+.card-soft-clay:hover:not(:disabled),
 .soft-clay-premium:hover:not(:disabled),
-.soft-clay-card:hover:not(:disabled),
-.card-soft-clay:hover:not(:disabled) {
-  box-shadow: var(--soft-clay-shadow-hover), var(--soft-clay-shadow-inset);
-  filter: brightness(1.02);
+.soft-clay-card:hover:not(:disabled) {
+  box-shadow: var(--soft-clay-glass-shadow-hover);
 }
 
-/* Nacre blanche (sous-couches colorées en overlay) */
-.soft-clay-nacre {
-  background: var(--soft-clay-nacre-bg);
-}
-
-/* Texte plat — lisibilité maximale */
 .soft-clay-text-flat,
 .soft-clay-text-flat :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, small, strong, em) {
   text-shadow: none !important;
@@ -126,145 +95,110 @@
   color: inherit;
 }
 
-/* Pastilles d'icônes encapsulées */
 .soft-clay-icon-well {
   border: 1px solid rgba(255, 255, 255, 0.55);
-  box-shadow:
-    0 4px 12px -2px rgba(15, 23, 42, 0.14),
-    inset 2px 2px 6px rgba(255, 255, 255, 0.45),
-    inset -1px -1px 4px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.12);
 }
 
-/* --- Teintes section (ordre thème produit) --- */
+/* Teintes section (journey hubs) */
 .soft-clay-section-preconception {
-  background-image:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.9) 0%,
-      rgba(254, 249, 195, 0.58) 45%,
-      rgba(253, 224, 71, 0.38) 100%
-    );
+  background-color: var(--accent-yellow-glass) !important;
+  background-image: none !important;
 }
 
 .soft-clay-section-pregnancy {
-  background-image:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.9) 0%,
-      rgba(191, 219, 254, 0.58) 48%,
-      rgba(59, 130, 246, 0.36) 100%
-    );
+  background-color: var(--accent-blue-glass) !important;
+  background-image: none !important;
 }
 
 .soft-clay-section-baby-preparation {
-  background-image:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.9) 0%,
-      rgba(254, 215, 170, 0.58) 46%,
-      rgba(248, 113, 113, 0.36) 100%
-    );
+  background-color: var(--accent-peach-glass) !important;
+  background-image: none !important;
 }
 
 .soft-clay-section-postpartum {
-  background-image:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.9) 0%,
-      rgba(187, 247, 208, 0.58) 48%,
-      rgba(34, 197, 94, 0.34) 100%
-    );
+  background-color: var(--accent-green-glass) !important;
+  background-image: none !important;
 }
 
 .soft-clay-section-services {
-  background-image:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.9) 0%,
-      rgba(221, 214, 254, 0.58) 48%,
-      rgba(124, 58, 237, 0.34) 100%
-    );
+  background-color: var(--accent-violet-glass) !important;
+  background-image: none !important;
 }
 
-/* Congé maternité — violet / prune */
 .soft-clay-tint-violet {
-  background-image:
-    linear-gradient(
-      160deg,
-      #ffffff 0%,
-      #faf5ff 30%,
-      #f3e8ff 65%,
-      #ede9fe 100%
-    );
-  border-color: rgba(167, 139, 250, 0.45) !important;
-}
-
-/* Carte pastel assortie à l'accent de l'icône */
-.soft-clay-from-accent[data-accent='yellow'],
-.soft-clay-from-accent-yellow {
-  background-color: transparent !important;
-  background-image: var(--accent-yellow-card) !important;
-  border-color: var(--accent-yellow-border) !important;
-}
-.soft-clay-from-accent[data-accent='blue'],
-.soft-clay-from-accent-blue,
-.soft-clay-tier-blue {
-  background-color: transparent !important;
-  background-image: var(--accent-blue-card) !important;
-  border-color: var(--accent-blue-border) !important;
-}
-.soft-clay-from-accent[data-accent='sky'],
-.soft-clay-from-accent-sky {
-  background-color: transparent !important;
-  background-image: var(--accent-sky-card) !important;
-  border-color: var(--accent-sky-border) !important;
-}
-.soft-clay-from-accent[data-accent='red'],
-.soft-clay-from-accent-red,
-.soft-clay-tier-red {
-  background-color: transparent !important;
-  background-image: var(--accent-red-card) !important;
-  border-color: var(--accent-red-border) !important;
-}
-.soft-clay-from-accent[data-accent='peach'],
-.soft-clay-from-accent-peach {
-  background-color: transparent !important;
-  background-image: var(--accent-peach-card) !important;
-  border-color: var(--accent-peach-border) !important;
-}
-.soft-clay-from-accent[data-accent='pink'],
-.soft-clay-from-accent-pink {
-  background-color: transparent !important;
-  background-image: var(--accent-pink-card) !important;
-  border-color: var(--accent-pink-border) !important;
-}
-.soft-clay-from-accent[data-accent='green'],
-.soft-clay-from-accent-green,
-.soft-clay-tier-green {
-  background-color: transparent !important;
-  background-image: var(--accent-green-card) !important;
-  border-color: var(--accent-green-border) !important;
-}
-.soft-clay-from-accent[data-accent='violet'],
-.soft-clay-from-accent-violet,
-.soft-clay-tier-violet,
-.soft-clay-tint-violet {
-  background-color: transparent !important;
-  background-image: var(--accent-violet-card) !important;
+  background-color: var(--accent-violet-glass) !important;
+  background-image: none !important;
   border-color: var(--accent-violet-border) !important;
 }
-.soft-clay-from-accent[data-accent='slate'],
-.soft-clay-from-accent-slate {
-  background: var(--accent-slate-card) !important;
-  border-color: var(--accent-slate-border) !important;
-}
 
+/* Carte teintée selon accent icône */
 .soft-clay-from-accent[data-accent='yellow'],
 .soft-clay-from-accent-yellow,
 .soft-clay-tier-yellow {
-  background-color: transparent !important;
-  background-image: var(--accent-yellow-card) !important;
+  background-color: var(--accent-yellow-glass) !important;
+  background-image: none !important;
   border-color: var(--accent-yellow-border) !important;
+}
+
+.soft-clay-from-accent[data-accent='blue'],
+.soft-clay-from-accent-blue,
+.soft-clay-tier-blue {
+  background-color: var(--accent-blue-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-blue-border) !important;
+}
+
+.soft-clay-from-accent[data-accent='sky'],
+.soft-clay-from-accent-sky {
+  background-color: var(--accent-sky-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-sky-border) !important;
+}
+
+.soft-clay-from-accent[data-accent='red'],
+.soft-clay-from-accent-red,
+.soft-clay-tier-red {
+  background-color: var(--accent-red-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-red-border) !important;
+}
+
+.soft-clay-from-accent[data-accent='peach'],
+.soft-clay-from-accent-peach {
+  background-color: var(--accent-peach-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-peach-border) !important;
+}
+
+.soft-clay-from-accent[data-accent='pink'],
+.soft-clay-from-accent-pink {
+  background-color: var(--accent-pink-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-pink-border) !important;
+}
+
+.soft-clay-from-accent[data-accent='green'],
+.soft-clay-from-accent-green,
+.soft-clay-tier-green {
+  background-color: var(--accent-green-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-green-border) !important;
+}
+
+.soft-clay-from-accent[data-accent='violet'],
+.soft-clay-from-accent-violet,
+.soft-clay-tier-violet {
+  background-color: var(--accent-violet-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-violet-border) !important;
+}
+
+.soft-clay-from-accent[data-accent='slate'],
+.soft-clay-from-accent-slate {
+  background-color: var(--accent-slate-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-slate-border) !important;
 }
 
 /* Bulles d'icônes — teinte vive */
@@ -305,7 +239,6 @@
   background: var(--accent-slate-bubble);
 }
 
-/* Texte plat lisible sur cartes accent */
 .soft-clay-from-accent,
 .soft-clay-from-accent :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, div, small, strong, em) {
   color: var(--soft-clay-text);
@@ -320,17 +253,15 @@
   -webkit-text-fill-color: #ffffff !important;
 }
 
-/* Item tier accents (alias legacy → from-accent) */
-/* Pill variant */
 .soft-clay-pill {
   border-radius: var(--soft-clay-radius-pill);
 }
 
-/* Harmonisation avec glass existant */
 .card-glass-interactive.soft-clay-premium,
 .nacre-bombe.soft-clay-premium,
 [data-testid*='item-card'].soft-clay-premium,
-[data-testid*='section-card'].soft-clay-premium {
+[data-testid*='section-card'].soft-clay-premium,
+.card-soft-clay {
   border-radius: var(--soft-clay-radius);
-  border: var(--soft-clay-border) !important;
+  border: var(--soft-clay-glass-border) !important;
 }

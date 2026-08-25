@@ -343,7 +343,7 @@ function BirthListPage() {
         {/* Popup magasins */}
         {showStorePopup && (
           <div className="fixed inset-0 bg-black/30 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
-            <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl" data-testid="store-popup">
+            <div className="card-glass-modal rounded-2xl p-5 w-full max-w-sm" data-testid="store-popup">
               <h3 className="font-bold text-black mb-3">Où acheter ?</h3>
               <div className="space-y-2 max-h-[60vh] overflow-y-auto">
                 {STORES.map((store) => (
@@ -381,7 +381,7 @@ function BirthListPage() {
         {/* Formulaire soumettre un article */}
         {showSubmitForm && (
           <div className="fixed inset-0 bg-black/30 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
-            <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
+            <div className="card-glass-modal rounded-2xl p-5 w-full max-w-sm">
               <h3 className="font-bold text-black mb-3">Proposer un article</h3>
               <p className="text-xs text-slate-500 mb-3">Après validation par l'admin, l'article apparaîtra dans la liste de référence (+1 contribution)</p>
               <div className="space-y-3">
