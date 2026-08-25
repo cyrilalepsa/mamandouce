@@ -8,6 +8,7 @@ import {
   accentFromSectionId,
   normalizeAccent,
   softClayCardClasses,
+  cardSoftClayClasses,
 } from './accentTokens.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -30,6 +31,8 @@ test('section and item accents align with theme order', () => {
 test('soft-clay card classes derive from accent', () => {
   assert.match(softClayCardClasses('amber'), /soft-clay-from-accent-yellow/);
   assert.match(softClayCardClasses('violet', { pill: true }), /soft-clay-pill/);
+  assert.match(cardSoftClayClasses('blue', { level: 4 }), /rounded-\[20px\]/);
+  assert.match(cardSoftClayClasses('pink'), /card-soft-clay/);
 });
 
 test('PastelMosaicCard uses soft-clay-from-accent from color prop', () => {

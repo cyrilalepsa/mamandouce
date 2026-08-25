@@ -33,7 +33,7 @@ export function PastelMosaicCard({ color = 'pink', onClick, children, className 
       onClick={onClick}
       data-testid={testId}
       data-accent={accent}
-      className={`soft-clay-premium soft-clay-from-accent ${softClayCardClasses(accent)} soft-clay-text-flat relative overflow-hidden rounded-[24px] p-3 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-center shadow ${className}`}
+      className={`soft-clay-premium soft-clay-from-accent soft-clay-text-flat ${softClayCardClasses(accent)} soft-clay-text-flat relative overflow-hidden rounded-[24px] p-3 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-center shadow ${className}`}
       style={{ color: '#2C2C2C' }}
     >
       <div className="relative z-[2]" style={{ color: '#2C2C2C' }}>

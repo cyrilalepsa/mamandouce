@@ -13,6 +13,9 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../utils/api';
+import { cardSoftClayClasses } from '../utils/accentTokens';
+import { ListItemCard } from '../components/ui/SoftClayCards';
+import { IconWell } from '../components/ui/IconWell';
 
 function TrackingPage() {
   const navigate = useNavigate();
@@ -207,39 +210,39 @@ function TrackingPage() {
           </h2>
 
           {/* Container unique Maman : Stats + Graphique + bouton + intégré */}
-          <Card className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100" data-testid="weight-chart">
+          <Card className={`${cardSoftClayClasses('pink')} p-5 border-0 shadow-none`} data-testid="weight-chart">
             {/* Stats Poids actuel + Prise de poids (intégrées) */}
             <div className="grid grid-cols-2 gap-3 mb-4">
-              <div className="bg-gradient-to-br from-pink-50/50 to-rose-50/30 rounded-2xl p-3 flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-pink-100 to-rose-100 rounded-xl flex items-center justify-center logo-bubble-red flex-shrink-0">
-                  <Scale className="w-5 h-5 text-pink-500" />
-                </div>
+              <ListItemCard accent="pink" className="flex items-center gap-3">
+                <IconWell accent="pink" size="md">
+                  <Scale className="w-5 h-5 text-white" />
+                </IconWell>
                 <div>
-                  <p className="text-xs text-slate-500">Poids actuel</p>
-                  <p className="text-lg font-bold text-slate-700">
+                  <p className="text-xs text-slate-600">Poids actuel</p>
+                  <p className="text-lg font-bold text-slate-800">
                     {stats.currentWeight ? `${stats.currentWeight} kg` : '-- kg'}
                   </p>
                 </div>
-              </div>
-              <div className="bg-gradient-to-br from-green-50/50 to-emerald-50/30 rounded-2xl p-3 flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center logo-bubble-green flex-shrink-0">
-                  <TrendingUp className="w-5 h-5 text-green-500" />
-                </div>
+              </ListItemCard>
+              <ListItemCard accent="green" className="flex items-center gap-3">
+                <IconWell accent="green" size="md">
+                  <TrendingUp className="w-5 h-5 text-white" />
+                </IconWell>
                 <div>
-                  <p className="text-xs text-slate-500">Prise de poids</p>
-                  <p className="text-lg font-bold text-slate-700">
+                  <p className="text-xs text-slate-600">Prise de poids</p>
+                  <p className="text-lg font-bold text-slate-800">
                     {stats.weightGain ? `+${stats.weightGain} kg` : '-- kg'}
                   </p>
                 </div>
-              </div>
+              </ListItemCard>
             </div>
 
             {/* Header Courbe de poids + bouton + intégré */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-400 rounded-xl flex items-center justify-center">
+                <IconWell accent="pink" size="md">
                   <Weight className="w-5 h-5 text-white" />
-                </div>
+                </IconWell>
                 <div>
                   <h2 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
                     Courbe de poids
@@ -345,39 +348,39 @@ function TrackingPage() {
           </h2>
 
           {/* Container unique Bébé : Stats + Graphique + bouton + intégré */}
-          <Card className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100" data-testid="baby-chart">
+          <Card className={`${cardSoftClayClasses('sky')} p-5 border-0 shadow-none`} data-testid="baby-chart">
             {/* Stats Poids estimé + Taille (intégrées) */}
             <div className="grid grid-cols-2 gap-3 mb-4">
-              <div className="bg-gradient-to-br from-sky-50/50 to-indigo-50/30 rounded-2xl p-3 flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-sky-100 to-indigo-100 rounded-xl flex items-center justify-center logo-bubble-blue flex-shrink-0">
-                  <Scale className="w-5 h-5 text-sky-500" />
-                </div>
+              <ListItemCard accent="sky" className="flex items-center gap-3">
+                <IconWell accent="sky" size="md">
+                  <Scale className="w-5 h-5 text-white" />
+                </IconWell>
                 <div>
-                  <p className="text-xs text-slate-500">Poids estimé</p>
-                  <p className="text-lg font-bold text-slate-700">
+                  <p className="text-xs text-slate-600">Poids estimé</p>
+                  <p className="text-lg font-bold text-slate-800">
                     {stats.lastBabyWeight ? `${stats.lastBabyWeight} g` : '-- g'}
                   </p>
                 </div>
-              </div>
-              <div className="bg-gradient-to-br from-purple-50/50 to-violet-50/30 rounded-2xl p-3 flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-violet-100 rounded-xl flex items-center justify-center logo-bubble-violet flex-shrink-0">
-                  <Ruler className="w-5 h-5 text-purple-500" />
-                </div>
+              </ListItemCard>
+              <ListItemCard accent="violet" className="flex items-center gap-3">
+                <IconWell accent="violet" size="md">
+                  <Ruler className="w-5 h-5 text-white" />
+                </IconWell>
                 <div>
-                  <p className="text-xs text-slate-500">Taille</p>
-                  <p className="text-lg font-bold text-slate-700">
+                  <p className="text-xs text-slate-600">Taille</p>
+                  <p className="text-lg font-bold text-slate-800">
                     {stats.lastBabySize ? `${stats.lastBabySize} cm` : '-- cm'}
                   </p>
                 </div>
-              </div>
+              </ListItemCard>
             </div>
 
             {/* Header Croissance + bouton + intégré */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-sky-400 to-indigo-400 rounded-xl flex items-center justify-center">
+                <IconWell accent="sky" size="md">
                   <Baby className="w-5 h-5 text-white" />
-                </div>
+                </IconWell>
                 <div>
                   <h2 className="text-lg font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
                     Croissance du bébé
