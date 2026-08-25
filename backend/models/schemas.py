@@ -34,6 +34,7 @@ class UserCreate(BaseModel):
     status: Optional[str] = None  # 'envie_bebe' ou 'enceinte'
     children_at_home: int = 0
     multiple_pregnancy: str = "none"
+    referral_code: Optional[str] = None
 
     @model_validator(mode="after")
     def normalize_registration_names(self):

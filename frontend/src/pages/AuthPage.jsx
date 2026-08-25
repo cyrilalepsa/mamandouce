@@ -42,6 +42,7 @@ function AuthPage({ setIsAuthenticated }) {
     last_name: '',
     city: '',
     children_at_home: 0,
+    referral_code: '',
   });
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
@@ -70,6 +71,17 @@ function AuthPage({ setIsAuthenticated }) {
       }
     };
     checkQuickLogin();
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('register') === '1') {
+      setIsLogin(false);
+    }
+    const ref = params.get('ref') || localStorage.getItem('mamandouce_referral_code');
+    if (ref) {
+      setFormData((prev) => ({ ...prev, referral_code: ref.trim().toUpperCase() }));
+    }
   }, []);
 
   const handleBiometricLogin = async () => {

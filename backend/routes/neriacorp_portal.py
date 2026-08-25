@@ -3,8 +3,10 @@ Endpoints publics pour le portail NeriaCorp.
 MamanDouce est exposée en zone B2C.
 """
 import os
+from typing import Literal, Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 
 from core.config import (
     CLOUDINARY_CLOUD_NAME,
@@ -14,9 +16,130 @@ from core.config import (
     NERIACORP_PORTAL_URL,
     n2_ocr_base_url,
 )
+from core.database import db
+from core.security import get_current_user
 from integrations.neriacorp.catalog import get_portal_catalog_entry, get_portal_catalog_payload
+from integrations.neriacorp.nucleus_client import (
+    build_cross_app_entitlements,
+    push_cross_app_entitlements,
+    sync_b2c_profile,
+)
+from models.schemas import User
 
 router = APIRouter(tags=["neriacorp-portal"])
+
+PORTAL_APP_URL = os.environ.get("NERIACORP_PORTAL_APP_URL", "https://app.neriacorp.com").rstrip("/")
+
+
+class PortalOnboardingAck(BaseModel):
+    action: Literal["link", "skip"]
+    gdpr_consent: bool = False
+
+
+@router.get("/neriacorp/onboarding/status")
+async def neriacorp_onboarding_status(current_user: User = Depends(get_current_user)):
+    """Indique si la modale portail NeriaCorp doit s'afficher (parrainage ou premier N2O)."""
+    user_doc = await db.users.find_one({"id": current_user.id}, {"_id": 0}) or {}
+    wallet = await db.wallets.find_one({"user_id": current_user.id}, {"_id": 0, "balance": 1})
+    balance = float(wallet.get("balance", 0) if wallet else 0)
+
+    pending = user_doc.get("neriacorp_onboarding_pending")
+    linked = bool(user_doc.get("neriacorp_portal_linked"))
+    dismissed = bool(user_doc.get("neriacorp_onboarding_dismissed"))
+
+    show_modal = bool(pending) and not linked and not dismissed
+    entitlements = build_cross_app_entitlements(user_doc, balance)
+
+    sso = await neriacorp_sso_status()
+    return {
+        "show_modal": show_modal,
+        "trigger": pending,
+        "portal_linked": linked,
+        "portal_url": PORTAL_APP_URL,
+        "portal_home": NERIACORP_PORTAL_URL,
+        "wallet_balance": balance,
+        "cross_app": entitlements,
+        "sso": sso,
+        "gdpr_notice": (
+            "Votre compte NeriaCorp centralise vos applications B2C (MamanDouce, Héritia, Hysia). "
+            "Nous partageons uniquement email, nom et statut d'abonnement. "
+            "Vous pouvez refuser ou supprimer votre compte depuis le portail."
+        ),
+    }
+
+
+@router.post("/neriacorp/onboarding/ack")
+async def neriacorp_onboarding_ack(
+    body: PortalOnboardingAck,
+    current_user: User = Depends(get_current_user),
+):
+    """Lie ou ignore l'adhésion portail NeriaCorp après la modale."""
+    user_doc = await db.users.find_one({"id": current_user.id}, {"_id": 0}) or {}
+    wallet = await db.wallets.find_one({"user_id": current_user.id}, {"_id": 0, "balance": 1})
+    balance = float(wallet.get("balance", 0) if wallet else 0)
+
+    update = {
+        "neriacorp_onboarding_dismissed": True,
+        "neriacorp_onboarding_pending": None,
+        "neriacorp_gdpr_consent_at": None,
+    }
+
+    sync_result = None
+    cross_app = None
+
+    if body.action == "link":
+        if not body.gdpr_consent:
+            raise HTTPException(
+                status_code=400,
+                detail="Consentement RGPD requis pour lier le compte NeriaCorp",
+            )
+        from datetime import datetime, timezone
+
+        update["neriacorp_portal_linked"] = True
+        update["neriacorp_gdpr_consent_at"] = datetime.now(timezone.utc).isoformat()
+        sync_result = await sync_b2c_profile(user_doc)
+        cross_app = await push_cross_app_entitlements(user_doc, balance)
+
+    await db.users.update_one({"id": current_user.id}, {"$set": update})
+
+    return {
+        "success": True,
+        "action": body.action,
+        "portal_linked": body.action == "link",
+        "sync": sync_result,
+        "cross_app": cross_app,
+        "portal_url": PORTAL_APP_URL,
+    }
+
+
+@router.get("/neriacorp/cross-app/entitlements")
+async def neriacorp_cross_app_entitlements(current_user: User = Depends(get_current_user)):
+    """Droits cross-app (Héritia / Hysia) dérivés de l'abonnement MamanDouce."""
+    user_doc = await db.users.find_one({"id": current_user.id}, {"_id": 0}) or {}
+    wallet = await db.wallets.find_one({"user_id": current_user.id}, {"_id": 0, "balance": 1})
+    balance = float(wallet.get("balance", 0) if wallet else 0)
+    stored = await db.cross_app_entitlements.find_one({"user_id": current_user.id}, {"_id": 0})
+    entitlements = build_cross_app_entitlements(user_doc, balance)
+    return {
+        "entitlements": entitlements,
+        "stored_push": stored,
+        "portal_url": PORTAL_APP_URL,
+    }
+
+
+@router.post("/neriacorp/profile/sync")
+async def neriacorp_profile_sync(current_user: User = Depends(get_current_user)):
+    """Synchronise le profil B2C vers le Noyau NeriaCorp."""
+    user_doc = await db.users.find_one({"id": current_user.id}, {"_id": 0}) or {}
+    wallet = await db.wallets.find_one({"user_id": current_user.id}, {"_id": 0, "balance": 1})
+    balance = float(wallet.get("balance", 0) if wallet else 0)
+    sync_result = await sync_b2c_profile(user_doc)
+    cross_app = await push_cross_app_entitlements(user_doc, balance)
+    await db.users.update_one(
+        {"id": current_user.id},
+        {"$set": {"neriacorp_portal_linked": True}},
+    )
+    return {"success": True, "sync": sync_result, "cross_app": cross_app}
 
 
 @router.get("/neriacorp/catalog")

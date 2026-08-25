@@ -9,3 +9,4 @@ export { AccountStatusSection } from './AccountStatusSection';
 export { PushNotificationsSection } from './PushNotificationsSection';
 export { LanguageSelector } from './LanguageSelector';
 export { PersonalFamilyInfoSection } from './PersonalFamilyInfoSection';
+export { AccountClosureSection } from './AccountClosureSection';
