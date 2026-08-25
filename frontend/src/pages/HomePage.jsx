@@ -344,6 +344,7 @@ function HomePage() {
                     cycleLength={pregnancyProfile?.cycle_length || pregnancyProfile?.cycle_duration || 28}
                     currentWeek={pregnancyProfile?.current_week}
                     trimester={pregnancyProfile?.trimester}
+                    city={authUser?.city}
                     onPregnant={(dpaStr) => {
                       setIsPregnantHome(true);
                       setDueDateHome(dpaStr);

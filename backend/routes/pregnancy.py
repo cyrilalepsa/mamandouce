@@ -11,11 +11,22 @@ from core.database import db
 from core.security import get_current_user
 from core.cycle_dates import as_naive_utc, coerce_cycle_length, parse_last_period_datetime
 from core.cycle_store import load_cycle_profile, persist_cycle_settings
+from core.pregnancy_country import COUNTRY_FR, country_label
+from core.pregnancy_dates import (
+    calculate_dpa,
+    current_gestational_week,
+    resolve_pregnancy_country,
+)
 from models.schemas import User, PregnancyCalculation, PregnancyProfile
 
 logger = logging.getLogger("mamandouce.cycle")
 
 router = APIRouter(tags=["pregnancy"])
+
+
+async def _user_pregnancy_country(user_id: str) -> str:
+    user_doc = await db.users.find_one({"id": str(user_id)}, {"_id": 0, "city": 1}) or {}
+    return resolve_pregnancy_country(user_doc.get("city"))
 
 
 @router.get("/pregnancy/fetus-visuals")
@@ -45,16 +56,12 @@ async def get_public_fetus_visuals():
     }
 
 
-def calculate_pregnancy_dates(last_period: datetime, cycle_duration: int):
+def calculate_pregnancy_dates(last_period: datetime, cycle_duration: int, country: str = COUNTRY_FR):
     """
     Calculate all pregnancy-related dates with medical precision.
-    
-    Formulas used:
-    - Ovulation: Cycle duration - 14 days (luteal phase is constant at ~14 days)
-    - Fertile window: 5 days before ovulation to 1 day after
-    - Implantation: 6-12 days after ovulation (average: 9 days)
-    - Due date: Naegele's rule adjusted for cycle length
-    - Next period: If not pregnant, cycle_duration days after last period
+
+    France (CPAM): DPA = DDG + 9 calendar months (41 SA social security calendar).
+    UK (NHS): DPA = Naegele rule (280 days, adjusted for cycle length).
     """
     
     last_period = as_naive_utc(last_period)
@@ -84,11 +91,9 @@ def calculate_pregnancy_dates(last_period: datetime, cycle_duration: int):
     implantation_most_likely = ovulation_date + timedelta(days=9)
     
     # === DUE DATE (Date Prévue d'Accouchement - DPA) ===
-    # Naegele's rule: Last period + 280 days (for 28-day cycle)
-    # Adjustment for different cycle lengths:
-    # Add/subtract the difference from 28 days
-    cycle_adjustment = cycle_duration - 28
-    due_date = last_period + timedelta(days=280 + cycle_adjustment)
+    ddg_date = last_period.date()
+    due_date_dt = calculate_dpa(ddg_date, country, cycle_duration)
+    due_date = datetime.combine(due_date_dt, datetime.min.time())
     
     # Due date range (±2 weeks is normal)
     due_date_earliest = due_date - timedelta(days=14)
@@ -106,7 +111,7 @@ def calculate_pregnancy_dates(last_period: datetime, cycle_duration: int):
     # === CURRENT PREGNANCY WEEK ===
     today = datetime.now(timezone.utc).replace(tzinfo=None)
     days_pregnant = (today - last_period).days
-    weeks_pregnant = days_pregnant // 7
+    weeks_pregnant = current_gestational_week(ddg_date, today.date())
     days_in_week = days_pregnant % 7
     
     # === TRIMESTER ===
@@ -158,14 +163,19 @@ def calculate_pregnancy_dates(last_period: datetime, cycle_duration: int):
         "trimester": trimester,
         "days_until_due": (due_date - today).days,
         
-        # Explanations in French
+        "pregnancy_country": country,
+        "pregnancy_calendar": country_label(country),
         "explanations": {
             "ovulation": f"L'ovulation a lieu {days_to_ovulation} jours après le début des règles (jour {days_to_ovulation} du cycle).",
             "fertile_window": f"Période fertile : du jour {days_to_ovulation - 5} au jour {days_to_ovulation + 1} du cycle (6 jours).",
             "implantation": "La nidation se produit généralement entre 6 et 12 jours après l'ovulation.",
-            "due_date": f"Date calculée selon la règle de Naegele, ajustée pour un cycle de {cycle_duration} jours.",
-            "next_period": f"Si pas enceinte, prochaines règles attendues {cycle_duration} jours après les dernières."
-        }
+            "due_date": (
+                "Date calculée selon le calendrier CPAM (DDG + 9 mois)."
+                if country == COUNTRY_FR
+                else f"Date calculée selon la règle de Naegele (280 jours), ajustée pour un cycle de {cycle_duration} jours."
+            ),
+            "next_period": f"Si pas enceinte, prochaines règles attendues {cycle_duration} jours après les dernières.",
+        },
     }
 
 
@@ -185,7 +195,8 @@ async def calculate_pregnancy(data: PregnancyCalculation, current_user: User = D
         )
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-    result = calculate_pregnancy_dates(last_period, cycle_duration)
+    country = await _user_pregnancy_country(current_user.id)
+    result = calculate_pregnancy_dates(last_period, cycle_duration, country)
     ymd = last_period.strftime("%Y-%m-%d")
 
     profile = PregnancyProfile(
@@ -239,7 +250,7 @@ async def get_pregnancy_profile(current_user: User = Depends(get_current_user)):
 
     user_doc = await db.users.find_one(
         {"id": str(current_user.id)},
-        {"_id": 0, "status": 1, "is_pregnant": 1, "pregnancy_status": 1},
+        {"_id": 0, "status": 1, "is_pregnant": 1, "pregnancy_status": 1, "city": 1},
     ) or {}
     raw_status = str(
         user_doc.get("pregnancy_status") or user_doc.get("status") or ""
@@ -268,8 +279,17 @@ async def get_pregnancy_profile(current_user: User = Depends(get_current_user)):
             )
             return profile
         today = datetime.now(timezone.utc).replace(tzinfo=None)
+        country = resolve_pregnancy_country(user_doc.get("city"))
+        cycle_length = coerce_cycle_length(profile.get("cycle_length", profile.get("cycle_duration", 28)))
+        ddg_date = last_period.date()
+        due_date_dt = calculate_dpa(ddg_date, country, cycle_length)
+        due_date = datetime.combine(due_date_dt, datetime.min.time())
+        profile["estimated_due_date"] = due_date.isoformat()
+        profile["pregnancy_country"] = country
+        profile["pregnancy_calendar"] = country_label(country)
+
+        profile["current_week"] = current_gestational_week(ddg_date, today.date())
         days_pregnant = (today - last_period).days
-        profile["current_week"] = days_pregnant // 7
         profile["days_in_current_week"] = days_pregnant % 7
         profile["gestational_age"] = f"{profile['current_week']} SA + {profile['days_in_current_week']} jours"
         
@@ -280,17 +300,7 @@ async def get_pregnancy_profile(current_user: User = Depends(get_current_user)):
         else:
             profile["trimester"] = 3
         
-        if profile.get("estimated_due_date"):
-            try:
-                due_raw = str(profile["estimated_due_date"]).replace("Z", "+00:00")
-                due_date = as_naive_utc(datetime.fromisoformat(due_raw))
-                profile["days_until_due"] = (due_date - today).days
-            except ValueError:
-                logger.warning(
-                    "stored estimated_due_date invalid user_id=%s value=%r",
-                    current_user.id,
-                    profile.get("estimated_due_date"),
-                )
+        profile["days_until_due"] = (due_date - today).days
     
     return profile
 
@@ -305,7 +315,8 @@ async def calculate_cycle_dates(data: PregnancyCalculation, current_user: User =
     cycle_duration = coerce_cycle_length(data.cycle_length)
     
     # Calculate dates
-    result = calculate_pregnancy_dates(last_period, cycle_duration)
+    country = await _user_pregnancy_country(current_user.id)
+    result = calculate_pregnancy_dates(last_period, cycle_duration, country)
     
     # For women trying to conceive, focus on:
     return {
@@ -399,7 +410,8 @@ async def check_fertility_window(current_user: User = Depends(get_current_user))
         last_period = last_period + timedelta(days=cycle_length)
         days_since_period = (today - last_period).days
     
-    result = calculate_pregnancy_dates(last_period, cycle_length)
+    country = await _user_pregnancy_country(current_user.id)
+    result = calculate_pregnancy_dates(last_period, cycle_length, country)
     
     fertile_start = datetime.fromisoformat(result["fertile_window_start"])
     fertile_end = datetime.fromisoformat(result["fertile_window_end"])

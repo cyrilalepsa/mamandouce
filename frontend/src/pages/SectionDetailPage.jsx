@@ -16,6 +16,8 @@ import { useHomeLayout } from '../contexts/HomeLayoutContext';
 import { useSubscription } from '../components/SubscriptionGate';
 import { useTheme } from '../contexts/ThemeContext';
 import { MaternityLeaveSummaryCard } from '../components/pregnancy/MaternityLeaveSummaryCard';
+import { useAuth } from '../contexts/AuthContext';
+import { getLocalizedServices, resolveCountryFromCity } from '../utils/pregnancyDateUtils';
 
 // Métadonnées des sections
 const SECTION_META = {
@@ -464,12 +466,27 @@ function SectionDetailPage() {
   const { sectionId } = useParams();
   const { t } = useTranslation();
   const { pages, addPage, duplicateItemToPage } = useHomeLayout();
+  const { user } = useAuth();
   
   const [selectedItem, setSelectedItem] = useState(null);
   const [showDuplicatePopup, setShowDuplicatePopup] = useState(false);
 
   const meta = SECTION_META[sectionId];
-  const items = SECTION_ITEMS[sectionId] || [];
+  const country = resolveCountryFromCity(user?.city);
+  const items = sectionId === 'services'
+    ? getLocalizedServices(country, user?.city).map((service) => ({
+      id: service.id,
+      icon: service.id === 'nhs' || service.id === 'ameli' ? Hospital : service.id === 'caf' || service.id === 'govuk' ? Building2 : MapPin,
+      iconColor: service.id === 'caf' || service.id === 'govuk' ? 'text-yellow-500' : service.id === 'ameli' || service.id === 'nhs' ? 'text-blue-600' : 'text-red-600',
+      bgColor: service.id === 'caf' || service.id === 'govuk' ? 'yellow' : service.id === 'ameli' || service.id === 'nhs' ? 'blue' : 'red',
+      title: service.title,
+      titleKey: `services.${service.id}`,
+      desc: service.desc,
+      descKey: `services.${service.id}Desc`,
+      route: service.route,
+      external: true,
+    }))
+    : (SECTION_ITEMS[sectionId] || []);
 
   // Navigation
   const handleNavigate = (route, external = false) => {
