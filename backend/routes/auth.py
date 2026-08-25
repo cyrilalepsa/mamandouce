@@ -235,6 +235,8 @@ async def register(user_data: UserCreate):
     user = User(
         email=normalize_email(str(user_data.email)),
         name=user_data.name,
+        first_name=user_data.first_name,
+        last_name=user_data.last_name,
         city=user_data.city,
         birth_date=user_data.birth_date,
         status=user_data.status,
@@ -502,7 +504,7 @@ async def get_me(current_user: User = Depends(get_current_user)):
     return User(**payload)
 
 
-from models.schemas import ProfileUpdate
+from models.schemas import ProfileUpdate, build_full_name
 
 @router.put("/auth/profile")
 async def update_profile(profile_data: ProfileUpdate, current_user: User = Depends(get_current_user)):
@@ -515,6 +517,20 @@ async def update_profile(profile_data: ProfileUpdate, current_user: User = Depen
         if len(display_name) > 50:
             raise HTTPException(status_code=400, detail="Le nom ne peut pas dépasser 50 caractères")
         update_fields["display_name"] = display_name if display_name else None
+
+    if profile_data.first_name is not None:
+        first_name = profile_data.first_name.strip()
+        if not first_name:
+            raise HTTPException(status_code=400, detail="Le prénom est requis")
+        if len(first_name) > 80:
+            raise HTTPException(status_code=400, detail="Le prénom ne peut pas dépasser 80 caractères")
+        update_fields["first_name"] = first_name
+
+    if profile_data.last_name is not None:
+        last_name = profile_data.last_name.strip()
+        if len(last_name) > 80:
+            raise HTTPException(status_code=400, detail="Le nom ne peut pas dépasser 80 caractères")
+        update_fields["last_name"] = last_name
     
     if profile_data.avatar is not None:
         # Valider la taille de l'image (max 500KB en base64)
@@ -551,6 +567,17 @@ async def update_profile(profile_data: ProfileUpdate, current_user: User = Depen
 
     if profile_data.multiple_pregnancy is not None:
         update_fields["multiple_pregnancy"] = profile_data.multiple_pregnancy
+
+    if "first_name" in update_fields or "last_name" in update_fields:
+        current_doc = await db.users.find_one(
+            {"id": current_user.id},
+            {"_id": 0, "first_name": 1, "last_name": 1, "name": 1},
+        ) or {}
+        merged_first = update_fields.get("first_name", current_doc.get("first_name") or "")
+        merged_last = update_fields.get("last_name", current_doc.get("last_name") or "")
+        full_name = build_full_name(merged_first, merged_last)
+        if full_name:
+            update_fields["name"] = full_name
     
     if not update_fields:
         return {"success": True, "message": "Aucune modification"}

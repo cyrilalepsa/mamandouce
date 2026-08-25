@@ -1,6 +1,10 @@
-import { User, Mail, Calendar } from 'lucide-react';
+import { User, Mail, Calendar, MapPin, Users } from 'lucide-react';
+import { splitUserName } from '../../utils/userProfile';
 
 export function UserInfoCard({ user, formatDate }) {
+  const { firstName, lastName } = splitUserName(user);
+  const fullName = [firstName, lastName].filter(Boolean).join(' ') || user?.name || '—';
+
   return (
     <div 
       className="rounded-2xl p-5 relative overflow-hidden"
@@ -10,8 +14,7 @@ export function UserInfoCard({ user, formatDate }) {
       }}
       data-testid="user-info-card"
     >
-      {/* Voile blanc supprimé */}
-<div className="relative">
+      <div className="relative">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-sky-100/60 backdrop-blur-sm"
             style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.05)' }}
@@ -19,7 +22,7 @@ export function UserInfoCard({ user, formatDate }) {
             <User className="w-6 h-6 text-sky-500" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-700">{user?.name}</h2>
+            <h2 className="text-xl font-bold text-slate-700">{fullName}</h2>
             <p className="text-sm text-slate-500">{user?.email}</p>
           </div>
         </div>
@@ -32,6 +35,26 @@ export function UserInfoCard({ user, formatDate }) {
             <div>
               <p className="text-xs text-slate-500">Email</p>
               <p className="font-semibold text-sm text-slate-700">{user?.email}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-3 bg-white/60 backdrop-blur-sm rounded-xl"
+            style={{ boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.8)' }}
+          >
+            <MapPin className="w-4 h-4 text-violet-500" />
+            <div>
+              <p className="text-xs text-slate-500">Ville</p>
+              <p className="font-semibold text-sm text-slate-700">{user?.city || '—'}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-3 bg-white/60 backdrop-blur-sm rounded-xl"
+            style={{ boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.8)' }}
+          >
+            <Users className="w-4 h-4 text-violet-500" />
+            <div>
+              <p className="text-xs text-slate-500">Enfants à charge</p>
+              <p className="font-semibold text-sm text-slate-700">{user?.children_at_home ?? 0}</p>
             </div>
           </div>
 

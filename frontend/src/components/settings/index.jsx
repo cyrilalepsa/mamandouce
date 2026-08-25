@@ -8,4 +8,4 @@ export { PregnancyInfoSection } from './PregnancyInfoSection';
 export { AccountStatusSection } from './AccountStatusSection';
 export { PushNotificationsSection } from './PushNotificationsSection';
 export { LanguageSelector } from './LanguageSelector';
-export { FamilySituationSection } from './FamilySituationSection';
+export { PersonalFamilyInfoSection } from './PersonalFamilyInfoSection';
