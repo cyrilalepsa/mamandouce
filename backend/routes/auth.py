@@ -248,8 +248,44 @@ async def register(user_data: UserCreate):
     user_dict["created_at"] = user_dict["created_at"].isoformat()
     if is_superadmin_email(user.email):
         user_dict.update(SUPERADMIN_DB_SET)
+
+    referral_code = (user_data.referral_code or "").strip().upper()
+    if referral_code:
+        user_dict["signed_up_via_referral"] = referral_code
+        user_dict["neriacorp_onboarding_pending"] = "referral"
+    else:
+        user_dict["neriacorp_onboarding_pending"] = None
+
+    user_dict.setdefault("neriacorp_portal_linked", False)
+    user_dict.setdefault("neriacorp_onboarding_dismissed", False)
     
     await database.users.insert_one(user_dict)
+    
+    # Parrainage : créditer le sponsor et enregistrer le filleul
+    if referral_code:
+        from routes.referral import complete_referral_via_code
+
+        try:
+            await complete_referral_via_code(
+                referral_code=referral_code,
+                new_user_email=user.email,
+                new_user_name=user.name,
+            )
+        except HTTPException:
+            logger.warning("referral code invalid at register: %s", referral_code)
+    
+    # Cagnotte initiale (+3 N2O)
+    from models.solidarity import UserWallet, WalletTransaction, WalletTransactionType
+
+    wallet = UserWallet(user_id=user_dict["id"], balance=3.0, total_earned=3.0).dict()
+    await db.wallets.insert_one(wallet)
+    initial_tx = WalletTransaction(
+        user_id=user_dict["id"],
+        type=WalletTransactionType.INITIAL_BONUS,
+        amount=3.0,
+        description="Bonus de bienvenue - 3€ de votre abonnement",
+    ).dict()
+    await db.wallet_transactions.insert_one(initial_tx)
     
     # Track visitor/registration
     await db.site_stats.update_one(

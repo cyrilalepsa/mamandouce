@@ -404,6 +404,15 @@ export const api = {
     app: () => axios.get(`${API()}/neriacorp/app`),
     ssoStatus: () => axios.get(`${API()}/neriacorp/sso/status`),
     media: () => axios.get(`${API()}/neriacorp/media`),
+    onboardingStatus: () => axios.get(`${API()}/neriacorp/onboarding/status`, getAuthHeaders()),
+    ackOnboarding: (data) => axios.post(`${API()}/neriacorp/onboarding/ack`, data, getAuthHeaders()),
+    syncProfile: () => axios.post(`${API()}/neriacorp/profile/sync`, {}, getAuthHeaders()),
+    crossAppEntitlements: () => axios.get(`${API()}/neriacorp/cross-app/entitlements`, getAuthHeaders()),
+  },
+
+  solidarity: {
+    archivePreview: () => axios.get(`${API()}/solidarity/archive-preview`, getAuthHeaders()),
+    archiveAccount: (data) => axios.post(`${API()}/solidarity/archive-account`, data, getAuthHeaders()),
   },
   
   nameStats: {

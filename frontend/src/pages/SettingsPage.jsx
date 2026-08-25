@@ -17,7 +17,8 @@ import {
   TwoFactorSection,
   PushNotificationsSection,
   LanguageSelector,
-  PersonalFamilyInfoSection
+  PersonalFamilyInfoSection,
+  AccountClosureSection,
 } from '../components/settings';
 
 // Composant CollapsibleSection pour les paramètres avec effet glossy
@@ -248,6 +249,8 @@ function SettingsPage() {
                 onReloadUserInfo={loadUserInfo}
               />
             </CollapsibleSettingsSection>
+
+            <AccountClosureSection />
             
             {/* Section 2FA */}
             <CollapsibleSettingsSection

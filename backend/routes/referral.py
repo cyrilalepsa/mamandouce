@@ -13,6 +13,7 @@ import string
 from core.database import db
 from core.security import get_current_user
 from models.schemas import User
+from integrations.neriacorp.nucleus_client import maybe_mark_first_n2o_trigger
 from routes.push_notifications import send_admin_notification, send_push_notification
 
 router = APIRouter(tags=["referral"])
@@ -199,8 +200,7 @@ async def complete_referral_via_code(
         "created_at": now
     }
     await db.wallet_transactions.insert_one(transaction)
-    
-    # Get updated wallet balance to check milestones
+    await maybe_mark_first_n2o_trigger(sponsor["id"], 3.0, "referral_bonus")
     updated_wallet = await db.wallets.find_one({"user_id": sponsor["id"]}, {"_id": 0, "balance": 1})
     new_balance = updated_wallet.get("balance", 0) if updated_wallet else 3.0
     

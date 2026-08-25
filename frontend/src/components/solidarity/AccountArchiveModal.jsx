@@ -24,6 +24,7 @@ export default function AccountArchiveModal({ isOpen, onClose, onConfirm }) {
   const [friendEmail, setFriendEmail] = useState('');
   const [friendName, setFriendName] = useState('');
   const [reason, setReason] = useState('');
+  const [becomeAmbassador, setBecomeAmbassador] = useState(false);
   
   // Charger les données de preview
   useEffect(() => {
@@ -34,7 +35,7 @@ export default function AccountArchiveModal({ isOpen, onClose, onConfirm }) {
   
   const loadPreview = async () => {
     try {
-      const response = await api.get('/api/solidarity/archive-preview');
+      const response = await api.solidarity.archivePreview();
       setPreviewData(response.data);
     } catch (error) {
       console.error('Error loading archive preview:', error);
@@ -53,11 +54,12 @@ export default function AccountArchiveModal({ isOpen, onClose, onConfirm }) {
   const handleConfirmArchive = async () => {
     setLoading(true);
     try {
-      const response = await api.post('/api/solidarity/archive-account', {
+      const response = await api.solidarity.archiveAccount({
         donation_choice: donationChoice,
         friend_email: friendEmail || null,
         friend_name: friendName || null,
-        reason: reason || null
+        reason: reason || null,
+        become_ambassador: becomeAmbassador,
       });
       
       toast.success(response.data.message);
@@ -200,6 +202,24 @@ export default function AccountArchiveModal({ isOpen, onClose, onConfirm }) {
                 </div>
               </button>
               
+              {/* Option Ambassadrice */}
+              <button
+                type="button"
+                onClick={() => setBecomeAmbassador(!becomeAmbassador)}
+                className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
+                  becomeAmbassador
+                    ? 'border-violet-400 bg-violet-50 dark:bg-violet-900/30'
+                    : 'border-slate-200 dark:border-slate-700'
+                }`}
+              >
+                <p className={`font-bold ${textColor}`} style={textShadow}>
+                  Devenir Ambassadrice MamanDouce
+                </p>
+                <p className={`text-sm ${textMuted} mt-1`} style={textShadow}>
+                  Continuez à parrainer et contribuer après votre parcours maternité
+                </p>
+              </button>
+
               {/* Option 3: Sans transmission */}
               <button
                 onClick={() => handleChoiceSelect('none')}

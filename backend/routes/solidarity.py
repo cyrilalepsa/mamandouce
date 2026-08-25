@@ -11,6 +11,7 @@ import uuid
 from core.database import db
 from core.security import get_current_user
 from core.gamification import badge_progress_percent, eligible_badges
+from integrations.neriacorp.nucleus_client import maybe_mark_first_n2o_trigger
 from models.schemas import User
 from models.solidarity import (
     WalletTransaction, WalletTransactionType, UserWallet,
@@ -44,6 +45,7 @@ class ArchiveAccountInput(BaseModel):
     friend_email: Optional[str] = None
     friend_name: Optional[str] = None
     reason: Optional[str] = None
+    become_ambassador: bool = False
 
 
 # ==================== WALLET (CAGNOTTE) ====================
@@ -116,6 +118,8 @@ async def credit_referral_bonus(current_user: User = Depends(get_current_user)):
         description="Bonus parrainage réussi +3€"
     ).dict()
     await db.wallet_transactions.insert_one(tx)
+    
+    await maybe_mark_first_n2o_trigger(current_user.id, amount, WalletTransactionType.REFERRAL_BONUS.value)
     
     return {"success": True, "amount_credited": amount}
 
@@ -386,24 +390,42 @@ async def archive_account(data: ArchiveAccountInput, current_user: User = Depend
     # Sauvegarder la demande d'archivage
     archive_request.gift_card_id = gift_card_id
     archive_request.relay_donation_id = relay_donation_id
-    await db.archive_requests.insert_one(archive_request.dict())
-    
-    # Marquer le compte comme archivé (pas supprimé)
-    await db.users.update_one(
-        {"id": current_user.id},
-        {"$set": {
+    archive_dict = archive_request.dict()
+    archive_dict["become_ambassador"] = data.become_ambassador
+    await db.archive_requests.insert_one(archive_dict)
+
+    existing_user = await db.users.find_one({"id": current_user.id}, {"_id": 0, "subscription_status": 1}) or {}
+    user_update = {
+        "archived_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+    if data.become_ambassador:
+        user_update.update({
+            "ambassador_status": True,
+            "pregnancy_journey_completed": True,
+            "archived": False,
+            "subscription_status": existing_user.get("subscription_status") or "free",
+        })
+        message = (
+            "Merci ! Vous restez Ambassadrice MamanDouce : parrainage et contributions solidaires actifs."
+        )
+    else:
+        user_update.update({
             "archived": True,
-            "archived_at": datetime.now(timezone.utc).isoformat(),
-            "subscription_status": "archived"
-        }}
-    )
-    
+            "ambassador_status": False,
+            "subscription_status": "archived",
+        })
+        message = "Compte archivé avec succès. Merci pour votre confiance !"
+
+    await db.users.update_one({"id": current_user.id}, {"$set": user_update})
+
     return {
         "success": True,
         "balance_donated": balance if data.donation_choice in ["friend", "relay"] else 0,
         "donation_choice": data.donation_choice,
+        "become_ambassador": data.become_ambassador,
         "gift_card_code": gift_card_id[:8].upper() if gift_card_id else None,
-        "message": "Compte archivé avec succès. Merci pour votre confiance !"
+        "message": message,
     }
 
 

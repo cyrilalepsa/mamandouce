@@ -20,6 +20,7 @@ import {
 } from '../components/home';
 
 import { NewsBubble, NewsPopup, useNews } from '../components/home/NewsBubble';
+import PortalOnboardingHost from '../components/portal/PortalOnboardingHost';
 
 function HomePage() {
   const { t } = useTranslation();
@@ -393,6 +394,8 @@ function HomePage() {
           onClose={closePopup}
           onMarkAsSeen={markAsSeen}
         />
+
+        <PortalOnboardingHost />
         
         {tutorialDismissed && (
           <InfoButton onClick={openTutorial} />

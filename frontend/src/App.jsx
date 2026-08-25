@@ -8,6 +8,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { AutoRefreshProvider } from './contexts/AutoRefreshContext';
 import { checkFirstVisitLanguage } from './i18n';
 import { toast } from 'sonner';
+import InvitationPage from './pages/InvitationPage';
 import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import PregnancyCalculator from './pages/PregnancyCalculator';
@@ -186,6 +187,7 @@ useEffect(() => {
             <div className="App">
               <BrowserRouter>
                 <Routes>
+                <Route path="/invitation/:code" element={<InvitationPage />} />
                 <Route
                   path="/auth"
                   element={

@@ -54,6 +54,12 @@ APP_REGISTRY: Dict[str, Dict[str, Any]] = {
         "theme_color": "#2E8B57",
         "default_revenue": 40.0,
     },
+    "Hysia": {
+        "env_prefix": "HYSIA",
+        "inject_path": "/api/neriacorp/inject",
+        "theme_color": "#6366F1",
+        "default_revenue": 35.0,
+    },
 }
 
 CONNECT_TIMEOUT = 8.0

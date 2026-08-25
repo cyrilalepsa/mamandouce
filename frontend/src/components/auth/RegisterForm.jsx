@@ -164,6 +164,12 @@ export function RegisterForm({
             />
           </div>
         </div>
+
+        {formData.referral_code && (
+          <div className="rounded-2xl bg-violet-50 border border-violet-200 px-4 py-3 text-sm text-violet-800">
+            Code parrainage : <strong>{formData.referral_code}</strong>
+          </div>
+        )}
         
         <div>
           <Label htmlFor="password" className="text-slate-600 font-semibold">Mot de passe</Label>
