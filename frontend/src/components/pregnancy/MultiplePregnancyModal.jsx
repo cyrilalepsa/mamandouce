@@ -11,11 +11,7 @@ export function MultiplePregnancyModal({ open, onClose, onSelect, saving = false
       data-testid="multiple-pregnancy-modal"
     >
       <div
-        className="w-full max-w-md rounded-3xl p-6 shadow-2xl border border-violet-100/80"
-        style={{
-          background:
-            'linear-gradient(160deg, #ffffff 0%, #faf5ff 35%, #f3e8ff 70%, #ede9fe 100%)',
-        }}
+        className="w-full max-w-md rounded-3xl p-6 card-glass-modal card-glass-modal-violet"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-3 mb-4">

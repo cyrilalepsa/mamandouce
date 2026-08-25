@@ -139,7 +139,7 @@ export function PregnancyInfoSection({
   // Modal de confirmation finale
   const confirmationModal = showFinalWarning && (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl animate-fade-in">
+      <div className="card-glass-modal rounded-3xl p-6 max-w-md w-full animate-fade-in">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold text-slate-700">Confirmation finale</h3>
           <button

@@ -175,3 +175,38 @@ button.card-glass-interactive,
 .card-flat :where([class*="text-pink-"], [class*="text-rose-"], [class*="text-purple-"], [class*="text-violet-"], [class*="text-sky-"], [class*="text-blue-"], [class*="text-green-"], [class*="text-emerald-"], [class*="text-amber-"], [class*="text-yellow-"], [class*="text-red-"], [class*="text-orange-"], [class*="text-indigo-"], [class*="text-teal-"]) {
   -webkit-text-fill-color: currentColor;
 }
+
+/* --- Modales & popups — glass pur --- */
+.card-glass-modal,
+[role="dialog"][class*="rounded-"],
+.fixed.inset-0 > .rounded-2xl[class*="shadow"],
+.fixed.inset-0 > .rounded-3xl[class*="shadow"],
+.fixed.inset-0 > [class*="rounded-2xl"][class*="shadow"],
+.fixed.inset-0 > [class*="rounded-3xl"][class*="shadow"] {
+  background-color: rgba(255, 255, 255, 0.35) !important;
+  background-image: none !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.card-glass-modal::before,
+.card-glass-modal::after,
+[role="dialog"][class*="rounded-"]::before,
+[role="dialog"][class*="rounded-"]::after,
+.fixed.inset-0 > .rounded-2xl[class*="shadow"]::before,
+.fixed.inset-0 > .rounded-3xl[class*="shadow"]::before {
+  display: none !important;
+  content: none !important;
+}
+
+.card-glass-modal-violet {
+  background-color: rgba(196, 181, 253, 0.35) !important;
+  border-color: rgba(124, 58, 237, 0.35) !important;
+}
+
+.card-glass-modal-pink {
+  background-color: rgba(244, 114, 182, 0.35) !important;
+  border-color: rgba(236, 72, 153, 0.35) !important;
+}
