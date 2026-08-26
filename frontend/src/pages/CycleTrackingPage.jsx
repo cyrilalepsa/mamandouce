@@ -16,6 +16,10 @@ import { CycleHistoryModal } from '../components/cycle/CycleHistoryModal';
 import { InitialSetupModal } from '../components/cycle/InitialSetupModal';
 import { CycleReportModal } from '../components/cycle/CycleReportModal';
 import { PregnancyToggle } from '../components/cycle/PregnancyToggle';
+import {
+  PregnancyEncouragementModal,
+  PREGNANCY_ENCOURAGEMENT_DISMISSED_KEY,
+} from '../components/cycle/PregnancyEncouragementModal';
 import { AgendaCard } from '../components/home/AgendaCard';
 import {
   buildCycleSavePayload,
@@ -25,6 +29,8 @@ import {
 } from '../utils/cycleForm';
 import { isPregnancyActive, pregnancyProgress } from '../utils/pregnancyStatus';
 import confetti from 'canvas-confetti';
+
+const PRECONCEPTION_HUB = '/section/preconception';
 
 function CycleTrackingPage() {
   const navigate = useNavigate();
@@ -64,6 +70,7 @@ function CycleTrackingPage() {
   const [initialDates, setInitialDates] = useState(['', '', '']);
   const [showCycleReport, setShowCycleReport] = useState(false);
   const [cycleReport, setCycleReport] = useState(null);
+  const [showEncouragementModal, setShowEncouragementModal] = useState(false);
   
   // Couleurs mode sombre - BLANC PUR pour lisibilité maximale
   const cardBg = isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100';
@@ -102,6 +109,19 @@ useEffect(() => {
     };
     initialize();
   }, []);
+
+  useEffect(() => {
+    if (!initialLoading && isPregnant) {
+      setShowEncouragementModal(
+        sessionStorage.getItem(PREGNANCY_ENCOURAGEMENT_DISMISSED_KEY) !== 'true',
+      );
+    }
+  }, [initialLoading, isPregnant]);
+
+  const dismissEncouragementModal = () => {
+    sessionStorage.setItem(PREGNANCY_ENCOURAGEMENT_DISMISSED_KEY, 'true');
+    setShowEncouragementModal(false);
+  };
 
   // 🔥 NOM CORRIGÉ : "loadCycleData" pour correspondre au useEffect
   const loadCycleData = async () => {
@@ -527,10 +547,10 @@ useEffect(() => {
     );
     return (
       <div className="min-h-screen gradient-bg" data-testid="pregnancy-tracking-active">
-        <div className="max-w-2xl mx-auto p-4 sm:p-6">
+        <div className="relative z-[60] max-w-2xl mx-auto p-4 sm:p-6">
           <div className="flex items-center gap-4 mb-6">
             <Button
-              onClick={() => navigate('/')}
+              onClick={() => navigate(PRECONCEPTION_HUB)}
               variant="ghost"
               className={`p-2 rounded-full ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-white/50'}`}
               data-testid="back-button"
@@ -538,7 +558,9 @@ useEffect(() => {
               <ArrowLeft className={`w-6 h-6 ${textSecondary}`} />
             </Button>
             <div className="flex-1">
-              <h1 className={`text-2xl font-bold ${textPrimary}`}>Suivi de grossesse</h1>
+              <h1 className={`text-2xl font-bold ${textPrimary}`}>
+                {t('home.cycleTracking', 'Suivi de cycles')}
+              </h1>
               <p className={`text-sm ${textMuted}`}>Votre grossesse est active</p>
             </div>
           </div>
@@ -555,18 +577,6 @@ useEffect(() => {
                 Accouchement prévu le {new Date(dueDate).toLocaleDateString('fr-FR')}
               </p>
             )}
-          </Card>
-
-          <Card
-            className="mt-4 p-5 rounded-3xl border-2 border-pink-200 bg-gradient-to-r from-pink-50 via-rose-50 to-amber-50 text-center"
-            data-testid="pregnancy-encouragement-card"
-          >
-            <Heart className="w-8 h-8 text-pink-500 mx-auto mb-2" />
-            <h2 className="font-bold text-pink-700 text-lg">Félicitations !</h2>
-            <p className="text-sm text-pink-600 mt-1">
-              Cette première escale est achevée. Toute l’équipe MamanDouce vous souhaite
-              une belle grossesse et beaucoup de courage pour la suite !
-            </p>
           </Card>
 
           <div className="grid grid-cols-2 gap-3 mt-4" data-testid="pregnant-cycle-tabs">
@@ -589,11 +599,20 @@ useEffect(() => {
           </div>
         </div>
 
+        <PregnancyEncouragementModal
+          isOpen={showEncouragementModal}
+          onClose={dismissEncouragementModal}
+          onGoToPregnancy={() => {
+            dismissEncouragementModal();
+            navigate('/pregnancy-fertility');
+          }}
+        />
+
         <FertilityCalendar
           isOpen={showCalendar}
           onClose={() => {
             setShowCalendar(false);
-            if (searchParams.get('calendar') === 'true') navigate('/');
+            if (searchParams.get('calendar') === 'true') navigate(PRECONCEPTION_HUB);
           }}
           agendaData={agendaData}
           rapportDates={[]}
