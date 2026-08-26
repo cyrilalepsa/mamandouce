@@ -1,0 +1,110 @@
+/* ============================================
+   CHARTE « Chaleur & Douceur Premium »
+   Cartes voyage (journey-steps) — test glass satiné
+   ============================================ */
+
+:root {
+  --warm-premium-text: #2D2424;
+  --warm-premium-text-muted: #6B5E5A;
+  --warm-premium-bg: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    #FFF8F0 52%,
+    #FEEBE2 100%
+  );
+  --warm-premium-border: 1px solid rgba(255, 255, 255, 0.8);
+  --warm-premium-shadow:
+    0 12px 32px -10px rgba(254, 215, 200, 0.55),
+    0 4px 14px -4px rgba(251, 192, 168, 0.28),
+    inset 0 6px 10px rgba(255, 255, 255, 1),
+    inset 0 -6px 14px rgba(254, 205, 185, 0.2);
+  --warm-premium-shadow-hover:
+    0 16px 36px -10px rgba(254, 215, 200, 0.62),
+    0 6px 18px -4px rgba(251, 192, 168, 0.32),
+    inset 0 6px 10px rgba(255, 255, 255, 1),
+    inset 0 -6px 14px rgba(254, 205, 185, 0.22);
+}
+
+/* Fond page voyage — ambiance veloutée */
+.journey-warm-page {
+  background: var(--warm-premium-bg) fixed !important;
+  background-attachment: fixed !important;
+}
+
+/* Carte pill principale */
+.warm-premium-card {
+  background: var(--warm-premium-bg) !important;
+  background-image: var(--warm-premium-bg) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: var(--warm-premium-border) !important;
+  box-shadow: var(--warm-premium-shadow) !important;
+  color: var(--warm-premium-text) !important;
+  -webkit-text-fill-color: var(--warm-premium-text) !important;
+  opacity: 1 !important;
+  position: relative;
+  overflow: hidden;
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.2s ease;
+}
+
+.warm-premium-card::before,
+.warm-premium-card::after {
+  display: none !important;
+  content: none !important;
+}
+
+.warm-premium-card:hover:not(:disabled) {
+  box-shadow: var(--warm-premium-shadow-hover) !important;
+}
+
+.warm-premium-card--compact {
+  box-shadow:
+    0 6px 18px -6px rgba(254, 215, 200, 0.45),
+    0 2px 8px -2px rgba(251, 192, 168, 0.2),
+    inset 0 5px 8px rgba(255, 255, 255, 1),
+    inset 0 -4px 10px rgba(254, 205, 185, 0.16) !important;
+}
+
+.warm-premium-text :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, div, small, strong, em) {
+  text-shadow: none !important;
+}
+
+.warm-premium-text :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--warm-premium-text) !important;
+  -webkit-text-fill-color: var(--warm-premium-text) !important;
+}
+
+.warm-premium-text :where(p, span:not(.text-white)) {
+  color: var(--warm-premium-text-muted) !important;
+  -webkit-text-fill-color: var(--warm-premium-text-muted) !important;
+}
+
+.warm-premium-card .text-white,
+.warm-premium-card [class*='text-white'] {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Bouton épingle — verre opalin chaud */
+.warm-premium-pin {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, #FFF8F0 100%) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  box-shadow:
+    0 4px 10px -3px rgba(254, 215, 200, 0.4),
+    inset 0 4px 6px rgba(255, 255, 255, 0.95),
+    inset 0 -3px 6px rgba(254, 205, 185, 0.14) !important;
+}
+
+.warm-premium-pin.is-pinned {
+  background: linear-gradient(135deg, #FFF0F5 0%, #FEEBE2 100%) !important;
+  border-color: rgba(244, 114, 182, 0.25) !important;
+}
+
+/* Typo page */
+.journey-warm-page .journey-warm-hint {
+  color: var(--warm-premium-text-muted) !important;
+}
