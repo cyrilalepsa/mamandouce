@@ -7,6 +7,7 @@ import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
 import api from '../utils/api';
+import { withTimeout } from '../utils/backendUrl';
 import FertilityCalendar from '../components/FertilityCalendar';
 import { getCurrentLanguage } from '../i18n';
 import { useTheme } from '../contexts/ThemeContext';
@@ -31,6 +32,12 @@ import { isPregnancyActive } from '../utils/pregnancyStatus';
 import confetti from 'canvas-confetti';
 
 const PRECONCEPTION_HUB = '/section/preconception';
+const PROFILE_LOAD_TIMEOUT_MS = 8000;
+const INITIAL_LOAD_SAFETY_MS = 10000;
+
+function readStoredPregnancyFlag() {
+  return localStorage.getItem('mamandouce_pregnant') === 'true';
+}
 
 function CycleTrackingPage() {
   const navigate = useNavigate();
@@ -52,7 +59,7 @@ function CycleTrackingPage() {
   // Nouveaux états
   const [showSymptomModal, setShowSymptomModal] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [isPregnant, setIsPregnant] = useState(() => localStorage.getItem('mamandouce_pregnant') === 'true');
+  const [isPregnant, setIsPregnant] = useState(() => readStoredPregnancyFlag());
   const [dueDate, setDueDate] = useState(() => localStorage.getItem('mamandouce_due_date') || '');
   const [todaySymptoms, setTodaySymptoms] = useState([]);
   const [todayMood, setTodayMood] = useState(null);
@@ -86,10 +93,9 @@ function CycleTrackingPage() {
   const getThemeColor = (baseColor, darkColor) => isDarkMode ? darkColor : baseColor;
 
 useEffect(() => {
-    // 🎯 Détection du paramètre ?calendar=true
     const params = new URLSearchParams(window.location.search);
     const openCalendar = params.get('calendar') === 'true';
-    if (openCalendar) {
+    if (openCalendar && !readStoredPregnancyFlag()) {
       setShowCalendar(true);
     }
 
@@ -103,10 +109,22 @@ useEffect(() => {
         ]);
       } else {
         setShowIrregularBanner(false);
+        setShowCalendar(false);
       }
     };
     initialize();
   }, []);
+
+  useEffect(() => {
+    const safetyTimer = setTimeout(() => setInitialLoading(false), INITIAL_LOAD_SAFETY_MS);
+    return () => clearTimeout(safetyTimer);
+  }, []);
+
+  useEffect(() => {
+    if (isPregnant) {
+      setShowCalendar(false);
+    }
+  }, [isPregnant]);
 
   useEffect(() => {
     if (!initialLoading && isPregnant) {
@@ -124,28 +142,36 @@ useEffect(() => {
   // 🔥 NOM CORRIGÉ : "loadCycleData" pour correspondre au useEffect
   const loadCycleData = async () => {
     let pregnancyActive = isPregnancyActive({
-      storedPregnant: localStorage.getItem('mamandouce_pregnant'),
+      storedPregnant: readStoredPregnancyFlag(),
     });
     try {
-      const profileRes = await api.pregnancy.getProfile();
+      const profileRes = await withTimeout(
+        api.pregnancy.getProfile(),
+        PROFILE_LOAD_TIMEOUT_MS,
+        'pregnancy.profile',
+      );
       const profile = profileRes.data;
       pregnancyActive = isPregnancyActive({
         profile,
-        storedPregnant: localStorage.getItem('mamandouce_pregnant'),
+        storedPregnant: readStoredPregnancyFlag(),
       });
       setIsPregnant(pregnancyActive);
       if (pregnancyActive) {
         setDueDate(profile?.estimated_due_date || localStorage.getItem('mamandouce_due_date') || '');
+        setShowCalendar(false);
       }
       if (profile && profile.last_period_date) {
         const ymd = toYearMonthDay(profile.last_period_date);
         const length = parseHabitualLength(profile.cycle_length, 28);
         setLastPeriodDate(ymd);
         setCycleLength(length);
-        calculateAgendaDates(ymd, length);
+        if (!pregnancyActive) {
+          calculateAgendaDates(ymd, length);
+        }
       }
     } catch (error) {
       console.warn('Profil cycle indisponible (utilisateur sans paramètres) :', error?.response?.status || error.message);
+      setIsPregnant(pregnancyActive);
     } finally {
       setInitialLoading(false);
     }
@@ -532,7 +558,7 @@ useEffect(() => {
     return Math.round(total / cycleHistory.length);
   };
 
-  if (!initialLoading && isPregnant) {
+  if (isPregnant) {
     return (
       <div className="min-h-screen gradient-bg" data-testid="pregnancy-tracking-active">
         <div className="relative z-[60] max-w-2xl mx-auto p-4 sm:p-6">
@@ -552,6 +578,33 @@ useEffect(() => {
               <p className={`text-sm ${textMuted}`}>Votre grossesse est active</p>
             </div>
           </div>
+
+          <Card
+            className="mb-4 p-4 rounded-2xl border-2 border-pink-200 bg-gradient-to-r from-pink-50 via-rose-50 to-amber-50"
+            data-testid="pregnancy-cycle-suspended-banner"
+          >
+            <p className="text-sm text-pink-700 font-semibold">
+              Grossesse en cours — suivi de cycle fertilité suspendu
+            </p>
+            <p className="text-xs text-pink-600 mt-1 leading-relaxed">
+              Le calendrier d&apos;ovulation est désactivé pendant la grossesse. Consultez votre
+              espace Grossesse pour suivre votre parcours.
+            </p>
+            <Button
+              type="button"
+              onClick={() => navigate('/pregnancy-fertility', { replace: true })}
+              className="mt-3 w-full rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 text-white"
+              data-testid="pregnancy-hub-cta"
+            >
+              Accéder à mon espace Grossesse
+            </Button>
+          </Card>
+
+          {initialLoading && (
+            <div className="flex justify-center py-4" data-testid="pregnancy-tracking-loading">
+              <div className="w-6 h-6 border-2 border-pink-400 border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-3 mt-4" data-testid="pregnant-cycle-tabs">
             <Button

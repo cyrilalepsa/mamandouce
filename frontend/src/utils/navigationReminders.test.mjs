@@ -57,7 +57,9 @@ test("navigation moves Grossesse & Fertilité out of Profile", () => {
   assert.match(encouragementModal, /pregnancy-encouragement-close/);
   assert.match(cycle, /PregnancyEncouragementModal/);
   assert.match(cycle, /PRECONCEPTION_HUB/);
-  assert.match(cycle, /pregnant-calculation-tab/);
+  assert.match(cycle, /pregnancy-cycle-suspended-banner/);
+  assert.match(cycle, /withTimeout\(/);
+  assert.match(cycle, /INITIAL_LOAD_SAFETY_MS/);
   assert.match(cycle, /pregnant-calendar-tab/);
 });
 

@@ -54,7 +54,8 @@ test("subscription refresh does not unmount dashboard or duplicate /auth/me", ()
 
   assert.doesNotMatch(gate, /api\.auth\.getMe\(\)/);
   assert.match(gate, /initialCheckDoneRef/);
-  assert.match(gate, /if \(showLoader\) setLoading\(true\)/);
+  assert.match(gate, /setLoading\(false\)/);
+  assert.doesNotMatch(gate, /if \(showLoader\) setLoading\(false\)/);
   assert.match(gate, /checkSubscription\(auth\.user, \{ showLoader \}\)/);
   assert.match(gate, /const contextValue = useMemo\(/);
   assert.match(gate, /value=\{contextValue\}/);

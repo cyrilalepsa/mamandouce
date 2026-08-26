@@ -90,7 +90,7 @@ export function SubscriptionGate({ children }) {
         }
       }
     } finally {
-      if (showLoader) setLoading(false);
+      setLoading(false);
     }
   }, [applyPrivileged]);
 
