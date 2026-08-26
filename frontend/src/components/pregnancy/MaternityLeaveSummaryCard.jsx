@@ -1,24 +1,40 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CalendarHeart, Baby, ChevronDown } from 'lucide-react';
+import { toast } from 'sonner';
 import api from '../../utils/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { IconWell } from '../ui/IconWell';
-import { cardSoftClayClasses, cardInnerCreamClasses } from '../../utils/accentTokens';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
+import { cardInnerCreamClasses } from '../../utils/accentTokens';
+import { toYmd } from '../../utils/pregnancyDateUtils';
 import {
   calculateMaternityLeaveDates,
   formatFrenchDate,
   getScenarioLabel,
+  MATERNITY_DURATION_EXTENDED,
+  MATERNITY_DURATION_STANDARD,
+  normalizeMaternityDurationOption,
 } from '../../utils/maternityLeave';
 
 export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false }) {
-  const { user } = useAuth();
+  const { user, ingestUser } = useAuth();
   const [searchParams] = useSearchParams();
   const focusMaternityLeave = searchParams.get('focus') === 'maternity-leave';
   const cardRef = useRef(null);
   const [dueDate, setDueDate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(defaultOpen || focusMaternityLeave);
+  const [durationOption, setDurationOption] = useState(
+    normalizeMaternityDurationOption(user?.maternity_leave_duration),
+  );
+  const [prenatalStartInput, setPrenatalStartInput] = useState(user?.maternity_prenatal_start || '');
+  const [postnatalEndInput, setPostnatalEndInput] = useState(user?.maternity_postnatal_end || '');
+  const [useCpamDates, setUseCpamDates] = useState(
+    Boolean(user?.maternity_prenatal_start && user?.maternity_postnatal_end),
+  );
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -43,6 +59,17 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
   }, [user?.children_at_home, user?.multiple_pregnancy]);
 
   useEffect(() => {
+    setDurationOption(normalizeMaternityDurationOption(user?.maternity_leave_duration));
+    setPrenatalStartInput(user?.maternity_prenatal_start || '');
+    setPostnatalEndInput(user?.maternity_postnatal_end || '');
+    setUseCpamDates(Boolean(user?.maternity_prenatal_start && user?.maternity_postnatal_end));
+  }, [
+    user?.maternity_leave_duration,
+    user?.maternity_prenatal_start,
+    user?.maternity_postnatal_end,
+  ]);
+
+  useEffect(() => {
     if (focusMaternityLeave) {
       setIsOpen(true);
       requestAnimationFrame(() => {
@@ -53,7 +80,42 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
 
   const childrenAtHome = user?.children_at_home ?? 0;
   const multiplePregnancy = user?.multiple_pregnancy ?? 'none';
-  const leave = calculateMaternityLeaveDates(dueDate, childrenAtHome, multiplePregnancy);
+  const leave = calculateMaternityLeaveDates(dueDate, childrenAtHome, multiplePregnancy, {
+    durationOption,
+    prenatalStartIso: useCpamDates ? prenatalStartInput : null,
+    postnatalEndIso: useCpamDates ? postnatalEndInput : null,
+    useCpamOverrides: useCpamDates,
+  });
+
+  const showDurationChoice =
+    childrenAtHome >= 2 && multiplePregnancy === 'none';
+
+  const handleSaveCpamSettings = async () => {
+    setSaving(true);
+    try {
+      const payload = {
+        maternity_leave_duration: durationOption,
+        maternity_prenatal_start: useCpamDates ? prenatalStartInput || null : null,
+        maternity_postnatal_end: useCpamDates ? postnatalEndInput || null : null,
+      };
+      const res = await api.auth.updateProfile(payload);
+      if (res.data?.user) {
+        ingestUser(res.data.user);
+      }
+      toast.success('Dates de congé maternité enregistrées');
+    } catch {
+      toast.error('Impossible de sauvegarder les dates');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const applyCalculatedToCpamFields = () => {
+    if (!leave || leave.isCpamOverride) return;
+    setPrenatalStartInput(toYmd(leave.prenatalStart));
+    setPostnatalEndInput(toYmd(leave.postnatalEnd));
+    setUseCpamDates(true);
+  };
 
   return (
     <div
@@ -101,9 +163,100 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
               estimer votre congé maternité.
             </p>
           ) : (
-            <div className="mt-3 space-y-2">
+            <div className="mt-3 space-y-3">
               <p className="text-xs text-violet-700/75">{getScenarioLabel(leave.scenario)}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+
+              {showDurationChoice && (
+                <div className={`p-3 space-y-2 ${cardInnerCreamClasses('', { level: 4 })}`}>
+                  <p className="text-xs font-semibold text-violet-800">Durée CPAM (3e enfant)</p>
+                  <label className="flex items-start gap-2 text-xs text-violet-900">
+                    <input
+                      type="radio"
+                      name="maternity-duration"
+                      checked={durationOption === MATERNITY_DURATION_EXTENDED}
+                      onChange={() => setDurationOption(MATERNITY_DURATION_EXTENDED)}
+                      className="mt-0.5"
+                    />
+                    <span>6 semaines prénatal + 20 semaines postnatal (option prolongation)</span>
+                  </label>
+                  <label className="flex items-start gap-2 text-xs text-violet-900">
+                    <input
+                      type="radio"
+                      name="maternity-duration"
+                      checked={durationOption === MATERNITY_DURATION_STANDARD}
+                      onChange={() => setDurationOption(MATERNITY_DURATION_STANDARD)}
+                      className="mt-0.5"
+                    />
+                    <span>8 semaines prénatal + 18 semaines postnatal (barème standard Ameli)</span>
+                  </label>
+                </div>
+              )}
+
+              <div className={`p-3 space-y-2 ${cardInnerCreamClasses('', { level: 4 })}`}>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-semibold text-violet-800">Relevé Ameli / CPAM</p>
+                  <label className="flex items-center gap-1.5 text-xs text-violet-800">
+                    <input
+                      type="checkbox"
+                      checked={useCpamDates}
+                      onChange={(e) => setUseCpamDates(e.target.checked)}
+                    />
+                    Utiliser mes dates officielles
+                  </label>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[11px] text-violet-700 font-medium">Début prénatal</label>
+                    <Input
+                      type="date"
+                      value={prenatalStartInput}
+                      onChange={(e) => setPrenatalStartInput(e.target.value)}
+                      disabled={!useCpamDates}
+                      className="mt-1 h-9 text-sm"
+                      data-testid="maternity-cpam-prenatal-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-violet-700 font-medium">Fin postnatal</label>
+                    <Input
+                      type="date"
+                      value={postnatalEndInput}
+                      onChange={(e) => setPostnatalEndInput(e.target.value)}
+                      disabled={!useCpamDates}
+                      className="mt-1 h-9 text-sm"
+                      data-testid="maternity-cpam-postnatal-input"
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="text-xs"
+                    onClick={applyCalculatedToCpamFields}
+                    disabled={leave.isCpamOverride}
+                  >
+                    Reprendre le calcul
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="text-xs"
+                    onClick={handleSaveCpamSettings}
+                    disabled={saving}
+                    data-testid="maternity-cpam-save"
+                  >
+                    {saving ? 'Enregistrement…' : 'Enregistrer'}
+                  </Button>
+                </div>
+                <p className="text-[10px] text-violet-700/65">
+                  Saisissez les dates figurant sur votre relevé Ameli pour éviter tout écart de
+                  calcul.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div
                   className={`px-3 py-2 ${cardInnerCreamClasses('', { level: 4 })}`}
                   data-testid="maternity-leave-prenatal"
@@ -114,9 +267,11 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
                   <p className="text-sm font-bold text-violet-900">
                     {formatFrenchDate(leave.prenatalStart)}
                   </p>
-                  <p className="text-xs text-violet-700/70">
-                    {leave.prenatalWeeks} sem. avant la DPA
-                  </p>
+                  {leave.prenatalWeeks && (
+                    <p className="text-xs text-violet-700/70">
+                      {leave.prenatalWeeks} sem. avant la DPA
+                    </p>
+                  )}
                 </div>
                 <div
                   className={`px-3 py-2 ${cardInnerCreamClasses('', { level: 4 })}`}
@@ -128,12 +283,14 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
                   <p className="text-sm font-bold text-violet-900">
                     {formatFrenchDate(leave.postnatalEnd)}
                   </p>
-                  <p className="text-xs text-violet-700/70">
-                    {leave.postnatalWeeks} sem. après la DPA
-                  </p>
+                  {leave.postnatalWeeks && (
+                    <p className="text-xs text-violet-700/70">
+                      {leave.postnatalWeeks} sem. après la DPA
+                    </p>
+                  )}
                 </div>
               </div>
-              <p className="text-[11px] text-violet-700/65 mt-2">
+              <p className="text-[11px] text-violet-700/65">
                 DPA : {formatFrenchDate(leave.dueDate)}
               </p>
             </div>

@@ -604,6 +604,15 @@ async def update_profile(profile_data: ProfileUpdate, current_user: User = Depen
     if profile_data.multiple_pregnancy is not None:
         update_fields["multiple_pregnancy"] = profile_data.multiple_pregnancy
 
+    if profile_data.maternity_leave_duration is not None:
+        update_fields["maternity_leave_duration"] = profile_data.maternity_leave_duration
+
+    if profile_data.maternity_prenatal_start is not None:
+        update_fields["maternity_prenatal_start"] = profile_data.maternity_prenatal_start or None
+
+    if profile_data.maternity_postnatal_end is not None:
+        update_fields["maternity_postnatal_end"] = profile_data.maternity_postnatal_end or None
+
     if "first_name" in update_fields or "last_name" in update_fields:
         current_doc = await db.users.find_one(
             {"id": current_user.id},

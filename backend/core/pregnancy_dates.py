@@ -74,16 +74,34 @@ def calculate_maternity_leave(
     dpa: date,
     children_at_home: int = 0,
     multiple_pregnancy: str = "none",
+    duration_option: str = "extended",
+    prenatal_start_override: Optional[date] = None,
+    postnatal_end_override: Optional[date] = None,
 ) -> Dict[str, Any]:
     multi = str(multiple_pregnancy or "none").strip().lower()
     children = max(0, int(children_at_home or 0))
+    duration = str(duration_option or "extended").strip().lower()
+    if duration not in {"extended", "standard"}:
+        duration = "extended"
+
+    if prenatal_start_override and postnatal_end_override:
+        return {
+            "prenatal_start": prenatal_start_override,
+            "postnatal_end": postnatal_end_override,
+            "prenatal_weeks": None,
+            "postnatal_weeks": None,
+            "scenario": "cpam_statement",
+        }
 
     if multi in {"twins", "jumeaux"}:
         prenatal_weeks, postnatal_weeks, scenario = 12, 22, "twins"
     elif multi in {"triplets_or_more", "triplets", "triple"}:
         prenatal_weeks, postnatal_weeks, scenario = 24, 22, "triplets_or_more"
     elif children >= 2:
-        prenatal_weeks, postnatal_weeks, scenario = 8, 18, "third_child_plus"
+        if duration == "standard":
+            prenatal_weeks, postnatal_weeks, scenario = 8, 18, "third_child_plus_standard"
+        else:
+            prenatal_weeks, postnatal_weeks, scenario = 6, 20, "third_child_plus_extended"
     else:
         prenatal_weeks, postnatal_weeks, scenario = 6, 10, "first_or_second_child"
 

@@ -53,9 +53,17 @@ def test_cpam_maternity_leave_for_dpa_january_first():
     assert first_child["prenatal_start"] == date(2026, 11, 20)
     assert first_child["postnatal_end"] == date(2027, 3, 11)
 
-    third_child = calculate_maternity_leave(DPA, children_at_home=2, multiple_pregnancy="none")
-    assert third_child["prenatal_start"] == date(2026, 11, 6)
-    assert third_child["postnatal_end"] == date(2027, 5, 6)
+    third_child_extended = calculate_maternity_leave(
+        DPA, children_at_home=2, multiple_pregnancy="none", duration_option="extended"
+    )
+    assert third_child_extended["prenatal_start"] == date(2026, 11, 20)
+    assert third_child_extended["postnatal_end"] == date(2027, 5, 20)
+
+    third_child_standard = calculate_maternity_leave(
+        DPA, children_at_home=2, multiple_pregnancy="none", duration_option="standard"
+    )
+    assert third_child_standard["prenatal_start"] == date(2026, 11, 6)
+    assert third_child_standard["postnatal_end"] == date(2027, 5, 6)
 
     twins = calculate_maternity_leave(DPA, children_at_home=0, multiple_pregnancy="twins")
     assert twins["prenatal_start"] == date(2026, 10, 9)
@@ -64,6 +72,26 @@ def test_cpam_maternity_leave_for_dpa_january_first():
     triplets = calculate_maternity_leave(DPA, children_at_home=0, multiple_pregnancy="triplets_or_more")
     assert triplets["prenatal_start"] == date(2026, 7, 17)
     assert triplets["postnatal_end"] == date(2027, 6, 3)
+
+
+def test_cpam_maternity_leave_for_dpa_december_sixteenth():
+    dpa = date(2026, 12, 16)
+    extended = calculate_maternity_leave(
+        dpa, children_at_home=2, multiple_pregnancy="none", duration_option="extended"
+    )
+    assert extended["prenatal_start"] == date(2026, 11, 4)
+    assert extended["postnatal_end"] == date(2027, 5, 4)
+
+    override = calculate_maternity_leave(
+        dpa,
+        children_at_home=2,
+        multiple_pregnancy="none",
+        prenatal_start_override=date(2026, 11, 6),
+        postnatal_end_override=date(2027, 5, 6),
+    )
+    assert override["scenario"] == "cpam_statement"
+    assert override["prenatal_start"] == date(2026, 11, 6)
+    assert override["postnatal_end"] == date(2027, 5, 6)
 
 
 def test_uk_dpa_uses_naegele():
