@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, CalendarDays, Settings, Save, CalendarRange, Egg, Heart, Droplets, Baby, Info, TestTube, Moon, Sun, Sparkles, Plus, X, History, Brain, AlertTriangle, TrendingUp } from 'lucide-react';
+import { ArrowLeft, CalendarDays, Settings, Save, CalendarRange, Egg, Heart, Droplets, Info, TestTube, Moon, Sun, Sparkles, Plus, X, History, Brain, AlertTriangle, TrendingUp } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -23,8 +23,10 @@ import {
   parseHabitualLength,
   toYearMonthDay,
 } from '../utils/cycleForm';
-import { isPregnancyActive, pregnancyProgress } from '../utils/pregnancyStatus';
+import { isPregnancyActive } from '../utils/pregnancyStatus';
 import confetti from 'canvas-confetti';
+
+const PRECONCEPTION_HUB = '/section/preconception';
 
 function CycleTrackingPage() {
   const navigate = useNavigate();
@@ -48,8 +50,6 @@ function CycleTrackingPage() {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [isPregnant, setIsPregnant] = useState(() => localStorage.getItem('mamandouce_pregnant') === 'true');
   const [dueDate, setDueDate] = useState(() => localStorage.getItem('mamandouce_due_date') || '');
-  const [pregnancyWeek, setPregnancyWeek] = useState(null);
-  const [pregnancyTrimester, setPregnancyTrimester] = useState(null);
   const [todaySymptoms, setTodaySymptoms] = useState([]);
   const [todayMood, setTodayMood] = useState(null);
   const [todayTemp, setTodayTemp] = useState('');
@@ -118,8 +118,6 @@ useEffect(() => {
       setIsPregnant(pregnancyActive);
       if (pregnancyActive) {
         setDueDate(profile?.estimated_due_date || localStorage.getItem('mamandouce_due_date') || '');
-        setPregnancyWeek(profile?.current_week || null);
-        setPregnancyTrimester(profile?.trimester || null);
       }
       if (profile && profile.last_period_date) {
         const ymd = toYearMonthDay(profile.last_period_date);
@@ -517,20 +515,12 @@ useEffect(() => {
   };
 
   if (!initialLoading && isPregnant) {
-    const progress = pregnancyProgress(
-      {
-        current_week: pregnancyWeek,
-        trimester: pregnancyTrimester,
-        estimated_due_date: dueDate,
-      },
-      dueDate,
-    );
     return (
       <div className="min-h-screen gradient-bg" data-testid="pregnancy-tracking-active">
         <div className="max-w-2xl mx-auto p-4 sm:p-6">
           <div className="flex items-center gap-4 mb-6">
             <Button
-              onClick={() => navigate('/')}
+              onClick={() => navigate(PRECONCEPTION_HUB)}
               variant="ghost"
               className={`p-2 rounded-full ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-white/50'}`}
               data-testid="back-button"
@@ -538,27 +528,15 @@ useEffect(() => {
               <ArrowLeft className={`w-6 h-6 ${textSecondary}`} />
             </Button>
             <div className="flex-1">
-              <h1 className={`text-2xl font-bold ${textPrimary}`}>Suivi de grossesse</h1>
+              <h1 className={`text-2xl font-bold ${textPrimary}`}>
+                {t('home.cycleTracking', 'Suivi de cycles')}
+              </h1>
               <p className={`text-sm ${textMuted}`}>Votre grossesse est active</p>
             </div>
           </div>
 
-          <Card className="card_nacre rounded-3xl p-6 text-center">
-            <Baby className="w-10 h-10 text-pink-200 mx-auto mb-3" />
-            <p className="text-sm text-white/80 uppercase tracking-wider">Avancement</p>
-            <p className="text-3xl font-bold text-white mt-2">Semaine {progress.week}</p>
-            <p className="text-sm font-semibold text-white/90 mt-2">
-              Trimestre {progress.trimester} • SA
-            </p>
-            {dueDate && (
-              <p className="text-xs text-white/75 mt-3">
-                Accouchement prévu le {new Date(dueDate).toLocaleDateString('fr-FR')}
-              </p>
-            )}
-          </Card>
-
           <Card
-            className="mt-4 p-5 rounded-3xl border-2 border-pink-200 bg-gradient-to-r from-pink-50 via-rose-50 to-amber-50 text-center"
+            className="p-5 rounded-3xl border-2 border-pink-200 bg-gradient-to-r from-pink-50 via-rose-50 to-amber-50 text-center"
             data-testid="pregnancy-encouragement-card"
           >
             <Heart className="w-8 h-8 text-pink-500 mx-auto mb-2" />
@@ -593,7 +571,7 @@ useEffect(() => {
           isOpen={showCalendar}
           onClose={() => {
             setShowCalendar(false);
-            if (searchParams.get('calendar') === 'true') navigate('/');
+            if (searchParams.get('calendar') === 'true') navigate(PRECONCEPTION_HUB);
           }}
           agendaData={agendaData}
           rapportDates={[]}
