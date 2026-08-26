@@ -13,9 +13,6 @@ import {
   calculateMaternityLeaveDates,
   formatFrenchDate,
   getScenarioLabel,
-  MATERNITY_DURATION_EXTENDED,
-  MATERNITY_DURATION_STANDARD,
-  normalizeMaternityDurationOption,
 } from '../../utils/maternityLeave';
 
 export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false }) {
@@ -26,9 +23,6 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
   const [dueDate, setDueDate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(defaultOpen || focusMaternityLeave);
-  const [durationOption, setDurationOption] = useState(
-    normalizeMaternityDurationOption(user?.maternity_leave_duration),
-  );
   const [prenatalStartInput, setPrenatalStartInput] = useState(user?.maternity_prenatal_start || '');
   const [postnatalEndInput, setPostnatalEndInput] = useState(user?.maternity_postnatal_end || '');
   const [useCpamDates, setUseCpamDates] = useState(
@@ -59,15 +53,10 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
   }, [user?.children_at_home, user?.multiple_pregnancy]);
 
   useEffect(() => {
-    setDurationOption(normalizeMaternityDurationOption(user?.maternity_leave_duration));
     setPrenatalStartInput(user?.maternity_prenatal_start || '');
     setPostnatalEndInput(user?.maternity_postnatal_end || '');
     setUseCpamDates(Boolean(user?.maternity_prenatal_start && user?.maternity_postnatal_end));
-  }, [
-    user?.maternity_leave_duration,
-    user?.maternity_prenatal_start,
-    user?.maternity_postnatal_end,
-  ]);
+  }, [user?.maternity_prenatal_start, user?.maternity_postnatal_end]);
 
   useEffect(() => {
     if (focusMaternityLeave) {
@@ -81,20 +70,15 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
   const childrenAtHome = user?.children_at_home ?? 0;
   const multiplePregnancy = user?.multiple_pregnancy ?? 'none';
   const leave = calculateMaternityLeaveDates(dueDate, childrenAtHome, multiplePregnancy, {
-    durationOption,
     prenatalStartIso: useCpamDates ? prenatalStartInput : null,
     postnatalEndIso: useCpamDates ? postnatalEndInput : null,
     useCpamOverrides: useCpamDates,
   });
 
-  const showDurationChoice =
-    childrenAtHome >= 2 && multiplePregnancy === 'none';
-
   const handleSaveCpamSettings = async () => {
     setSaving(true);
     try {
       const payload = {
-        maternity_leave_duration: durationOption,
         maternity_prenatal_start: useCpamDates ? prenatalStartInput || null : null,
         maternity_postnatal_end: useCpamDates ? postnatalEndInput || null : null,
       };
@@ -165,32 +149,6 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
           ) : (
             <div className="mt-3 space-y-3">
               <p className="text-xs text-violet-700/75">{getScenarioLabel(leave.scenario)}</p>
-
-              {showDurationChoice && (
-                <div className={`p-3 space-y-2 ${cardInnerCreamClasses('', { level: 4 })}`}>
-                  <p className="text-xs font-semibold text-violet-800">Durée CPAM (3e enfant)</p>
-                  <label className="flex items-start gap-2 text-xs text-violet-900">
-                    <input
-                      type="radio"
-                      name="maternity-duration"
-                      checked={durationOption === MATERNITY_DURATION_EXTENDED}
-                      onChange={() => setDurationOption(MATERNITY_DURATION_EXTENDED)}
-                      className="mt-0.5"
-                    />
-                    <span>6 semaines prénatal + 20 semaines postnatal (option prolongation)</span>
-                  </label>
-                  <label className="flex items-start gap-2 text-xs text-violet-900">
-                    <input
-                      type="radio"
-                      name="maternity-duration"
-                      checked={durationOption === MATERNITY_DURATION_STANDARD}
-                      onChange={() => setDurationOption(MATERNITY_DURATION_STANDARD)}
-                      className="mt-0.5"
-                    />
-                    <span>8 semaines prénatal + 18 semaines postnatal (barème standard Ameli)</span>
-                  </label>
-                </div>
-              )}
 
               <div className={`p-3 space-y-2 ${cardInnerCreamClasses('', { level: 4 })}`}>
                 <div className="flex items-center justify-between gap-2">
@@ -292,6 +250,7 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
               </div>
               <p className="text-[11px] text-violet-700/65">
                 DPA : {formatFrenchDate(leave.dueDate)}
+                {leave.totalWeeks ? ` · Total : ${leave.totalWeeks} semaines` : ''}
               </p>
             </div>
           )}
