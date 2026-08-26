@@ -58,7 +58,8 @@ test("dashboard and pregnancy module enforce pregnancy guards", () => {
   assert.match(pregnancyPage, /!isPregnant && cycleStatus/);
   assert.match(pregnancyPage, /isPregnant \? \(/);
   assert.match(tracking, /data-testid="pregnancy-tracking-active"/);
-  assert.match(tracking, /if \(!initialLoading && isPregnant\)/);
+  assert.match(tracking, /if \(isPregnant\) \{\s*\n\s*return/s);
+  assert.match(tracking, /pregnancy-cycle-suspended-banner/);
 });
 
 test("recent dashboard memos cannot access declarations in the TDZ", () => {
