@@ -8,7 +8,7 @@ import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
 import { useHomeLayout } from '../contexts/HomeLayoutContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { accentFromBgColor, accentFromSectionId } from '../utils/accentTokens';
+import { accentFromBgColor, accentFromSectionId, softClayCardClasses } from '../utils/accentTokens';
 import { IconWell } from '../components/ui/IconWell';
 
 // Métadonnées des sections
@@ -243,9 +243,11 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
   const sectionAccent = accentFromSectionId(sectionId);
   const items = SECTION_ITEMS[sectionId] || [];
   
-  const textColorTitle = isDarkMode ? 'text-white' : '';
-  const textColorDesc = isDarkMode ? 'text-white' : '';
-  const textColorItem = isDarkMode ? 'text-white' : '';
+  // Couleurs de texte conditionnelles pour le mode sombre
+  // Couleurs de texte avec ombre pour lisibilité en mode sombre
+  const textColorTitle = isDarkMode ? 'text-white' : 'text-slate-700';
+  const textColorDesc = isDarkMode ? 'text-white' : 'text-slate-500';
+  const textColorItem = isDarkMode ? 'text-white' : 'text-slate-600';
   
   // Style d'ombre pour mode sombre
   const darkTextShadow = isDarkMode ? { textShadow: '1px 1px 3px rgba(0,0,0,1)' } : {};
@@ -333,9 +335,10 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
       <div 
         className={`
           relative overflow-hidden cursor-pointer select-none section-card
+          soft-clay-premium soft-clay-from-accent soft-clay-section-${sectionId} soft-clay-text-flat
+          ${softClayCardClasses(sectionAccent)}
           rounded-[24px] px-5 py-2.5
           transition-all duration-300
-          ${!isDarkMode ? 'warm-premium-card warm-premium-text' : 'soft-clay-text-flat'}
           ${!isPinned ? 'hover:scale-[1.02] active:scale-[0.98]' : ''}
           ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''}
         `}
@@ -343,7 +346,9 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
           background: isDarkMode ? getCardBackground(sectionId) : undefined,
           border: isDarkMode ? getCardBorder(sectionId) : undefined,
           boxShadow: isDarkMode ? getCardShadow(sectionId) : undefined,
-          color: isDarkMode ? '#ffffff' : undefined,
+          backdropFilter: 'none',
+          WebkitBackdropFilter: 'none',
+          color: '#000000',
           WebkitUserSelect: 'none', 
           WebkitTouchCallout: 'none' 
         }}
@@ -386,10 +391,8 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
           {/* Bouton épingle - bulle nacre bombée */}
           <button
             onClick={handlePinClick}
-            className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-              isDarkMode ? '' : `warm-premium-pin ${isPinned ? 'is-pinned' : ''}`
-            }`}
-            style={isDarkMode ? {
+            className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{
               background: isPinned 
                 ? 'linear-gradient(145deg, #fce7f3, #fbcfe8)' 
                 : 'linear-gradient(160deg, #ffffff 0%, #fafafa 40%, #f0f0f2 100%)',
@@ -397,7 +400,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
                 ? '1px solid rgba(244, 114, 182, 0.3)' 
                 : '1px solid rgba(255,255,255,0.7)',
               boxShadow: '0 3px 6px -1px rgba(0,0,0,0.08), inset -2px -2px 5px rgba(0,0,0,0.05), inset 2px 2px 5px rgba(255,255,255,0.8)'
-            } : undefined}
+            }}
             data-testid={`pin-${sectionId}`}
           >
             <Pin className={`w-4 h-4 ${isPinned ? 'text-pink-500 rotate-45' : 'text-red-300'}`} />
@@ -416,9 +419,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
                   key={item.id}
                   onClick={() => handleItemClick(item.route, item.external)}
                   data-accent={itemAccent}
-                  className={`relative flex flex-col items-center gap-1 p-3 rounded-[24px] transition-all active:scale-95 ${
-                    isDarkMode ? '' : 'warm-premium-card warm-premium-card--compact warm-premium-text'
-                  }`}
+                  className={`relative flex flex-col items-center gap-1 p-3 rounded-[24px] soft-clay-premium soft-clay-from-accent soft-clay-text-flat ${softClayCardClasses(itemAccent)} transition-all active:scale-95`}
                   style={{ 
                     background: isDarkMode ? 'rgba(30,41,59,0.9)' : undefined,
                     border: isDarkMode ? '1px solid rgba(71,85,105,0.5)' : undefined,
@@ -525,7 +526,7 @@ function JourneyStepsPage() {
   };
 
   return (
-    <div className="min-h-screen journey-warm-page">
+    <div className="min-h-screen gradient-bg">
       <div className="max-w-2xl mx-auto p-4 sm:p-6 pt-8 sm:pt-10">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -548,7 +549,7 @@ function JourneyStepsPage() {
               </h1>
               <Heart className="w-4 h-4 text-pink-400" fill="currentColor" />
             </div>
-            <p className={`text-xs journey-warm-hint ${isDarkMode ? 'text-white' : ''}`} style={darkTextShadow}>
+            <p className={`text-xs ${isDarkMode ? 'text-white' : 'text-slate-400'}`} style={darkTextShadow}>
               {t('journey.longPressHint', 'Appui long pour dupliquer · Clic pour entrer')}
             </p>
           </div>
