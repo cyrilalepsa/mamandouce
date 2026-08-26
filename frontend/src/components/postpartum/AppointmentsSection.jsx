@@ -3,6 +3,7 @@ import {
   Calendar, Heart, Baby, Shield, Stethoscope, Clock, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { PastelAccordion, PastelCard } from '../ui/PastelComponents';
+import { IconWell } from '../ui/IconWell';
 
 // Grouper les rendez-vous par période
 const groupAppointmentsByPeriod = (appointments) => {
@@ -41,12 +42,10 @@ function AppointmentCard({ apt, color }) {
     <PastelCard color={cardColor} className="p-4 mb-3">
       {/* Header */}
       <div className="flex items-start gap-3 mb-3">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-          isObligatoire ? 'bg-rose-100/60' : 'bg-sky-100/60'
-        } backdrop-blur-sm`}
-          style={{ boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.03)' }}
-        >
-          <Stethoscope className={`w-5 h-5 ${isObligatoire ? 'text-rose-600' : 'text-sky-600'}`} />
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0">
+          <IconWell accent={isObligatoire ? 'red' : 'sky'} size="md">
+            <Stethoscope className="w-5 h-5 text-white" />
+          </IconWell>
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap">
@@ -83,9 +82,7 @@ function AppointmentCard({ apt, color }) {
       {/* Details */}
       <div className="space-y-2.5">
         {apt.for_mom && apt.for_mom.length > 0 && (
-          <div className="bg-pink-50/60 backdrop-blur-sm rounded-xl p-2.5"
-            style={{ boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.8)' }}
-          >
+          <div className="card-inner-cream rounded-xl p-2.5">
             <h4 className="text-sm font-bold text-pink-700 mb-1.5 flex items-center gap-1">
               <Heart className="w-3.5 h-3.5" /> Pour maman
             </h4>
@@ -101,9 +98,7 @@ function AppointmentCard({ apt, color }) {
         )}
         
         {apt.for_baby && apt.for_baby.length > 0 && (
-          <div className="bg-sky-50/60 backdrop-blur-sm rounded-xl p-2.5"
-            style={{ boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.8)' }}
-          >
+          <div className="card-inner-cream rounded-xl p-2.5">
             <h4 className="text-sm font-bold text-sky-700 mb-1.5 flex items-center gap-1">
               <Baby className="w-3.5 h-3.5" /> Pour bébé
             </h4>
@@ -119,9 +114,7 @@ function AppointmentCard({ apt, color }) {
         )}
         
         {apt.vaccines && apt.vaccines.length > 0 && (
-          <div className="bg-green-50/60 backdrop-blur-sm rounded-xl p-2.5"
-            style={{ boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.8)' }}
-          >
+          <div className="card-inner-cream rounded-xl p-2.5">
             <h4 className="text-sm font-bold text-green-700 mb-1.5 flex items-center gap-1">
               <Shield className="w-3.5 h-3.5" /> Vaccins
             </h4>
@@ -135,11 +128,9 @@ function AppointmentCard({ apt, color }) {
         )}
         
         {apt.tips && (
-          <div className="bg-amber-50/50 backdrop-blur-sm rounded-xl p-2.5 border border-amber-200/40"
-            style={{ boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.8)' }}
-          >
-            <p className="text-xs text-amber-800">
-              <span className="font-bold text-amber-600">💡 Conseil :</span> {apt.tips}
+          <div className="card-inner-cream rounded-xl p-2.5">
+            <p className="text-xs text-amber-900">
+              <span className="font-bold text-amber-700">💡 Conseil :</span> {apt.tips}
             </p>
           </div>
         )}

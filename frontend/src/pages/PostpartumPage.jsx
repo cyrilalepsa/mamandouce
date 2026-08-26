@@ -16,6 +16,7 @@ import { ToggleAllSections } from '../components/ToggleAllSections';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useHomeLayout } from '../contexts/HomeLayoutContext';
 import { DuplicatePopup } from '../components/home/DuplicatePopup';
+import { CategoryDetailTile } from '../components/ui/SoftClayCards';
 
 // Import refactored components
 import {
@@ -322,7 +323,7 @@ export default function PostpartumPage() {
       label: 'Alimentation', 
       desc: 'Allaitement, biberons, diversification',
       icon: Utensils, 
-      color: 'orange',
+      color: 'yellow',
       route: '/postpartum/alimentation'
     },
     { 
@@ -330,7 +331,7 @@ export default function PostpartumPage() {
       label: 'Soins quotidiens', 
       desc: 'Coucher, change, portage',
       icon: Baby, 
-      color: 'sky',
+      color: 'blue',
       route: '/postpartum/soins'
     },
     { 
@@ -338,7 +339,7 @@ export default function PostpartumPage() {
       label: 'Sécurité', 
       desc: 'Difficultés, précautions',
       icon: Shield, 
-      color: 'violet',
+      color: 'red',
       route: '/postpartum/securite'
     },
     { 
@@ -346,7 +347,7 @@ export default function PostpartumPage() {
       label: 'RDV médicaux', 
       desc: 'Suivi post-accouchement',
       icon: Calendar, 
-      color: 'pink',
+      color: 'green',
       route: '/postpartum/rdv'
     },
   ];
@@ -359,7 +360,7 @@ export default function PostpartumPage() {
     { id: 'formula', label: t('postpartumPage.sections.formula'), icon: Baby, color: 'sky' },
     { id: 'diapers', label: t('postpartumPage.sections.diapers'), icon: Droplets, color: 'cyan' },
     { id: 'babywearing', label: t('postpartumPage.sections.babywearing'), icon: HandHeart, color: 'violet' },
-    { id: 'diversification', label: t('postpartumPage.sections.diversification'), icon: Utensils, color: 'orange' },
+    { id: 'diversification', label: t('postpartumPage.sections.diversification'), icon: Utensils, color: 'red' },
     { id: 'recipes', label: t('postpartumPage.sections.recipes'), icon: Sparkles, color: 'emerald', badge: content?.recipes?.length || 0 },
     { id: 'precautions', label: t('postpartumPage.sections.precautions'), icon: Shield, color: 'slate' },
   ];
@@ -765,19 +766,16 @@ export default function PostpartumPage() {
         <div className="grid grid-cols-2 gap-4">
           {mainCategories.map((category, index) => {
             const Icon = category.icon;
-            
-            // Cycle couleurs logos : Jaune → Bleu → Rouge → Vert
-            const logoCycleColors = [
-              'from-yellow-400 to-amber-500',
-              'from-blue-400 to-sky-500',
-              'from-red-400 to-rose-500',
-              'from-green-400 to-emerald-500',
-            ];
-            const logoColor = logoCycleColors[index % logoCycleColors.length];
-            
             return (
-              <Card 
-                key={category.id} 
+              <CategoryDetailTile
+                key={category.id}
+                accent={category.color}
+                index={index}
+                title={category.label}
+                subtitle={category.desc}
+                icon={<Icon className="w-7 h-7 text-white" />}
+                testId={`category-${category.id}`}
+                selected={selectedForDuplicate === category.id}
                 onClick={() => navigate(category.route)}
                 onTouchStart={() => handleLongPressStart(category.id)}
                 onTouchEnd={handleLongPressEnd}
@@ -785,33 +783,12 @@ export default function PostpartumPage() {
                 onMouseDown={() => handleLongPressStart(category.id)}
                 onMouseUp={handleLongPressEnd}
                 onMouseLeave={handleLongPressEnd}
-                className={`relative overflow-hidden rounded-3xl p-5 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] border-0 select-none nacre-bombe ${
-                  selectedForDuplicate === category.id ? 'ring-2 ring-pink-400' : ''
-                }`}
-                style={{ 
-                  background: 'linear-gradient(160deg, #ffffff 0%, #ffffff 25%, #fefefe 50%, #fafafa 80%, #f5f5f7 100%)',
-                  boxShadow: '0 8px 24px -4px rgba(0,0,0,0.1), 0 4px 10px -2px rgba(0,0,0,0.05), inset -5px -5px 12px rgba(0,0,0,0.04), inset 5px 5px 12px rgba(255,255,255,0.95)',
-                  border: '1px solid rgba(255,255,255,0.95)',
-                  WebkitUserSelect: 'none', 
-                  WebkitTouchCallout: 'none' 
+                className="select-none"
+                style={{
+                  WebkitUserSelect: 'none',
+                  WebkitTouchCallout: 'none',
                 }}
-                data-testid={`category-${category.id}`}
-              >
-                {/* Bulle logo colorée vive */}
-                <div 
-                  className={`relative w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 bg-gradient-to-br ${logoColor}`}
-                  style={{
-                    boxShadow: '0 4px 10px -2px rgba(0,0,0,0.2), inset 0 1px 3px rgba(255,255,255,0.3)',
-                  }}
-                >
-                  <Icon className="w-7 h-7 text-white" />
-                </div>
-                
-                <div className="relative text-center">
-                  <h3 className="font-bold text-black text-base mb-1">{category.label}</h3>
-                  <p className="text-xs text-slate-500">{category.desc}</p>
-                </div>
-              </Card>
+              />
             );
           })}
         </div>

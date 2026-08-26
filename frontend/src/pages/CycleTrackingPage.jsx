@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, CalendarDays, Settings, Save, CalendarRange, Egg, Heart, Droplets, Baby, Info, TestTube, Moon, Sun, Sparkles, Plus, X, History, Brain, AlertTriangle, TrendingUp } from 'lucide-react';
+import { ArrowLeft, CalendarDays, Settings, Save, CalendarRange, Egg, Heart, Droplets, Info, TestTube, Moon, Sun, Sparkles, Plus, X, History, Brain, AlertTriangle, TrendingUp } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -27,7 +27,7 @@ import {
   parseHabitualLength,
   toYearMonthDay,
 } from '../utils/cycleForm';
-import { isPregnancyActive, pregnancyProgress } from '../utils/pregnancyStatus';
+import { isPregnancyActive } from '../utils/pregnancyStatus';
 import confetti from 'canvas-confetti';
 
 const PRECONCEPTION_HUB = '/section/preconception';
@@ -54,8 +54,6 @@ function CycleTrackingPage() {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [isPregnant, setIsPregnant] = useState(() => localStorage.getItem('mamandouce_pregnant') === 'true');
   const [dueDate, setDueDate] = useState(() => localStorage.getItem('mamandouce_due_date') || '');
-  const [pregnancyWeek, setPregnancyWeek] = useState(null);
-  const [pregnancyTrimester, setPregnancyTrimester] = useState(null);
   const [todaySymptoms, setTodaySymptoms] = useState([]);
   const [todayMood, setTodayMood] = useState(null);
   const [todayTemp, setTodayTemp] = useState('');
@@ -138,8 +136,6 @@ useEffect(() => {
       setIsPregnant(pregnancyActive);
       if (pregnancyActive) {
         setDueDate(profile?.estimated_due_date || localStorage.getItem('mamandouce_due_date') || '');
-        setPregnancyWeek(profile?.current_week || null);
-        setPregnancyTrimester(profile?.trimester || null);
       }
       if (profile && profile.last_period_date) {
         const ymd = toYearMonthDay(profile.last_period_date);
@@ -537,14 +533,6 @@ useEffect(() => {
   };
 
   if (!initialLoading && isPregnant) {
-    const progress = pregnancyProgress(
-      {
-        current_week: pregnancyWeek,
-        trimester: pregnancyTrimester,
-        estimated_due_date: dueDate,
-      },
-      dueDate,
-    );
     return (
       <div className="min-h-screen gradient-bg" data-testid="pregnancy-tracking-active">
         <div className="relative z-[60] max-w-2xl mx-auto p-4 sm:p-6">
@@ -564,20 +552,6 @@ useEffect(() => {
               <p className={`text-sm ${textMuted}`}>Votre grossesse est active</p>
             </div>
           </div>
-
-          <Card className="card_nacre rounded-3xl p-6 text-center">
-            <Baby className="w-10 h-10 text-pink-200 mx-auto mb-3" />
-            <p className="text-sm text-white/80 uppercase tracking-wider">Avancement</p>
-            <p className="text-3xl font-bold text-white mt-2">Semaine {progress.week}</p>
-            <p className="text-sm font-semibold text-white/90 mt-2">
-              Trimestre {progress.trimester} • SA
-            </p>
-            {dueDate && (
-              <p className="text-xs text-white/75 mt-3">
-                Accouchement prévu le {new Date(dueDate).toLocaleDateString('fr-FR')}
-              </p>
-            )}
-          </Card>
 
           <div className="grid grid-cols-2 gap-3 mt-4" data-testid="pregnant-cycle-tabs">
             <Button

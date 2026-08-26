@@ -1,51 +1,36 @@
 /* ============================================
-   GLASSMORPHISM BOMBÉ 3D — interactif vs plat
+   GLASSMORPHISM PUR — verre dépoli, sans irisé
    ============================================ */
 
 :root {
   --glass-text: var(--md-text-anthracite, #2C2C2C);
-  --glass-bg: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.42) 0%,
-    rgba(255, 255, 255, 0.14) 42%,
-    rgba(255, 255, 255, 0.08) 58%,
-    rgba(255, 255, 255, 0.28) 100%
-  );
-  --glass-border: 1px solid rgba(255, 255, 255, 0.45);
-  --glass-blur: blur(12px) saturate(180%);
-  --glass-shadow-interactive:
-    0 10px 28px -8px rgba(15, 23, 42, 0.14),
-    0 4px 14px -4px rgba(15, 23, 42, 0.07),
-    inset 3px 3px 10px rgba(255, 255, 255, 0.88),
-    inset -3px -3px 10px rgba(15, 23, 42, 0.05);
-  --glass-shadow-interactive-hover:
-    0 14px 32px -8px rgba(15, 23, 42, 0.16),
-    0 6px 16px -4px rgba(15, 23, 42, 0.08),
-    inset 3px 3px 12px rgba(255, 255, 255, 0.92),
-    inset -3px -3px 10px rgba(15, 23, 42, 0.06);
+  --glass-blur: blur(12px);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+  --glass-shadow: var(--clay-shadow-full);
+  --glass-shadow-hover: var(--clay-shadow-hover);
   --glass-radius: 24px;
 }
 
-/* --- INTERACTIF : cliquable / collapsible --- */
+/* --- Interactif : cliquable / collapsible --- */
 .card-glass-interactive,
-.nacre-bombe:not(.fixed):not(.card-flat),
-[data-testid*="category-"]:not(.fixed):not(.card-flat),
-[data-testid*="video-"]:not(.fixed):not(.card-flat),
-[class*="cursor-pointer"][class*="rounded-"][class*="shadow"]:not(.admin-drawer):not(.fertility-calendar):not(.fixed):not(.card-flat),
+.nacre-bombe:not(.fixed):not(.card-flat):not(.card-soft-clay):not(.soft-clay-from-accent),
+[data-testid*="category-"]:not(.fixed):not(.card-flat):not(.card-soft-clay):not(.soft-clay-from-accent),
+[data-testid*="video-"]:not(.fixed):not(.card-flat):not(.card-soft-clay):not(.soft-clay-from-accent),
+[class*="cursor-pointer"][class*="rounded-"][class*="shadow"]:not(.admin-drawer):not(.fertility-calendar):not(.fixed):not(.card-flat):not(.card-soft-clay):not(.soft-clay-from-accent):not(.soft-clay-premium),
 button.card-glass-interactive,
 .PastelMosaicCard-glass,
 .PastelPillCard-glass {
-  background-color: rgba(255, 255, 255, 0.12) !important;
-  background-image: var(--glass-bg) !important;
-  backdrop-filter: var(--glass-blur) !important;
-  -webkit-backdrop-filter: var(--glass-blur) !important;
-  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  background-color: var(--clay-surface-white, #FFFFFF) !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+  border: var(--glass-border) !important;
   border-radius: var(--glass-radius, 24px);
-  box-shadow: var(--glass-shadow-interactive) !important;
+  box-shadow: var(--glass-shadow) !important;
   position: relative;
   overflow: hidden;
-  transition: box-shadow 0.22s ease, transform 0.22s ease, filter 0.22s ease;
-  /* Texte anthracite — le blanc est illisible sur glass clair */
+  transition: box-shadow 0.22s ease, transform 0.22s ease;
   color: var(--glass-text) !important;
   -webkit-text-fill-color: var(--glass-text);
 }
@@ -53,119 +38,105 @@ button.card-glass-interactive,
 .card-glass-interactive:hover,
 .nacre-bombe:not(.fixed):not(.card-flat):hover,
 [class*="cursor-pointer"][class*="rounded-"][class*="shadow"]:not(.admin-drawer):not(.fertility-calendar):not(.fixed):not(.card-flat):hover {
-  box-shadow: var(--glass-shadow-interactive-hover) !important;
-  filter: brightness(1.03);
+  box-shadow: var(--glass-shadow-hover) !important;
+  transform: translateY(-1px);
 }
 
-/* Reflet glossy bombé */
+/* Pas de reflets spéculaires / arc-en-ciel */
 .card-glass-interactive::before,
-.nacre-bombe:not(.fixed):not(.card-flat)::before {
-  content: '' !important;
-  display: block !important;
-  position: absolute !important;
-  top: 3px !important;
-  left: 8% !important;
-  right: 8% !important;
-  height: 28% !important;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.55) 0%,
-    rgba(255, 255, 255, 0) 100%
-  ) !important;
-  border-radius: inherit !important;
-  pointer-events: none !important;
-  z-index: 1 !important;
+.card-glass-interactive::after,
+.nacre-bombe:not(.fixed):not(.card-flat)::before,
+.nacre-bombe:not(.fixed):not(.card-flat)::after {
+  display: none !important;
+  content: none !important;
 }
 
-/* Soft-clay section / item cards — teintes thème conservées */
+/* Cartes teintées (soft-clay / card-soft-clay) — glass pur */
 [data-testid*="section-card"].soft-clay-premium,
-[data-testid*="item-card"].soft-clay-premium {
+[data-testid*="item-card"].soft-clay-premium,
+.card-soft-clay,
+.soft-clay-from-accent,
+.soft-clay-premium.card-soft-clay {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  color: var(--soft-clay-text) !important;
-  -webkit-text-fill-color: var(--soft-clay-text);
+  opacity: 1 !important;
+  box-shadow: var(--clay-shadow-full) !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  color: var(--soft-clay-text, var(--glass-text)) !important;
+  -webkit-text-fill-color: var(--soft-clay-text, var(--glass-text));
 }
 
 [data-testid*="section-card"].soft-clay-premium :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, div),
-[data-testid*="item-card"].soft-clay-premium :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, div) {
-  color: var(--soft-clay-text);
-  -webkit-text-fill-color: var(--soft-clay-text);
+[data-testid*="item-card"].soft-clay-premium :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, div),
+.card-soft-clay :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, div),
+.soft-clay-from-accent :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, div) {
+  color: var(--soft-clay-text, var(--glass-text));
+  -webkit-text-fill-color: var(--soft-clay-text, var(--glass-text));
 }
 
 [data-testid*="item-card"].soft-clay-premium .text-white,
-[data-testid*="section-card"].soft-clay-premium .text-white {
+[data-testid*="section-card"].soft-clay-premium .text-white,
+.card-soft-clay .text-white,
+.soft-clay-from-accent .text-white {
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
 }
 
+/* Accents glass sur card-glass-interactive */
 .card-glass-interactive[data-accent="pink"],
 .glass-accent-pink {
-  background-color: rgba(255, 182, 193, 0.18) !important;
-  border-color: rgba(255, 140, 159, 0.4) !important;
+  background-color: var(--accent-pink-glass, #F9A8D4) !important;
+  border-color: var(--accent-pink-border, #EC4899) !important;
 }
 .card-glass-interactive[data-accent="sky"],
 .glass-accent-sky {
-  background-color: rgba(125, 214, 255, 0.18) !important;
-  border-color: rgba(125, 214, 255, 0.4) !important;
+  background-color: var(--accent-sky-glass, #7DD3FC) !important;
+  border-color: var(--accent-sky-border, #0EA5E9) !important;
 }
 .card-glass-interactive[data-accent="green"],
 .glass-accent-green {
-  background-color: rgba(167, 243, 208, 0.2) !important;
-  border-color: rgba(110, 231, 183, 0.4) !important;
+  background-color: var(--accent-green-glass, #86EFAC) !important;
+  border-color: var(--accent-green-border, #22C55E) !important;
 }
 .card-glass-interactive[data-accent="purple"],
 .glass-accent-purple {
-  background-color: rgba(216, 180, 254, 0.18) !important;
-  border-color: rgba(196, 181, 253, 0.4) !important;
+  background-color: var(--accent-violet-glass, #C4B5FD) !important;
+  border-color: var(--accent-violet-border, #7C3AED) !important;
 }
 .card-glass-interactive[data-accent="amber"],
 .glass-accent-amber {
-  background-color: rgba(253, 224, 71, 0.16) !important;
-  border-color: rgba(234, 179, 8, 0.4) !important;
+  background-color: var(--accent-yellow-glass, #FDE047) !important;
+  border-color: var(--accent-yellow-border, #EAB308) !important;
 }
-
-/* Fête du jour — jaune chaleureux lumineux, glass 3D conservé */
 .card-glass-interactive.glass-fete-du-jour,
 .glass-fete-du-jour {
-  background-color: rgba(250, 204, 21, 0.22) !important;
-  background-image: linear-gradient(
-    135deg,
-    rgba(255, 251, 220, 0.58) 0%,
-    rgba(254, 240, 138, 0.38) 42%,
-    rgba(251, 191, 36, 0.22) 100%
-  ) !important;
-  border-color: rgba(245, 158, 11, 0.5) !important;
+  background-color: var(--accent-yellow-glass, #FDE047) !important;
+  background-image: none !important;
+  border-color: var(--accent-yellow-border, #EAB308) !important;
 }
-
-/* Semaine d'aménorrhée — rose magenta lumineux, glass 3D conservé */
 .card-glass-interactive.glass-sa-week,
 .glass-sa-week {
-  background-color: rgba(219, 39, 119, 0.16) !important;
-  background-image: linear-gradient(
-    135deg,
-    rgba(255, 228, 240, 0.55) 0%,
-    rgba(244, 114, 182, 0.32) 45%,
-    rgba(190, 24, 93, 0.18) 100%
-  ) !important;
-  border-color: rgba(219, 39, 119, 0.45) !important;
+  background-color: var(--accent-pink-glass, #F9A8D4) !important;
+  background-image: none !important;
+  border-color: var(--accent-pink-border, #EC4899) !important;
 }
 .card-glass-interactive[data-accent="violet"],
 .glass-accent-violet {
-  background-color: rgba(221, 214, 254, 0.18) !important;
-  border-color: rgba(167, 139, 250, 0.35) !important;
+  background-color: var(--accent-violet-glass, #C4B5FD) !important;
+  border-color: var(--accent-violet-border, #7C3AED) !important;
 }
 .card-glass-interactive[data-accent="red"],
 .glass-accent-red {
-  background-color: rgba(254, 202, 202, 0.18) !important;
-  border-color: rgba(252, 165, 165, 0.4) !important;
+  background-color: var(--accent-red-glass, #FCA5A5) !important;
+  border-color: var(--accent-red-border, #EF4444) !important;
 }
 .card-glass-interactive[data-accent="slate"],
 .glass-accent-slate {
-  background-color: rgba(226, 232, 240, 0.22) !important;
-  border-color: rgba(148, 163, 184, 0.35) !important;
+  background-color: var(--accent-slate-glass, #E2E8F0) !important;
+  border-color: var(--accent-slate-border, #94A3B8) !important;
 }
 
-/* --- STATIQUE : plat, sans volume bombé --- */
+/* --- Statique : plat --- */
 .card-flat {
   background-image: none !important;
   backdrop-filter: none !important;
@@ -183,9 +154,6 @@ button.card-glass-interactive,
   content: none !important;
 }
 
-/* === TEXTE ANTHRACITE DANS LES CARTES ===
-   Écrase text-white / blanc hérité (illisible sur fond clair).
-   Les accents couleur (pink, amber…) restent autorisés via leurs classes. */
 .card-glass-interactive :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, div, small, strong, em),
 .card-flat :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, div, small, strong, em),
 .nacre-bombe:not(.card-flat) :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, div),
@@ -195,7 +163,6 @@ button.card-glass-interactive,
   -webkit-text-fill-color: var(--glass-text);
 }
 
-/* Blanc forcé → anthracite (sauf sur bandeaux gradient foncés marqués .allow-white-text) */
 .card-glass-interactive .text-white:not(.allow-white-text),
 .card-glass-interactive [class*="text-white"]:not(.allow-white-text),
 .card-flat .text-white:not(.allow-white-text),
@@ -207,9 +174,50 @@ button.card-glass-interactive,
   -webkit-text-fill-color: var(--glass-text) !important;
 }
 
-/* Accents pastel conservés (hiérarchie couleur) */
 .card-glass-interactive :where([class*="text-pink-"], [class*="text-rose-"], [class*="text-purple-"], [class*="text-violet-"], [class*="text-sky-"], [class*="text-blue-"], [class*="text-green-"], [class*="text-emerald-"], [class*="text-amber-"], [class*="text-yellow-"], [class*="text-red-"], [class*="text-orange-"], [class*="text-indigo-"], [class*="text-teal-"]),
 .card-flat :where([class*="text-pink-"], [class*="text-rose-"], [class*="text-purple-"], [class*="text-violet-"], [class*="text-sky-"], [class*="text-blue-"], [class*="text-green-"], [class*="text-emerald-"], [class*="text-amber-"], [class*="text-yellow-"], [class*="text-red-"], [class*="text-orange-"], [class*="text-indigo-"], [class*="text-teal-"]) {
   -webkit-text-fill-color: currentColor;
 }
 
+/* --- Modales & popups — opaques 100% --- */
+.card-glass-modal,
+[role="dialog"][class*="rounded-"],
+.fixed.inset-0 > .rounded-2xl[class*="shadow"],
+.fixed.inset-0 > .rounded-3xl[class*="shadow"],
+.fixed.inset-0 > [class*="rounded-2xl"][class*="shadow"],
+.fixed.inset-0 > [class*="rounded-3xl"][class*="shadow"] {
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  box-shadow: var(--clay-shadow-full) !important;
+}
+
+.fertility-calendar-modal {
+  background-color: #FFFFFF !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+}
+
+.card-glass-modal::before,
+.card-glass-modal::after,
+[role="dialog"][class*="rounded-"]::before,
+[role="dialog"][class*="rounded-"]::after,
+.fixed.inset-0 > .rounded-2xl[class*="shadow"]::before,
+.fixed.inset-0 > .rounded-3xl[class*="shadow"]::before {
+  display: none !important;
+  content: none !important;
+}
+
+.card-glass-modal-violet {
+  background-color: var(--accent-violet-glass, #C4B5FD) !important;
+  border-color: var(--accent-violet-border, #7C3AED) !important;
+}
+
+.card-glass-modal-pink {
+  background-color: var(--accent-pink-glass, #F9A8D4) !important;
+  border-color: var(--accent-pink-border, #EC4899) !important;
+}

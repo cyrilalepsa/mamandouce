@@ -10,8 +10,11 @@ export default defineConfig(({ mode }) => {
 
   const autoUpdateSWPlugin = () => ({
     name: 'auto-update-sw-version',
-    closeBundle() {
-      const swPath = path.resolve(rootDir, 'dist/sw.js');
+    writeBundle() {
+      const distDir = path.resolve(rootDir, 'dist');
+      fs.mkdirSync(distDir, { recursive: true });
+
+      const swPath = path.join(distDir, 'sw.js');
 
       if (fs.existsSync(swPath)) {
         let content = fs.readFileSync(swPath, 'utf8');
@@ -25,11 +28,11 @@ export default defineConfig(({ mode }) => {
       }
 
       const serveSrc = path.resolve(rootDir, 'serve.json');
-      const serveDest = path.resolve(rootDir, 'dist/serve.json');
+      const serveDest = path.join(distDir, 'serve.json');
       if (fs.existsSync(serveSrc)) {
         fs.copyFileSync(serveSrc, serveDest);
       }
-    }
+    },
   });
 
   return {

@@ -51,19 +51,50 @@ def test_cpam_echo_windows_for_ddg_april_first():
 def test_cpam_maternity_leave_for_dpa_january_first():
     first_child = calculate_maternity_leave(DPA, children_at_home=0, multiple_pregnancy="none")
     assert first_child["prenatal_start"] == date(2026, 11, 20)
-    assert first_child["postnatal_end"] == date(2027, 3, 11)
+    assert first_child["postnatal_end"] == date(2027, 3, 12)
+    assert first_child["total_weeks"] == 16
+    assert first_child["scenario"] == "first_child"
+
+    second_child = calculate_maternity_leave(DPA, children_at_home=1, multiple_pregnancy="none")
+    assert second_child["prenatal_start"] == date(2026, 11, 20)
+    assert second_child["postnatal_end"] == date(2027, 3, 12)
+    assert second_child["scenario"] == "second_child"
 
     third_child = calculate_maternity_leave(DPA, children_at_home=2, multiple_pregnancy="none")
     assert third_child["prenatal_start"] == date(2026, 11, 6)
-    assert third_child["postnatal_end"] == date(2027, 5, 6)
+    assert third_child["postnatal_end"] == date(2027, 5, 7)
+    assert third_child["total_weeks"] == 26
 
     twins = calculate_maternity_leave(DPA, children_at_home=0, multiple_pregnancy="twins")
     assert twins["prenatal_start"] == date(2026, 10, 9)
-    assert twins["postnatal_end"] == date(2027, 6, 3)
+    assert twins["postnatal_end"] == date(2027, 6, 4)
+    assert twins["total_weeks"] == 34
 
     triplets = calculate_maternity_leave(DPA, children_at_home=0, multiple_pregnancy="triplets_or_more")
     assert triplets["prenatal_start"] == date(2026, 7, 17)
-    assert triplets["postnatal_end"] == date(2027, 6, 3)
+    assert triplets["postnatal_end"] == date(2027, 6, 4)
+    assert triplets["total_weeks"] == 46
+
+
+def test_cpam_maternity_leave_leap_year_dpa():
+    dpa = date(2024, 2, 29)
+    first_child = calculate_maternity_leave(dpa, children_at_home=0, multiple_pregnancy="none")
+    assert first_child["prenatal_start"] == date(2024, 1, 18)
+    assert first_child["postnatal_end"] == date(2024, 5, 9)
+
+
+def test_cpam_maternity_leave_cpam_override():
+    dpa = date(2026, 12, 16)
+    override = calculate_maternity_leave(
+        dpa,
+        children_at_home=2,
+        multiple_pregnancy="none",
+        prenatal_start_override=date(2026, 11, 6),
+        postnatal_end_override=date(2027, 5, 6),
+    )
+    assert override["scenario"] == "cpam_statement"
+    assert override["prenatal_start"] == date(2026, 11, 6)
+    assert override["postnatal_end"] == date(2027, 5, 6)
 
 
 def test_uk_dpa_uses_naegele():

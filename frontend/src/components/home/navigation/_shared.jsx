@@ -3,28 +3,38 @@ import { useTranslation } from 'react-i18next';
 import { Card } from '../../ui/card';
 import { Lock, ChevronDown, Pin, PinOff } from 'lucide-react';
 import { toast } from 'sonner';
+import { normalizeAccent, softClayCardClasses, cardSoftClayClasses } from '../../../utils/accentTokens';
 
-// Styles pastel soft pour glass bombé (couleurs conservées, alpha réduit)
+export { IconWell } from '../../ui/IconWell';
 export const PASTEL_STYLES = {
   pink: { accent: 'pink' },
   sky: { accent: 'sky' },
   green: { accent: 'green' },
-  purple: { accent: 'purple' },
-  amber: { accent: 'amber' },
+  purple: { accent: 'violet' },
+  amber: { accent: 'yellow' },
   red: { accent: 'red' },
   violet: { accent: 'violet' },
   slate: { accent: 'slate' },
+  yellow: { accent: 'yellow' },
+  blue: { accent: 'blue' },
+  peach: { accent: 'red' },
+  orange: { accent: 'red' },
 };
 
-// Composant carte pastel glass bombé pour mosaïques (interactif)
+function resolveAccent(color, locked) {
+  if (locked) return 'slate';
+  return normalizeAccent(PASTEL_STYLES[color]?.accent || color);
+}
+
+// Composant carte pastel — fond assorti à l'accent de l'icône
 export function PastelMosaicCard({ color = 'pink', onClick, children, className = '', testId, locked = false }) {
-  const accent = (PASTEL_STYLES[locked ? 'slate' : color] || PASTEL_STYLES.pink).accent;
+  const accent = resolveAccent(color, locked);
   return (
     <div
       onClick={onClick}
       data-testid={testId}
       data-accent={accent}
-      className={`card-glass-interactive glass-accent-${accent} soft-clay-premium soft-clay-text-flat relative overflow-hidden rounded-[24px] p-3 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-center shadow ${className}`}
+      className={`${cardSoftClayClasses(accent)} relative overflow-hidden p-3 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-center shadow ${className}`}
       style={{ color: '#2C2C2C' }}
     >
       <div className="relative z-[2]" style={{ color: '#2C2C2C' }}>
@@ -34,15 +44,15 @@ export function PastelMosaicCard({ color = 'pink', onClick, children, className 
   );
 }
 
-// Composant carte pastel glass bombé pleine largeur (pill) — interactif
+// Carte pill pleine largeur — même règle accent = fond carte
 export function PastelPillCard({ color = 'purple', onClick, children, className = '', testId }) {
-  const accent = (PASTEL_STYLES[color] || PASTEL_STYLES.purple).accent;
+  const accent = resolveAccent(color, false);
   return (
     <div
       onClick={onClick}
       data-testid={testId}
       data-accent={accent}
-      className={`card-glass-interactive glass-accent-${accent} soft-clay-premium soft-clay-pill soft-clay-text-flat relative overflow-hidden rounded-full px-4 py-2.5 cursor-pointer transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] shadow ${className}`}
+      className={`${cardSoftClayClasses(accent, { pill: true })} relative overflow-hidden px-4 py-2.5 cursor-pointer transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] shadow ${className}`}
       style={{ color: '#2C2C2C' }}
     >
       <div className="relative z-[2]" style={{ color: '#2C2C2C' }}>
@@ -199,4 +209,3 @@ export function CollapsibleSection({ title, icon: Icon, iconColor, children, def
     </div>
   );
 }
-

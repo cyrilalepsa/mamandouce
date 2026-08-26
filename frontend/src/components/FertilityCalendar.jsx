@@ -267,7 +267,7 @@ export default function FertilityCalendar({
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <Card className="bg-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl border-0">
+      <Card className="fertility-calendar-modal card-glass-modal bg-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto border-0 shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-slate-100">
           <h2 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>

@@ -4,7 +4,7 @@ Pregnancy date calculations aligned with national calendars.
 France (CPAM / Ameli):
 - DPA = DDG + 9 calendar months
 - SA windows use the CPAM offset: DDG + (SA - 1) * 7 - 14 days
-- Maternity leave: inclusive postnatal end (DPA + weeks * 7 - 1 day)
+- Maternity leave: postnatal end = DPA + postnatal_weeks * 7 days
 
 UK (NHS):
 - DPA = DDG + 280 days (Naegele, 40 SA)
@@ -74,9 +74,26 @@ def calculate_maternity_leave(
     dpa: date,
     children_at_home: int = 0,
     multiple_pregnancy: str = "none",
+    prenatal_start_override: Optional[date] = None,
+    postnatal_end_override: Optional[date] = None,
 ) -> Dict[str, Any]:
+    """
+    Barème Ameli — semaines avant/après la DPA.
+    Début prénatal = DPA − (semaines_prénatal × 7)
+    Fin postnatal = DPA + (semaines_postnatal × 7)
+    """
     multi = str(multiple_pregnancy or "none").strip().lower()
     children = max(0, int(children_at_home or 0))
+
+    if prenatal_start_override and postnatal_end_override:
+        return {
+            "prenatal_start": prenatal_start_override,
+            "postnatal_end": postnatal_end_override,
+            "prenatal_weeks": None,
+            "postnatal_weeks": None,
+            "total_weeks": None,
+            "scenario": "cpam_statement",
+        }
 
     if multi in {"twins", "jumeaux"}:
         prenatal_weeks, postnatal_weeks, scenario = 12, 22, "twins"
@@ -84,17 +101,20 @@ def calculate_maternity_leave(
         prenatal_weeks, postnatal_weeks, scenario = 24, 22, "triplets_or_more"
     elif children >= 2:
         prenatal_weeks, postnatal_weeks, scenario = 8, 18, "third_child_plus"
+    elif children == 1:
+        prenatal_weeks, postnatal_weeks, scenario = 6, 10, "second_child"
     else:
-        prenatal_weeks, postnatal_weeks, scenario = 6, 10, "first_or_second_child"
+        prenatal_weeks, postnatal_weeks, scenario = 6, 10, "first_child"
 
     prenatal_start = dpa - timedelta(days=prenatal_weeks * 7)
-    postnatal_end = dpa + timedelta(days=postnatal_weeks * 7 - 1)
+    postnatal_end = dpa + timedelta(days=postnatal_weeks * 7)
 
     return {
         "prenatal_start": prenatal_start,
         "postnatal_end": postnatal_end,
         "prenatal_weeks": prenatal_weeks,
         "postnatal_weeks": postnatal_weeks,
+        "total_weeks": prenatal_weeks + postnatal_weeks,
         "scenario": scenario,
     }
 

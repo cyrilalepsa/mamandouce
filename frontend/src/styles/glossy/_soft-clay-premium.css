@@ -1,81 +1,94 @@
 /* ============================================
-   SOFT-CLAY / NEUMORPHISM PREMIUM
-   Harmonisation globale — couleurs thème conservées
+   CARTES GLASS — teinte pastel + verre dépoli
+   (alias legacy : soft-clay / card-soft-clay)
    ============================================ */
 
 :root {
   --soft-clay-radius: 24px;
   --soft-clay-radius-pill: 9999px;
-  --soft-clay-border: 1px solid rgba(255, 255, 255, 0.8);
+  --soft-clay-glass-border: 1px solid rgba(255, 255, 255, 0.85);
+  --soft-clay-cream-inner: #FFFDF9;
+  --soft-clay-glass-shadow: var(--clay-shadow-full);
+  --soft-clay-glass-shadow-hover: var(--clay-shadow-hover);
   --soft-clay-text: var(--md-text-anthracite, #2c2c2c);
 
-  --soft-clay-shadow-outer:
-    0 10px 28px -8px rgba(15, 23, 42, 0.14),
-    0 4px 14px -4px rgba(15, 23, 42, 0.07);
+  /* Bulles d'icônes — dégradé vif (hors surface carte) */
+  --accent-yellow-bubble: linear-gradient(145deg, #fbbf24, #f59e0b);
+  --accent-blue-bubble: linear-gradient(145deg, #60a5fa, #3b82f6);
+  --accent-sky-bubble: linear-gradient(145deg, #38bdf8, #0ea5e9);
+  --accent-red-bubble: linear-gradient(145deg, #f87171, #ef4444);
+  --accent-peach-bubble: linear-gradient(145deg, #f87171, #ef4444);
+  --accent-pink-bubble: linear-gradient(145deg, #f472b6, #ec4899);
+  --accent-green-bubble: linear-gradient(145deg, #4ade80, #22c55e);
+  --accent-violet-bubble: linear-gradient(145deg, #a78bfa, #7c3aed);
+  --accent-slate-bubble: linear-gradient(145deg, #94a3b8, #64748b);
 
-  --soft-clay-shadow-inset:
-    inset 3px 3px 10px rgba(255, 255, 255, 0.88),
-    inset -3px -3px 10px rgba(15, 23, 42, 0.05);
+  /* Fonds pastel opaques 100% — teintes éclaircies (+10–15% luminosité) */
+  --accent-yellow-glass: #FEF08A;
+  --accent-yellow-border: #EAB308;
 
-  --soft-clay-shadow-hover:
-    0 14px 32px -8px rgba(15, 23, 42, 0.16),
-    0 6px 16px -4px rgba(15, 23, 42, 0.08);
+  --accent-blue-glass: #BFDBFE;
+  --accent-blue-border: #3B82F6;
 
-  --soft-clay-nacre-bg:
-    linear-gradient(
-      160deg,
-      #ffffff 0%,
-      #fefefe 22%,
-      #fafafa 52%,
-      #f5f5f7 82%,
-      #f0f0f2 100%
-    );
+  --accent-sky-glass: #BAE6FD;
+  --accent-sky-border: #0EA5E9;
+
+  --accent-red-glass: #FECACA;
+  --accent-red-border: #EF4444;
+
+  --accent-peach-glass: #FECACA;
+  --accent-peach-border: #EF4444;
+
+  --accent-pink-glass: #FBCFE8;
+  --accent-pink-border: #EC4899;
+
+  --accent-green-glass: #BBF7D0;
+  --accent-green-border: #22C55E;
+
+  --accent-violet-glass: #DDD6FE;
+  --accent-violet-border: #7C3AED;
+
+  --accent-slate-glass: #E2E8F0;
+  --accent-slate-border: #94A3B8;
+
+  --clay-surface-white: #FFFFFF;
 }
 
-/* --- Base surface --- */
+/* --- Surface glass de base --- */
+.card-soft-clay,
 .soft-clay-premium,
 .soft-clay-card {
   border-radius: var(--soft-clay-radius);
-  border: var(--soft-clay-border);
-  box-shadow: var(--soft-clay-shadow-outer), var(--soft-clay-shadow-inset);
+  border: var(--soft-clay-glass-border);
+  box-shadow: var(--soft-clay-glass-shadow);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  opacity: 1;
   position: relative;
   overflow: hidden;
   transition:
     box-shadow 0.22s ease,
-    transform 0.2s ease,
-    filter 0.22s ease;
+    transform 0.2s ease;
 }
 
+/* Pas de reflet spéculaire / irisé */
+.card-soft-clay::before,
+.card-soft-clay::after,
 .soft-clay-premium::before,
-.soft-clay-card::before {
-  content: '';
-  position: absolute;
-  top: 4px;
-  left: 10%;
-  right: 10%;
-  height: 30%;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.62) 0%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 1;
+.soft-clay-premium::after,
+.soft-clay-card::before,
+.soft-clay-card::after {
+  display: none !important;
+  content: none !important;
 }
 
+.card-soft-clay:hover:not(:disabled),
 .soft-clay-premium:hover:not(:disabled),
 .soft-clay-card:hover:not(:disabled) {
-  box-shadow: var(--soft-clay-shadow-hover), var(--soft-clay-shadow-inset);
-  filter: brightness(1.02);
+  box-shadow: var(--soft-clay-glass-shadow-hover);
+  transform: translateY(-1px);
 }
 
-/* Nacre blanche (sous-couches colorées en overlay) */
-.soft-clay-nacre {
-  background: var(--soft-clay-nacre-bg);
-}
-
-/* Texte plat — lisibilité maximale */
 .soft-clay-text-flat,
 .soft-clay-text-flat :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, small, strong, em) {
   text-shadow: none !important;
@@ -86,135 +99,244 @@
   color: inherit;
 }
 
-/* Pastilles d'icônes encapsulées */
-.soft-clay-icon-well {
+.soft-clay-icon-well,
+.soft-clay-icon-from-accent,
+[class*='soft-clay-icon-from-accent'] {
   border: 1px solid rgba(255, 255, 255, 0.55);
-  box-shadow:
-    0 4px 12px -2px rgba(15, 23, 42, 0.14),
-    inset 2px 2px 6px rgba(255, 255, 255, 0.45),
-    inset -1px -1px 4px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--clay-icon-shadow-full);
 }
 
-/* --- Teintes section (ordre thème produit) --- */
+/* Teintes section (journey hubs) */
 .soft-clay-section-preconception {
-  background-image:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.96) 0%,
-      rgba(254, 249, 195, 0.42) 45%,
-      rgba(253, 224, 71, 0.18) 100%
-    );
+  background-color: var(--accent-yellow-glass) !important;
+  background-image: none !important;
 }
 
 .soft-clay-section-pregnancy {
-  background-image:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.96) 0%,
-      rgba(191, 219, 254, 0.45) 48%,
-      rgba(59, 130, 246, 0.16) 100%
-    );
+  background-color: var(--accent-blue-glass) !important;
+  background-image: none !important;
 }
 
 .soft-clay-section-baby-preparation {
-  background-image:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.96) 0%,
-      rgba(254, 215, 170, 0.42) 46%,
-      rgba(248, 113, 113, 0.16) 100%
-    );
+  background-color: var(--accent-peach-glass) !important;
+  background-image: none !important;
 }
 
 .soft-clay-section-postpartum {
-  background-image:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.96) 0%,
-      rgba(187, 247, 208, 0.42) 48%,
-      rgba(34, 197, 94, 0.14) 100%
-    );
+  background-color: var(--accent-green-glass) !important;
+  background-image: none !important;
 }
 
 .soft-clay-section-services {
-  background-image:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.96) 0%,
-      rgba(221, 214, 254, 0.44) 48%,
-      rgba(124, 58, 237, 0.14) 100%
-    );
+  background-color: var(--accent-violet-glass) !important;
+  background-image: none !important;
 }
 
-/* Congé maternité — violet / prune */
 .soft-clay-tint-violet {
-  background-image:
-    linear-gradient(
-      160deg,
-      #ffffff 0%,
-      #faf5ff 30%,
-      #f3e8ff 65%,
-      #ede9fe 100%
-    );
-  border-color: rgba(167, 139, 250, 0.45) !important;
+  background-color: var(--accent-violet-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-violet-border) !important;
 }
 
-/* Item tier accents (sous-cartes SectionDetail) */
+/* Carte teintée selon accent icône */
+.soft-clay-from-accent[data-accent='yellow'],
+.soft-clay-from-accent-yellow,
 .soft-clay-tier-yellow {
-  background-image:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.98) 0%,
-      rgba(254, 240, 138, 0.22) 100%
-    );
+  background-color: var(--accent-yellow-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-yellow-border) !important;
 }
 
+.soft-clay-from-accent[data-accent='blue'],
+.soft-clay-from-accent-blue,
 .soft-clay-tier-blue {
-  background-image:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.98) 0%,
-      rgba(191, 219, 254, 0.24) 100%
-    );
+  background-color: var(--accent-blue-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-blue-border) !important;
 }
 
+.soft-clay-from-accent[data-accent='sky'],
+.soft-clay-from-accent-sky {
+  background-color: var(--accent-sky-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-sky-border) !important;
+}
+
+.soft-clay-from-accent[data-accent='red'],
+.soft-clay-from-accent-red,
 .soft-clay-tier-red {
-  background-image:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.98) 0%,
-      rgba(254, 202, 202, 0.22) 100%
-    );
+  background-color: var(--accent-red-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-red-border) !important;
 }
 
+.soft-clay-from-accent[data-accent='peach'],
+.soft-clay-from-accent-peach {
+  background-color: var(--accent-peach-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-peach-border) !important;
+}
+
+.soft-clay-from-accent[data-accent='pink'],
+.soft-clay-from-accent-pink {
+  background-color: var(--accent-pink-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-pink-border) !important;
+}
+
+.soft-clay-from-accent[data-accent='green'],
+.soft-clay-from-accent-green,
 .soft-clay-tier-green {
-  background-image:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.98) 0%,
-      rgba(187, 247, 208, 0.22) 100%
-    );
+  background-color: var(--accent-green-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-green-border) !important;
 }
 
+.soft-clay-from-accent[data-accent='violet'],
+.soft-clay-from-accent-violet,
 .soft-clay-tier-violet {
-  background-image:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.98) 0%,
-      rgba(221, 214, 254, 0.24) 100%
-    );
+  background-color: var(--accent-violet-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-violet-border) !important;
 }
 
-/* Pill variant */
+.soft-clay-from-accent[data-accent='slate'],
+.soft-clay-from-accent-slate {
+  background-color: var(--accent-slate-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-slate-border) !important;
+}
+
+/* Bulles d'icônes — teinte vive */
+.soft-clay-icon-from-accent[data-accent='yellow'],
+.soft-clay-icon-from-accent-yellow {
+  background: var(--accent-yellow-bubble);
+}
+.soft-clay-icon-from-accent[data-accent='blue'],
+.soft-clay-icon-from-accent-blue {
+  background: var(--accent-blue-bubble);
+}
+.soft-clay-icon-from-accent[data-accent='sky'],
+.soft-clay-icon-from-accent-sky {
+  background: var(--accent-sky-bubble);
+}
+.soft-clay-icon-from-accent[data-accent='red'],
+.soft-clay-icon-from-accent-red {
+  background: var(--accent-red-bubble);
+}
+.soft-clay-icon-from-accent[data-accent='peach'],
+.soft-clay-icon-from-accent-peach {
+  background: var(--accent-peach-bubble);
+}
+.soft-clay-icon-from-accent[data-accent='pink'],
+.soft-clay-icon-from-accent-pink {
+  background: var(--accent-pink-bubble);
+}
+.soft-clay-icon-from-accent[data-accent='green'],
+.soft-clay-icon-from-accent-green {
+  background: var(--accent-green-bubble);
+}
+.soft-clay-icon-from-accent[data-accent='violet'],
+.soft-clay-icon-from-accent-violet {
+  background: var(--accent-violet-bubble);
+}
+.soft-clay-icon-from-accent[data-accent='slate'],
+.soft-clay-icon-from-accent-slate {
+  background: var(--accent-slate-bubble);
+}
+
+.soft-clay-from-accent,
+.soft-clay-from-accent :where(h1, h2, h3, h4, h5, h6, p, span, label, a, li, button, div, small, strong, em) {
+  color: var(--soft-clay-text);
+  -webkit-text-fill-color: var(--soft-clay-text);
+  text-shadow: none !important;
+}
+
+.soft-clay-icon-well .text-white,
+.soft-clay-icon-from-accent .text-white,
+.soft-clay-icon-from-accent [class*='text-white'] {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
 .soft-clay-pill {
   border-radius: var(--soft-clay-radius-pill);
 }
 
-/* Harmonisation avec glass existant */
 .card-glass-interactive.soft-clay-premium,
 .nacre-bombe.soft-clay-premium,
 [data-testid*='item-card'].soft-clay-premium,
-[data-testid*='section-card'].soft-clay-premium {
+[data-testid*='section-card'].soft-clay-premium,
+.card-soft-clay {
   border-radius: var(--soft-clay-radius);
-  border: var(--soft-clay-border) !important;
+  border: var(--soft-clay-glass-border) !important;
+}
+
+/* Creux interne teinté selon accent (volume 3D sans irisé) */
+.soft-clay-from-accent[data-accent='yellow'],
+.soft-clay-from-accent-yellow {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(234, 179, 8, 0.12) !important;
+}
+.soft-clay-from-accent[data-accent='blue'],
+.soft-clay-from-accent-blue {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(59, 130, 246, 0.12) !important;
+}
+.soft-clay-from-accent[data-accent='sky'],
+.soft-clay-from-accent-sky {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(14, 165, 233, 0.12) !important;
+}
+.soft-clay-from-accent[data-accent='red'],
+.soft-clay-from-accent-red {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(239, 68, 68, 0.12) !important;
+}
+.soft-clay-from-accent[data-accent='peach'],
+.soft-clay-from-accent-peach {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(239, 68, 68, 0.12) !important;
+}
+.soft-clay-from-accent[data-accent='pink'],
+.soft-clay-from-accent-pink {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(236, 72, 153, 0.12) !important;
+}
+.soft-clay-from-accent[data-accent='green'],
+.soft-clay-from-accent-green {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(34, 197, 94, 0.12) !important;
+}
+.soft-clay-from-accent[data-accent='violet'],
+.soft-clay-from-accent-violet {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(124, 58, 237, 0.12) !important;
+}
+.soft-clay-from-accent[data-accent='slate'],
+.soft-clay-from-accent-slate {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(100, 116, 139, 0.12) !important;
+}
+
+.card-glass-modal-violet {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(124, 58, 237, 0.12) !important;
+}
+
+.card-glass-modal-pink {
+  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(236, 72, 153, 0.12) !important;
+}
+
+/* Sous-cartes / champs internes — blanc crème opaque */
+.card-inner-cream,
+.soft-clay-inner-cream {
+  background-color: var(--soft-clay-cream-inner) !important;
+  background-image: none !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  box-shadow:
+    0 4px 10px -4px rgba(0, 0, 0, 0.08),
+    inset 0 3px 5px rgba(255, 255, 255, 0.75),
+    inset 0 1px 2px rgba(255, 255, 255, 0.95),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.06) !important;
+}
+
+.card-inner-cream.soft-clay-from-accent,
+.card-inner-cream[data-accent],
+.soft-clay-inner-cream.soft-clay-from-accent {
+  background-color: var(--soft-clay-cream-inner) !important;
+  border-color: rgba(255, 255, 255, 0.9) !important;
 }

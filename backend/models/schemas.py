@@ -8,6 +8,14 @@ import uuid
 
 # ==================== AUTH ====================
 MULTIPLE_PREGNANCY_VALUES = frozenset({"none", "twins", "triplets_or_more"})
+MATERNITY_DURATION_VALUES = frozenset({"extended", "standard"})
+
+
+def normalize_maternity_duration(value: Optional[str]) -> str:
+    raw = str(value or "extended").strip().lower()
+    if raw in MATERNITY_DURATION_VALUES:
+        return raw
+    return "extended"
 
 
 def normalize_multiple_pregnancy(value: Optional[str]) -> str:
@@ -105,7 +113,9 @@ class User(BaseModel):
     pregnancy_status: Optional[str] = None
     children_at_home: int = 0
     multiple_pregnancy: str = "none"
-    role: str = "user"  # "user" or "admin"
+    maternity_leave_duration: str = "extended"
+    maternity_prenatal_start: Optional[str] = None
+    maternity_postnatal_end: Optional[str] = None
 
     @field_validator("children_at_home", mode="before")
     @classmethod
@@ -122,6 +132,22 @@ class User(BaseModel):
     @classmethod
     def coerce_user_multiple_pregnancy(cls, value):
         return normalize_multiple_pregnancy(value)
+
+    @field_validator("maternity_leave_duration", mode="before")
+    @classmethod
+    def coerce_user_maternity_duration(cls, value):
+        return normalize_maternity_duration(value)
+
+    @field_validator("maternity_prenatal_start", "maternity_postnatal_end", mode="before")
+    @classmethod
+    def normalize_maternity_date(cls, value):
+        if value is None or value == "":
+            return None
+        from core.cycle_dates import normalize_iso_date
+
+        return normalize_iso_date(str(value))
+
+    role: str = "user"  # "user" or "admin"
     subscription_status: Optional[str] = "free"  # "free", "trial", "premium"
     is_superadmin: Optional[bool] = False
     is_admin: Optional[bool] = False
@@ -216,6 +242,9 @@ class ProfileUpdate(BaseModel):
     city: Optional[str] = None  # Ville de l'utilisatrice
     children_at_home: Optional[int] = None
     multiple_pregnancy: Optional[str] = None
+    maternity_leave_duration: Optional[str] = None
+    maternity_prenatal_start: Optional[str] = None
+    maternity_postnatal_end: Optional[str] = None
 
     @field_validator("first_name", "last_name", mode="before")
     @classmethod
@@ -243,6 +272,22 @@ class ProfileUpdate(BaseModel):
         if value is None or value == "":
             return None
         return normalize_multiple_pregnancy(value)
+
+    @field_validator("maternity_leave_duration", mode="before")
+    @classmethod
+    def coerce_profile_maternity_duration(cls, value):
+        if value is None or value == "":
+            return None
+        return normalize_maternity_duration(value)
+
+    @field_validator("maternity_prenatal_start", "maternity_postnatal_end", mode="before")
+    @classmethod
+    def normalize_profile_maternity_date(cls, value):
+        if value is None or value == "":
+            return None
+        from core.cycle_dates import normalize_iso_date
+
+        return normalize_iso_date(str(value))
 
 # ==================== PREGNANCY ====================
 class PregnancyCalculation(BaseModel):
