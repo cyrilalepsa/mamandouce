@@ -1,0 +1,22 @@
+{
+  "name": "MamanDouce",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "install": "cd frontend && (npm ci --no-audit --no-fund || npm install --no-audit --no-fund) && cd ../backend && pip3 install --no-cache-dir -r requirements.txt",
+  "terminals": [
+    {
+      "name": "frontend-dev",
+      "command": "cd frontend && npm run dev -- --host 0.0.0.0 --port 5173"
+    },
+    {
+      "name": "backend-api",
+      "command": "cd backend && env PYTHONPATH=. uvicorn server:app --reload --host 0.0.0.0 --port 8000"
+    }
+  ],
+  "ports": [
+    { "port": 5173, "name": "Frontend (Vite)" },
+    { "port": 8000, "name": "Backend API" }
+  ]
+}

@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { BabySleepAudioCard } from '../components/outils/BabySleepAudioCard';
+import { Button } from '../../components/ui/button';
+import { BabySleepAudioCard } from '../../components/outils/BabySleepAudioCard';
 
 function BabySleepPage() {
   const navigate = useNavigate();
