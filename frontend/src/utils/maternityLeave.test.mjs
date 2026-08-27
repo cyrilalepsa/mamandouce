@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
   AMELI_MATERNITY_MATRIX,
+  AMELI_RESOURCES_SECTION_PATH,
+  CPAM_MATERNITY_GAP_GUIDANCE,
   calculateMaternityLeaveDates,
   computeLeaveDatesFromDpa,
   getMaternityLeaveWeeks,
@@ -108,4 +110,10 @@ test('twins maternity leave for DPA 2027-01-01', () => {
   const result = calculateMaternityLeaveDates('2027-01-01', 0, 'twins');
   assert.equal(result.prenatalStart.toISOString().slice(0, 10), '2026-10-09');
   assert.equal(result.postnatalEnd.toISOString().slice(0, 10), '2027-06-04');
+});
+
+test('CPAM gap guidance constants are exposed for maternity leave UI', () => {
+  assert.match(CPAM_MATERNITY_GAP_GUIDANCE, /semaines civiles complètes/);
+  assert.match(CPAM_MATERNITY_GAP_GUIDANCE, /attestation/);
+  assert.equal(AMELI_RESOURCES_SECTION_PATH, '/section/services?focus=ameli');
 });
