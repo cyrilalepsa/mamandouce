@@ -14,7 +14,8 @@ import {
   PostpartumSection,
   ServicesSection,
   FaqBabySection,
-  SolidaritySection
+  SolidaritySection,
+  OutilsSection
 } from './NavigationSections';
 
 // Durée de l'appui long pour suppression (2 secondes)
@@ -196,6 +197,7 @@ export function UserSectionCard({ item, onRemove, pregnancyProfile, hasPregnancy
     'services': ServicesSection,
     'faq-baby': FaqBabySection,
     'solidarity': SolidaritySection,
+    'outils': OutilsSection,
   };
   
   const SECTION_META = {
@@ -206,6 +208,7 @@ export function UserSectionCard({ item, onRemove, pregnancyProfile, hasPregnancy
     'services': { bgGradient: 'from-violet-50 to-purple-50', borderColor: 'border-violet-200/80' },
     'faq-baby': { bgGradient: 'from-yellow-50 to-amber-50', borderColor: 'border-yellow-200/80' },
     'solidarity': { bgGradient: 'from-violet-50 to-purple-50', borderColor: 'border-violet-200/80' },
+    'outils': { bgGradient: 'from-slate-50 to-slate-100', borderColor: 'border-slate-200/80' },
   };
   
   const meta = SECTION_META[item.id];

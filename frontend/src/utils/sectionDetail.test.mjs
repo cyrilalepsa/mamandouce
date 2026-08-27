@@ -32,6 +32,7 @@ test('home navigation CollapsibleSections default to closed', () => {
     'src/components/home/navigation/ServicesSection.jsx',
     'src/components/home/navigation/SolidaritySection.jsx',
     'src/components/home/navigation/FaqBabySection.jsx',
+    'src/components/home/navigation/OutilsSection.jsx',
   ]) {
     const src = readFileSync(join(root, rel), 'utf8');
     assert.doesNotMatch(src, /defaultOpen=\{true\}/, rel);

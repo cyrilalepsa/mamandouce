@@ -111,7 +111,7 @@ function ChatBubble() {
         <button
           onClick={() => setIsOpen(true)}
           data-testid="chat-bubble-button"
-          className="fixed bottom-20 right-6 w-10 h-10 bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-full shadow-sm hover:shadow-md hover:bg-white hover:scale-105 transition-all duration-300 flex items-center justify-center z-50 group"
+          className="fixed bottom-32 right-4 w-10 h-10 bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-full shadow-sm hover:shadow-md hover:bg-white hover:scale-105 transition-all duration-300 flex items-center justify-center z-50 group"
         >
           <MessageCircle className="w-5 h-5 text-pink-400" />
           {unreadCount > 0 && (

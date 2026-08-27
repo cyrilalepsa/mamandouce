@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Heart, Sparkles, Baby, Gift, HeartHandshake, Settings, ChevronRight, Check, Pin } from 'lucide-react';
+import { ArrowLeft, Heart, Sparkles, Baby, Gift, HeartHandshake, Settings, ChevronRight, Check, Pin, Wrench } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -64,9 +64,19 @@ const SECTION_META = {
     borderColor: 'border-sky-200/50',
     iconColor: 'text-sky-600',
   },
+  'outils': { 
+    icon: Wrench, 
+    name: 'Outils',
+    nameKey: 'sections.outils',
+    description: 'Outils pratiques au quotidien',
+    descKey: 'sections.outilsDesc',
+    bgGradient: 'from-white/95 via-slate-100/70 to-slate-200/50',
+    borderColor: 'border-slate-200/50',
+    iconColor: 'text-slate-600',
+  },
 };
 
-const SECTIONS_ORDER = ['preconception', 'pregnancy', 'baby-preparation', 'postpartum', 'services'];
+const SECTIONS_ORDER = ['preconception', 'pregnancy', 'baby-preparation', 'postpartum', 'services', 'outils'];
 
 // Items pour l'accordéon - correspondant exactement à SectionDetailPage
 const SECTION_ITEMS = {
@@ -105,6 +115,11 @@ const SECTION_ITEMS = {
     { id: 'ameli', icon: '🏥', name: 'Ameli', nameKey: 'services.ameli', route: 'https://www.ameli.fr', external: true },
     { id: 'maps', icon: '📍', name: 'Mairie proche', nameKey: 'services.maps', route: 'https://www.google.com/maps/search/mairie', external: true },
     { id: 'videos', icon: '🎬', name: 'Vidéos', nameKey: 'services.videos', route: 'https://www.youtube.com/results?search_query=grossesse+conseils', external: true },
+  ],
+  'outils': [
+    { id: 'baby-sleep', icon: '🌙', name: 'Bonne nuit bébé', nameKey: 'outils.sleep.title', route: '/outils/bonne-nuit-bebe' },
+    { id: 'pediatrician-notes', icon: '🩺', name: 'Cher pédiatre', nameKey: 'outils.pediatrician.title', route: '/outils/cher-pediatre' },
+    { id: 'emergency-birth', icon: '🚨', name: 'Fiche urgence naissance', nameKey: 'outils.emergency.title', route: '/outils/fiche-urgence' },
   ],
 };
 
@@ -556,7 +571,7 @@ function JourneyStepsPage() {
           <div className="w-10"></div>
         </div>
 
-        {/* Les 5 sections en cartes pill avec accordéon */}
+        {/* Les 6 sections en cartes pill avec accordéon */}
         <div className="space-y-3">
           {SECTIONS_ORDER.map((sectionId) => (
             <SectionCard

@@ -119,7 +119,9 @@
     "postpartum": "Postpartum care",
     "postpartumDesc": "Support after childbirth",
     "services": "Services and resources",
-    "servicesDesc": "Useful tools and resources"
+    "servicesDesc": "Useful tools and resources",
+    "outils": "Tools",
+    "outilsDesc": "Everyday practical tools"
   },
   "calculator": {
     "title": "Pregnancy Calculator",

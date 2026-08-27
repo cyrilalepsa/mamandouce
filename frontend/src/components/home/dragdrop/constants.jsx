@@ -7,6 +7,7 @@ export const ITEM_ICONS = {
   'baby-preparation': '🎁',
   'postpartum': '💕',
   'services': '⚙️',
+  'outils': '🔧',
   'faq-baby': '❓',
   'cycle-tracking': '📅',
   'fertility-calc': '📊',
@@ -39,6 +40,9 @@ export const ITEM_ICONS = {
   'ameli': '🏥',
   'maps': '📍',
   'videos': '🎬',
+  'baby-sleep': '🌙',
+  'pediatrician-notes': '🩺',
+  'emergency-birth': '🚨',
   // Items alimentation post-partum
   'breastfeeding': '🤱',
   'formula': '🍼',
@@ -69,6 +73,7 @@ export const ITEM_NAMES = {
   'baby-preparation': 'Préparation bébé',
   'postpartum': 'Post-partum',
   'services': 'Services',
+  'outils': 'Outils',
   'faq-baby': 'FAQ Bébé',
   'cycle-tracking': 'Cycles',
   'fertility-calc': 'Fertilité',
@@ -101,6 +106,9 @@ export const ITEM_NAMES = {
   'ameli': 'Ameli',
   'maps': 'Mairie',
   'videos': 'Vidéos',
+  'baby-sleep': 'Bonne nuit',
+  'pediatrician-notes': 'Pédiatre',
+  'emergency-birth': 'Urgence',
   // Items alimentation post-partum
   'breastfeeding': 'Allaitement',
   'formula': 'Biberon',
@@ -133,6 +141,7 @@ export const ITEM_TRANSLATION_KEYS = {
   'baby-preparation': 'journey.sections.babyPreparation',
   'postpartum': 'journey.sections.postpartum',
   'services': 'journey.sections.services',
+  'outils': 'sections.outils',
   'faq-baby': 'sections.faq',
   
   // === PRÉCONCEPTION ===
@@ -194,6 +203,9 @@ export const ITEM_TRANSLATION_KEYS = {
   'ameli': 'services.ameli',
   'maps': 'services.maps',
   'videos': 'services.videos',
+  'baby-sleep': 'outils.sleep.title',
+  'pediatrician-notes': 'outils.pediatrician.title',
+  'emergency-birth': 'outils.emergency.title',
 };
 
 // Styles bombés et colorés pour chaque item
@@ -223,6 +235,11 @@ export const ITEM_STYLES = {
     gradient: 'linear-gradient(145deg, #e0e7ff 0%, #c7d2fe 50%, #a5b4fc 100%)',
     shadow: '0 8px 25px rgba(165, 180, 252, 0.35), inset 0 -4px 12px rgba(0,0,0,0.08)',
     border: 'rgba(129, 140, 248, 0.3)'
+  },
+  'outils': { 
+    gradient: 'linear-gradient(145deg, #f1f5f9 0%, #cbd5e1 50%, #64748b 100%)',
+    shadow: '0 8px 25px rgba(100, 116, 139, 0.35), inset 0 -4px 12px rgba(0,0,0,0.08)',
+    border: 'rgba(100, 116, 139, 0.3)'
   },
   'faq-baby': {
     gradient: 'linear-gradient(145deg, #fef3c7 0%, #fde68a 50%, #fbbf24 100%)',
@@ -488,6 +505,21 @@ export const ITEM_STYLES = {
     shadow: '0 8px 25px rgba(249, 168, 212, 0.35), inset 0 -4px 12px rgba(0,0,0,0.08)',
     border: 'rgba(244, 114, 182, 0.3)'
   },
+  'baby-sleep': { 
+    gradient: 'linear-gradient(145deg, #ede9fe 0%, #ddd6fe 50%, #c4b5fd 100%)',
+    shadow: '0 8px 25px rgba(196, 181, 253, 0.35), inset 0 -4px 12px rgba(0,0,0,0.08)',
+    border: 'rgba(167, 139, 250, 0.3)'
+  },
+  'pediatrician-notes': { 
+    gradient: 'linear-gradient(145deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%)',
+    shadow: '0 8px 25px rgba(125, 211, 252, 0.35), inset 0 -4px 12px rgba(0,0,0,0.08)',
+    border: 'rgba(56, 189, 248, 0.3)'
+  },
+  'emergency-birth': { 
+    gradient: 'linear-gradient(145deg, #fecdd3 0%, #fda4af 50%, #fb7185 100%)',
+    shadow: '0 8px 25px rgba(251, 113, 133, 0.35), inset 0 -4px 12px rgba(0,0,0,0.08)',
+    border: 'rgba(244, 63, 94, 0.3)'
+  },
   
   // === STYLE PAR DÉFAUT ===
   'default': { 
@@ -504,6 +536,7 @@ export const ITEM_ROUTES = {
   'baby-preparation': '/section/baby-preparation',
   'postpartum': '/postpartum',
   'services': '/section/services',
+  'outils': '/section/outils',
   'faq-baby': '/faq-baby',
   'cycle-tracking': '/cycle-tracking',
   'fertility-calc': '/fertility-calculator',
@@ -521,6 +554,9 @@ export const ITEM_ROUTES = {
   'birth-list': '/birth-list',
   'maternity-bag': '/maternity-bag',
   'chatbot': '/chatbot',
+  'baby-sleep': '/outils/bonne-nuit-bebe',
+  'pediatrician-notes': '/outils/cher-pediatre',
+  'emergency-birth': '/outils/fiche-urgence',
 };
 
 
