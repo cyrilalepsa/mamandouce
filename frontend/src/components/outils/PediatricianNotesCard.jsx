@@ -8,6 +8,9 @@ import { toast } from 'sonner';
 
 const STORAGE_KEY = 'mamandouce_pediatrician_notes';
 
+const FORM_FIELD_CLASS =
+  'w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400';
+
 const EMPTY_NOTE = {
   date: '',
   weight: '',
@@ -96,7 +99,7 @@ export function PediatricianNotesCard({ embedded = false }) {
 
   return (
     <div className={wrapperClass} data-testid="pediatrician-notes-card">
-      <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 space-y-4">
+      <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 space-y-4 [color-scheme:light]">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-sky-100 flex items-center justify-center">
             <Stethoscope className="w-6 h-6 text-sky-600" />
@@ -116,14 +119,14 @@ export function PediatricianNotesCard({ embedded = false }) {
             type="date"
             value={form.date}
             onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
-            className="rounded-xl"
+            className="rounded-xl text-slate-900 bg-white placeholder:text-slate-400"
             data-testid="ped-note-date"
           />
           <Input
             placeholder={t('outils.pediatrician.weightPlaceholder', 'Poids (kg)')}
             value={form.weight}
             onChange={(e) => setForm((f) => ({ ...f, weight: e.target.value }))}
-            className="rounded-xl"
+            className="rounded-xl text-slate-900 bg-white placeholder:text-slate-400"
             data-testid="ped-note-weight"
           />
         </div>
@@ -131,21 +134,21 @@ export function PediatricianNotesCard({ embedded = false }) {
           placeholder={t('outils.pediatrician.symptomsPlaceholder', 'Symptômes observés...')}
           value={form.symptoms}
           onChange={(e) => setForm((f) => ({ ...f, symptoms: e.target.value }))}
-          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm min-h-[72px]"
+          className={`${FORM_FIELD_CLASS} min-h-[72px]`}
           data-testid="ped-note-symptoms"
         />
         <textarea
           placeholder={t('outils.pediatrician.medsPlaceholder', 'Traitements / température...')}
           value={form.medications}
           onChange={(e) => setForm((f) => ({ ...f, medications: e.target.value }))}
-          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm min-h-[56px]"
+          className={`${FORM_FIELD_CLASS} min-h-[56px]`}
           data-testid="ped-note-meds"
         />
         <textarea
           placeholder={t('outils.pediatrician.questionsPlaceholder', 'Questions pour le pédiatre...')}
           value={form.questions}
           onChange={(e) => setForm((f) => ({ ...f, questions: e.target.value }))}
-          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm min-h-[56px]"
+          className={`${FORM_FIELD_CLASS} min-h-[56px]`}
           data-testid="ped-note-questions"
         />
         <Button
