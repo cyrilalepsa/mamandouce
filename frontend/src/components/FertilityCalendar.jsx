@@ -128,6 +128,8 @@ export default function FertilityCalendar({
   rapportDates = [],
   onAddRapport,
   onRemoveRapport,
+  variant = 'modal',
+  hideFertilityFeatures = false,
 }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedZone, setSelectedZone] = useState(() =>
@@ -141,7 +143,12 @@ export default function FertilityCalendar({
     localStorage.setItem('mamandouce_school_zone', zone);
   };
 
-  if (!isOpen) return null;
+  const isPage = variant === 'page';
+  if (!isOpen && !isPage) return null;
+
+  const legendItems = hideFertilityFeatures
+    ? LEGEND_ITEMS.filter((item) => item.key === 'school' || item.key === 'public')
+    : LEGEND_ITEMS;
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -265,18 +272,23 @@ export default function FertilityCalendar({
   const selectedDateStr = selectedDate ? toDateStr(selectedDate) : null;
   const selectedHasRapport = selectedDate ? isRapportDay(selectedDate) : false;
 
-  return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <Card className="fertility-calendar-modal card-glass-modal bg-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto border-0 shadow-2xl">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-100">
-          <h2 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
-            Calendrier
-          </h2>
-          <Button onClick={onClose} className="bg-slate-100 rounded-full p-2 hover:bg-slate-200">
-            <X className="w-5 h-5 text-slate-600" />
-          </Button>
-        </div>
+  const cardClassName = isPage
+    ? 'fertility-calendar-page card-glass-modal bg-white rounded-3xl w-full border-0 shadow-xl'
+    : 'fertility-calendar-modal card-glass-modal bg-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto border-0 shadow-2xl';
+
+  const content = (
+      <Card className={cardClassName} data-testid={isPage ? 'calendar-page-card' : undefined}>
+        {/* Header (modal only) */}
+        {!isPage && (
+          <div className="flex items-center justify-between p-4 border-b border-slate-100">
+            <h2 className="text-xl font-bold text-slate-700" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              Calendrier
+            </h2>
+            <Button onClick={onClose} className="bg-slate-100 rounded-full p-2 hover:bg-slate-200">
+              <X className="w-5 h-5 text-slate-600" />
+            </Button>
+          </div>
+        )}
 
         {/* Zone scolaire */}
         <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
@@ -314,21 +326,23 @@ export default function FertilityCalendar({
         </div>
 
         {/* Bouton règles */}
-        <div className="px-4 py-2 border-b border-slate-100">
-          <button
-            type="button"
-            onClick={() => {
-              const today = new Date();
-              localStorage.setItem('mamandouce_last_period_start', toDateStr(today));
-              setSelectedDate(today);
-              setShowAddRapport(true);
-            }}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-white text-sm font-semibold bg-gradient-to-r from-rose-400 to-pink-500 shadow-sm"
-          >
-            <Droplets className="w-4 h-4" />
-            Début de règles aujourd&apos;hui
-          </button>
-        </div>
+        {!hideFertilityFeatures && (
+          <div className="px-4 py-2 border-b border-slate-100">
+            <button
+              type="button"
+              onClick={() => {
+                const today = new Date();
+                localStorage.setItem('mamandouce_last_period_start', toDateStr(today));
+                setSelectedDate(today);
+                setShowAddRapport(true);
+              }}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-white text-sm font-semibold bg-gradient-to-r from-rose-400 to-pink-500 shadow-sm"
+            >
+              <Droplets className="w-4 h-4" />
+              Début de règles aujourd&apos;hui
+            </button>
+          </div>
+        )}
 
         {/* Navigation mois */}
         <div className="flex items-center justify-between px-4 py-2">
@@ -381,7 +395,7 @@ export default function FertilityCalendar({
                   >
                     <button
                       type="button"
-                      onClick={() => day.isCurrentMonth && handleDayClick(day.date)}
+                      onClick={() => day.isCurrentMonth && !hideFertilityFeatures && handleDayClick(day.date)}
                       disabled={!day.isCurrentMonth}
                       className={`
                         relative w-8 h-8 rounded-full flex items-center justify-center text-xs transition-all focus:outline-none shrink-0
@@ -431,7 +445,7 @@ export default function FertilityCalendar({
         <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 rounded-b-3xl">
           <p className="font-bold mb-2.5 text-slate-700 text-xs uppercase tracking-wide">Légende</p>
           <div className="grid grid-cols-2 gap-x-3 gap-y-2.5">
-            {LEGEND_ITEMS.map((item) => (
+            {legendItems.map((item) => (
               <div key={item.key} className="flex items-center gap-2 min-w-0">
                 {item.swatch === 'circle' && (
                   <span
@@ -454,9 +468,17 @@ export default function FertilityCalendar({
           </div>
         </div>
       </Card>
+  );
+
+  return (
+    <div
+      className={isPage ? 'w-full' : 'fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4'}
+      data-testid={isPage ? 'fertility-calendar-page' : undefined}
+    >
+      {content}
 
       {/* Modal ajout / suppression rapport — était manquant */}
-      {showAddRapport && selectedDate && (
+      {!hideFertilityFeatures && showAddRapport && selectedDate && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40">
           <Card className="bg-white rounded-2xl w-full max-w-sm p-5 shadow-xl border-0">
             <h3 className="text-lg font-bold text-slate-800 mb-1" style={{ fontFamily: 'Nunito, sans-serif' }}>

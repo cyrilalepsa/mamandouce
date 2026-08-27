@@ -8,7 +8,7 @@ import { getNameOfTheDay } from '../data/namesByCountry';
  * Fête du Jour — carte glassmorphism
  * Affiche toujours un prénom + la date.
  * Seule → pleine largeur ; à côté de SA → compact demi-grille.
- * Clic → calendrier (/cycle-tracking?calendar=true)
+ * Clic → calendrier (/calendar)
  */
 export default function NameOfTheDay({ compact = false, fullWidth = false }) {
   const { t, i18n } = useTranslation();
@@ -29,7 +29,7 @@ export default function NameOfTheDay({ compact = false, fullWidth = false }) {
     };
   }, [currentLang]);
 
-  const goCalendar = () => navigate('/cycle-tracking?calendar=true');
+  const goCalendar = () => navigate('/calendar');
   const alone = fullWidth && !compact;
 
   return (

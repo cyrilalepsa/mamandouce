@@ -57,6 +57,7 @@ import BabyNamesPage from './pages/BabyNamesPage';
 import UpdatesHistoryPage from './pages/UpdatesHistoryPage';
 import CarteVisitePage from './pages/CarteVisitePage';
 import CycleTrackingPage from './pages/CycleTrackingPage';
+import CalendarPage from './pages/CalendarPage';
 import FertilityCalculatorPage from './pages/FertilityCalculatorPage';
 import PregnancyFertilityPage from './pages/PregnancyFertilityPage';
 import RemindersPage from './pages/RemindersPage';
@@ -264,6 +265,8 @@ useEffect(() => {
                 <Route path="/baby-names" element={<ProtectedRoute><BabyNamesPage /></ProtectedRoute>} />
                 <Route path="/updates" element={<ProtectedRoute requireSubscription={false}><UpdatesHistoryPage /></ProtectedRoute>} />
                 <Route path="/carte-visite" element={<ProtectedRoute><CarteVisitePage /></ProtectedRoute>} />
+                <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+                <Route path="/dashboard/calendar" element={<Navigate to="/calendar" replace />} />
                 <Route path="/cycle-tracking" element={<ProtectedRoute><CycleTrackingPage /></ProtectedRoute>} />
                 <Route path="/fertility-calculator" element={<ProtectedRoute><FertilityCalculatorPage /></ProtectedRoute>} />
                 <Route path="/pregnancy-fertility" element={<ProtectedRoute><PregnancyFertilityPage /></ProtectedRoute>} />
