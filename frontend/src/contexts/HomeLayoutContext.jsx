@@ -50,6 +50,7 @@ const DEFAULT_LAYOUT = {
         { id: 'baby-preparation', type: 'section', expanded: false },
         { id: 'postpartum', type: 'section', expanded: false },
         { id: 'services', type: 'section', expanded: false },
+        { id: 'outils', type: 'section', expanded: false },
         { id: 'solidarity', type: 'section', expanded: false },
       ]
     }
@@ -73,6 +74,7 @@ export const AVAILABLE_ITEMS = {
     { id: 'baby-preparation', name: 'Préparer l\'arrivée de bébé', icon: 'Gift', premium: false },
     { id: 'postpartum', name: 'Suivi post-partum', icon: 'Heart', premium: false },
     { id: 'services', name: 'Services et ressources', icon: 'Settings', premium: false },
+    { id: 'outils', name: 'Outils', icon: 'Wrench', premium: false },
     { id: 'solidarity', name: 'Solidarité', icon: 'HandHeart', premium: false },
   ],
   cards: [

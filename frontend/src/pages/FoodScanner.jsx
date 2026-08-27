@@ -128,11 +128,34 @@ function FoodScanner() {
     }
     
     setLoading(true);
+    setBarcodeNotFound(false);
     try {
       const response = await api.scan.barcode(code);
-      setResult(response.data);
+      const data = response.data;
+
+      if (!data) {
+        setBarcodeNotFound(true);
+        setResult(null);
+        setSearchResults([]);
+        setNotFound(false);
+        setNewFoodData((prev) => ({ ...prev, barcode: code }));
+        return;
+      }
+
+      setResult(data);
       setSearchResults([]);
-      toast.success('Produit trouvé !');
+      setNotFound(false);
+
+      if (data.is_unknown || data.can_contribute || data.safe_for_pregnancy === 'unknown') {
+        setBarcodeNotFound(true);
+        setNewFoodData((prev) => ({
+          ...prev,
+          name: data.name || prev.name,
+          barcode: code,
+        }));
+      } else {
+        toast.success('Produit trouvé !');
+      }
     } catch (error) {
       if (error.response?.status === 403) {
         toast.error(
@@ -149,7 +172,11 @@ function FoodScanner() {
           { duration: 5000 }
         );
       } else {
-        toast.error('Erreur lors du scan');
+        setBarcodeNotFound(true);
+        setResult(null);
+        setSearchResults([]);
+        setNotFound(false);
+        setNewFoodData((prev) => ({ ...prev, barcode: code }));
       }
     } finally { // ✅ Correction du "finally" avec deux l
       setLoading(false);
@@ -212,6 +239,7 @@ function FoodScanner() {
     
     setLoading(true);
     setNotFound(false);
+    setBarcodeNotFound(false);
     isProcessingRef.current = true;
     try {
       const response = await api.scan.search(searchQuery);
@@ -256,6 +284,7 @@ function FoodScanner() {
       setShowAddFoodModal(false);
       setNewFoodData({ name: '', barcode: '', category: '', notes: '' });
       setNotFound(false);
+      setBarcodeNotFound(false);
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Erreur lors de l\'ajout');
     } finally {
@@ -319,6 +348,7 @@ function FoodScanner() {
   const [newFoodData, setNewFoodData] = useState({ name: '', barcode: '', category: '', notes: '' });
   const [addingFood, setAddingFood] = useState(false);
   const [notFound, setNotFound] = useState(false);
+  const [barcodeNotFound, setBarcodeNotFound] = useState(false);
   const [proposingFood, setProposingFood] = useState(false);
   const [submittedFoods, setSubmittedFoods] = useState(new Set());
 
@@ -580,7 +610,7 @@ function FoodScanner() {
             <div className="text-center">
               <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
               <h3 className="text-xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                {t('scanner.foodNotFound')}
+                {t('scanner.productNotListed', 'Produit non référencé')}
               </h3>
               <p className="text-slate-600 mb-4">
                 "{searchQuery}" {t('scanner.notInDatabase')}
@@ -594,7 +624,38 @@ function FoodScanner() {
                 className="bg-gradient-to-r from-pink-400 to-pink-300 text-white rounded-full px-6 py-3 font-semibold"
               >
                 <Plus className="w-5 h-5 mr-2" />
-                {t('scanner.proposeFood')}
+                {t('scanner.addProductN2O', 'Ajouter ce produit (+ point N2O)')}
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {barcodeNotFound && (
+          <Card className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 border-2 border-amber-200" data-testid="barcode-not-found-card">
+            <div className="text-center">
+              <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
+              <h3 className="text-xl font-bold text-slate-700 mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                {t('scanner.productNotListed', 'Produit non référencé')}
+              </h3>
+              <p className="text-slate-600 mb-4">
+                {barcode
+                  ? `${t('scanner.barcodeEAN')}: ${barcode}`
+                  : t('scanner.notInDatabase')}
+              </p>
+              <Button
+                onClick={() => {
+                  setNewFoodData((prev) => ({
+                    ...prev,
+                    barcode: barcode || prev.barcode,
+                    name: result?.name || prev.name,
+                  }));
+                  setShowAddFoodModal(true);
+                }}
+                data-testid="add-unknown-barcode-food"
+                className="bg-gradient-to-r from-pink-400 to-pink-300 text-white rounded-full px-6 py-3 font-semibold"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                {t('scanner.addProductN2O', 'Ajouter ce produit (+ point N2O)')}
               </Button>
             </div>
           </Card>

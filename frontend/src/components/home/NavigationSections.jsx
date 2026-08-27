@@ -11,3 +11,4 @@ export { PostpartumSection } from './navigation/PostpartumSection';
 export { FaqBabySection } from './navigation/FaqBabySection';
 export { ServicesSection } from './navigation/ServicesSection';
 export { SolidaritySection } from './navigation/SolidaritySection';
+export { OutilsSection } from './navigation/OutilsSection';

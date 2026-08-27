@@ -6,7 +6,7 @@ import {
   Check, Pin, PinOff, CalendarHeart, ScanBarcode, Apple, History,
   Stethoscope, Bell, BookHeart, Users, ChevronRight, Crown, Lock,
   ClipboardList, Briefcase, Video, Youtube, Book, Phone, LineChart,
-  Scale, Lightbulb, Building2, Hospital, MapPin, ExternalLink, Utensils, Shield, FileText
+  Scale, Lightbulb, Building2, Hospital, MapPin, ExternalLink, Utensils, Shield, FileText, Wrench, Moon, AlertCircle
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -62,6 +62,14 @@ const SECTION_META = {
     accentColor: 'text-sky-600',
     bgColor: 'bg-sky-50/50',
   },
+  'outils': { 
+    icon: Wrench, 
+    name: 'Outils',
+    nameKey: 'sections.outils',
+    bgGradient: 'from-white/95 via-slate-50/70 to-slate-100/50',
+    accentColor: 'text-slate-600',
+    bgColor: 'bg-slate-50/50',
+  },
 };
 
 // Contenu de chaque section (cartes individuelles) - Dégradés accentués vers le blanc + bonbon pastel
@@ -104,6 +112,11 @@ const SECTION_ITEMS = {
     { id: 'ameli', icon: Hospital, iconColor: 'text-blue-600', bgColor: 'blue', title: 'Ameli', titleKey: 'services.ameli', desc: 'Assurance maladie', descKey: 'services.ameliDesc', route: 'https://www.ameli.fr', external: true },
     { id: 'maps', icon: MapPin, iconColor: 'text-red-600', bgColor: 'red', title: 'Mairie proche', titleKey: 'services.maps', desc: 'Démarches administratives', descKey: 'services.mapsDesc', route: 'https://www.google.com/maps/search/mairie', external: true },
     { id: 'videos', icon: Video, iconColor: 'text-green-600', bgColor: 'green', title: 'Vidéos', titleKey: 'services.videos', desc: 'Tutoriels YouTube', descKey: 'services.tutorials', route: 'https://www.youtube.com/results?search_query=grossesse+conseils', external: true },
+  ],
+  'outils': [
+    { id: 'baby-sleep', icon: Moon, iconColor: 'text-violet-600', bgColor: 'violet', title: 'Bonne nuit bébé', titleKey: 'outils.sleep.title', desc: 'Bruits blancs & murmure', descKey: 'outils.sleep.shortDesc', route: '/outils/bonne-nuit-bebe' },
+    { id: 'pediatrician-notes', icon: Stethoscope, iconColor: 'text-sky-600', bgColor: 'sky', title: 'Cher pédiatre', titleKey: 'outils.pediatrician.title', desc: 'Notes & synthèse', descKey: 'outils.pediatrician.shortDesc', route: '/outils/cher-pediatre' },
+    { id: 'emergency-birth', icon: AlertCircle, iconColor: 'text-red-600', bgColor: 'red', title: 'Fiche urgence naissance', titleKey: 'outils.emergency.title', desc: 'Partage relais', descKey: 'outils.emergency.shortDesc', route: '/outils/fiche-urgence' },
   ],
 };
 

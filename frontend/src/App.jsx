@@ -71,7 +71,11 @@ import TireliirePage from './pages/TireliirePage';
 import ModerationPage from './pages/ModerationPage';
 import BabyEvolutionPage from './pages/BabyEvolutionPage';
 import FaqBabyPage from './pages/FaqBabyPage';
+import BabySleepPage from './pages/outils/BabySleepPage';
+import PediatricianNotesPage from './pages/outils/PediatricianNotesPage';
+import EmergencyInfoPage from './pages/outils/EmergencyInfoPage';
 import ChatBubble from './components/ChatBubble';
+import ScannerFab from './components/ScannerFab';
 import { EmotionalIntelligenceProvider } from './components/EmotionalIntelligence';
 // WhatsNewModal remplacé par NewsBubble dans HomePage
 import { NewBadgeProvider } from './components/NewBadge';
@@ -282,9 +286,13 @@ useEffect(() => {
                 <Route path="/moderation" element={<ProtectedRoute><ModerationPage /></ProtectedRoute>} />
                 <Route path="/baby-evolution" element={<ProtectedRoute><BabyEvolutionPage /></ProtectedRoute>} />
                 <Route path="/faq-baby" element={<ProtectedRoute><FaqBabyPage /></ProtectedRoute>} />
+                <Route path="/outils/bonne-nuit-bebe" element={<ProtectedRoute><BabySleepPage /></ProtectedRoute>} />
+                <Route path="/outils/cher-pediatre" element={<ProtectedRoute><PediatricianNotesPage /></ProtectedRoute>} />
+                <Route path="/outils/fiche-urgence" element={<ProtectedRoute><EmergencyInfoPage /></ProtectedRoute>} />
               </Routes>
             </BrowserRouter>
             <Toaster />
+            <ScannerFab />
             <ChatBubble />
             <PWAInstallBanner />
             <OfflineSyncIndicator />

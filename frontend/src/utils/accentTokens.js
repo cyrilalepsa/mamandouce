@@ -26,6 +26,7 @@ export const SECTION_ACCENT = {
   'baby-preparation': 'red',
   postpartum: 'green',
   services: 'violet',
+  outils: 'slate',
 };
 
 export function normalizeAccent(accent) {
