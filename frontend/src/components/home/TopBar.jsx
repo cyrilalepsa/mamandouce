@@ -7,18 +7,21 @@ import api from '../../utils/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { AvatarPreview } from '../profile/AvatarBuilder';
 import { languages, changeLanguage, getCurrentLanguage } from '../../i18n';
-import { Check, X } from 'lucide-react';
+import { LanguagePopoverMenu } from '../LanguagePopoverMenu';
 
 // Drapeau langue inline (glyphe nu, pas de bulle)
 function LanguageInlineFlag() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState(getCurrentLanguage());
-  const dropdownRef = useRef(null);
+  const buttonRef = useRef(null);
+  const menuRef = useRef(null);
   const currentLanguage = languages.find(l => l.code === currentLang) || languages[0];
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      const inButton = buttonRef.current?.contains(event.target);
+      const inMenu = menuRef.current?.contains(event.target);
+      if (!inButton && !inMenu) {
         setIsOpen(false);
       }
     };
@@ -42,8 +45,9 @@ function LanguageInlineFlag() {
   };
 
   return (
-    <div className="relative shrink-0 self-center" ref={dropdownRef}>
+    <div className="relative shrink-0 self-center">
       <button
+        ref={buttonRef}
         onClick={(e) => { e.stopPropagation(); setIsOpen(prev => !prev); }}
         className="flex items-center justify-center w-7 h-7"
         style={{
@@ -57,32 +61,17 @@ function LanguageInlineFlag() {
       >
         <span style={{ fontSize: 20, lineHeight: '28px', display: 'block' }}>{currentLanguage.flag}</span>
       </button>
-      {isOpen && (
-        <div
-          className="absolute right-2 top-full mt-2 origin-top-right z-50 w-48 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
-        >
-          <div className="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-pink-50 to-purple-50 border-b border-slate-100">
-            <span className="text-sm font-semibold text-slate-600">Langue</span>
-            <button onClick={(e) => { e.stopPropagation(); setIsOpen(false); }} className="p-1 hover:bg-slate-200 rounded-full">
-              <X className="w-4 h-4 text-slate-400" />
-            </button>
-          </div>
-          <div className="max-h-[300px] overflow-y-auto py-1">
-            {languages.map((lang) => (
-              <button key={lang.code} onClick={(e) => { e.stopPropagation(); handleChange(lang.code); }}
-                className={`w-full flex items-center justify-between px-4 py-3 hover:bg-slate-50 ${lang.code === currentLang ? 'bg-pink-50' : ''}`}
-                data-testid={`lang-inline-${lang.code}`}
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{lang.flag}</span>
-                  <span className={`font-medium ${lang.code === currentLang ? 'text-pink-600' : 'text-slate-700'}`}>{lang.name}</span>
-                </div>
-                {lang.code === currentLang && <Check className="w-5 h-5 text-pink-500" />}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      <div ref={menuRef}>
+        <LanguagePopoverMenu
+          anchorRef={buttonRef}
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          languages={languages}
+          currentLang={currentLang}
+          onSelect={handleChange}
+          testIdPrefix="lang-inline"
+        />
+      </div>
     </div>
   );
 }
