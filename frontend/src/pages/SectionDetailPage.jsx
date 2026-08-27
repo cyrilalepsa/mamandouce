@@ -510,6 +510,7 @@ function SectionDetailPage() {
   }
 
   const Icon = meta.icon;
+  const sectionBackPath = '/journey-steps';
 
   return (
     <div className={`min-h-screen bg-gradient-to-br ${meta.bgGradient}`}>
@@ -517,7 +518,7 @@ function SectionDetailPage() {
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
           <Button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(sectionBackPath)}
             variant="ghost"
             className="p-2 rounded-full hover:bg-white/50"
             data-testid="back-button"

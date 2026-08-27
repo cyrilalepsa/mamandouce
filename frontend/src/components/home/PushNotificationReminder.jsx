@@ -73,28 +73,28 @@ export function PushNotificationReminder() {
   }
 
   return (
-    <Card className="relative overflow-hidden bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 rounded-2xl p-4 mb-4 shadow-lg">
+    <Card className="relative overflow-hidden bg-white border-2 border-violet-200 rounded-2xl p-4 mb-4 shadow-md">
       {/* Bouton fermer */}
       <button
         onClick={handleDismiss}
-        className="absolute top-2 right-2 w-7 h-7 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
+        className="absolute top-2 right-2 w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center transition-colors"
         data-testid="dismiss-push-reminder"
       >
-        <X className="w-4 h-4 text-white" />
+        <X className="w-4 h-4 text-slate-600" />
       </button>
 
       <div className="flex items-start gap-3">
         {/* Icône animée */}
-        <div className="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center flex-shrink-0">
-          <Bell className="w-6 h-6 text-white animate-bounce" />
+        <div className="w-12 h-12 bg-violet-100 rounded-xl flex items-center justify-center flex-shrink-0">
+          <Bell className="w-6 h-6 text-violet-600 animate-bounce" />
         </div>
 
         {/* Contenu */}
         <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-white text-sm mb-1">
+          <h3 className="font-bold text-slate-800 text-sm mb-1">
             Ne manquez rien !
           </h3>
-          <p className="text-white/90 text-xs leading-relaxed mb-3">
+          <p className="text-slate-700 text-xs leading-relaxed mb-3">
             Activez les notifications pour recevoir vos rappels de RDV et conseils personnalisés, même quand l'app est fermée.
           </p>
 
@@ -102,18 +102,18 @@ export function PushNotificationReminder() {
           <Button
             onClick={handleGoToSettings}
             data-testid="go-to-push-settings"
-            className="bg-white text-purple-600 hover:bg-white/90 rounded-full px-4 py-2 text-sm font-semibold flex items-center gap-2 shadow-md"
+            className="bg-violet-50 text-slate-800 hover:bg-violet-100 border border-violet-200 rounded-full px-4 py-2 text-sm font-semibold flex items-center gap-2 shadow-sm"
           >
-            <Smartphone className="w-4 h-4" />
+            <Smartphone className="w-4 h-4 text-violet-700" />
             Activer les notifications
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4 text-violet-700" />
           </Button>
         </div>
       </div>
 
       {/* Étoiles décoratives */}
-      <div className="absolute top-1 left-1/4 w-2 h-2 bg-white/30 rounded-full animate-pulse" />
-      <div className="absolute bottom-3 right-1/3 w-1.5 h-1.5 bg-white/20 rounded-full animate-pulse delay-300" />
+      <div className="absolute top-1 left-1/4 w-2 h-2 bg-violet-200 rounded-full animate-pulse" />
+      <div className="absolute bottom-3 right-1/3 w-1.5 h-1.5 bg-pink-200 rounded-full animate-pulse delay-300" />
     </Card>
   );
 }
