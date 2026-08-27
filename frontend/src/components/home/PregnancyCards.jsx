@@ -12,7 +12,7 @@ export function PregnancyStatusCard({ pregnancyProfile }) {
   return (
     <Card
       className={`${cardSoftClayClasses('pink')} p-5 border-0 shadow-none cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]`}
-      onClick={() => navigate('/pregnancy-fertility')}
+      onClick={() => navigate('/grossesse')}
       data-testid="pregnancy-status-card"
       data-accent="pink"
     >

@@ -49,16 +49,16 @@ test("cycle summary and pregnancy progress are deterministic", () => {
 
 test("dashboard and pregnancy module enforce pregnancy guards", () => {
   const toggle = read("src/components/cycle/PregnancyToggle.jsx");
-  const pregnancyPage = read("src/pages/PregnancyFertilityPage.jsx");
+  const pregnancyPage = read("src/pages/GrossessePage.jsx");
   const tracking = read("src/pages/CycleTrackingPage.jsx");
 
   assert.match(toggle, /cycle-summary-card/);
   assert.match(toggle, /pregnancy-progress-card/);
-  assert.match(toggle, /navigate\(isPregnant \? '\/pregnancy-fertility' : '\/cycle-tracking'\)/);
-  assert.match(pregnancyPage, /!isPregnant && cycleStatus/);
-  assert.match(pregnancyPage, /isPregnant \? \(/);
-  assert.match(tracking, /data-testid="pregnancy-tracking-active"/);
-  assert.match(tracking, /if \(isPregnant\) \{\s*\n\s*return/s);
+  assert.match(toggle, /navigate\(isPregnant \? '\/grossesse' : '\/cycle-tracking'\)/);
+  assert.match(pregnancyPage, /grossesse-pregnant-panel/);
+  assert.match(pregnancyPage, /grossesse-preconception-card/);
+  assert.match(tracking, /'pregnancy-tracking-active'/);
+  assert.doesNotMatch(tracking, /if \(isPregnant\) \{\s*\n\s*return/s);
   assert.match(tracking, /pregnancy-cycle-suspended-banner/);
 });
 

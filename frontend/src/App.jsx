@@ -59,7 +59,7 @@ import CarteVisitePage from './pages/CarteVisitePage';
 import CycleTrackingPage from './pages/CycleTrackingPage';
 import CalendarPage from './pages/CalendarPage';
 import FertilityCalculatorPage from './pages/FertilityCalculatorPage';
-import PregnancyFertilityPage from './pages/PregnancyFertilityPage';
+import GrossessePage from './pages/GrossessePage';
 import RemindersPage from './pages/RemindersPage';
 import JourneyStepsPage from './pages/JourneyStepsPage';
 import SectionDetailPage from './pages/SectionDetailPage';
@@ -269,8 +269,8 @@ useEffect(() => {
                 <Route path="/dashboard/calendar" element={<Navigate to="/calendar" replace />} />
                 <Route path="/cycle-tracking" element={<ProtectedRoute><CycleTrackingPage /></ProtectedRoute>} />
                 <Route path="/fertility-calculator" element={<ProtectedRoute><FertilityCalculatorPage /></ProtectedRoute>} />
-                <Route path="/pregnancy-fertility" element={<ProtectedRoute><PregnancyFertilityPage /></ProtectedRoute>} />
-                <Route path="/grossesse" element={<Navigate to="/pregnancy-fertility" replace />} />
+                <Route path="/grossesse" element={<ProtectedRoute><GrossessePage /></ProtectedRoute>} />
+                <Route path="/pregnancy-fertility" element={<Navigate to="/grossesse" replace />} />
                 <Route path="/reminders" element={<ProtectedRoute><RemindersPage /></ProtectedRoute>} />
                 <Route path="/journey-steps" element={<ProtectedRoute><JourneyStepsPage /></ProtectedRoute>} />
                 <Route path="/section/:sectionId" element={<ProtectedRoute><SectionDetailPage /></ProtectedRoute>} />

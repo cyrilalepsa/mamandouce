@@ -32,7 +32,7 @@ export function PregnancySection({ hasPregnancyProfile, pregnancyProfile }) {
     >
       <PastelPillCard
         color="blue"
-        onClick={() => navigate('/pregnancy-fertility')}
+        onClick={() => navigate('/grossesse')}
         testId="pregnancy-fertility-nav"
         className="mb-4"
       >
