@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { EmergencyInfoCard } from '../components/outils/EmergencyInfoCard';
+import { Button } from '../../components/ui/button';
+import { EmergencyInfoCard } from '../../components/outils/EmergencyInfoCard';
 
 function EmergencyInfoPage() {
   const navigate = useNavigate();
