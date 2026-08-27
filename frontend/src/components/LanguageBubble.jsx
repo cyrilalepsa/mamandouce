@@ -56,16 +56,22 @@ export function LanguageBubble({ isOpen: controlledOpen, onToggle } = {}) {
   };
 
   return (
-    <div className="absolute top-4 right-14" style={{ zIndex: 50 }} ref={dropdownRef}>
-      {isOpen && (
-        <div
-          className="absolute top-10 right-0 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
-          style={{
-            minWidth: '200px',
-            zIndex: 9999,
-            animation: 'fadeInDown 0.2s ease-out',
-          }}
+    <div className="absolute top-4 right-14 z-50">
+      <div className="relative" ref={dropdownRef}>
+        <button
+          type="button"
+          onClick={toggleDropdown}
+          className="p-1 flex items-center justify-center transition-all duration-200 hover:scale-110 hover:opacity-80"
+          title={t('settings.selectLanguage')}
+          data-testid="language-bubble-btn"
         >
+          <span className="text-2xl">{currentLanguage.flag}</span>
+        </button>
+
+        {isOpen && (
+          <div
+            className="absolute right-2 top-full mt-2 origin-top-right z-50 w-48 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden animate-fade-in"
+          >
           <div className="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-pink-50 to-purple-50 border-b border-slate-100">
             <span className="text-sm font-semibold text-slate-600">{t('settings.language')}</span>
             <button
@@ -108,18 +114,9 @@ export function LanguageBubble({ isOpen: controlledOpen, onToggle } = {}) {
               </button>
             ))}
           </div>
-        </div>
-      )}
-
-      <button
-        type="button"
-        onClick={toggleDropdown}
-        className="p-1 flex items-center justify-center transition-all duration-200 hover:scale-110 hover:opacity-80"
-        title={t('settings.selectLanguage')}
-        data-testid="language-bubble-btn"
-      >
-        <span className="text-2xl">{currentLanguage.flag}</span>
-      </button>
+          </div>
+        )}
+      </div>
 
       <style>{`
         @keyframes fadeInDown {

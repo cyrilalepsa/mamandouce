@@ -42,13 +42,11 @@ function LanguageInlineFlag() {
   };
 
   return (
-    <div className="relative" ref={dropdownRef} style={{ width: 28, height: 28, flexShrink: 0, alignSelf: 'center' }}>
+    <div className="relative shrink-0 self-center" ref={dropdownRef}>
       <button
         onClick={(e) => { e.stopPropagation(); setIsOpen(prev => !prev); }}
-        className="flex items-center justify-center"
+        className="flex items-center justify-center w-7 h-7"
         style={{
-          width: 28,
-          height: 28,
           background: 'none',
           border: 'none',
           boxShadow: 'none',
@@ -60,7 +58,9 @@ function LanguageInlineFlag() {
         <span style={{ fontSize: 20, lineHeight: '28px', display: 'block' }}>{currentLanguage.flag}</span>
       </button>
       {isOpen && (
-        <div className="absolute top-10 right-0 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden" style={{ minWidth: '200px', zIndex: 9999 }}>
+        <div
+          className="absolute right-2 top-full mt-2 origin-top-right z-50 w-48 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
+        >
           <div className="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-pink-50 to-purple-50 border-b border-slate-100">
             <span className="text-sm font-semibold text-slate-600">Langue</span>
             <button onClick={(e) => { e.stopPropagation(); setIsOpen(false); }} className="p-1 hover:bg-slate-200 rounded-full">
