@@ -1,5 +1,7 @@
 import { useLayoutEffect, useState } from 'react';
 import { Check, X } from 'lucide-react';
+import { usePopoverMountTransition } from '../hooks/usePopoverMountTransition';
+import { popoverMenuAnimationClass } from '../utils/popoverMenuAnimation';
 
 const MENU_CLASS =
   'fixed z-[9999] w-48 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden';
@@ -14,11 +16,12 @@ export function LanguagePopoverMenu({
   title = 'Langue',
   testIdPrefix = 'lang-inline',
 }) {
+  const { shouldRender, isShown } = usePopoverMountTransition(isOpen, { exitMs: 150 });
   const [position, setPosition] = useState(null);
 
   useLayoutEffect(() => {
-    if (!isOpen || !anchorRef?.current) {
-      setPosition(null);
+    if (!shouldRender || !anchorRef?.current) {
+      if (!shouldRender) setPosition(null);
       return;
     }
 
@@ -38,13 +41,13 @@ export function LanguagePopoverMenu({
       window.removeEventListener('resize', updatePosition);
       window.removeEventListener('scroll', updatePosition, true);
     };
-  }, [isOpen, anchorRef]);
+  }, [shouldRender, anchorRef]);
 
-  if (!isOpen || !position) return null;
+  if (!shouldRender || !position) return null;
 
   return (
     <div
-      className={MENU_CLASS}
+      className={`${MENU_CLASS} ${popoverMenuAnimationClass(isShown)}`}
       style={{ top: position.top, right: position.right }}
       data-testid="language-popover-menu"
     >
