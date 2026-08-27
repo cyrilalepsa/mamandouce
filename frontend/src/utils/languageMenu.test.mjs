@@ -21,3 +21,17 @@ test('language popovers use fixed overlay positioning without layout flow', () =
   assert.doesNotMatch(popover, /top-full/);
   assert.doesNotMatch(topBar, /top-full mt-2/);
 });
+
+test('language and account menus share fade-scale popover animation', () => {
+  const topBar = read('src/components/home/TopBar.jsx');
+  const popover = read('src/components/LanguagePopoverMenu.jsx');
+  const animation = read('src/utils/popoverMenuAnimation.js');
+
+  assert.match(animation, /opacity-100 scale-100 duration-200 ease-out/);
+  assert.match(animation, /opacity-0 scale-95 duration-150 ease-in/);
+  assert.match(popover, /usePopoverMountTransition/);
+  assert.match(popover, /popoverMenuAnimationClass/);
+  assert.match(topBar, /usePopoverMountTransition/);
+  assert.match(topBar, /popoverMenuAnimationClass/);
+  assert.doesNotMatch(topBar, /animate-fade-in/);
+});

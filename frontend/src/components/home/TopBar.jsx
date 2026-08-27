@@ -8,6 +8,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { AvatarPreview } from '../profile/AvatarBuilder';
 import { languages, changeLanguage, getCurrentLanguage } from '../../i18n';
 import { LanguagePopoverMenu } from '../LanguagePopoverMenu';
+import { usePopoverMountTransition } from '../../hooks/usePopoverMountTransition';
+import { popoverMenuAnimationClass } from '../../utils/popoverMenuAnimation';
 
 // Drapeau langue inline (glyphe nu, pas de bulle)
 function LanguageInlineFlag() {
@@ -88,6 +90,8 @@ export function TopBar({ isAdmin: isAdminProp, userAvatar = null, userAvatarConf
     || String(role || '').toLowerCase() === 'admin'
   );
   const [menuOpen, setMenuOpen] = useState(false);
+  const { shouldRender: shouldRenderAccountMenu, isShown: isAccountMenuShown } =
+    usePopoverMountTransition(menuOpen, { exitMs: 150 });
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState(0);
@@ -322,9 +326,9 @@ export function TopBar({ isAdmin: isAdminProp, userAvatar = null, userAvatarConf
       </div>
 
       {/* Menu déroulant — positionné FIXE dans le viewport, ne déplace rien */}
-      {menuOpen && (
+      {shouldRenderAccountMenu && (
         <div 
-          className="fixed right-3 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden animate-fade-in"
+          className={`fixed right-3 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden ${popoverMenuAnimationClass(isAccountMenuShown)}`}
           ref={menuDropdownRef}
           style={{ 
             top: '52px',
