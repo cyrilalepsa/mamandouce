@@ -19,7 +19,6 @@ import { CycleReportModal } from '../components/cycle/CycleReportModal';
 import { PregnancyToggle } from '../components/cycle/PregnancyToggle';
 import {
   PregnancyEncouragementModal,
-  PREGNANCY_ENCOURAGEMENT_DISMISSED_KEY,
 } from '../components/cycle/PregnancyEncouragementModal';
 import { AgendaCard } from '../components/home/AgendaCard';
 import {
@@ -118,23 +117,11 @@ useEffect(() => {
     return () => clearTimeout(safetyTimer);
   }, []);
 
-  useEffect(() => {
-    if (isPregnant) {
-      setShowCalendar(false);
-    }
-  }, [isPregnant]);
+  const closeEncouragementModal = () => setShowEncouragementModal(false);
 
-  useEffect(() => {
-    if (!initialLoading && isPregnant) {
-      setShowEncouragementModal(
-        sessionStorage.getItem(PREGNANCY_ENCOURAGEMENT_DISMISSED_KEY) !== 'true',
-      );
-    }
-  }, [initialLoading, isPregnant]);
-
-  const dismissEncouragementModal = () => {
-    sessionStorage.setItem(PREGNANCY_ENCOURAGEMENT_DISMISSED_KEY, 'true');
-    setShowEncouragementModal(false);
+  const goToPregnancyHub = () => {
+    closeEncouragementModal();
+    navigate('/pregnancy-fertility');
   };
 
   // 🔥 NOM CORRIGÉ : "loadCycleData" pour correspondre au useEffect
@@ -156,7 +143,6 @@ useEffect(() => {
       setIsPregnant(pregnancyActive);
       if (pregnancyActive) {
         setDueDate(profile?.estimated_due_date || localStorage.getItem('mamandouce_due_date') || '');
-        setShowCalendar(false);
       }
       if (profile && profile.last_period_date) {
         const ymd = toYearMonthDay(profile.last_period_date);
@@ -585,8 +571,8 @@ useEffect(() => {
               Grossesse en cours — suivi de cycle fertilité suspendu
             </p>
             <p className="text-xs text-pink-600 mt-1 leading-relaxed">
-              Le calendrier d&apos;ovulation est désactivé pendant la grossesse. Consultez votre
-              espace Grossesse pour suivre votre parcours.
+              Le suivi fertilité est suspendu. Le calendrier reste disponible en mode sommaire
+              (jours fériés et vacances scolaires).
             </p>
             <Button
               type="button"
@@ -626,20 +612,18 @@ useEffect(() => {
 
         <PregnancyEncouragementModal
           isOpen={showEncouragementModal}
-          onClose={dismissEncouragementModal}
-          onGoToPregnancy={() => {
-            dismissEncouragementModal();
-            navigate('/pregnancy-fertility');
-          }}
+          onClose={closeEncouragementModal}
+          onGoToPregnancy={goToPregnancyHub}
         />
 
         <FertilityCalendar
           isOpen={showCalendar}
           onClose={() => setShowCalendar(false)}
-          agendaData={agendaData}
+          agendaData={null}
           rapportDates={[]}
           onAddRapport={() => {}}
           onRemoveRapport={() => {}}
+          hideFertilityFeatures={true}
         />
       </div>
     );
@@ -807,6 +791,7 @@ return (
                 onPregnant={(dpaStr) => {
                   setIsPregnant(true);
                   setDueDate(dpaStr);
+                  setShowEncouragementModal(true);
 
                   // 🚀 1. LES JETS DE COEURS
                   const scalar = 2;

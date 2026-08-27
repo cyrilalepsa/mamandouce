@@ -16,10 +16,11 @@ export function CpamDateGapInfo({ className = '' }) {
         </button>
       </PopoverTrigger>
       <PopoverContent
-        side="bottom"
+        side="top"
         align="end"
-        sideOffset={6}
-        className="max-w-[min(18rem,calc(100vw-2rem))] w-auto text-xs leading-relaxed bg-violet-900 text-white border-0 px-3 py-2 shadow-lg"
+        sideOffset={8}
+        animation="fade"
+        className="max-w-[min(18rem,calc(100vw-2rem))] w-auto text-xs leading-relaxed bg-slate-900 text-white border-0 shadow-xl rounded-xl p-3"
         data-testid="maternity-cpam-gap-popover"
       >
         {CPAM_MATERNITY_GAP_GUIDANCE}

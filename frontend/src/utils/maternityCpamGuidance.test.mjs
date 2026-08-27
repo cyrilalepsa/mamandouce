@@ -15,7 +15,9 @@ test('maternity leave card surfaces CPAM gap info and Ameli resources link', () 
   assert.match(gapInfo, /maternity-cpam-gap-info/);
   assert.match(gapInfo, /PopoverTrigger/);
   assert.match(gapInfo, /maternity-cpam-gap-popover/);
-  assert.doesNotMatch(gapInfo, /TooltipProvider/);
+  assert.match(gapInfo, /side="top"/);
+  assert.match(gapInfo, /animation="fade"/);
+  assert.match(gapInfo, /bg-slate-900 text-white/);
   assert.match(gapInfo, /Pourquoi un écart/);
   assert.match(card, /CpamDateGapInfo/);
   assert.match(card, /maternity-ameli-resources-link/);

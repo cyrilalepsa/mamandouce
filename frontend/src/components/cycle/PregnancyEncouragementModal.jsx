@@ -4,8 +4,26 @@ import { Button } from '../ui/button';
 
 export const PREGNANCY_ENCOURAGEMENT_DISMISSED_KEY = 'mamandouce_cycle_congrats_dismissed';
 
-export function PregnancyEncouragementModal({ isOpen, onClose, onGoToPregnancy }) {
+const CONTENT = {
+  pregnancy: {
+    body: 'Cette première escale est achevée. Toute l’équipe MamanDouce vous souhaite une belle grossesse et beaucoup de courage pour la suite !',
+    cta: 'Accéder à mon espace Grossesse',
+  },
+  birth: {
+    body: 'Bienvenue à votre bébé ! Toute l’équipe MamanDouce vous accompagne pour cette nouvelle étape post-partum.',
+    cta: 'Accéder au post-partum',
+  },
+};
+
+export function PregnancyEncouragementModal({
+  isOpen,
+  onClose,
+  onGoToPregnancy,
+  variant = 'pregnancy',
+}) {
   if (!isOpen) return null;
+
+  const copy = CONTENT[variant] || CONTENT.pregnancy;
 
   return (
     <div
@@ -31,10 +49,7 @@ export function PregnancyEncouragementModal({ isOpen, onClose, onGoToPregnancy }
 
         <Heart className="w-8 h-8 text-pink-500 mx-auto mb-2" />
         <h2 className="font-bold text-pink-700 text-lg">Félicitations !</h2>
-        <p className="text-sm text-pink-600 mt-1 leading-relaxed">
-          Cette première escale est achevée. Toute l’équipe MamanDouce vous souhaite
-          une belle grossesse et beaucoup de courage pour la suite !
-        </p>
+        <p className="text-sm text-pink-600 mt-1 leading-relaxed">{copy.body}</p>
 
         <div className="mt-5 space-y-2">
           <Button
@@ -43,7 +58,7 @@ export function PregnancyEncouragementModal({ isOpen, onClose, onGoToPregnancy }
             className="w-full rounded-2xl py-5 bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold"
             data-testid="pregnancy-encouragement-go"
           >
-            Accéder à mon espace Grossesse
+            {copy.cta}
           </Button>
           <Button
             type="button"
