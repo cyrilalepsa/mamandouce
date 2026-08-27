@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { CalendarHeart, Baby, ChevronDown } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { CalendarHeart, Baby, ChevronDown, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../../utils/api';
 import { useAuth } from '../../contexts/AuthContext';
@@ -13,9 +13,12 @@ import {
   calculateMaternityLeaveDates,
   formatFrenchDate,
   getScenarioLabel,
+  AMELI_RESOURCES_SECTION_PATH,
 } from '../../utils/maternityLeave';
+import { CpamDateGapInfo } from './CpamDateGapInfo';
 
 export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false }) {
+  const navigate = useNavigate();
   const { user, ingestUser } = useAuth();
   const [searchParams] = useSearchParams();
   const focusMaternityLeave = searchParams.get('focus') === 'maternity-leave';
@@ -212,6 +215,20 @@ export function MaternityLeaveSummaryCard({ className = '', defaultOpen = false 
                   Saisissez les dates figurant sur votre relevé Ameli pour éviter tout écart de
                   calcul.
                 </p>
+                <button
+                  type="button"
+                  onClick={() => navigate(AMELI_RESOURCES_SECTION_PATH)}
+                  className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-violet-800 hover:text-violet-950 underline-offset-2 hover:underline"
+                  data-testid="maternity-ameli-resources-link"
+                >
+                  <Link2 className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                  Vérifier sur mon compte Ameli
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <p className="text-xs font-semibold text-violet-800">Dates affichées</p>
+                <CpamDateGapInfo />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">

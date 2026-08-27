@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
   ArrowLeft, Heart, Sparkles, Baby, Gift, HeartHandshake, Settings, 
@@ -402,12 +402,31 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
 function SectionDetailPage() {
   const navigate = useNavigate();
   const { sectionId } = useParams();
+  const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const { pages, addPage, duplicateItemToPage } = useHomeLayout();
   const { user } = useAuth();
   
   const [selectedItem, setSelectedItem] = useState(null);
   const [showDuplicatePopup, setShowDuplicatePopup] = useState(false);
+
+  const focusItemId = searchParams.get('focus');
+
+  useEffect(() => {
+    if (sectionId !== 'services' || !focusItemId) return;
+
+    const timer = window.setTimeout(() => {
+      const el = document.querySelector(`[data-testid="item-card-${focusItemId}"]`);
+      if (!el) return;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('ring-2', 'ring-sky-400', 'ring-offset-2');
+      window.setTimeout(() => {
+        el.classList.remove('ring-2', 'ring-sky-400', 'ring-offset-2');
+      }, 2600);
+    }, 200);
+
+    return () => window.clearTimeout(timer);
+  }, [sectionId, focusItemId]);
 
   const meta = SECTION_META[sectionId];
   const country = resolveCountryFromCity(user?.city);

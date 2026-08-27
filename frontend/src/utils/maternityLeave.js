@@ -2,6 +2,13 @@ import { addDays, parseYmd, toYmd } from './pregnancyDateUtils.js';
 
 export const MULTIPLE_PREGNANCY_VALUES = ['none', 'twins', 'triplets_or_more'];
 
+/** Guidance when CPAM calendar weeks differ from theoretical Ameli barème. */
+export const CPAM_MATERNITY_GAP_GUIDANCE =
+  'La CPAM calcule parfois le congé en semaines civiles complètes ou selon votre jour d\'arrêt exact. Fiez-vous aux dates de votre attestation.';
+
+export const AMELI_ACCOUNT_URL = 'https://www.ameli.fr';
+export const AMELI_RESOURCES_SECTION_PATH = '/section/services?focus=ameli';
+
 /** Barème officiel Ameli — semaines avant / après la DPA */
 export const AMELI_MATERNITY_MATRIX = {
   first_child: { prenatalWeeks: 6, postnatalWeeks: 10, totalWeeks: 16 },
