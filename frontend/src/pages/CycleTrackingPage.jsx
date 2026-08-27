@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, CalendarDays, Settings, Save, CalendarRange, Egg, Heart, Droplets, Info, TestTube, Moon, Sun, Sparkles, Plus, X, History, Brain, AlertTriangle, TrendingUp } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -30,7 +30,6 @@ import {
 import { isPregnancyActive } from '../utils/pregnancyStatus';
 import confetti from 'canvas-confetti';
 
-const PRECONCEPTION_HUB = '/section/preconception';
 const PROFILE_LOAD_TIMEOUT_MS = 8000;
 const INITIAL_LOAD_SAFETY_MS = 10000;
 
@@ -40,7 +39,6 @@ function readStoredPregnancyFlag() {
 
 function CycleTrackingPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const currentLang = getCurrentLanguage();
   const { isDarkMode } = useTheme();
@@ -91,12 +89,6 @@ function CycleTrackingPage() {
   const getThemeColor = (baseColor, darkColor) => isDarkMode ? darkColor : baseColor;
 
   useEffect(() => {
-    if (searchParams.get('calendar') === 'true') {
-      navigate('/calendar', { replace: true });
-    }
-  }, [searchParams, navigate]);
-
-useEffect(() => {
     const initialize = async () => {
       const pregnancyActive = await loadCycleData();
       if (!pregnancyActive) {
@@ -121,7 +113,7 @@ useEffect(() => {
 
   const goToPregnancyHub = () => {
     closeEncouragementModal();
-    navigate('/pregnancy-fertility');
+    navigate('/grossesse');
   };
 
   // 🔥 NOM CORRIGÉ : "loadCycleData" pour correspondre au useEffect
@@ -542,95 +534,11 @@ useEffect(() => {
     return Math.round(total / cycleHistory.length);
   };
 
-  if (isPregnant) {
-    return (
-      <div className="min-h-screen gradient-bg" data-testid="pregnancy-tracking-active">
-        <div className="relative z-[60] max-w-2xl mx-auto p-4 sm:p-6">
-          <div className="flex items-center gap-4 mb-6">
-            <Button
-              onClick={() => navigate(PRECONCEPTION_HUB)}
-              variant="ghost"
-              className={`p-2 rounded-full ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-white/50'}`}
-              data-testid="back-button"
-            >
-              <ArrowLeft className={`w-6 h-6 ${textSecondary}`} />
-            </Button>
-            <div className="flex-1">
-              <h1 className={`text-2xl font-bold ${textPrimary}`}>
-                {t('home.cycleTracking', 'Suivi de cycles')}
-              </h1>
-              <p className={`text-sm ${textMuted}`}>Votre grossesse est active</p>
-            </div>
-          </div>
-
-          <Card
-            className="mb-4 p-4 rounded-2xl border-2 border-pink-200 bg-gradient-to-r from-pink-50 via-rose-50 to-amber-50"
-            data-testid="pregnancy-cycle-suspended-banner"
-          >
-            <p className="text-sm text-pink-700 font-semibold">
-              Grossesse en cours — suivi de cycle fertilité suspendu
-            </p>
-            <p className="text-xs text-pink-600 mt-1 leading-relaxed">
-              Le suivi fertilité est suspendu. Le calendrier reste disponible en mode sommaire
-              (jours fériés et vacances scolaires).
-            </p>
-            <Button
-              type="button"
-              onClick={() => navigate('/pregnancy-fertility', { replace: true })}
-              className="mt-3 w-full rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 text-white"
-              data-testid="pregnancy-hub-cta"
-            >
-              Accéder à mon espace Grossesse
-            </Button>
-          </Card>
-
-          {initialLoading && (
-            <div className="flex justify-center py-4" data-testid="pregnancy-tracking-loading">
-              <div className="w-6 h-6 border-2 border-pink-400 border-t-transparent rounded-full animate-spin" />
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-3 mt-4" data-testid="pregnant-cycle-tabs">
-            <Button
-              onClick={() => navigate('/calculator')}
-              className="rounded-2xl py-6 bg-white text-purple-600 border border-purple-100"
-              data-testid="pregnant-calculation-tab"
-            >
-              <CalendarDays className="w-5 h-5 mr-2" />
-              Calcul
-            </Button>
-            <Button
-              onClick={() => setShowCalendar(true)}
-              className="rounded-2xl py-6 bg-white text-pink-600 border border-pink-100"
-              data-testid="pregnant-calendar-tab"
-            >
-              <CalendarRange className="w-5 h-5 mr-2" />
-              Calendrier
-            </Button>
-          </div>
-        </div>
-
-        <PregnancyEncouragementModal
-          isOpen={showEncouragementModal}
-          onClose={closeEncouragementModal}
-          onGoToPregnancy={goToPregnancyHub}
-        />
-
-        <FertilityCalendar
-          isOpen={showCalendar}
-          onClose={() => setShowCalendar(false)}
-          agendaData={null}
-          rapportDates={[]}
-          onAddRapport={() => {}}
-          onRemoveRapport={() => {}}
-          hideFertilityFeatures={true}
-        />
-      </div>
-    );
-  }
-
-return (
-    <div className="min-h-screen gradient-bg">
+  return (
+    <div
+      className="min-h-screen gradient-bg"
+      data-testid={isPregnant ? 'pregnancy-tracking-active' : undefined}
+    >
       <div className="max-w-2xl mx-auto p-4 sm:p-6">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -646,8 +554,13 @@ return (
             <h1 className={`text-2xl font-bold ${textPrimary}`} style={{ fontFamily: 'Nunito, sans-serif', ...textShadow }}>
               {t('home.cycleTracking', 'Suivi de cycles')}
             </h1>
-            <p className={`text-sm ${textMuted}`} style={textShadow}>{t('fertility.trackYourCycle', 'Calendrier fertilité')}</p>
+            <p className={`text-sm ${textMuted}`} style={textShadow}>
+              {isPregnant
+                ? 'Suivi de cycle suspendu'
+                : t('fertility.trackYourCycle', 'Calendrier fertilité')}
+            </p>
           </div>
+          {!isPregnant && (
           <div className="flex items-center gap-2">
             {cycleAnalysis?.has_enough_data && (
               <Button
@@ -674,10 +587,55 @@ return (
               <Settings className="w-5 h-5" />
             </Button>
           </div>
+          )}
         </div>
 
+        {isPregnant && (
+          <Card
+            className="mb-4 p-4 rounded-2xl border-2 border-pink-200 bg-gradient-to-r from-pink-50 via-rose-50 to-amber-50"
+            data-testid="pregnancy-cycle-suspended-banner"
+          >
+            <p className="text-sm text-pink-700 font-semibold">
+              Grossesse en cours — suivi de cycle fertilité suspendu
+            </p>
+            <p className="text-xs text-pink-600 mt-1 leading-relaxed">
+              Le suivi fertilité est suspendu. Le calendrier reste disponible en mode sommaire
+              (jours fériés et vacances scolaires).
+            </p>
+            <Button
+              type="button"
+              onClick={() => navigate('/grossesse')}
+              className="mt-3 w-full rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 text-white"
+              data-testid="pregnancy-hub-cta"
+            >
+              Accéder à mon espace Grossesse
+            </Button>
+          </Card>
+        )}
+
+        {isPregnant && (
+          <div className="grid grid-cols-2 gap-3 mb-4" data-testid="pregnant-cycle-tabs">
+            <Button
+              onClick={() => navigate('/calculator')}
+              className="rounded-2xl py-6 bg-white text-purple-600 border border-purple-100"
+              data-testid="pregnant-calculation-tab"
+            >
+              <CalendarDays className="w-5 h-5 mr-2" />
+              Calcul
+            </Button>
+            <Button
+              onClick={() => setShowCalendar(true)}
+              className="rounded-2xl py-6 bg-white text-pink-600 border border-pink-100"
+              data-testid="pregnant-calendar-tab"
+            >
+              <CalendarRange className="w-5 h-5 mr-2" />
+              Calendrier
+            </Button>
+          </div>
+        )}
+
         {/* Bannière d'irrégularité */}
-        {showIrregularBanner && cycleAnalysis?.is_irregular && (
+        {!isPregnant && showIrregularBanner && cycleAnalysis?.is_irregular && (
           <Card className={`rounded-2xl p-4 mb-4 border ${isDarkMode ? 'bg-amber-900/30 border-amber-700' : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200'}`}>
             <div className="flex items-start gap-3">
               <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${isDarkMode ? 'bg-amber-800/50' : 'bg-amber-100'}`}>
@@ -699,7 +657,7 @@ return (
         )}
 
         {/* Formulaire de configuration */}
-        {showForm && (
+        {!isPregnant && showForm && (
           <Card className={`rounded-2xl p-4 mb-4 space-y-4 border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-br from-purple-50 to-pink-50 border-0'}`}>
             <div className={`flex flex-col gap-2`}>
               <label className={`text-sm font-medium ${textSecondary}`}>Date des dernières règles :</label>
@@ -730,8 +688,14 @@ return (
           </Card>
         )}
 
-        {/* Contenu principal de l'agenda */}
-        {initialLoading ? (
+        {isPregnant && initialLoading && (
+          <div className="flex justify-center py-4" data-testid="pregnancy-tracking-loading">
+            <div className="w-6 h-6 border-2 border-pink-400 border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+
+        {!isPregnant && (
+          initialLoading ? (
           <div className="flex justify-center py-12">
             <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin"></div>
           </div>
@@ -866,17 +830,24 @@ return (
           </div>
         ) : (
           <div className="text-center py-12 text-slate-500">Configurez votre cycle pour commencer.</div>
+        )
         )}
       </div>
 
       {/* Modals de l'application */}
+      <PregnancyEncouragementModal
+        isOpen={showEncouragementModal}
+        onClose={closeEncouragementModal}
+        onGoToPregnancy={goToPregnancyHub}
+      />
       <FertilityCalendar
         isOpen={showCalendar}
         onClose={() => setShowCalendar(false)}
-        agendaData={agendaData}
-        rapportDates={rapportDates}
+        agendaData={isPregnant ? null : agendaData}
+        rapportDates={isPregnant ? [] : rapportDates}
         onAddRapport={handleAddRapport}
         onRemoveRapport={handleRemoveRapport}
+        hideFertilityFeatures={isPregnant}
       />
       <SymptomsModal
         isOpen={showSymptomModal}

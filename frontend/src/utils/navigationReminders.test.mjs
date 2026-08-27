@@ -49,7 +49,7 @@ test("navigation moves Grossesse & Fertilité out of Profile", () => {
   const cycle = read("src/pages/CycleTrackingPage.jsx");
   const encouragementModal = read("src/components/cycle/PregnancyEncouragementModal.jsx");
 
-  assert.match(toggle, /isPregnant \? '\/pregnancy-fertility' : '\/cycle-tracking'/);
+  assert.match(toggle, /isPregnant \? '\/grossesse' : '\/cycle-tracking'/);
   assert.match(section, /pregnancy-fertility-nav/);
   assert.doesNotMatch(profile, /title="Grossesse & Fertilité"/);
   assert.match(nameDay, /navigate\('\/calendar'\)/);
@@ -63,12 +63,11 @@ test("navigation moves Grossesse & Fertilité out of Profile", () => {
   assert.match(cycle, /PregnancyEncouragementModal/);
   assert.match(cycle, /setShowEncouragementModal\(true\)/);
   assert.doesNotMatch(cycle, /sessionStorage\.getItem\(PREGNANCY_ENCOURAGEMENT_DISMISSED_KEY\)/);
-  assert.match(cycle, /hideFertilityFeatures=\{true\}/);
-  assert.match(cycle, /PRECONCEPTION_HUB/);
+  assert.match(cycle, /hideFertilityFeatures=\{isPregnant\}/);
+  assert.match(cycle, /navigate\('\/grossesse'\)/);
   assert.match(cycle, /pregnancy-cycle-suspended-banner/);
   assert.match(cycle, /withTimeout\(/);
   assert.match(cycle, /INITIAL_LOAD_SAFETY_MS/);
-  assert.match(cycle, /navigate\('\/calendar'/);
   assert.match(cycle, /pregnant-calendar-tab/);
 });
 

@@ -15,7 +15,6 @@ import { toast } from 'sonner';
 import { useHomeLayout } from '../contexts/HomeLayoutContext';
 import { useSubscription } from '../components/SubscriptionGate';
 import { useTheme } from '../contexts/ThemeContext';
-import { MaternityLeaveSummaryCard } from '../components/pregnancy/MaternityLeaveSummaryCard';
 import { useAuth } from '../contexts/AuthContext';
 import { getLocalizedServices, resolveCountryFromCity } from '../utils/pregnancyDateUtils';
 import { accentFromBgColor, cardSoftClayClasses } from '../utils/accentTokens';
@@ -544,7 +543,6 @@ function SectionDetailPage() {
               isSelected={selectedItem?.id === item.id}
             />
           ))}
-          {sectionId === 'pregnancy' && <MaternityLeaveSummaryCard />}
         </div>
 
         {/* Footer */}

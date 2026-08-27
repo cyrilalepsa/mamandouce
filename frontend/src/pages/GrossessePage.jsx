@@ -5,16 +5,18 @@ import api from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { PregnancyToggle } from '../components/cycle/PregnancyToggle';
 import { FertilityRemindersCard, PregnancyCard } from '../components/profile';
 import { MaternityLeaveSummaryCard } from '../components/pregnancy/MaternityLeaveSummaryCard';
 import { isPregnancyActive } from '../utils/pregnancyStatus';
 
-export default function PregnancyFertilityPage() {
+/**
+ * Vue dédiée Grossesse & Fertilité — suivi grossesse, congé maternité Ameli, etc.
+ * Route canonique : /grossesse
+ */
+export default function GrossessePage() {
   const navigate = useNavigate();
   const { user, refreshMe } = useAuth();
   const [profile, setProfile] = useState(null);
-  const [cycleStatus, setCycleStatus] = useState(null);
   const [fertilityEnabled, setFertilityEnabled] = useState(false);
   const [fertilityLoading, setFertilityLoading] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState('free');
@@ -31,16 +33,13 @@ export default function PregnancyFertilityPage() {
 
   const loadData = useCallback(async () => {
     setLoading(true);
-    const [profileResult, cycleResult, fertilityResult, subscriptionResult] =
-      await Promise.allSettled([
-        api.pregnancy.getProfile(),
-        api.cycle.status(),
-        api.pregnancy.getFertilityRemindersStatus(),
-        api.subscription.getFullStatus(),
-      ]);
+    const [profileResult, fertilityResult, subscriptionResult] = await Promise.allSettled([
+      api.pregnancy.getProfile(),
+      api.pregnancy.getFertilityRemindersStatus(),
+      api.subscription.getFullStatus(),
+    ]);
 
     if (profileResult.status === 'fulfilled') setProfile(profileResult.value.data || null);
-    if (cycleResult.status === 'fulfilled') setCycleStatus(cycleResult.value.data || null);
     if (fertilityResult.status === 'fulfilled') {
       setFertilityEnabled(Boolean(fertilityResult.value.data?.enabled));
     }
@@ -56,6 +55,10 @@ export default function PregnancyFertilityPage() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  useEffect(() => {
+    refreshMe?.();
+  }, [refreshMe]);
 
   const toggleFertility = async () => {
     if (isPregnant) return;
@@ -78,82 +81,55 @@ export default function PregnancyFertilityPage() {
   };
 
   return (
-    <div className="min-h-screen gradient-bg" data-testid="pregnancy-fertility-page">
+    <div className="min-h-screen gradient-bg" data-testid="grossesse-page">
       <div className="max-w-2xl mx-auto p-4 sm:p-6 space-y-4">
         <div className="flex items-center gap-4 mb-2">
-          <Button onClick={() => navigate(-1)} variant="ghost" className="p-2 rounded-full">
+          <Button onClick={() => navigate('/')} variant="ghost" className="p-2 rounded-full" data-testid="grossesse-back-button">
             <ArrowLeft className="w-6 h-6 text-slate-600" />
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-slate-800">Grossesse & Fertilité</h1>
             <p className="text-sm text-slate-600">
-              {isPregnant ? 'Votre parcours grossesse' : 'Votre cycle et votre projet bébé'}
+              {isPregnant ? 'Votre parcours grossesse' : 'Préparez votre projet bébé'}
             </p>
           </div>
         </div>
 
         {loading ? (
           <Card className="p-8 text-center rounded-[24px] soft-clay-text-flat">Chargement...</Card>
+        ) : isPregnant ? (
+          <div className="space-y-4" data-testid="grossesse-pregnant-panel">
+            <PregnancyCard
+              pregnancyProfile={profile}
+              subscriptionStatus={subscriptionStatus}
+              setSubscriptionStatus={setSubscriptionStatus}
+              onLoadFullStatus={loadData}
+              formatDate={formatDate}
+            />
+            <MaternityLeaveSummaryCard defaultOpen className="!col-span-1 w-full" />
+          </div>
         ) : (
           <>
-            {!isPregnant && (
-              <PregnancyToggle
-                mode="profile"
-                isPregnant={isPregnant}
-                dueDate={dueDate}
-                lastPeriodDate={profile?.last_period_date}
-                cycleLength={profile?.cycle_length || 28}
-                currentWeek={profile?.current_week}
-                trimester={profile?.trimester}
-                onPregnant={async (_dpa, periodDate) => {
-                  await api.pregnancy.calculate({
-                    last_period_date: periodDate,
-                    cycle_length: profile?.cycle_length || 28,
-                  });
-                  await refreshMe();
-                  await loadData();
-                }}
-              />
-            )}
-
-            {!isPregnant && cycleStatus?.show_alert && (
-              <Card className="p-4 rounded-[24px] border-2 border-amber-200 bg-amber-50 soft-clay-text-flat">
-                <p className="font-bold text-amber-800">{cycleStatus?.message || 'Suivi du cycle'}</p>
-                {cycleStatus?.suggestion && (
-                  <p className="text-sm text-amber-700 mt-1">{cycleStatus.suggestion}</p>
-                )}
-              </Card>
-            )}
-
-            {isPregnant ? (
-              <div className="space-y-4" data-testid="pregnancy-fertility-pregnant-panel">
-                <PregnancyCard
-                  pregnancyProfile={profile}
-                  subscriptionStatus={subscriptionStatus}
-                  setSubscriptionStatus={setSubscriptionStatus}
-                  onLoadFullStatus={loadData}
-                  formatDate={formatDate}
-                />
-                <MaternityLeaveSummaryCard defaultOpen className="!col-span-1 w-full" />
-              </div>
-            ) : (
-              <FertilityRemindersCard
-                pregnancyProfile={profile}
-                fertilityRemindersEnabled={fertilityEnabled}
-                fertilityRemindersLoading={fertilityLoading}
-                onToggle={toggleFertility}
-              />
-            )}
-
-            {!isPregnant && (
+            <Card className="p-4 rounded-[24px] border-2 border-pink-100 bg-pink-50/80 soft-clay-text-flat" data-testid="grossesse-preconception-card">
+              <p className="text-sm text-slate-700 leading-relaxed">
+                Déclarez votre grossesse depuis le <strong>Suivi de cycles</strong> pour déverrouiller
+                cette espace (dates, congé maternité Ameli, informations de grossesse).
+              </p>
               <Button
                 onClick={() => navigate('/cycle-tracking')}
-                className="w-full rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white"
+                className="mt-3 w-full rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white"
+                data-testid="grossesse-open-cycle-tracking"
               >
                 <Heart className="w-4 h-4 mr-2" />
-                Ouvrir le suivi de cycle
+                Ouvrir le suivi de cycles
               </Button>
-            )}
+            </Card>
+            <FertilityRemindersCard
+              pregnancyProfile={profile}
+              fertilityRemindersEnabled={fertilityEnabled}
+              fertilityRemindersLoading={fertilityLoading}
+              onToggle={toggleFertility}
+            />
           </>
         )}
       </div>

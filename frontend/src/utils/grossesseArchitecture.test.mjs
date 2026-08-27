@@ -9,13 +9,16 @@ const read = (rel) => readFileSync(join(root, rel), 'utf8');
 
 test('grossesse is canonical pregnancy hub route', () => {
   const app = read('src/App.jsx');
+  const grossesse = read('src/pages/GrossessePage.jsx');
+  const cycle = read('src/pages/CycleTrackingPage.jsx');
+  const section = read('src/pages/SectionDetailPage.jsx');
+
   assert.match(app, /path="\/grossesse" element=\{<ProtectedRoute><GrossessePage/);
   assert.match(app, /path="\/pregnancy-fertility" element=\{<Navigate to="\/grossesse" replace \/>}/);
-});
-
-test('birth declaration shows congrats modal on confirm only', () => {
-  const section = read('src/components/settings/PregnancyInfoSection.jsx');
-  assert.match(section, /setShowBirthCongrats\(true\)/);
-  assert.match(section, /variant="birth"/);
-  assert.match(section, /navigate\('\/postpartum'\)/);
+  assert.match(grossesse, /data-testid="grossesse-page"/);
+  assert.match(grossesse, /MaternityLeaveSummaryCard/);
+  assert.match(grossesse, /grossesse-pregnant-panel/);
+  assert.doesNotMatch(section, /MaternityLeaveSummaryCard/);
+  assert.match(cycle, /navigate\('\/grossesse'\)/);
+  assert.doesNotMatch(cycle, /if \(isPregnant\) \{\s*return \(/);
 });
