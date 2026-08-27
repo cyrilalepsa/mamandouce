@@ -8,6 +8,7 @@ import PageHeader from '../components/PageHeader';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import { N20Amount } from '../components/N20Icon';
+import { N20GamificationRulesCard } from '../components/solidarity/N20GamificationRulesCard';
 
 function TireliirePage() {
   const navigate = useNavigate();
@@ -306,6 +307,8 @@ function TireliirePage() {
             </div>
           </div>
         </Card>
+
+        <N20GamificationRulesCard />
 
         {/* Transaction History */}
         {data?.transactions?.length > 0 && (
