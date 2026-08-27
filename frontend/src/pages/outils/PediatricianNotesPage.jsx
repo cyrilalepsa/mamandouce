@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { PediatricianNotesCard } from '../components/outils/PediatricianNotesCard';
+import { Button } from '../../components/ui/button';
+import { PediatricianNotesCard } from '../../components/outils/PediatricianNotesCard';
 
 function PediatricianNotesPage() {
   const navigate = useNavigate();
