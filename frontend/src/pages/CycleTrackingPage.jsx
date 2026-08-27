@@ -52,8 +52,7 @@ function CycleTrackingPage() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  // Ouvrir le calendrier automatiquement si ?calendar=true dans l'URL
-  const [showCalendar, setShowCalendar] = useState(searchParams.get('calendar') === 'true');
+  const [showCalendar, setShowCalendar] = useState(false);
   const [rapportDates, setRapportDates] = useState([]);
   
   // Nouveaux états
@@ -92,13 +91,13 @@ function CycleTrackingPage() {
   // Couleurs thématiques avec luminosité augmentée pour mode sombre
   const getThemeColor = (baseColor, darkColor) => isDarkMode ? darkColor : baseColor;
 
-useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const openCalendar = params.get('calendar') === 'true';
-    if (openCalendar && !readStoredPregnancyFlag()) {
-      setShowCalendar(true);
+  useEffect(() => {
+    if (searchParams.get('calendar') === 'true') {
+      navigate('/calendar', { replace: true });
     }
+  }, [searchParams, navigate]);
 
+useEffect(() => {
     const initialize = async () => {
       const pregnancyActive = await loadCycleData();
       if (!pregnancyActive) {
@@ -109,7 +108,6 @@ useEffect(() => {
         ]);
       } else {
         setShowIrregularBanner(false);
-        setShowCalendar(false);
       }
     };
     initialize();
@@ -637,10 +635,7 @@ useEffect(() => {
 
         <FertilityCalendar
           isOpen={showCalendar}
-          onClose={() => {
-            setShowCalendar(false);
-            if (searchParams.get('calendar') === 'true') navigate(PRECONCEPTION_HUB);
-          }}
+          onClose={() => setShowCalendar(false)}
           agendaData={agendaData}
           rapportDates={[]}
           onAddRapport={() => {}}
@@ -892,13 +887,7 @@ return (
       {/* Modals de l'application */}
       <FertilityCalendar
         isOpen={showCalendar}
-        onClose={() => {
-          setShowCalendar(false);
-          // Si ouvert depuis la carte « Fête du jour », retour accueil
-          if (searchParams.get('calendar') === 'true') {
-            navigate('/');
-          }
-        }}
+        onClose={() => setShowCalendar(false)}
         agendaData={agendaData}
         rapportDates={rapportDates}
         onAddRapport={handleAddRapport}
