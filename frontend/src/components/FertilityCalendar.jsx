@@ -273,8 +273,8 @@ export default function FertilityCalendar({
   const selectedHasRapport = selectedDate ? isRapportDay(selectedDate) : false;
 
   const cardClassName = isPage
-    ? 'fertility-calendar-page card-glass-modal bg-white rounded-3xl w-full border-0 shadow-xl'
-    : 'fertility-calendar-modal card-glass-modal bg-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto border-0 shadow-2xl';
+    ? 'fertility-calendar-page card-glass-modal bg-white rounded-3xl w-full border-0 shadow-xl overflow-hidden'
+    : 'fertility-calendar-modal card-glass-modal bg-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto overflow-x-hidden border-0 shadow-2xl';
 
   const content = (
       <Card className={cardClassName} data-testid={isPage ? 'calendar-page-card' : undefined}>
@@ -291,7 +291,9 @@ export default function FertilityCalendar({
         )}
 
         {/* Zone scolaire */}
-        <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
+        <div
+          className={`px-4 py-3 border-b border-slate-100 bg-slate-50 ${isPage ? 'rounded-t-3xl' : ''}`}
+        >
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <MapPin className="w-4 h-4 text-slate-500 shrink-0" />

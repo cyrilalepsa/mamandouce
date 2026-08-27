@@ -101,8 +101,8 @@ export default function CalendarPage() {
 
   return (
     <div className="min-h-screen gradient-bg" data-testid="calendar-page">
-      <div className="max-w-2xl mx-auto p-4 sm:p-6">
-        <div className="flex items-center gap-4 mb-6">
+      <div className="max-w-2xl mx-auto p-4 sm:p-6 space-y-4">
+        <div className="flex items-center gap-4">
           <Button
             type="button"
             onClick={() => navigate('/')}
@@ -130,7 +130,8 @@ export default function CalendarPage() {
             <div className="w-8 h-8 border-4 border-pink-400 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
-          <FertilityCalendar
+          <div className="calendar-page-card-shell pt-1" data-testid="calendar-page-card-shell">
+            <FertilityCalendar
             variant="page"
             isOpen={true}
             onClose={() => navigate('/')}
@@ -140,6 +141,7 @@ export default function CalendarPage() {
             onRemoveRapport={handleRemoveRapport}
             hideFertilityFeatures={isPregnant}
           />
+          </div>
         )}
       </div>
     </div>

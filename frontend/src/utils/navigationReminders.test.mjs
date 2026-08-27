@@ -56,7 +56,8 @@ test("navigation moves Grossesse & Fertilité out of Profile", () => {
   const calendarPage = read("src/pages/CalendarPage.jsx");
   assert.match(calendarPage, /data-testid="calendar-page"/);
   assert.match(calendarPage, /data-testid="calendar-back-button"/);
-  assert.match(calendarPage, /hideFertilityFeatures=\{isPregnant\}/);
+  assert.match(calendarPage, /calendar-page-card-shell/);
+  assert.match(read("src/components/FertilityCalendar.jsx"), /overflow-hidden/);
   assert.match(encouragementModal, /pregnancy-encouragement-modal/);
   assert.match(encouragementModal, /pregnancy-encouragement-close/);
   assert.match(cycle, /PregnancyEncouragementModal/);
