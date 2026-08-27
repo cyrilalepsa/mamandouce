@@ -75,7 +75,7 @@ import BabySleepPage from './pages/outils/BabySleepPage';
 import PediatricianNotesPage from './pages/outils/PediatricianNotesPage';
 import EmergencyInfoPage from './pages/outils/EmergencyInfoPage';
 import ChatBubble from './components/ChatBubble';
-import ScannerFab from './components/ScannerFab';
+import BottomNav from './components/BottomNav';
 import { EmotionalIntelligenceProvider } from './components/EmotionalIntelligence';
 // WhatsNewModal remplacé par NewsBubble dans HomePage
 import { NewBadgeProvider } from './components/NewBadge';
@@ -291,7 +291,7 @@ useEffect(() => {
                 <Route path="/outils/fiche-urgence" element={<ProtectedRoute><EmergencyInfoPage /></ProtectedRoute>} />
               </Routes>
               <Toaster />
-              <ScannerFab />
+              <BottomNav />
               <ChatBubble />
               <PWAInstallBanner />
               <OfflineSyncIndicator />

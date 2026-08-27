@@ -10,18 +10,40 @@ function read(rel) {
   return readFileSync(join(root, rel), 'utf8');
 }
 
-test('ScannerFab is wired in App with glassmorphism scanner route', () => {
+test('PageHeader and BackButton prioritize onBack then backPath then history', () => {
+  const header = read('src/components/PageHeader.jsx');
+  assert.match(header, /onBack/);
+  assert.match(header, /backPath/);
+  assert.match(header, /BackButton/);
+
+  const backButton = read('src/components/BackButton.jsx');
+  assert.match(backButton, /useBackNavigation/);
+
+  const hook = read('src/hooks/useBackNavigation.js');
+  assert.match(hook, /if \(typeof onBack === 'function'\)/);
+  assert.match(hook, /if \(backPath\)/);
+  assert.match(hook, /navigate\(-1\)/);
+});
+
+test('CycleTrackingPage back button targets journey steps explicitly', () => {
+  const src = read('src/pages/CycleTrackingPage.jsx');
+  assert.match(src, /backPath="\/journey-steps"/);
+  assert.doesNotMatch(src, /onClick=\{\(\) => navigate\('\/'\)\}/);
+});
+
+test('BottomNav renders scanner button at dock center and is wired in App', () => {
+  const bottomNav = read('src/components/BottomNav.jsx');
+  assert.match(bottomNav, /data-testid="bottom-nav"/);
+  assert.match(bottomNav, /data-testid="bottom-nav-scanner"/);
+  assert.match(bottomNav, /navigate\('\/scanner'\)/);
+  assert.match(bottomNav, /Camera/);
+
   const app = read('src/App.jsx');
-  assert.match(app, /import ScannerFab from '\.\/components\/ScannerFab'/);
-  assert.match(app, /<ScannerFab \/>/);
+  assert.match(app, /import BottomNav from '\.\/components\/BottomNav'/);
+  assert.match(app, /<BottomNav \/>/);
   const routerBlock = app.match(/<BrowserRouter>[\s\S]*?<\/BrowserRouter>/);
   assert.ok(routerBlock, 'BrowserRouter block expected in App.jsx');
-  assert.match(routerBlock[0], /<ScannerFab \/>/);
-  const fab = read('src/components/ScannerFab.jsx');
-  assert.match(fab, /data-testid="scanner-fab"/);
-  assert.match(fab, /bottom-20 right-4/);
-  assert.match(fab, /border-pink-500/);
-  assert.match(fab, /navigate\('\/scanner'\)/);
+  assert.match(routerBlock[0], /<BottomNav \/>/);
 });
 
 test('FoodScanner shows unreferenced product banner for barcode scans', () => {

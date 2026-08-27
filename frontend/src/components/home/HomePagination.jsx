@@ -72,7 +72,7 @@ export function PageDots({ pages, currentIndex, onPageChange, onSetAsHome, onCre
   return createPortal(
     <div 
       id="page-dots"
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center gap-2.5 py-2 px-4"
+      className="fixed bottom-[5.5rem] left-1/2 -translate-x-1/2 z-50 flex items-center justify-center gap-2.5 py-2 px-4"
       style={{
         /* Fond BLANC OPAQUE, pas de blur */
         background: '#FFFFFF',

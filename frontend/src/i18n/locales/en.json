@@ -63,6 +63,14 @@
     "loginSuccess": "Login successful!",
     "resetEmailSent": "Reset email sent"
   },
+  "nav": {
+    "main": "Main navigation",
+    "home": "Home",
+    "journey": "Journey",
+    "calendar": "Calendar",
+    "profile": "Profile",
+    "scanner": "Food scanner"
+  },
   "home": {
     "welcome": "Hello",
     "myAgenda": "My agenda",
