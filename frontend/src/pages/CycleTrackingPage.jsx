@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, CalendarDays, Settings, Save, CalendarRange, Egg, Heart, Droplets, Info, TestTube, Moon, Sun, Sparkles, Plus, X, History, Brain, AlertTriangle, TrendingUp } from 'lucide-react';
+import { CalendarDays, Settings, Save, CalendarRange, Egg, Heart, Droplets, Info, TestTube, Moon, Sun, Sparkles, Plus, X, History, Brain, AlertTriangle, TrendingUp } from 'lucide-react';
+import { BackButton } from '../components/BackButton';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -542,14 +543,12 @@ function CycleTrackingPage() {
       <div className="max-w-2xl mx-auto p-4 sm:p-6">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
-          <Button
-            onClick={() => navigate('/')}
+          <BackButton
+            backPath="/journey-steps"
             variant="ghost"
             className={`p-2 rounded-full ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-white/50'}`}
-            data-testid="back-button"
-          >
-            <ArrowLeft className={`w-6 h-6 ${textSecondary}`} />
-          </Button>
+            iconClassName={`w-6 h-6 ${textSecondary}`}
+          />
           <div className="flex-1">
             <h1 className={`text-2xl font-bold ${textPrimary}`} style={{ fontFamily: 'Nunito, sans-serif', ...textShadow }}>
               {t('home.cycleTracking', 'Suivi de cycles')}

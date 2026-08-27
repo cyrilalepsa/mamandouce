@@ -1,21 +1,11 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Camera } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { AUTH_LOGIN_PATH } from '../utils/superadmin';
-
-const HIDDEN_PREFIXES = [
-  AUTH_LOGIN_PATH,
-  '/auth',
-  '/pricing',
-  '/subscription',
-  '/reset-password',
-  '/invitation',
-  '/privacy',
-];
+import { shouldHideAppShell } from '../utils/appShellVisibility';
 
 /**
  * FAB persistant — ouvre le scanner alimentaire.
- * Style glassmorphism 3D assorti aux bulles Info & Nouveautés.
+ * Conservé pour les pages sans BottomNav (ex. accueil avec dock masqué).
  */
 export function ScannerFab() {
   const navigate = useNavigate();
@@ -23,12 +13,8 @@ export function ScannerFab() {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading || !isAuthenticated) return null;
-
-  const path = location.pathname;
-  if (path === '/scanner' || path.startsWith('/scanner/')) return null;
-  if (HIDDEN_PREFIXES.some((prefix) => path === prefix || path.startsWith(`${prefix}/`))) {
-    return null;
-  }
+  if (shouldHideAppShell(location.pathname)) return null;
+  if (location.pathname !== '/') return null;
 
   return (
     <button

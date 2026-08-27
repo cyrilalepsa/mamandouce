@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import { BackButton } from '../components/BackButton';
 import { toast } from 'sonner';
 import api from '../utils/api';
 import { withTimeout } from '../utils/backendUrl';
@@ -103,15 +102,13 @@ export default function CalendarPage() {
     <div className="min-h-screen gradient-bg" data-testid="calendar-page">
       <div className="max-w-2xl mx-auto p-4 sm:p-6 space-y-4">
         <div className="flex items-center gap-4">
-          <Button
-            type="button"
-            onClick={() => navigate('/')}
+          <BackButton
+            backPath="/cycle-tracking"
             variant="ghost"
             className={`p-2 rounded-full ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-white/50'}`}
-            data-testid="calendar-back-button"
-          >
-            <ArrowLeft className={`w-6 h-6 ${textSecondary}`} />
-          </Button>
+            iconClassName={`w-6 h-6 ${textSecondary}`}
+            testId="calendar-back-button"
+          />
           <div className="flex-1">
             <h1
               className={`text-2xl font-bold ${textPrimary}`}
@@ -134,7 +131,7 @@ export default function CalendarPage() {
             <FertilityCalendar
             variant="page"
             isOpen={true}
-            onClose={() => navigate('/')}
+            onClose={() => navigate('/cycle-tracking')}
             agendaData={isPregnant ? null : agendaData}
             rapportDates={isPregnant ? [] : rapportDates}
             onAddRapport={handleAddRapport}

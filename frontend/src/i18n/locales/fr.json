@@ -65,6 +65,14 @@
     "loginSuccess": "Connexion réussie !",
     "resetEmailSent": "Email de réinitialisation envoyé"
   },
+  "nav": {
+    "main": "Navigation principale",
+    "home": "Accueil",
+    "journey": "Parcours",
+    "calendar": "Calendrier",
+    "profile": "Profil",
+    "scanner": "Scanner alimentaire"
+  },
   "home": {
     "welcome": "Bonjour",
     "myAgenda": "Mon agenda",

@@ -28,6 +28,12 @@ test('SectionDetailPage back button targets journey steps explicitly', () => {
   assert.match(src, /navigate\(sectionBackPath\)/);
 });
 
+test('CycleTrackingPage back button targets journey steps explicitly', () => {
+  const src = read('src/pages/CycleTrackingPage.jsx');
+  assert.match(src, /backPath="\/journey-steps"/);
+  assert.doesNotMatch(src, /onClick=\{\(\) => navigate\('\/'\)\}/);
+});
+
 test('PediatricianNotesCard form fields use dark readable text', () => {
   const src = read('src/components/outils/PediatricianNotesCard.jsx');
   assert.match(src, /text-slate-900/);
