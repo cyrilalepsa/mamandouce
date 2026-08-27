@@ -14,6 +14,9 @@ test('ScannerFab is wired in App with glassmorphism scanner route', () => {
   const app = read('src/App.jsx');
   assert.match(app, /import ScannerFab from '\.\/components\/ScannerFab'/);
   assert.match(app, /<ScannerFab \/>/);
+  const routerBlock = app.match(/<BrowserRouter>[\s\S]*?<\/BrowserRouter>/);
+  assert.ok(routerBlock, 'BrowserRouter block expected in App.jsx');
+  assert.match(routerBlock[0], /<ScannerFab \/>/);
   const fab = read('src/components/ScannerFab.jsx');
   assert.match(fab, /data-testid="scanner-fab"/);
   assert.match(fab, /bottom-20 right-4/);

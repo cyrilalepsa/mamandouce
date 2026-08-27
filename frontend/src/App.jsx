@@ -290,14 +290,14 @@ useEffect(() => {
                 <Route path="/outils/cher-pediatre" element={<ProtectedRoute><PediatricianNotesPage /></ProtectedRoute>} />
                 <Route path="/outils/fiche-urgence" element={<ProtectedRoute><EmergencyInfoPage /></ProtectedRoute>} />
               </Routes>
+              <Toaster />
+              <ScannerFab />
+              <ChatBubble />
+              <PWAInstallBanner />
+              <OfflineSyncIndicator />
+              <EmotionalIntelligenceProvider />
+              {/* WhatsNewModal supprimé - remplacé par NewsBubble dans HomePage */}
             </BrowserRouter>
-            <Toaster />
-            <ScannerFab />
-            <ChatBubble />
-            <PWAInstallBanner />
-            <OfflineSyncIndicator />
-            <EmotionalIntelligenceProvider />
-            {/* WhatsNewModal supprimé - remplacé par NewsBubble dans HomePage */}
           </div>
         </NewBadgeProvider>
       </HomeLayoutProvider>
