@@ -5,6 +5,8 @@ import { Input } from '../ui/input';
 import { Baby, Calendar, AlertTriangle, Heart, X, AlertCircle } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'sonner';
+import { PregnancyEncouragementModal } from '../cycle/PregnancyEncouragementModal';
+import { useNavigate } from 'react-router-dom';
 
 export function PregnancyInfoSection({ 
   subscriptionStatus, 
@@ -17,6 +19,8 @@ export function PregnancyInfoSection({
   const [birthDate, setBirthDate] = useState('');
   const [babyName, setBabyName] = useState('');
   const [confirmingBirth, setConfirmingBirth] = useState(false);
+  const [showBirthCongrats, setShowBirthCongrats] = useState(false);
+  const navigate = useNavigate();
 
   const handleShowFinalWarning = () => {
     if (!birthDate) {
@@ -39,6 +43,7 @@ export function PregnancyInfoSection({
       toast.success('Félicitations pour votre bébé ! Votre suivi post-partum est maintenant accessible.');
       setShowBirthConfirm(false);
       setShowFinalWarning(false);
+      setShowBirthCongrats(true);
       setSubscriptionStatus('free');
       onLoadFullStatus?.();
     } catch (error) {
@@ -208,12 +213,25 @@ export function PregnancyInfoSection({
     </div>
   );
 
+  const birthCongratsModal = (
+    <PregnancyEncouragementModal
+      isOpen={showBirthCongrats}
+      onClose={() => setShowBirthCongrats(false)}
+      onGoToPregnancy={() => {
+        setShowBirthCongrats(false);
+        navigate('/postpartum');
+      }}
+      variant="birth"
+    />
+  );
+
   // Mode embedded (intégré dans une autre carte)
   if (embedded) {
     return (
       <>
         {mainContent}
         {confirmationModal}
+        {birthCongratsModal}
       </>
     );
   }
@@ -238,6 +256,7 @@ export function PregnancyInfoSection({
         {mainContent}
       </Card>
       {confirmationModal}
+      {birthCongratsModal}
     </>
   );
 }

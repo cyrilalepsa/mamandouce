@@ -379,12 +379,14 @@ export default function FertilityCalendar({
               {week.map((day, dayIndex) => {
                 const holiday = isSchoolHoliday(day.date, selectedZone);
                 const publicHoliday = isPublicHoliday(day.date);
-                const fertile = isFertileDay(day.date);
-                const ovulation = isOvulationDay(day.date);
-                const period = isPeriodDay(day.date);
-                const rapport = isRapportDay(day.date);
+                const fertile = hideFertilityFeatures ? false : isFertileDay(day.date);
+                const ovulation = hideFertilityFeatures ? false : isOvulationDay(day.date);
+                const period = hideFertilityFeatures ? false : isPeriodDay(day.date);
+                const rapport = hideFertilityFeatures ? false : isRapportDay(day.date);
                 const today = isToday(day.date);
-                const cycleBg = getCycleBg(ovulation, period, fertile, day.isCurrentMonth);
+                const cycleBg = hideFertilityFeatures
+                  ? 'transparent'
+                  : getCycleBg(ovulation, period, fertile, day.isCurrentMonth);
                 const tip = [holiday && `Vacances : ${holiday}`, publicHoliday && `Férié : ${publicHoliday}`]
                   .filter(Boolean)
                   .join(' · ');
