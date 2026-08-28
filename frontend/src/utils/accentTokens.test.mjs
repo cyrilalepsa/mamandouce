@@ -26,6 +26,7 @@ test('section and item accents align with theme order', () => {
   assert.equal(accentFromSectionId('preconception'), 'yellow');
   assert.equal(accentFromSectionId('pregnancy'), 'blue');
   assert.equal(accentFromSectionId('baby-preparation'), 'red');
+  assert.equal(accentFromSectionId('outils'), 'magenta');
   assert.equal(accentFromBgColor('yellow'), 'yellow');
   assert.equal(accentFromBgColor('violet'), 'violet');
 });

@@ -77,6 +77,7 @@ import EmergencyInfoPage from './pages/outils/EmergencyInfoPage';
 import CockpitPage from './pages/CockpitPage';
 import ChatBubble from './components/ChatBubble';
 import ScannerFab from './components/ScannerFab';
+import { ScannerOverlayProvider } from './contexts/ScannerOverlayContext';
 import { EmotionalIntelligenceProvider } from './components/EmotionalIntelligence';
 // WhatsNewModal remplacé par NewsBubble dans HomePage
 import { NewBadgeProvider } from './components/NewBadge';
@@ -192,6 +193,7 @@ useEffect(() => {
             <MaintenanceBanner />
             <div className="App">
               <BrowserRouter>
+                <ScannerOverlayProvider>
                 <Routes>
                 <Route path="/invitation/:code" element={<InvitationPage />} />
                 <Route
@@ -299,6 +301,7 @@ useEffect(() => {
               <OfflineSyncIndicator />
               <EmotionalIntelligenceProvider />
               {/* WhatsNewModal supprimé - remplacé par NewsBubble dans HomePage */}
+                </ScannerOverlayProvider>
             </BrowserRouter>
           </div>
         </NewBadgeProvider>

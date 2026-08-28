@@ -70,9 +70,9 @@ const SECTION_META = {
     nameKey: 'sections.outils',
     description: 'Outils pratiques au quotidien',
     descKey: 'sections.outilsDesc',
-    bgGradient: 'from-white/95 via-slate-100/70 to-slate-200/50',
-    borderColor: 'border-slate-200/50',
-    iconColor: 'text-slate-600',
+    bgGradient: 'from-white/95 via-pink-50/60 to-slate-100/50',
+    borderColor: 'border-pink-400/50',
+    iconColor: 'text-pink-700',
   },
 };
 

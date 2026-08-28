@@ -26,6 +26,7 @@ function FoodScanner() {
   const [activeTab, setActiveTab] = useState('camera');
   const [favorites, setFavorites] = useState(new Set());
   const [scanning, setScanning] = useState(false);
+  const [detailOnly, setDetailOnly] = useState(false);
   
   // 🛡️ LE BOUCLIER ANTI-RAFALE : On utilise une ref pour un blocage physique instantané
   const isProcessingRef = useRef(false); 
@@ -36,7 +37,28 @@ function FoodScanner() {
 
   useEffect(() => {
     loadFavorites();
-    if (location.state?.openAddModal) {
+    const state = location.state;
+    if (state?.detailOnly) {
+      setDetailOnly(true);
+      setBarcode(state.barcode || '');
+      if (state.result) {
+        setResult(state.result);
+        setBarcodeNotFound(state.barcodeNotFound ?? false);
+        if (state.barcodeNotFound) {
+          setNewFoodData((prev) => ({
+            ...prev,
+            name: state.result.name || prev.name,
+            barcode: state.barcode,
+          }));
+        }
+      } else if (state.barcodeNotFound) {
+        setBarcodeNotFound(true);
+        setResult(null);
+        setNewFoodData((prev) => ({ ...prev, barcode: state.barcode }));
+      }
+      navigate(location.pathname, { replace: true, state: null });
+    }
+    if (state?.openAddModal) {
       setShowAddFoodModal(true);
     }
     return () => {
@@ -391,6 +413,7 @@ function FoodScanner() {
           </div>
         )}
 
+        {!detailOnly && (
         <div className="flex gap-2">
           <Button
             disabled={isProcessingRef.current}
@@ -420,8 +443,9 @@ function FoodScanner() {
             {t('scanner.search')}
           </Button>
         </div>
+        )}
 
-        {activeTab === 'camera' && (
+        {!detailOnly && activeTab === 'camera' && (
           <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
             <div className="text-center mb-4">
               <p className="text-slate-600 mb-4">{t('scanner.pointCamera')}</p>
@@ -455,7 +479,7 @@ function FoodScanner() {
           </Card>
         )}
 
-        {activeTab === 'manual' && (
+        {!detailOnly && activeTab === 'manual' && (
           <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
             <form onSubmit={handleManualBarcode} className="space-y-4">
               <div>
@@ -482,7 +506,7 @@ function FoodScanner() {
           </Card>
         )}
 
-        {activeTab === 'search' && (
+        {!detailOnly && activeTab === 'search' && (
           <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
             <form onSubmit={handleSearch} className="space-y-4">
               <div>

@@ -760,7 +760,7 @@ export default function PostpartumPage() {
             return (
               <CategoryDetailTile
                 key={category.id}
-                accent={category.color}
+                accent="postpartum"
                 index={index}
                 title={category.label}
                 subtitle={category.desc}

@@ -42,7 +42,7 @@ test('Home uses centered PageDots pill and fixed corner scanner bubble', () => {
   const home = read('src/components/home/CustomizableHome.jsx');
   assert.match(home, /<PageDots/);
   assert.match(home, /ScannerDockButton/);
-  assert.match(home, /navigate\('\/scanner'\)/);
+  assert.match(home, /openScanner/);
 
   const dock = read('src/components/ScannerDockButton.jsx');
   assert.match(dock, /bottom: BUBBLE_BOTTOM/);
@@ -60,15 +60,25 @@ test('ScannerFab floats on non-home pages only', () => {
   assert.match(fab, /location\.pathname === '\/'/);
   assert.match(fab, /data-testid="scanner-fab"/);
   assert.match(fab, /bottom-20 right-4/);
-  assert.match(fab, /navigate\('\/scanner'\)/);
+  assert.match(fab, /openScanner/);
+  assert.doesNotMatch(fab, /navigate\('\/scanner'\)/);
 });
 
-test('FoodScanner shows unreferenced product banner for barcode scans', () => {
+test('Scanner overlay opens camera directly and redirects to product detail', () => {
+  const app = read('src/App.jsx');
+  assert.match(app, /ScannerOverlayProvider/);
+
+  const overlay = read('src/components/scanner/ScannerCameraOverlay.jsx');
+  assert.match(overlay, /data-testid="scanner-camera-overlay"/);
+  assert.match(overlay, /Html5Qrcode/);
+  assert.match(overlay, /onScanComplete/);
+
+  const ctx = read('src/contexts/ScannerOverlayContext.jsx');
+  assert.match(ctx, /detailOnly: true/);
+  assert.match(ctx, /navigate\('\/scanner'/);
+
   const scanner = read('src/pages/FoodScanner.jsx');
-  assert.match(scanner, /barcodeNotFound/);
-  assert.match(scanner, /barcode-not-found-card/);
-  assert.match(scanner, /scanner\.addProductN2O/);
-  assert.match(scanner, /scanner\.productNotListed/);
+  assert.match(scanner, /detailOnly/);
 });
 
 test('Outils section is the sixth journey step with three tool cards', () => {
@@ -91,7 +101,9 @@ test('Outils section is the sixth journey step with three tool cards', () => {
   assert.match(routes, /\/outils\/fiche-urgence/);
 });
 
-test('accent token maps outils section to slate', () => {
-  const tokens = read('src/utils/accentTokens.js');
-  assert.match(tokens, /outils: 'slate'/);
+test('accent token maps outils section to magenta rose', () => {
+  const registry = read('src/utils/colorRegistry.js');
+  assert.match(registry, /accent: 'magenta'/);
+  assert.match(registry, /border-pink-400/);
+  assert.match(registry, /via-pink-50\/60/);
 });
