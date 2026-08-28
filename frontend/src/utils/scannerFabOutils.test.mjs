@@ -31,20 +31,20 @@ test('CycleTrackingPage back button targets journey steps explicitly', () => {
   assert.doesNotMatch(src, /onClick=\{\(\) => navigate\('\/'\)\}/);
 });
 
-test('BottomNav is the single global dock with scanner on the right', () => {
-  const bottomNav = read('src/components/BottomNav.jsx');
-  assert.match(bottomNav, /data-testid="bottom-nav"/);
-  assert.match(bottomNav, /data-testid="bottom-nav-scanner"/);
-  assert.match(bottomNav, /navigate\('\/scanner'\)/);
-  assert.match(bottomNav, /id: 'outils'/);
-  assert.doesNotMatch(bottomNav, /-mt-5/);
-
+test('ScannerFab is the only global floating control and opens /scanner', () => {
   const app = read('src/App.jsx');
-  const bottomNavMatches = app.match(/<BottomNav \/>/g) || [];
-  assert.equal(bottomNavMatches.length, 1, 'BottomNav must be mounted once in App.jsx');
+  assert.match(app, /import ScannerFab from '\.\/components\/ScannerFab'/);
+  assert.match(app, /<ScannerFab \/>/);
+  assert.doesNotMatch(app, /BottomNav/);
+  const routerBlock = app.match(/<BrowserRouter>[\s\S]*?<\/BrowserRouter>/);
+  assert.ok(routerBlock, 'BrowserRouter block expected in App.jsx');
+  assert.match(routerBlock[0], /<ScannerFab \/>/);
 
-  const home = read('src/components/home/CustomizableHome.jsx');
-  assert.doesNotMatch(home, /<PageDots/);
+  const fab = read('src/components/ScannerFab.jsx');
+  assert.match(fab, /data-testid="scanner-fab"/);
+  assert.match(fab, /bottom-20 right-4/);
+  assert.match(fab, /border-pink-500/);
+  assert.match(fab, /navigate\('\/scanner'\)/);
 });
 
 test('FoodScanner shows unreferenced product banner for barcode scans', () => {
