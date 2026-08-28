@@ -11,7 +11,7 @@ export function DiapersSection({ diapers }) {
       <p className="text-sm text-pink-600 bg-pink-50/50 backdrop-blur-sm p-3 rounded-xl">Fréquence : {diapers.frequency}</p>
       
       {/* Tailles */}
-      <PastelAccordion title="Tailles par âge et poids" icon="👶" color="sky" defaultOpen={true}>
+      <PastelAccordion title="Tailles par âge et poids" icon="👶" color="sky" defaultOpen={false}>
         <div className="grid grid-cols-2 gap-3">
           {diapers.sizes?.map((size, index) => {
             const colors = ['amber', 'sky', 'rose', 'green', 'purple'];

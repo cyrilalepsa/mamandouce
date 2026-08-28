@@ -17,7 +17,7 @@ export function PrecautionsSection({ precautions }) {
           index={index}
           title={precaution.title}
           icon={<Shield className="w-5 h-5 text-white" />}
-          defaultOpen={index === 0}
+          defaultOpen={false}
         >
           {precaution.description && (
             <SubCard accent={index} level={4} className="mb-3">

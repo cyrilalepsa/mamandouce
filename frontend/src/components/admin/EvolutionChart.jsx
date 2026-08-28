@@ -7,7 +7,7 @@ import api from '../../utils/api';
 export function EvolutionChart() {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     loadChartData();

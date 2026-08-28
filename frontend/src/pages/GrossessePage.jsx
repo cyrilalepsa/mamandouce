@@ -106,7 +106,7 @@ export default function GrossessePage() {
               onLoadFullStatus={loadData}
               formatDate={formatDate}
             />
-            <MaternityLeaveSummaryCard defaultOpen className="!col-span-1 w-full" />
+            <MaternityLeaveSummaryCard defaultOpen={false} className="!col-span-1 w-full" />
           </div>
         ) : (
           <>

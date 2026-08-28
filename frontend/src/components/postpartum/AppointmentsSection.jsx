@@ -151,7 +151,7 @@ export function AppointmentsSection({ appointments }) {
   const groupedAppointments = groupAppointmentsByPeriod(appointments);
   
   const periods = [
-    { title: "Semaine 1 - Sortie de maternité", icon: "🏥", color: "rose", defaultOpen: true },
+    { title: "Semaine 1 - Sortie de maternité", icon: "🏥", color: "rose", defaultOpen: false },
     { title: "Semaines 2-4 - Premier mois", icon: "👶", color: "sky", defaultOpen: false },
     { title: "Mois 2 - Premiers vaccins", icon: "💉", color: "green", defaultOpen: false },
     { title: "Mois 3-4 - Suivi régulier", icon: "📋", color: "purple", defaultOpen: false },

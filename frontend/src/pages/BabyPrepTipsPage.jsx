@@ -197,8 +197,8 @@ const PREP_CATEGORIES = [
 function BabyPrepTipsPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [expandedCategory, setExpandedCategory] = useState('medical');
-  const [openGroups, setOpenGroups] = useState({ essential: true, recommended: false });
+  const [expandedCategory, setExpandedCategory] = useState(null);
+  const [openGroups, setOpenGroups] = useState({ essential: false, recommended: false });
 
   const toggleCategory = (categoryId) => {
     setExpandedCategory(expandedCategory === categoryId ? null : categoryId);

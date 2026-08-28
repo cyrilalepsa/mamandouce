@@ -178,7 +178,7 @@ function BirthListPage() {
   const renderItemList = (categories, showAllItems = true) => (
     <div className="space-y-3">
       {categories.map((cat, catIndex) => {
-        const isExpanded = expandedCategories[cat.category] !== false;
+        const isExpanded = expandedCategories[cat.category] === true;
         const items = showAllItems ? cat.items : cat.items;
 
         return (
