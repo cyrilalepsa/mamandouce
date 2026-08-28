@@ -5,6 +5,7 @@ export { FoodsTab } from './FoodsTab';
 export { RefundsTab } from './RefundsTab';
 export { DashboardTab } from './DashboardTab';
 export { RemindersTab } from './RemindersTab';
+export { WhatsNewAdminSection } from './WhatsNewAdminSection';
 export { AndroidExportTab } from './AndroidExportTab';
 export { default as GuardianTab } from './GuardianTab';
 export { default as GuardianStatusIndicator } from './GuardianStatusIndicator';
