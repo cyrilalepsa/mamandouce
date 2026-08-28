@@ -8,7 +8,7 @@ import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
 import { useHomeLayout } from '../contexts/HomeLayoutContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { accentFromBgColor, accentFromSectionId, softClayCardClasses } from '../utils/accentTokens';
+import { accentFromSectionId, sectionInteractiveCardClasses } from '../utils/accentTokens';
 import { IconWell } from '../components/ui/IconWell';
 
 // Métadonnées des sections
@@ -260,9 +260,9 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
   
   // Couleurs de texte conditionnelles pour le mode sombre
   // Couleurs de texte avec ombre pour lisibilité en mode sombre
-  const textColorTitle = isDarkMode ? 'text-white' : 'text-slate-700';
-  const textColorDesc = isDarkMode ? 'text-white' : 'text-slate-500';
-  const textColorItem = isDarkMode ? 'text-white' : 'text-slate-600';
+  const textColorTitle = isDarkMode ? 'text-white' : 'text-slate-800';
+  const textColorDesc = isDarkMode ? 'text-white' : 'text-slate-600';
+  const textColorItem = isDarkMode ? 'text-white' : 'text-slate-800';
   
   // Style d'ombre pour mode sombre
   const darkTextShadow = isDarkMode ? { textShadow: '1px 1px 3px rgba(0,0,0,1)' } : {};
@@ -350,9 +350,8 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
       <div 
         className={`
           relative overflow-hidden cursor-pointer select-none section-card
-          soft-clay-premium soft-clay-from-accent soft-clay-section-${sectionId} soft-clay-text-flat
-          ${softClayCardClasses(sectionAccent)}
-          rounded-[24px] px-5 py-2.5
+          ${sectionInteractiveCardClasses(sectionId)}
+          px-5 py-2.5
           transition-all duration-300
           ${!isPinned ? 'hover:scale-[1.02] active:scale-[0.98]' : ''}
           ${isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''}
@@ -361,9 +360,6 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
           background: isDarkMode ? getCardBackground(sectionId) : undefined,
           border: isDarkMode ? getCardBorder(sectionId) : undefined,
           boxShadow: isDarkMode ? getCardShadow(sectionId) : undefined,
-          backdropFilter: 'none',
-          WebkitBackdropFilter: 'none',
-          color: '#000000',
           WebkitUserSelect: 'none', 
           WebkitTouchCallout: 'none' 
         }}
@@ -427,14 +423,12 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
       {isPinned && (
         <div className="mt-2 mx-0.5 animate-in slide-in-from-top-2 duration-200">
           <div className="grid grid-cols-3 gap-1.5">
-            {items.slice(0, 6).map((item, index) => {
-              const itemAccent = accentFromBgColor(item.color || sectionAccent);
-              return (
+            {items.slice(0, 6).map((item, index) => (
                 <button
                   key={item.id}
                   onClick={() => handleItemClick(item.route, item.external)}
-                  data-accent={itemAccent}
-                  className={`relative flex flex-col items-center gap-1 p-3 rounded-[24px] soft-clay-premium soft-clay-from-accent soft-clay-text-flat ${softClayCardClasses(itemAccent)} transition-all active:scale-95`}
+                  data-accent={sectionAccent}
+                  className={`relative flex flex-col items-center gap-1 p-3 ${sectionInteractiveCardClasses(sectionId)} transition-all active:scale-95`}
                   style={{ 
                     background: isDarkMode ? 'rgba(30,41,59,0.9)' : undefined,
                     border: isDarkMode ? '1px solid rgba(71,85,105,0.5)' : undefined,
@@ -443,10 +437,9 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
                   }}
                 >
                   <span className="text-xl">{item.icon}</span>
-                  <span className={`text-[10px] ${textColorItem} font-medium text-center leading-tight`} style={{ ...darkTextShadow, position: 'relative', zIndex: 10 }}>{t(item.nameKey, item.name)}</span>
+                  <span className={`text-[10px] font-medium text-center leading-tight ${isDarkMode ? textColorItem : 'text-slate-800'}`} style={{ ...darkTextShadow, position: 'relative', zIndex: 10 }}>{t(item.nameKey, item.name)}</span>
                 </button>
-              );
-            })}
+              ))}
           </div>
           {items.length > 6 && (
             <button

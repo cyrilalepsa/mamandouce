@@ -5,13 +5,15 @@
  */
 
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Home, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
-import { toast } from 'sonner';
+import { ScannerDockButton } from '../ScannerDockButton';
 
 // Bulles de pagination centrées (en bas : + | Home | bulles rondes colorées pastel)
 export function PageDots({ pages, currentIndex, onPageChange, onSetAsHome, onCreatePage, defaultPageId }) {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const currentPage = pages[currentIndex];
   const isCurrentPageHome = currentPage?.id === defaultPageId;
@@ -72,7 +74,7 @@ export function PageDots({ pages, currentIndex, onPageChange, onSetAsHome, onCre
   return createPortal(
     <div 
       id="page-dots"
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center gap-2.5 py-2 px-4"
+      className="fixed bottom-6 left-1/2 z-50 flex max-w-[calc(100vw-1.5rem)] -translate-x-1/2 items-center justify-center gap-2 py-2 pl-3 pr-2"
       style={{
         /* Fond BLANC OPAQUE, pas de blur */
         background: '#FFFFFF',
@@ -160,6 +162,10 @@ export function PageDots({ pages, currentIndex, onPageChange, onSetAsHome, onCre
           </button>
         );
       })}
+
+      <span className="mx-0.5 h-4 w-px shrink-0 bg-slate-200" aria-hidden="true" />
+
+      <ScannerDockButton onClick={() => navigate('/scanner')} />
     </div>,
     document.body
   );

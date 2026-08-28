@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Stethoscope, Plus, FileText, Trash2 } from 'lucide-react';
+import { sectionReadingCardClasses, sectionAccentTextClass } from '../../utils/accentTokens';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
@@ -99,7 +100,7 @@ export function PediatricianNotesCard({ embedded = false }) {
 
   return (
     <div className={wrapperClass} data-testid="pediatrician-notes-card">
-      <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 space-y-4 [color-scheme:light]">
+      <Card className={`${sectionReadingCardClasses('outils', { rounded: 'rounded-3xl', extra: 'p-6 shadow-sm space-y-4 [color-scheme:light]' })}`}>
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-sky-100 flex items-center justify-center">
             <Stethoscope className="w-6 h-6 text-sky-600" />

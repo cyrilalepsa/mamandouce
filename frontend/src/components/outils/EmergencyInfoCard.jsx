@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, Share2, Download } from 'lucide-react';
+import { sectionReadingCardClasses, sectionAccentTextClass } from '../../utils/accentTokens';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
@@ -99,7 +100,7 @@ export function EmergencyInfoCard({ embedded = false }) {
 
   return (
     <div className={wrapperClass} data-testid="emergency-info-card">
-      <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 space-y-4">
+      <Card className={`${sectionReadingCardClasses('outils', { rounded: 'rounded-3xl', extra: 'p-6 shadow-sm space-y-4' })}`}>
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-red-100 flex items-center justify-center">
             <AlertCircle className="w-6 h-6 text-red-600" />
