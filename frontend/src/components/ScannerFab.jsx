@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { shouldHideAppShell } from '../utils/appShellVisibility';
 
 /**
- * FAB persistant — ouvre le scanner alimentaire (coin bas-droit).
+ * FAB persistant hors accueil — sur l'accueil le scanner est dans la pilule PageDots.
  */
 export function ScannerFab() {
   const navigate = useNavigate();
@@ -13,6 +13,7 @@ export function ScannerFab() {
 
   if (loading || !isAuthenticated) return null;
   if (shouldHideAppShell(location.pathname)) return null;
+  if (location.pathname === '/') return null;
 
   return (
     <button

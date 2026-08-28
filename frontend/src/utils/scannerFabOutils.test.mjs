@@ -31,19 +31,27 @@ test('CycleTrackingPage back button targets journey steps explicitly', () => {
   assert.doesNotMatch(src, /onClick=\{\(\) => navigate\('\/'\)\}/);
 });
 
-test('ScannerFab is the only global floating control and opens /scanner', () => {
+test('Home uses minimal PageDots dock with scanner on the right, not BottomNav', () => {
   const app = read('src/App.jsx');
-  assert.match(app, /import ScannerFab from '\.\/components\/ScannerFab'/);
-  assert.match(app, /<ScannerFab \/>/);
   assert.doesNotMatch(app, /BottomNav/);
-  const routerBlock = app.match(/<BrowserRouter>[\s\S]*?<\/BrowserRouter>/);
-  assert.ok(routerBlock, 'BrowserRouter block expected in App.jsx');
-  assert.match(routerBlock[0], /<ScannerFab \/>/);
+
+  const pagination = read('src/components/home/HomePagination.jsx');
+  assert.match(pagination, /ScannerDockButton/);
+  assert.match(pagination, /navigate\('\/scanner'\)/);
+  assert.match(pagination, /data-testid="page-dots"/);
+
+  const home = read('src/components/home/CustomizableHome.jsx');
+  assert.match(home, /<PageDots/);
+});
+
+test('ScannerFab floats on non-home pages only', () => {
+  const app = read('src/App.jsx');
+  assert.match(app, /<ScannerFab \/>/);
 
   const fab = read('src/components/ScannerFab.jsx');
+  assert.match(fab, /location\.pathname === '\/'/);
   assert.match(fab, /data-testid="scanner-fab"/);
   assert.match(fab, /bottom-20 right-4/);
-  assert.match(fab, /border-pink-500/);
   assert.match(fab, /navigate\('\/scanner'\)/);
 });
 
