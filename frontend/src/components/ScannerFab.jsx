@@ -4,8 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { shouldHideAppShell } from '../utils/appShellVisibility';
 
 /**
- * FAB persistant — ouvre le scanner alimentaire.
- * Conservé pour les pages sans BottomNav (ex. accueil avec dock masqué).
+ * FAB persistant — ouvre le scanner alimentaire (coin bas-droit).
  */
 export function ScannerFab() {
   const navigate = useNavigate();
@@ -14,7 +13,6 @@ export function ScannerFab() {
 
   if (loading || !isAuthenticated) return null;
   if (shouldHideAppShell(location.pathname)) return null;
-  if (location.pathname !== '/') return null;
 
   return (
     <button

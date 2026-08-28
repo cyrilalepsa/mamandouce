@@ -31,19 +31,20 @@ test('CycleTrackingPage back button targets journey steps explicitly', () => {
   assert.doesNotMatch(src, /onClick=\{\(\) => navigate\('\/'\)\}/);
 });
 
-test('BottomNav renders scanner button at dock center and is wired in App', () => {
-  const bottomNav = read('src/components/BottomNav.jsx');
-  assert.match(bottomNav, /data-testid="bottom-nav"/);
-  assert.match(bottomNav, /data-testid="bottom-nav-scanner"/);
-  assert.match(bottomNav, /navigate\('\/scanner'\)/);
-  assert.match(bottomNav, /Camera/);
-
+test('ScannerFab is the only global floating control and opens /scanner', () => {
   const app = read('src/App.jsx');
-  assert.match(app, /import BottomNav from '\.\/components\/BottomNav'/);
-  assert.match(app, /<BottomNav \/>/);
+  assert.match(app, /import ScannerFab from '\.\/components\/ScannerFab'/);
+  assert.match(app, /<ScannerFab \/>/);
+  assert.doesNotMatch(app, /BottomNav/);
   const routerBlock = app.match(/<BrowserRouter>[\s\S]*?<\/BrowserRouter>/);
   assert.ok(routerBlock, 'BrowserRouter block expected in App.jsx');
-  assert.match(routerBlock[0], /<BottomNav \/>/);
+  assert.match(routerBlock[0], /<ScannerFab \/>/);
+
+  const fab = read('src/components/ScannerFab.jsx');
+  assert.match(fab, /data-testid="scanner-fab"/);
+  assert.match(fab, /bottom-20 right-4/);
+  assert.match(fab, /border-pink-500/);
+  assert.match(fab, /navigate\('\/scanner'\)/);
 });
 
 test('FoodScanner shows unreferenced product banner for barcode scans', () => {

@@ -2,9 +2,9 @@
    BOUTONS CHAMALLOW 3D FLOTTANTS - CONTRASTE AMÉLIORÉ
    Exclut: drawer, bulles flottantes accueil, calendrier
    ============================================ */
-button:not([data-testid^="drawer-"]):not([data-testid="tirelire-button"]):not([data-testid="tutorial-info-button"]):not([data-testid="news-bubble"]):not([data-testid="scanner-fab"]):not([data-testid="bottom-nav-scanner"]),
-button:not([data-testid^="drawer-"]):not([data-testid="tirelire-button"]):not([data-testid="tutorial-info-button"]):not([data-testid="news-bubble"]):not([data-testid="scanner-fab"]):not([data-testid="bottom-nav-scanner"])[class*="bg-gradient"],
-button:not([data-testid^="drawer-"]):not([data-testid="tirelire-button"]):not([data-testid="tutorial-info-button"]):not([data-testid="news-bubble"]):not([data-testid="scanner-fab"]):not([data-testid="bottom-nav-scanner"])[class*="rounded-full"],
+button:not([data-testid^="drawer-"]):not([data-testid="tirelire-button"]):not([data-testid="tutorial-info-button"]):not([data-testid="news-bubble"]):not([data-testid="scanner-fab"]),
+button:not([data-testid^="drawer-"]):not([data-testid="tirelire-button"]):not([data-testid="tutorial-info-button"]):not([data-testid="news-bubble"]):not([data-testid="scanner-fab"])[class*="bg-gradient"],
+button:not([data-testid^="drawer-"]):not([data-testid="tirelire-button"]):not([data-testid="tutorial-info-button"]):not([data-testid="news-bubble"]):not([data-testid="scanner-fab"])[class*="rounded-full"],
 .btn-glossy {
   position: relative;
   /* Boutons BLANC INTENSE BOMBÉ */
