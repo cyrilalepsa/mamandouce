@@ -12,7 +12,7 @@ export function BreastfeedingSection({ breastfeeding }) {
       <p className="text-sm text-slate-500 mb-4">Cliquez sur une section pour voir les détails</p>
       
       {/* Bénéfices */}
-      <PastelAccordion title="Les bienfaits de l'allaitement" icon="💝" color="pink" defaultOpen={true}>
+      <PastelAccordion title="Les bienfaits de l'allaitement" icon="💝" color="pink" defaultOpen={false}>
         <PastelCard color="pink" className="p-4">
           <div className="grid grid-cols-1 gap-2">
             {breastfeeding.benefits?.map((benefit, i) => (

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -505,7 +505,6 @@ export function UsersTab({
   const [expandedMonths, setExpandedMonths] = useState({});
   const [filterStatus, setFilterStatus] = useState('all'); // all, premium, free, trial
   const [showTestUsers, setShowTestUsers] = useState(false);
-  const [initialized, setInitialized] = useState(false);
 
   const safeUsers = Array.isArray(users) ? users : [];
   const safeTestUsers = Array.isArray(testUsers) ? testUsers : [];
@@ -530,20 +529,6 @@ export function UsersTab({
     () => groupUsersByDate(filteredUsers),
     [filteredUsers],
   );
-
-  useEffect(() => {
-    if (initialized || sortedYears.length === 0) return;
-    const autoYears = {};
-    const autoMonths = {};
-    sortedYears.forEach(year => {
-      autoYears[year] = true;
-      const months = Object.keys(grouped[year] || {}).sort((a, b) => b - a);
-      if (months.length > 0) autoMonths[`${year}-${months[0]}`] = true;
-    });
-    setExpandedYears(autoYears);
-    setExpandedMonths(autoMonths);
-    setInitialized(true);
-  }, [grouped, initialized, sortedYears]);
 
   const toggleYear = (year) => {
     setExpandedYears(prev => ({ ...prev, [year]: !prev[year] }));

@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+import { useState, createContext, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card } from '../../ui/card';
 import { Lock, ChevronDown, Pin, PinOff } from 'lucide-react';
@@ -72,14 +72,6 @@ const PinnedSectionsContext = createContext({
 export function PinnedSectionsProvider({ children }) {
   const [pinnedSections, setPinnedSections] = useState([]);
 
-  useEffect(() => {
-    // Charger les sections épinglées depuis localStorage
-    const saved = localStorage.getItem('mamandouce_pinned_sections');
-    if (saved) {
-      setPinnedSections(JSON.parse(saved));
-    }
-  }, []);
-
   const togglePin = (sectionId) => {
     setPinnedSections(prev => {
       const newPinned = prev.includes(sectionId)
@@ -110,14 +102,7 @@ export function CollapsibleSection({ title, icon: Icon, iconColor, children, def
   const { t } = useTranslation();
   const { isPinned, togglePin } = usePinnedSections();
   const pinned = sectionId ? isPinned(sectionId) : false;
-  const [isOpen, setIsOpen] = useState(defaultOpen || pinned);
-  
-  // Mettre à jour l'état si la section est épinglée
-  useEffect(() => {
-    if (pinned) {
-      setIsOpen(true);
-    }
-  }, [pinned]);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   
   // Si title est un composant React, on l'affiche directement
   const isCustomTitle = typeof title !== 'string';

@@ -469,10 +469,7 @@ function JourneyStepsPage() {
   const darkTextShadow = isDarkMode ? { textShadow: '1px 1px 3px rgba(0,0,0,1)' } : {};
   
   // État des sections épinglées/déroulées (stockées dans localStorage)
-  const [pinnedSections, setPinnedSections] = useState(() => {
-    const saved = localStorage.getItem('mamandouce_expanded_journey_sections');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [pinnedSections, setPinnedSections] = useState([]);
 
   // Toggle épingle = dérouler/replier (uniquement par clic direct sur l'épingle)
   const togglePin = (sectionId) => {

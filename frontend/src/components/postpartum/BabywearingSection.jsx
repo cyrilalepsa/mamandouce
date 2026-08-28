@@ -10,7 +10,7 @@ export function BabywearingSection({ babywearing }) {
       <p className="text-sm text-slate-600">{babywearing.description}</p>
       
       {/* Bénéfices */}
-      <PastelAccordion title="Bienfaits du portage" icon="💝" color="pink" defaultOpen={true}>
+      <PastelAccordion title="Bienfaits du portage" icon="💝" color="pink" defaultOpen={false}>
         <PastelCard color="pink" className="p-4">
           <div className="grid grid-cols-1 gap-2">
             {babywearing.benefits?.map((benefit, i) => (

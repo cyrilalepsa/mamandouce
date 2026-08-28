@@ -12,7 +12,7 @@ export function FormulaSection({ formula }) {
       
       {/* Préparation */}
       {formula.preparation && (
-        <PastelAccordion title="Préparation du biberon" icon="🍼" color="sky" defaultOpen={true}>
+        <PastelAccordion title="Préparation du biberon" icon="🍼" color="sky" defaultOpen={false}>
           <PastelCard color="sky" className="p-4">
             <ol className="text-sm text-slate-600 space-y-2">
               {formula.preparation.steps?.map((step, i) => (

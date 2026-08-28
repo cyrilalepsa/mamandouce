@@ -19,7 +19,7 @@ export function DifficultiesSection({ difficulties }) {
             title={diff.title}
             icon={diff.video_url ? "🎬" : "⚠️"}
             color={color}
-            defaultOpen={index === 0}
+            defaultOpen={false}
           >
             <PastelCard color={color} className="p-4 mb-3">
               <p className="text-sm text-slate-600 mb-3">{diff.description}</p>

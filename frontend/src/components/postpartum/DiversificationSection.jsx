@@ -10,7 +10,7 @@ export function DiversificationSection({ diversification }) {
       <p className="text-sm text-slate-600">{diversification.description}</p>
       
       {/* Quand commencer */}
-      <PastelAccordion title="Quand commencer ?" icon="🌱" color="green" defaultOpen={true}>
+      <PastelAccordion title="Quand commencer ?" icon="🌱" color="green" defaultOpen={false}>
         <PastelCard color="green" className="p-4">
           <p className="text-sm text-green-700 mb-2">{diversification.when_to_start?.age}</p>
           <h4 className="text-sm font-semibold text-green-800 mb-2">Signes que bébé est prêt :</h4>

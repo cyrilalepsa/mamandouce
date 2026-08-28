@@ -8,7 +8,7 @@ import { appUpdates } from '../data/appUpdates';
 export default function UpdatesHistoryPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [expandedVersion, setExpandedVersion] = useState(appUpdates[0]?.version);
+  const [expandedVersion, setExpandedVersion] = useState(null);
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
