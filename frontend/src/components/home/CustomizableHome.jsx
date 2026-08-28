@@ -14,7 +14,6 @@ import { UpcomingRemindersCard } from './UpcomingRemindersCard';
 import { PushNotificationReminder } from './PushNotificationReminder';
 import { TutorialPopup, InfoButton, useTutorial } from './TutorialPopup';
 import { UserWelcomeHeader } from './HomeWidgets';
-import { PageDots } from './HomePagination';
 import { HomePageSlider } from './HomePageSlider';
 import { DeletePageConfirmModal, GroupNameModal, CreatePageModal } from './HomeModals';
 
@@ -245,12 +244,6 @@ export function CustomizableHome({
     }
   };
 
-  const handleSetAsHome = async () => {
-    if (setDefaultPage && currentPage) {
-      await setDefaultPage(currentPage.id);
-    }
-  };
-
   // Loading state
   if (isLoading) {
     return (
@@ -370,15 +363,7 @@ export function CustomizableHome({
         />
       )}
 
-      {/* Bulles de pagination (en bas de page) */}
-      <PageDots
-        pages={pages}
-        currentIndex={currentPageIndex}
-        onPageChange={setCurrentPage}
-        onSetAsHome={handleSetAsHome}
-        onCreatePage={() => setShowCreatePagePrompt(true)}
-        defaultPageId={defaultPageId}
-      />
+      {/* Pagination par swipe — la barre globale BottomNav remplace l'ancien dock PageDots fixe */}
     </div>
   );
 }

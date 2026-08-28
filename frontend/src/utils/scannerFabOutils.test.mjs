@@ -31,19 +31,20 @@ test('CycleTrackingPage back button targets journey steps explicitly', () => {
   assert.doesNotMatch(src, /onClick=\{\(\) => navigate\('\/'\)\}/);
 });
 
-test('BottomNav renders scanner button at dock center and is wired in App', () => {
+test('BottomNav is the single global dock with scanner on the right', () => {
   const bottomNav = read('src/components/BottomNav.jsx');
   assert.match(bottomNav, /data-testid="bottom-nav"/);
   assert.match(bottomNav, /data-testid="bottom-nav-scanner"/);
   assert.match(bottomNav, /navigate\('\/scanner'\)/);
-  assert.match(bottomNav, /Camera/);
+  assert.match(bottomNav, /id: 'outils'/);
+  assert.doesNotMatch(bottomNav, /-mt-5/);
 
   const app = read('src/App.jsx');
-  assert.match(app, /import BottomNav from '\.\/components\/BottomNav'/);
-  assert.match(app, /<BottomNav \/>/);
-  const routerBlock = app.match(/<BrowserRouter>[\s\S]*?<\/BrowserRouter>/);
-  assert.ok(routerBlock, 'BrowserRouter block expected in App.jsx');
-  assert.match(routerBlock[0], /<BottomNav \/>/);
+  const bottomNavMatches = app.match(/<BottomNav \/>/g) || [];
+  assert.equal(bottomNavMatches.length, 1, 'BottomNav must be mounted once in App.jsx');
+
+  const home = read('src/components/home/CustomizableHome.jsx');
+  assert.doesNotMatch(home, /<PageDots/);
 });
 
 test('FoodScanner shows unreferenced product banner for barcode scans', () => {

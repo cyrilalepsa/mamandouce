@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { 
-  ArrowLeft, Heart, Sparkles, Baby, Gift, HeartHandshake, Settings, 
+import { BackButton } from '../components/BackButton';
+import {
+  Heart, Sparkles, Baby, Gift, HeartHandshake, Settings,
   Check, Pin, PinOff, CalendarHeart, ScanBarcode, Apple, History,
   Stethoscope, Bell, BookHeart, Users, ChevronRight, Crown, Lock,
   ClipboardList, Briefcase, Video, Youtube, Book, Phone, LineChart,
@@ -517,14 +518,11 @@ function SectionDetailPage() {
       <div className="max-w-2xl mx-auto p-4 sm:p-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
-          <Button
-            onClick={() => navigate(sectionBackPath)}
+          <BackButton
+            backPath={sectionBackPath}
             variant="ghost"
             className="p-2 rounded-full hover:bg-white/50"
-            data-testid="back-button"
-          >
-            <ArrowLeft className="w-6 h-6 text-slate-600" />
-          </Button>
+          />
           
           <div className="flex-1 text-center">
             <div className="flex items-center justify-center gap-2">

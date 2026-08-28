@@ -17,7 +17,7 @@ test('outils tool pages use explicit back route to section outils', () => {
     'src/pages/outils/EmergencyInfoPage.jsx',
   ]) {
     const src = read(rel);
-    assert.match(src, /navigate\('\/section\/outils'\)/, rel);
+    assert.match(src, /backPath="\/section\/outils"/, rel);
     assert.doesNotMatch(src, /navigate\(-1\)/, rel);
   }
 });
@@ -25,7 +25,7 @@ test('outils tool pages use explicit back route to section outils', () => {
 test('SectionDetailPage back button targets journey steps explicitly', () => {
   const src = read('src/pages/SectionDetailPage.jsx');
   assert.match(src, /sectionBackPath = '\/journey-steps'/);
-  assert.match(src, /navigate\(sectionBackPath\)/);
+  assert.match(src, /backPath=\{sectionBackPath\}/);
 });
 
 test('CycleTrackingPage back button targets journey steps explicitly', () => {
