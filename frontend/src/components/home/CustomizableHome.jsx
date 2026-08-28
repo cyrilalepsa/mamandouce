@@ -15,6 +15,7 @@ import { PushNotificationReminder } from './PushNotificationReminder';
 import { TutorialPopup, InfoButton, useTutorial } from './TutorialPopup';
 import { UserWelcomeHeader } from './HomeWidgets';
 import { PageDots } from './HomePagination';
+import { ScannerDockButton } from '../ScannerDockButton';
 import { HomePageSlider } from './HomePageSlider';
 import { DeletePageConfirmModal, GroupNameModal, CreatePageModal } from './HomeModals';
 
@@ -379,6 +380,8 @@ export function CustomizableHome({
         onCreatePage={() => setShowCreatePagePrompt(true)}
         defaultPageId={defaultPageId}
       />
+
+      <ScannerDockButton onClick={() => navigate('/scanner')} />
     </div>
   );
 }
