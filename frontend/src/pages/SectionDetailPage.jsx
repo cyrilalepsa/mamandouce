@@ -67,9 +67,9 @@ const SECTION_META = {
     icon: Wrench, 
     name: 'Outils',
     nameKey: 'sections.outils',
-    bgGradient: 'from-white/95 via-slate-50/70 to-slate-100/50',
-    accentColor: 'text-slate-600',
-    bgColor: 'bg-slate-50/50',
+    bgGradient: 'from-white/95 via-pink-50/60 to-slate-100/50',
+    accentColor: 'text-pink-700',
+    bgColor: 'bg-pink-50/50',
   },
 };
 

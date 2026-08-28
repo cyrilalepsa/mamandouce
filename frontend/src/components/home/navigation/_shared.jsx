@@ -34,7 +34,7 @@ export function PastelMosaicCard({ color = 'pink', onClick, children, className 
       onClick={onClick}
       data-testid={testId}
       data-accent={accent}
-      className={`${cardSoftClayClasses(accent)} relative overflow-hidden p-3 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-center shadow ${className}`}
+      className={`${cardSoftClayClasses(accent)} relative overflow-hidden p-3 cursor-pointer text-center ${className}`}
       style={{ color: '#2C2C2C' }}
     >
       <div className="relative z-[2]" style={{ color: '#2C2C2C' }}>
@@ -52,7 +52,7 @@ export function PastelPillCard({ color = 'purple', onClick, children, className 
       onClick={onClick}
       data-testid={testId}
       data-accent={accent}
-      className={`${cardSoftClayClasses(accent, { pill: true })} relative overflow-hidden px-4 py-2.5 cursor-pointer transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] shadow ${className}`}
+      className={`${cardSoftClayClasses(accent, { pill: true })} relative overflow-hidden px-4 py-2.5 cursor-pointer ${className}`}
       style={{ color: '#2C2C2C' }}
     >
       <div className="relative z-[2]" style={{ color: '#2C2C2C' }}>

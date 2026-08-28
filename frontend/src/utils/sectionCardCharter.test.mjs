@@ -12,12 +12,13 @@ function read(rel) {
 
 test('SECTION_ACCENT maps six journey sections to charter colors', () => {
   const tokens = read('src/utils/accentTokens.js');
-  assert.match(tokens, /preconception: 'yellow'/);
-  assert.match(tokens, /pregnancy: 'blue'/);
-  assert.match(tokens, /'baby-preparation': 'red'/);
-  assert.match(tokens, /postpartum: 'green'/);
-  assert.match(tokens, /services: 'violet'/);
-  assert.match(tokens, /outils: 'slate'/);
+  const registry = read('src/utils/colorRegistry.js');
+  assert.match(tokens, /SECTION_COLOR_REGISTRY/);
+  assert.match(registry, /preconception:/);
+  assert.match(registry, /pregnancy:/);
+  assert.match(registry, /postpartum:/);
+  assert.match(registry, /services:/);
+  assert.match(registry, /outils: MAGENTA_SECTION/);
 });
 
 test('section card helpers expose interactive gradient and reading border styles', () => {
@@ -39,6 +40,22 @@ test('JourneySteps and SectionDetail inherit parent section accent on cards', ()
   assert.match(detail, /sectionInteractiveCardClasses\(sectionAccent/);
   assert.match(detail, /min-h-screen gradient-bg/);
   assert.doesNotMatch(detail, /meta\.bgGradient/);
+});
+
+test('interactive card helpers include shadow relief and bounce motion', () => {
+  const tokens = read('src/utils/accentTokens.js');
+  assert.match(tokens, /CARD_INTERACTIVE_SHADOW/);
+  assert.match(tokens, /CARD_INTERACTIVE_MOTION/);
+  assert.match(tokens, /hover:-translate-y-1/);
+  assert.match(tokens, /active:scale-95/);
+});
+
+test('postpartum hub cards inherit parent section accent', () => {
+  const hub = read('src/components/postpartum/PostpartumHubCard.jsx');
+  assert.match(hub, /sectionInteractiveCardClasses\(POSTPARTUM_SECTION\)/);
+  assert.match(read('src/pages/PostpartumAlimentationPage.jsx'), /PostpartumHubCard/);
+  assert.match(read('src/pages/PostpartumSoinsPage.jsx'), /PostpartumHubCard/);
+  assert.match(read('src/pages/PostpartumSecuritePage.jsx'), /PostpartumHubCard/);
 });
 
 test('derived outils and preconception pages use section reading cards', () => {

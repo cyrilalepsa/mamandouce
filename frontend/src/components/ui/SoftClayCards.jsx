@@ -33,8 +33,8 @@ export function ResourceCard({
       onKeyDown={onClick ? (e) => e.key === 'Enter' && onClick(e) : undefined}
       data-accent={name}
       data-testid={testId}
-      className={`${cardSoftClayClasses(name, { level })} relative overflow-hidden transition-all duration-200 ${
-        onClick ? 'cursor-pointer hover:scale-[1.01] active:scale-[0.99]' : ''
+      className={`${cardSoftClayClasses(name, { level })} relative overflow-hidden ${
+        onClick ? 'cursor-pointer' : ''
       } ${className}`}
       {...props}
     >

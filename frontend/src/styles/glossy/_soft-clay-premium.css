@@ -42,6 +42,10 @@
   --accent-pink-glass: #FBCFE8;
   --accent-pink-border: #EC4899;
 
+  --accent-magenta-glass: #FCE7F3;
+  --accent-magenta-border: #F472B6;
+  --accent-magenta-bubble: linear-gradient(145deg, #f472b6, #e879f9);
+
   --accent-green-glass: #BBF7D0;
   --accent-green-border: #22C55E;
 
@@ -184,6 +188,13 @@
   border-color: var(--accent-pink-border) !important;
 }
 
+.soft-clay-from-accent[data-accent='magenta'],
+.soft-clay-from-accent-magenta {
+  background-color: var(--accent-magenta-glass) !important;
+  background-image: none !important;
+  border-color: var(--accent-magenta-border) !important;
+}
+
 .soft-clay-from-accent[data-accent='green'],
 .soft-clay-from-accent-green,
 .soft-clay-tier-green {
@@ -231,6 +242,10 @@
 .soft-clay-icon-from-accent[data-accent='pink'],
 .soft-clay-icon-from-accent-pink {
   background: var(--accent-pink-bubble);
+}
+.soft-clay-icon-from-accent[data-accent='magenta'],
+.soft-clay-icon-from-accent-magenta {
+  background: var(--accent-magenta-bubble);
 }
 .soft-clay-icon-from-accent[data-accent='green'],
 .soft-clay-icon-from-accent-green {

@@ -8,6 +8,7 @@ import { CloudCard } from '../components/ui/CloudCard';
 import { toast } from 'sonner';
 import { useHomeLayout } from '../contexts/HomeLayoutContext';
 import { DuplicatePopup } from '../components/home/DuplicatePopup';
+import { PostpartumHubCard } from '../components/postpartum/PostpartumHubCard';
 
 const ALIMENTATION_ITEMS = [
   { 
@@ -148,8 +149,12 @@ export default function PostpartumAlimentationPage() {
         {/* Grille de cartes 2x2 */}
         <div className="grid grid-cols-2 gap-3">
           {ALIMENTATION_ITEMS.map((item) => (
-            <div
+            <PostpartumHubCard
               key={item.id}
+              title={item.title}
+              desc={item.desc}
+              emoji={item.icon}
+              selected={selectedForDuplicate === item.id}
               onClick={() => navigate(item.route)}
               onTouchStart={() => handleLongPressStart(item.id)}
               onTouchEnd={handleLongPressEnd}
@@ -157,32 +162,7 @@ export default function PostpartumAlimentationPage() {
               onMouseDown={() => handleLongPressStart(item.id)}
               onMouseUp={handleLongPressEnd}
               onMouseLeave={handleLongPressEnd}
-              className={`relative overflow-hidden rounded-2xl p-4 cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all select-none ${
-                selectedForDuplicate === item.id ? 'ring-2 ring-pink-400' : ''
-              }`}
-              style={{ 
-                background: 'linear-gradient(160deg, #ffffff 0%, #ffffff 25%, #fefefe 50%, #fafafa 80%, #f5f5f7 100%)',
-                border: '1px solid rgba(255,255,255,0.95)',
-                boxShadow: '0 8px 20px -4px rgba(0,0,0,0.08), 0 4px 8px -2px rgba(0,0,0,0.04), inset -4px -4px 10px rgba(0,0,0,0.03), inset 4px 4px 10px rgba(255,255,255,0.95)',
-                WebkitUserSelect: 'none', 
-                WebkitTouchCallout: 'none' 
-              }}
-            >
-              {/* Effet de reflet bombé glossy */}
-              {/* Voile blanc supprimé */}
-              
-              <div className="relative text-center">
-                <div className={`w-12 h-12 mx-auto mb-2 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center shadow-lg ${['logo-bubble-yellow','logo-bubble-blue','logo-bubble-red','logo-bubble-green','logo-bubble-violet'][ALIMENTATION_ITEMS.indexOf(item) % 5]}`}>
-                  <span className="text-2xl">{item.icon}</span>
-                </div>
-                <h3 className="font-semibold text-slate-700 dark:text-black text-sm mb-1">
-                  {item.title}
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-700">
-                  {item.desc}
-                </p>
-              </div>
-            </div>
+            />
           ))}
         </div>
 

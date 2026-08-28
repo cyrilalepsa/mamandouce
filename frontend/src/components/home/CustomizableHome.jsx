@@ -16,6 +16,7 @@ import { TutorialPopup, InfoButton, useTutorial } from './TutorialPopup';
 import { UserWelcomeHeader } from './HomeWidgets';
 import { PageDots } from './HomePagination';
 import { ScannerDockButton } from '../ScannerDockButton';
+import { useScannerOverlay } from '../../contexts/ScannerOverlayContext';
 import { HomePageSlider } from './HomePageSlider';
 import { DeletePageConfirmModal, GroupNameModal, CreatePageModal } from './HomeModals';
 
@@ -128,6 +129,7 @@ export function CustomizableHome({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { openScanner } = useScannerOverlay();
   const { isPremium } = useSubscription();
   const containerRef = useRef(null);
   
@@ -381,7 +383,7 @@ export function CustomizableHome({
         defaultPageId={defaultPageId}
       />
 
-      <ScannerDockButton onClick={() => navigate('/scanner')} />
+      <ScannerDockButton onClick={openScanner} />
     </div>
   );
 }
