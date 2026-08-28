@@ -20,6 +20,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { getLocalizedServices, resolveCountryFromCity } from '../utils/pregnancyDateUtils';
 import { accentFromSectionId, sectionInteractiveCardClasses, sectionReadingCardClasses, sectionAccentTextClass } from '../utils/accentTokens';
 import { IconWell } from '../components/ui/IconWell';
+import { getJourneyPostpartumItems } from '../config/sectionNavigation';
+import { resolveSectionIcon } from '../config/sectionIcons';
 
 // Métadonnées des sections
 const SECTION_META = {
@@ -102,12 +104,6 @@ const SECTION_ITEMS = {
     { id: 'prep-tips', icon: BookHeart, iconColor: 'text-red-600', bgColor: 'red', title: 'Conseils & Préparation', titleKey: 'babyPrep.prepTips', desc: 'Guide complet', descKey: 'babyPrep.prepTipsDesc', route: '/baby-prep-tips' },
     { id: 'videos-resources', icon: Video, iconColor: 'text-green-600', bgColor: 'green', title: 'Vidéos & Ressources', titleKey: 'babyPrep.videosResources', desc: 'Tutoriels & conseils', descKey: 'babyPrep.videosResourcesDesc', route: '/baby-videos' },
   ],
-  'postpartum': [
-    { id: 'postpartum-rdv', icon: Stethoscope, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'RDV médicaux', titleKey: 'postpartum.rdv', desc: 'Suivi post-accouchement', descKey: 'postpartum.rdvDesc', route: '/postpartum/rdv' },
-    { id: 'postpartum-alimentation', icon: Utensils, iconColor: 'text-blue-600', bgColor: 'blue', title: 'Alimentation', titleKey: 'postpartum.alimentation', desc: 'Allaitement, biberons, diversification', descKey: 'postpartum.alimentationDesc', route: '/postpartum/alimentation' },
-    { id: 'postpartum-soins', icon: Baby, iconColor: 'text-red-600', bgColor: 'red', title: 'Soins quotidiens', titleKey: 'postpartum.soins', desc: 'Coucher, change, portage', descKey: 'postpartum.soinsDesc', route: '/postpartum/soins' },
-    { id: 'postpartum-securite', icon: Shield, iconColor: 'text-green-600', bgColor: 'green', title: 'Sécurité', titleKey: 'postpartum.securite', desc: 'Difficultés, précautions', descKey: 'postpartum.securiteDesc', route: '/postpartum/securite' },
-  ],
   'services': [
     { id: 'caf', icon: Building2, iconColor: 'text-yellow-500', bgColor: 'yellow', title: 'CAF', titleKey: 'services.caf', desc: 'Allocations familiales', descKey: 'services.cafDesc', route: 'https://www.caf.fr', external: true },
     { id: 'ameli', icon: Hospital, iconColor: 'text-blue-600', bgColor: 'blue', title: 'Ameli', titleKey: 'services.ameli', desc: 'Assurance maladie', descKey: 'services.ameliDesc', route: 'https://www.ameli.fr', external: true },
@@ -120,6 +116,15 @@ const SECTION_ITEMS = {
     { id: 'emergency-birth', icon: AlertCircle, iconColor: 'text-red-600', bgColor: 'red', title: 'Fiche urgence naissance', titleKey: 'outils.emergency.title', desc: 'Partage relais', descKey: 'outils.emergency.shortDesc', route: '/outils/fiche-urgence' },
   ],
 };
+
+function buildPostpartumSectionItems() {
+  return getJourneyPostpartumItems().map((item) => ({
+    ...item,
+    icon: resolveSectionIcon(item.icon),
+    iconColor: 'text-green-600',
+    bgColor: 'green',
+  }));
+}
 
 // Popup bulle pour dupliquer - Style gris translucide iOS
 function DuplicatePopup({ itemName, pages, onDuplicate, onCancel, onCreatePage, t }) {
@@ -456,7 +461,9 @@ function SectionDetailPage() {
       route: service.route,
       external: true,
     }))
-    : (SECTION_ITEMS[sectionId] || []);
+    : sectionId === 'postpartum'
+      ? buildPostpartumSectionItems()
+      : (SECTION_ITEMS[sectionId] || []);
 
   // Navigation
   const handleNavigate = (route, external = false) => {

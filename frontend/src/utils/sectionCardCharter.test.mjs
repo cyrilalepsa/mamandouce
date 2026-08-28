@@ -50,12 +50,14 @@ test('interactive card helpers include shadow relief and bounce motion', () => {
   assert.match(tokens, /active:scale-95/);
 });
 
-test('postpartum hub cards inherit parent section accent', () => {
-  const hub = read('src/components/postpartum/PostpartumHubCard.jsx');
-  assert.match(hub, /sectionInteractiveCardClasses\(POSTPARTUM_SECTION\)/);
-  assert.match(read('src/pages/PostpartumAlimentationPage.jsx'), /PostpartumHubCard/);
-  assert.match(read('src/pages/PostpartumSoinsPage.jsx'), /PostpartumHubCard/);
-  assert.match(read('src/pages/PostpartumSecuritePage.jsx'), /PostpartumHubCard/);
+test('postpartum hub cards inherit parent section accent from central config', () => {
+  const card = read('src/components/postpartum/PostpartumCategoryCard.jsx');
+  assert.match(card, /POSTPARTUM_SECTION_ID/);
+  assert.match(card, /sectionInteractiveCardClasses\(POSTPARTUM_SECTION_ID\)/);
+  assert.match(read('src/pages/PostpartumAlimentationPage.jsx'), /PostpartumCategoryGrid/);
+  assert.match(read('src/pages/PostpartumSoinsPage.jsx'), /PostpartumCategoryGrid/);
+  assert.match(read('src/pages/PostpartumSecuritePage.jsx'), /PostpartumCategoryGrid/);
+  assert.match(read('src/pages/PostpartumPage.jsx'), /mainCategories\.map/);
 });
 
 test('derived outils and preconception pages use section reading cards', () => {

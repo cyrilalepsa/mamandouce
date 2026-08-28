@@ -16,7 +16,9 @@ import { ToggleAllSections } from '../components/ToggleAllSections';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useHomeLayout } from '../contexts/HomeLayoutContext';
 import { DuplicatePopup } from '../components/home/DuplicatePopup';
-import { CategoryDetailTile } from '../components/ui/SoftClayCards';
+import { POSTPARTUM_CATEGORIES } from '../config/sectionNavigation';
+import { resolveSectionIcon } from '../config/sectionIcons';
+import { PostpartumCategoryCard } from '../components/postpartum/PostpartumCategoryCard';
 
 // Import refactored components
 import {
@@ -307,41 +309,8 @@ export default function PostpartumPage() {
     );
   }
 
-  // 4 catégories principales avec navigation vers sous-pages
-  const mainCategories = [
-    { 
-      id: 'alimentation', 
-      label: 'Alimentation', 
-      desc: 'Allaitement, biberons, diversification',
-      icon: Utensils, 
-      color: 'yellow',
-      route: '/postpartum/alimentation'
-    },
-    { 
-      id: 'soins', 
-      label: 'Soins quotidiens', 
-      desc: 'Coucher, change, portage',
-      icon: Baby, 
-      color: 'blue',
-      route: '/postpartum/soins'
-    },
-    { 
-      id: 'securite', 
-      label: 'Sécurité', 
-      desc: 'Difficultés, précautions',
-      icon: Shield, 
-      color: 'red',
-      route: '/postpartum/securite'
-    },
-    { 
-      id: 'rdv', 
-      label: 'RDV médicaux', 
-      desc: 'Suivi post-accouchement',
-      icon: Calendar, 
-      color: 'green',
-      route: '/postpartum/rdv'
-    },
-  ];
+  // 4 catégories principales — config centralisée sectionNavigation.js
+  const mainCategories = POSTPARTUM_CATEGORIES;
   
   // Anciennes sections pour l'affichage détaillé (quand on clique sur une section)
   const sections = [
@@ -755,15 +724,13 @@ export default function PostpartumPage() {
 
         {/* 4 Catégories principales en Mosaïque — Blanc intense, logos J→B→R→V */}
         <div className="grid grid-cols-2 gap-4">
-          {mainCategories.map((category, index) => {
-            const Icon = category.icon;
+          {mainCategories.map((category) => {
+            const Icon = resolveSectionIcon(category.icon);
             return (
-              <CategoryDetailTile
+              <PostpartumCategoryCard
                 key={category.id}
-                accent="postpartum"
-                index={index}
-                title={category.label}
-                subtitle={category.desc}
+                title={t(category.titleKey, category.title)}
+                subtitle={t(category.descKey, category.desc)}
                 icon={<Icon className="w-7 h-7 text-white" />}
                 testId={`category-${category.id}`}
                 selected={selectedForDuplicate === category.id}
@@ -775,10 +742,6 @@ export default function PostpartumPage() {
                 onMouseUp={handleLongPressEnd}
                 onMouseLeave={handleLongPressEnd}
                 className="select-none"
-                style={{
-                  WebkitUserSelect: 'none',
-                  WebkitTouchCallout: 'none',
-                }}
               />
             );
           })}
