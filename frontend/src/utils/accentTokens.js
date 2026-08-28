@@ -42,6 +42,60 @@ export function accentFromSectionId(sectionId) {
   return SECTION_ACCENT[sectionId] || 'slate';
 }
 
+/** Couleur de bordure section (cartes lecture) */
+export const SECTION_BORDER_CLASS = {
+  yellow: 'border-yellow-400',
+  blue: 'border-blue-400',
+  red: 'border-red-400',
+  green: 'border-green-400',
+  violet: 'border-violet-400',
+  slate: 'border-slate-400',
+};
+
+/** Fond gradient interactif — blanc → ardoise clair teinté section */
+export const SECTION_INTERACTIVE_BG = {
+  yellow: 'bg-gradient-to-br from-white via-yellow-50/55 to-slate-100',
+  blue: 'bg-gradient-to-br from-white via-blue-50/55 to-slate-100',
+  red: 'bg-gradient-to-br from-white via-red-50/55 to-slate-100',
+  green: 'bg-gradient-to-br from-white via-green-50/55 to-slate-100',
+  violet: 'bg-gradient-to-br from-white via-violet-50/55 to-slate-100',
+  slate: 'bg-gradient-to-br from-white via-slate-100/90 to-slate-200/70',
+};
+
+export function resolveSectionAccent(sectionIdOrAccent) {
+  if (sectionIdOrAccent && SECTION_ACCENT[sectionIdOrAccent]) {
+    return accentFromSectionId(sectionIdOrAccent);
+  }
+  return normalizeAccent(sectionIdOrAccent);
+}
+
+/** Carte cliquable / accordéon — gradient léger teinté par la section parente */
+export function sectionInteractiveCardClasses(sectionIdOrAccent, { rounded = 'rounded-[24px]', extra = '' } = {}) {
+  const accent = resolveSectionAccent(sectionIdOrAccent);
+  const bg = SECTION_INTERACTIVE_BG[accent] || SECTION_INTERACTIVE_BG.slate;
+  return [bg, 'text-slate-800', 'border border-white/70 shadow-sm', rounded, extra].filter(Boolean).join(' ');
+}
+
+/** Carte lecture / texte pur — fond blanc, contour section uniquement */
+export function sectionReadingCardClasses(sectionIdOrAccent, { rounded = 'rounded-[24px]', extra = '' } = {}) {
+  const accent = resolveSectionAccent(sectionIdOrAccent);
+  const border = SECTION_BORDER_CLASS[accent] || SECTION_BORDER_CLASS.slate;
+  return ['bg-white', 'border-2', border, 'text-slate-800', rounded, extra].filter(Boolean).join(' ');
+}
+
+export function sectionAccentTextClass(sectionIdOrAccent) {
+  const accent = resolveSectionAccent(sectionIdOrAccent);
+  const map = {
+    yellow: 'text-yellow-700',
+    blue: 'text-blue-700',
+    red: 'text-red-700',
+    green: 'text-green-700',
+    violet: 'text-violet-700',
+    slate: 'text-slate-700',
+  };
+  return map[accent] || map.slate;
+}
+
 export function softClayCardClasses(accent, { pill = false } = {}) {
   const name = normalizeAccent(accent);
   return [

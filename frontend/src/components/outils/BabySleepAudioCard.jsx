@@ -4,6 +4,7 @@ import { Moon, Mic, Square, Play, Pause, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { toast } from 'sonner';
+import { sectionReadingCardClasses, sectionInteractiveCardClasses, sectionAccentTextClass } from '../../utils/accentTokens';
 
 const NOISE_TYPES = [
   { id: 'white', labelKey: 'outils.sleep.whiteNoise' },
@@ -185,13 +186,13 @@ export function BabySleepAudioCard({ embedded = false }) {
 
   return (
     <div className={wrapperClass} data-testid="baby-sleep-audio-card">
-      <Card className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 space-y-5">
+      <Card className={`${sectionReadingCardClasses('outils', { rounded: 'rounded-3xl', extra: 'p-6 shadow-sm space-y-5' })}`}>
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center">
             <Moon className="w-6 h-6 text-violet-600" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-slate-700">
+            <h2 className={`text-lg font-bold ${sectionAccentTextClass('outils')}`}>
               {t('outils.sleep.title', 'Bonne nuit bébé')}
             </h2>
             <p className="text-sm text-slate-500">
@@ -212,8 +213,8 @@ export function BabySleepAudioCard({ embedded = false }) {
                 data-testid={`noise-${item.id}`}
                 className={`rounded-full px-4 py-2 text-sm font-semibold ${
                   noisePlaying && noiseType === item.id
-                    ? 'bg-violet-500 text-white'
-                    : 'bg-slate-100 text-slate-600'
+                    ? sectionInteractiveCardClasses('outils', { rounded: 'rounded-full', extra: 'px-4 py-2 text-sm font-semibold shadow-md' })
+                    : sectionReadingCardClasses('outils', { rounded: 'rounded-full', extra: 'px-4 py-2 text-sm font-semibold bg-white' })
                 }`}
               >
                 {noisePlaying && noiseType === item.id ? (

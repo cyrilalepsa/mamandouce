@@ -46,8 +46,9 @@ test('PastelMosaicCard uses soft-clay-from-accent from color prop', () => {
   assert.match(src, /data-accent=\{accent\}/);
 });
 
-test('ItemCard uses accentFromBgColor for card and icon well', () => {
+test('ItemCard inherits parent section accent for card and icon well', () => {
   const src = readFileSync(join(root, 'src/pages/SectionDetailPage.jsx'), 'utf8');
-  assert.match(src, /accentFromBgColor/);
+  assert.match(src, /sectionAccent/);
+  assert.match(src, /sectionInteractiveCardClasses\(sectionAccent/);
   assert.match(src, /<IconWell accent=\{accent\}/);
 });

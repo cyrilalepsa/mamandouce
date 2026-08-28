@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Heart, Lightbulb, Check, Pill, Apple, Dumbbell, Moon, Cigarette, Wine, Brain } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
+import { sectionReadingCardClasses, sectionAccentTextClass } from '../utils/accentTokens';
 
 const PRECONCEPTION_TIPS = [
   {
@@ -112,7 +113,7 @@ function PreconceptionTipsPage() {
   const otherTips = PRECONCEPTION_TIPS.filter(tip => !tip.important);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div className="min-h-screen gradient-bg">
       <div className="max-w-2xl mx-auto p-4 sm:p-6">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -125,8 +126,8 @@ function PreconceptionTipsPage() {
           </Button>
           <div className="flex-1 text-center">
             <div className="flex items-center justify-center gap-2">
-              <Lightbulb className="w-5 h-5 text-amber-500" />
-              <h1 className="text-lg font-bold text-amber-600">
+              <Lightbulb className={`w-5 h-5 ${sectionAccentTextClass('preconception')}`} />
+              <h1 className={`text-lg font-bold ${sectionAccentTextClass('preconception')}`}>
                 {t('preconception.preparationAdvice', 'Préparation et conseils')}
               </h1>
             </div>
@@ -149,11 +150,7 @@ function PreconceptionTipsPage() {
               return (
                 <Card 
                   key={tip.id}
-                  className={`p-4 rounded-2xl border transition-all ${
-                    checkedItems[tip.id] 
-                      ? 'bg-green-50 border-green-200' 
-                      : 'bg-white border-slate-100'
-                  }`}
+                  className={`${sectionReadingCardClasses('preconception', { rounded: 'rounded-2xl', extra: `p-4 transition-all ${checkedItems[tip.id] ? 'ring-2 ring-green-300' : ''}` })}`}
                 >
                   <div className="flex gap-3">
                     <div className={`w-10 h-10 ${tip.bgColor} rounded-xl flex items-center justify-center flex-shrink-0`}>
@@ -198,11 +195,7 @@ function PreconceptionTipsPage() {
               return (
                 <Card 
                   key={tip.id}
-                  className={`p-4 rounded-2xl border transition-all ${
-                    checkedItems[tip.id] 
-                      ? 'bg-green-50 border-green-200' 
-                      : 'bg-white/80 border-slate-100'
-                  }`}
+                  className={`${sectionReadingCardClasses('preconception', { rounded: 'rounded-2xl', extra: `p-4 transition-all ${checkedItems[tip.id] ? 'ring-2 ring-green-300' : ''}` })}`}
                 >
                   <div className="flex gap-3">
                     <div className={`w-10 h-10 ${tip.bgColor} rounded-xl flex items-center justify-center flex-shrink-0`}>

@@ -18,7 +18,7 @@ import { useSubscription } from '../components/SubscriptionGate';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { getLocalizedServices, resolveCountryFromCity } from '../utils/pregnancyDateUtils';
-import { accentFromBgColor, cardSoftClayClasses } from '../utils/accentTokens';
+import { accentFromSectionId, sectionInteractiveCardClasses, sectionReadingCardClasses, sectionAccentTextClass } from '../utils/accentTokens';
 import { IconWell } from '../components/ui/IconWell';
 
 // Métadonnées des sections
@@ -235,7 +235,7 @@ function DuplicatePopup({ itemName, pages, onDuplicate, onCancel, onCreatePage, 
 }
 
 // Carte individuelle avec appui long - style bombé avec dégradé prononcé
-function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
+function ItemCard({ item, sectionAccent, onNavigate, onLongPress, isSelected }) {
   const { t } = useTranslation();
   const { isPremium } = useSubscription();
   const { isDarkMode } = useTheme();
@@ -246,11 +246,10 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
   const isLocked = item.premium === 'full' && !isPremium;
   const isPartialPremium = item.premium === 'partial' && !isPremium;
   
-  // Couleur du texte — TOUJOURS NOIR PUR #000000
-  const textColorTitle = 'text-black';
-  const textColorDesc = 'text-black';
+  const textColorTitle = 'text-slate-800';
+  const textColorDesc = 'text-slate-700';
   
-  const accent = accentFromBgColor(item.bgColor);
+  const accent = sectionAccent;
   
   const handleTouchStart = (e) => {
     isLongPress.current = false;
@@ -283,7 +282,7 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
       <div 
         className={`
           relative overflow-hidden
-          ${cardSoftClayClasses(accent, { pill: true })}
+          ${sectionInteractiveCardClasses(sectionAccent, { rounded: 'rounded-full' })}
           px-3 py-1.5 select-none
           cursor-pointer transition-all col-span-2 sm:col-span-3
           hover:scale-[1.01] active:scale-[0.99]
@@ -344,7 +343,7 @@ function ItemCard({ item, onNavigate, onLongPress, isSelected }) {
     <div 
       className={`
         relative overflow-hidden
-        ${cardSoftClayClasses(accent, { level: 2 })}
+        ${sectionInteractiveCardClasses(sectionAccent)}
         p-1.5 select-none
         cursor-pointer transition-all text-center
         hover:scale-[1.02] active:scale-[0.98]
@@ -442,6 +441,7 @@ function SectionDetailPage() {
   }, [sectionId, focusItemId]);
 
   const meta = SECTION_META[sectionId];
+  const sectionAccent = accentFromSectionId(sectionId);
   const country = resolveCountryFromCity(user?.city);
   const items = sectionId === 'services'
     ? getLocalizedServices(country, user?.city).map((service) => ({
@@ -514,7 +514,7 @@ function SectionDetailPage() {
   const sectionBackPath = '/journey-steps';
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${meta.bgGradient}`}>
+    <div className="min-h-screen gradient-bg">
       <div className="max-w-2xl mx-auto p-4 sm:p-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
@@ -526,8 +526,8 @@ function SectionDetailPage() {
           
           <div className="flex-1 text-center">
             <div className="flex items-center justify-center gap-2">
-              <Icon className={`w-5 h-5 ${meta.accentColor}`} />
-              <h1 className={`text-lg font-bold ${meta.accentColor}`}>
+              <Icon className={`w-5 h-5 ${sectionAccentTextClass(sectionId)}`} />
+              <h1 className={`text-lg font-bold ${sectionAccentTextClass(sectionId)}`}>
                 {t(meta.nameKey, meta.name)}
               </h1>
             </div>
@@ -539,7 +539,7 @@ function SectionDetailPage() {
 
         {/* Message d'instruction */}
         <div className="text-center mb-4">
-          <span className={`inline-block text-xs ${meta.accentColor} opacity-70 px-4 py-1.5 rounded-full ${meta.bgColor}`}>
+          <span className={`inline-block text-xs px-4 py-1.5 ${sectionReadingCardClasses(sectionId, { rounded: 'rounded-full' })}`}>
             {t('section.longPressToSelect', 'Appui long pour dupliquer')}
           </span>
         </div>
@@ -550,6 +550,7 @@ function SectionDetailPage() {
             <ItemCard
               key={item.id}
               item={item}
+              sectionAccent={sectionAccent}
               onNavigate={handleNavigate}
               onLongPress={handleLongPress}
               isSelected={selectedItem?.id === item.id}
