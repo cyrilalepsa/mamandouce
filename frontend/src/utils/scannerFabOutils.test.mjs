@@ -31,17 +31,25 @@ test('CycleTrackingPage back button targets journey steps explicitly', () => {
   assert.doesNotMatch(src, /onClick=\{\(\) => navigate\('\/'\)\}/);
 });
 
-test('Home uses minimal PageDots dock with scanner on the right, not BottomNav', () => {
+test('Home uses centered PageDots pill and fixed corner scanner bubble', () => {
   const app = read('src/App.jsx');
   assert.doesNotMatch(app, /BottomNav/);
 
   const pagination = read('src/components/home/HomePagination.jsx');
-  assert.match(pagination, /ScannerDockButton/);
-  assert.match(pagination, /navigate\('\/scanner'\)/);
+  assert.doesNotMatch(pagination, /ScannerDockButton/);
   assert.match(pagination, /data-testid="page-dots"/);
 
   const home = read('src/components/home/CustomizableHome.jsx');
   assert.match(home, /<PageDots/);
+  assert.match(home, /ScannerDockButton/);
+  assert.match(home, /navigate\('\/scanner'\)/);
+
+  const dock = read('src/components/ScannerDockButton.jsx');
+  assert.match(dock, /bottom: BUBBLE_BOTTOM/);
+  assert.match(dock, /right: BUBBLE_SIDE/);
+  assert.match(dock, /width: BUBBLE_SIZE/);
+  assert.match(dock, /text-slate-600/);
+  assert.doesNotMatch(dock, /border-pink/);
 });
 
 test('ScannerFab floats on non-home pages only', () => {
