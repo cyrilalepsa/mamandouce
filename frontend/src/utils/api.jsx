@@ -355,6 +355,12 @@ export const api = {
     getChangelog: () => axios.get(`${API()}/admin/changelog`, getAuthHeaders()),
     markFeatureNotified: (featureId) => axios.post(`${API()}/admin/changelog/mark-notified/${featureId}`, {}, getAuthHeaders()),
     addChangelogFeature: (data) => axios.post(`${API()}/admin/changelog/add`, data, getAuthHeaders()),
+    getWhatsNew: () => axios.get(`${API()}/admin/whats-new`, getAuthHeaders()),
+    upsertWhatsNew: (data) => axios.post(`${API()}/admin/whats-new`, data, getAuthHeaders()),
+  },
+
+  whatsNew: {
+    getPublic: () => axios.get(`${API()}/whats-new`),
   },
   
   contributions: {

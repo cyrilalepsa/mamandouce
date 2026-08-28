@@ -74,6 +74,7 @@ import FaqBabyPage from './pages/FaqBabyPage';
 import BabySleepPage from './pages/outils/BabySleepPage';
 import PediatricianNotesPage from './pages/outils/PediatricianNotesPage';
 import EmergencyInfoPage from './pages/outils/EmergencyInfoPage';
+import CockpitPage from './pages/CockpitPage';
 import ChatBubble from './components/ChatBubble';
 import ScannerFab from './components/ScannerFab';
 import { EmotionalIntelligenceProvider } from './components/EmotionalIntelligence';
@@ -284,6 +285,7 @@ useEffect(() => {
                 <Route path="/trophies" element={<ProtectedRoute><TrophiesPage /></ProtectedRoute>} />
                 <Route path="/tirelire" element={<ProtectedRoute><TireliirePage /></ProtectedRoute>} />
                 <Route path="/moderation" element={<ProtectedRoute><ModerationPage /></ProtectedRoute>} />
+                <Route path="/cockpit" element={<ProtectedRoute requireSubscription={false}><CockpitPage /></ProtectedRoute>} />
                 <Route path="/baby-evolution" element={<ProtectedRoute><BabyEvolutionPage /></ProtectedRoute>} />
                 <Route path="/faq-baby" element={<ProtectedRoute><FaqBabyPage /></ProtectedRoute>} />
                 <Route path="/outils/bonne-nuit-bebe" element={<ProtectedRoute><BabySleepPage /></ProtectedRoute>} />

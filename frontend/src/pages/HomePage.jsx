@@ -76,7 +76,7 @@ function HomePage() {
     closeInteractiveTutorial 
   } = useTutorial();
   
-  const { hasNews, updates, isPopupOpen, openPopup, closePopup, markAsSeen } = useNews();
+  const { hasNews, items, isPopupOpen, openPopup, closePopup } = useNews();
 
   // Resync cartes grossesse à chaque retour sur l'accueil
   useEffect(() => {
@@ -390,9 +390,8 @@ function HomePage() {
         
         <NewsPopup 
           isVisible={isPopupOpen}
-          updates={updates}
+          items={items}
           onClose={closePopup}
-          onMarkAsSeen={markAsSeen}
         />
 
         <PortalOnboardingHost />

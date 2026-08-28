@@ -99,6 +99,7 @@ from routes.accounting import router as accounting_router
 from routes.emotional import router as emotional_router
 from routes.tirelire import router as tirelire_router
 from routes.babynames import router as babynames_router
+from routes.whats_new import router as whats_new_router
 
 # Include all routers
 api_router.include_router(auth_router)
@@ -127,6 +128,7 @@ api_router.include_router(accounting_router)
 api_router.include_router(emotional_router)
 api_router.include_router(tirelire_router)
 api_router.include_router(babynames_router)
+api_router.include_router(whats_new_router)
 from routes.neriacorp_portal import router as neriacorp_portal_router
 api_router.include_router(neriacorp_portal_router)
 from routes.scanner_ai import router as scanner_ai_router
