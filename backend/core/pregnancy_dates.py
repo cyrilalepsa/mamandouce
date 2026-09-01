@@ -63,11 +63,44 @@ CPAM_ECHO_OFFSETS = {
 }
 
 
+# 41 semaines d'aménorrhée (référence cycle 28 jours)
+DPA_DAYS_FROM_DDR_28 = 287
+# 39 semaines de gestation depuis la conception
+DPA_DAYS_FROM_DDG = 273
+
+
 def calculate_dpa(ddg: date, country: str, cycle_duration: int = 28) -> date:
     if country == COUNTRY_UK:
         adjustment = max(21, min(35, int(cycle_duration))) - 28
         return ddg + timedelta(days=280 + adjustment)
     return add_calendar_months(ddg, 9)
+
+
+def calculate_dpa_from_ddr(last_period: date, country: str, cycle_duration: int = 28) -> date:
+    """
+    DPA depuis la DDR (dernières règles).
+    France : DDG estimée (ovulation) puis +9 mois calendaires.
+    UK : règle de Naegele (280 j + ajustement cycle).
+    """
+    cycle_duration = max(21, min(35, int(cycle_duration)))
+    days_to_ovulation = cycle_duration - 14
+    ddg = last_period + timedelta(days=days_to_ovulation)
+    return calculate_dpa(ddg, country, cycle_duration)
+
+
+def weeks_amenorrhea(last_period: date, on_date: Optional[date] = None) -> int:
+    """Semaines d'aménorrhée (SA) depuis la DDR — semaine 1 dès J0 DDR."""
+    today = on_date or date.today()
+    days = max(0, (today - last_period).days)
+    return max(1, min(43, days // 7 + 1))
+
+
+def trimester_from_sa(weeks_sa: int) -> int:
+    if weeks_sa <= 13:
+        return 1
+    if weeks_sa <= 27:
+        return 2
+    return 3
 
 
 def calculate_maternity_leave(

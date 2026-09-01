@@ -6,9 +6,11 @@ import {
   buildFranceCpamAppointmentWindows,
   buildUkNhsAppointmentWindows,
   calculateDpa,
+  calculateDpaFromDDR,
   ddgFromDpa,
   parseYmd,
   resolveCountryFromCity,
+  weeksAmenorrhea,
 } from './pregnancyDateUtils.js';
 
 const DDG = '2026-04-01';
@@ -26,6 +28,17 @@ test('DDG 2026-04-01 yields DPA 2027-01-01 in France', () => {
   const ddg = parseYmd(DDG);
   const dpa = calculateDpa(ddg, COUNTRY_FR);
   assert.equal(dpa.toISOString().slice(0, 10), '2027-01-01');
+});
+
+test('DDR 2026-03-18 (cycle 28 j) yields DPA 2027-01-01 in France', () => {
+  const ddr = parseYmd('2026-03-18');
+  const dpa = calculateDpaFromDDR(ddr, COUNTRY_FR, 28);
+  assert.equal(dpa.toISOString().slice(0, 10), '2027-01-01');
+});
+
+test('weeksAmenorrhea counts SA from DDR with week 1 on day zero', () => {
+  assert.equal(weeksAmenorrhea('2026-04-01', new Date('2026-04-01T12:00:00Z')), 1);
+  assert.equal(weeksAmenorrhea('2026-04-01', new Date('2026-04-08T12:00:00Z')), 2);
 });
 
 test('France CPAM calendar matches official ranges for DDG 2026-04-01', () => {

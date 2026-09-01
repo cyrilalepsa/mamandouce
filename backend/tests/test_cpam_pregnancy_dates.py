@@ -9,10 +9,12 @@ from core.pregnancy_country import COUNTRY_FR, COUNTRY_UK, resolve_country_from_
 from core.pregnancy_dates import (
     build_medical_appointments,
     calculate_dpa,
+    calculate_dpa_from_ddr,
     calculate_maternity_leave,
     fr_sa_window,
     pregnancy_date_summary,
     resolve_pregnancy_country,
+    weeks_amenorrhea,
 )
 
 
@@ -31,6 +33,18 @@ def test_london_uses_uk():
 
 def test_france_dpa_is_ddg_plus_nine_months():
     assert calculate_dpa(DDG, COUNTRY_FR) == DPA
+
+
+def test_france_dpa_from_ddr_uses_ovulation_then_nine_months():
+    """DDR 2026-03-18 (cycle 28 j) → DDG 2026-04-01 → DPA 2027-01-01."""
+    ddr = date(2026, 3, 18)
+    assert calculate_dpa_from_ddr(ddr, COUNTRY_FR, 28) == DPA
+
+
+def test_weeks_amenorrhea_starts_at_week_one_on_ddr():
+    ddr = date(2026, 4, 1)
+    assert weeks_amenorrhea(ddr, date(2026, 4, 1)) == 1
+    assert weeks_amenorrhea(ddr, date(2026, 4, 8)) == 2
 
 
 def test_cpam_echo_windows_for_ddg_april_first():

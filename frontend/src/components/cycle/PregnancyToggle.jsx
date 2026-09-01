@@ -5,11 +5,13 @@ import NameOfTheDay from '../NameOfTheDay';
 import api from '../../utils/api';
 import { calculateCycleSummary, pregnancyProgress } from '../../utils/pregnancyStatus';
 import {
-  calculateDpa,
+  calculateDpaFromDDR,
   ddgFromDpa,
   parseYmd,
   resolveCountryFromCity,
   toYmd,
+  trimesterFromSA,
+  weeksAmenorrhea,
 } from '../../utils/pregnancyDateUtils';
 
 function makeHeartShape() {
@@ -31,12 +33,6 @@ const heart = makeHeartShape();
 
 function todayYmd() {
   return new Date().toISOString().split('T')[0];
-}
-
-function addDaysYmd(isoDate, days) {
-  const d = new Date(isoDate);
-  d.setDate(d.getDate() + days);
-  return d.toISOString().split('T')[0];
 }
 
 function firePregnancyConfetti() {
@@ -126,14 +122,8 @@ export function resolvePregnancyInfo({
     ? toYmd(ddgFromDpa(parseYmd(dueDate), country, cycleLength))
     : null);
   if (!startStr) return { week: 1, trimester: 1 };
-  const start = new Date(startStr);
-  const today = new Date();
-  const diffDays = Math.floor((today - start) / (1000 * 60 * 60 * 24));
-  const calculatedWeek = Math.max(1, Math.floor(diffDays / 7) + 1);
-  let calculatedTrimester = 1;
-  if (calculatedWeek > 14 && calculatedWeek <= 28) calculatedTrimester = 2;
-  if (calculatedWeek > 28) calculatedTrimester = 3;
-  return { week: calculatedWeek, trimester: calculatedTrimester };
+  const week = weeksAmenorrhea(startStr) || 1;
+  return { week, trimester: trimesterFromSA(week) };
 }
 
 /**
@@ -166,9 +156,11 @@ export function PregnancyToggle({
     firePregnancyConfetti();
 
     const period = lastPeriodDate || todayYmd();
-    const ddg = parseYmd(period);
+    const ddr = parseYmd(period);
     const country = resolveCountryFromCity(city);
-    const dpaStr = ddg ? toYmd(calculateDpa(ddg, country, cycleLength)) : addDaysYmd(period, 280);
+    const dpaStr = ddr
+      ? toYmd(calculateDpaFromDDR(ddr, country, cycleLength))
+      : null;
     persistPregnant(dpaStr);
     // Persist the status used by /auth/me, /pregnancy/profile and cycle alerts.
     try {

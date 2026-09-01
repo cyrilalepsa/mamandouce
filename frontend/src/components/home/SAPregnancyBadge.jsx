@@ -1,5 +1,10 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  trimesterFromSA,
+  weeksAmenorrhea,
+  weeksAmenorrheaFromDueDate,
+} from '../../utils/pregnancyDateUtils';
 
 /**
  * Carte SA (Semaines d'Aménorrhée) — glassmorphism
@@ -18,16 +23,10 @@ const glassStyle = {
 
 function computeSA(dueDateStr, lastPeriodDate) {
   if (lastPeriodDate) {
-    const start = new Date(lastPeriodDate);
-    const today = new Date();
-    const diffDays = Math.floor((today - start) / (1000 * 60 * 60 * 24));
-    return Math.max(1, Math.min(42, Math.floor(diffDays / 7) + 1));
+    return weeksAmenorrhea(lastPeriodDate);
   }
   if (!dueDateStr) return null;
-  const dueDate = new Date(dueDateStr);
-  const today = new Date();
-  const daysUntilDue = (dueDate - today) / (1000 * 60 * 60 * 24);
-  return Math.max(1, Math.min(42, Math.round(40 - daysUntilDue / 7)));
+  return weeksAmenorrheaFromDueDate(dueDateStr);
 }
 
 export function SAPregnancyBadge({ compact = true, lastPeriodDate = null }) {
@@ -45,7 +44,7 @@ export function SAPregnancyBadge({ compact = true, lastPeriodDate = null }) {
 
   if (!isPregnant || !sa) return null;
 
-  const trimester = sa <= 14 ? 1 : sa <= 28 ? 2 : 3;
+  const trimester = trimesterFromSA(sa);
 
   return (
     <button

@@ -105,6 +105,18 @@ export function calculateDpa(ddg, country = COUNTRY_FR, cycleLength = 28) {
   return addCalendarMonths(ddg, 9);
 }
 
+/** 41 SA depuis la DDR (cycle 28 j) */
+export const DPA_DAYS_FROM_DDR_28 = 287;
+
+/**
+ * DPA depuis la DDR : estime la DDG (ovulation) puis applique la règle pays.
+ */
+export function calculateDpaFromDDR(ddr, country = COUNTRY_FR, cycleLength = 28) {
+  const safeCycle = Math.max(21, Math.min(35, Number(cycleLength) || 28));
+  const ddg = addDays(ddr, safeCycle - 14);
+  return calculateDpa(ddg, country, safeCycle);
+}
+
 export function ddgFromDpa(dpa, country = COUNTRY_FR, cycleLength = 28) {
   if (country === COUNTRY_UK) {
     const adjustment = Math.max(21, Math.min(35, Number(cycleLength) || 28)) - 28;
@@ -120,6 +132,38 @@ export function currentGestationalWeek(ddg, onDate = new Date()) {
   today.setHours(0, 0, 0, 0);
   const days = Math.max(0, Math.floor((today - start) / 86400000));
   return Math.floor(days / 7);
+}
+
+/** Semaines d'aménorrhée (SA) depuis la DDR — semaine 1 dès J0. */
+export function weeksAmenorrhea(ddrIso, onDate = new Date()) {
+  const ddr = typeof ddrIso === 'string' ? parseYmd(ddrIso) : ddrIso;
+  if (!ddr) return null;
+  const ref = onDate instanceof Date ? onDate : parseYmd(onDate) || new Date();
+  ref.setHours(0, 0, 0, 0);
+  const start = new Date(ddr);
+  start.setHours(0, 0, 0, 0);
+  const diffDays = Math.max(0, Math.floor((ref - start) / 86400000));
+  return Math.max(1, Math.min(43, Math.floor(diffDays / 7) + 1));
+}
+
+/** Estime SA depuis la DPA (41 SA à terme). */
+export function weeksAmenorrheaFromDueDate(dueDateIso, country = COUNTRY_FR, cycleLength = 28, onDate = new Date()) {
+  const dpa = parseYmd(dueDateIso);
+  if (!dpa) return null;
+  const ref = onDate instanceof Date ? onDate : parseYmd(onDate) || new Date();
+  ref.setHours(0, 0, 0, 0);
+  const safeCycle = Math.max(21, Math.min(35, Number(cycleLength) || 28));
+  const gestationDays = country === COUNTRY_UK
+    ? 280 + (safeCycle - 28)
+    : DPA_DAYS_FROM_DDR_28 + (safeCycle - 28);
+  const daysUntilDue = (dpa - ref) / 86400000;
+  return Math.max(1, Math.min(43, Math.round((gestationDays / 7) - daysUntilDue / 7)));
+}
+
+export function trimesterFromSA(weeksSA) {
+  if (weeksSA <= 13) return 1;
+  if (weeksSA <= 27) return 2;
+  return 3;
 }
 
 export function buildFranceCpamAppointmentWindows(ddg, dpa) {
