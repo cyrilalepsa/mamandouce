@@ -191,14 +191,21 @@ async def send_weekly_tips_push_job():
         if not profile:
             continue
         
-        # Calculate current week
-        dpa = profile.get("due_date")
-        if dpa:
+        # Calculate current SA week from DDR when available, else from DPA
+        dpa = profile.get("due_date") or profile.get("estimated_due_date")
+        last_period = profile.get("last_period_date")
+        if dpa or last_period:
             try:
-                due_date = datetime.fromisoformat(dpa.replace('Z', '+00:00'))
-                conception_date = due_date - timedelta(weeks=40)
-                days_pregnant = (now - conception_date).days
-                current_week = max(1, min(42, days_pregnant // 7))
+                from core.pregnancy_dates import weeks_amenorrhea, parse_date
+
+                if last_period:
+                    ddr = parse_date(last_period)
+                    current_week = weeks_amenorrhea(ddr, now.date())
+                else:
+                    due_date = datetime.fromisoformat(str(dpa).replace('Z', '+00:00')).date()
+                    cycle_length = int(profile.get("cycle_length") or profile.get("cycle_duration") or 28)
+                    ddr_estimate = due_date - timedelta(days=287 + max(0, cycle_length - 28))
+                    current_week = weeks_amenorrhea(ddr_estimate, now.date())
                 
                 await send_push_notification(
                     user_email=user_email,

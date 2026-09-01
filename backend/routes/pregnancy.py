@@ -14,8 +14,9 @@ from core.cycle_store import load_cycle_profile, persist_cycle_settings
 from core.pregnancy_country import COUNTRY_FR, country_label
 from core.pregnancy_dates import (
     calculate_dpa,
-    current_gestational_week,
     resolve_pregnancy_country,
+    trimester_from_sa,
+    weeks_amenorrhea,
 )
 from models.schemas import User, PregnancyCalculation, PregnancyProfile
 
@@ -91,7 +92,7 @@ def calculate_pregnancy_dates(last_period: datetime, cycle_duration: int, countr
     implantation_most_likely = ovulation_date + timedelta(days=9)
     
     # === DUE DATE (Date Prévue d'Accouchement - DPA) ===
-    ddg_date = last_period.date()
+    ddg_date = conception_date.date()
     due_date_dt = calculate_dpa(ddg_date, country, cycle_duration)
     due_date = datetime.combine(due_date_dt, datetime.min.time())
     
@@ -110,17 +111,11 @@ def calculate_pregnancy_dates(last_period: datetime, cycle_duration: int, countr
     
     # === CURRENT PREGNANCY WEEK ===
     today = datetime.now(timezone.utc).replace(tzinfo=None)
-    days_pregnant = (today - last_period).days
-    weeks_pregnant = current_gestational_week(ddg_date, today.date())
+    ddr_date = last_period.date()
+    days_pregnant = (today.date() - ddr_date).days
+    weeks_pregnant = weeks_amenorrhea(ddr_date, today.date())
     days_in_week = days_pregnant % 7
-    
-    # === TRIMESTER ===
-    if weeks_pregnant <= 13:
-        trimester = 1
-    elif weeks_pregnant <= 26:
-        trimester = 2
-    else:
-        trimester = 3
+    trimester = trimester_from_sa(weeks_pregnant)
     
     # === GESTATIONAL AGE ===
     # Expressed as "X semaines + Y jours"
@@ -281,24 +276,21 @@ async def get_pregnancy_profile(current_user: User = Depends(get_current_user)):
         today = datetime.now(timezone.utc).replace(tzinfo=None)
         country = resolve_pregnancy_country(user_doc.get("city"))
         cycle_length = coerce_cycle_length(profile.get("cycle_length", profile.get("cycle_duration", 28)))
-        ddg_date = last_period.date()
+        cycle_length = coerce_cycle_length(profile.get("cycle_length", profile.get("cycle_duration", 28)))
+        days_to_ovulation = cycle_length - 14
+        ddg_date = last_period.date() + timedelta(days=days_to_ovulation)
         due_date_dt = calculate_dpa(ddg_date, country, cycle_length)
         due_date = datetime.combine(due_date_dt, datetime.min.time())
         profile["estimated_due_date"] = due_date.isoformat()
         profile["pregnancy_country"] = country
         profile["pregnancy_calendar"] = country_label(country)
 
-        profile["current_week"] = current_gestational_week(ddg_date, today.date())
-        days_pregnant = (today - last_period).days
+        ddr_date = last_period.date()
+        profile["current_week"] = weeks_amenorrhea(ddr_date, today.date())
+        days_pregnant = (today.date() - ddr_date).days
         profile["days_in_current_week"] = days_pregnant % 7
         profile["gestational_age"] = f"{profile['current_week']} SA + {profile['days_in_current_week']} jours"
-        
-        if profile["current_week"] <= 13:
-            profile["trimester"] = 1
-        elif profile["current_week"] <= 26:
-            profile["trimester"] = 2
-        else:
-            profile["trimester"] = 3
+        profile["trimester"] = trimester_from_sa(profile["current_week"])
         
         profile["days_until_due"] = (due_date - today).days
     

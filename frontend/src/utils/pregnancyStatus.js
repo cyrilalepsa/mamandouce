@@ -1,4 +1,4 @@
-import { resolveCountryFromCity } from './pregnancyDateUtils.js';
+import { resolveCountryFromCity, weeksAmenorrhea, weeksAmenorrheaFromDueDate, trimesterFromSA } from './pregnancyDateUtils.js';
 
 const PREGNANT_VALUES = new Set([
   'pregnant',
@@ -99,23 +99,17 @@ export function pregnancyProgress(
   const country = resolveCountryFromCity(city || profile?.city);
   const lmp = validDate(lastPeriodDate || profile?.last_period_date);
   if (!week && lmp) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    lmp.setHours(0, 0, 0, 0);
-    const days = Math.max(0, Math.floor((today - lmp) / 86400000));
-    week = Math.floor(days / 7);
+    week = weeksAmenorrhea(lmp.toISOString().slice(0, 10));
   }
 
   if (!week) {
     const due = validDate(profile?.estimated_due_date || dueDate);
-    if (due && lmp) {
-      const daysPregnant = Math.max(0, Math.floor((new Date() - lmp) / 86400000));
-      week = Math.floor(daysPregnant / 7);
-    } else if (due) {
-      const length = Math.min(45, Math.max(21, Number(cycleLength) || 28));
-      const gestationDays = country === 'UK' ? 280 + (length - 28) : 276;
-      const daysUntilDue = Math.ceil((due - new Date()) / 86400000);
-      week = Math.min(42, Math.max(1, Math.floor((gestationDays - daysUntilDue) / 7) + 1));
+    if (due) {
+      week = weeksAmenorrheaFromDueDate(
+        due.toISOString().slice(0, 10),
+        country,
+        cycleLength,
+      );
     }
   }
 
@@ -123,7 +117,7 @@ export function pregnancyProgress(
   const rawTrimester = Number(profile?.trimester);
   const trimester = [1, 2, 3].includes(rawTrimester)
     ? rawTrimester
-    : week <= 13 ? 1 : week <= 27 ? 2 : 3;
+    : trimesterFromSA(week);
 
   return { week, trimester };
 }
