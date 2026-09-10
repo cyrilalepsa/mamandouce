@@ -131,6 +131,8 @@ export const api = {
     barcode: (barcode) => axios.post(`${API()}/food/scan/barcode?barcode=${barcode}`, {}, getAuthHeaders()),
     search: (query) => axios.post(`${API()}/food/scan/search?query=${query}`, {}, getAuthHeaders()),
     image: (data) => axios.post(`${API()}/food/scan/image`, data, getAuthHeaders()),
+    analyzeText: (data) => axios.post(`${API()}/food/scan/analyze-text`, data, getAuthHeaders()),
+    save: (data) => axios.post(`${API()}/food/scan/save`, data, getAuthHeaders()),
     history: () => axios.get(`${API()}/food/scan/history`, getAuthHeaders()),
   },
   foods: {
