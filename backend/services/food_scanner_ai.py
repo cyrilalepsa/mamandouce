@@ -56,11 +56,15 @@ class AIFoodScanner:
         except Exception as e:
             logger.error("[FoodScanner] Erreur analyse: %s", e)
             return FoodScanResult(
-                food_name="Aliment non identifié",
+                food_name="Produit scanné",
                 verdict=FoodSafetyVerdict.LIMITE,
                 verdict_color="orange",
-                explanation="Impossible d'analyser l'image. Vérifiez que la photo est nette et bien éclairée.",
-                confidence=0.0,
+                explanation=(
+                    "L'analyse automatique n'a pas pu identifier précisément ce produit. "
+                    "À consommer avec précaution en attendant une vérification, "
+                    "ou reprenez une photo plus nette."
+                ),
+                confidence=0.35,
                 scanned_at=datetime.now(timezone.utc).isoformat(),
                 is_unknown=True,
                 safe_for_pregnancy="caution",
@@ -91,12 +95,18 @@ class AIFoodScanner:
             safety_status = "caution"
 
         confidence = float(data.get("confidence", 0.8) or 0.8)
-        food_name = str(data.get("food_name") or "Aliment")
-        is_unknown = (
-            confidence < 0.5
-            or food_name.lower()
-            in ["aliment", "aliment non identifié", "inconnu", "unknown", "produit", "objet"]
-        )
+        raw_name = str(data.get("food_name") or data.get("product_name") or "").strip()
+        generic_names = {
+            "aliment", "aliment non identifié", "inconnu", "unknown",
+            "produit", "objet", "produit inconnu", "article inconnu",
+        }
+        if not raw_name or raw_name.lower() in generic_names:
+            food_name = "Produit analysé par l'IA"
+        else:
+            food_name = raw_name
+
+        in_curated_db = str(data.get("analysis_source") or "") == "curated_database"
+        is_unknown = not in_curated_db
 
         return FoodScanResult(
             food_name=food_name,

@@ -6,13 +6,15 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import { 
+import {
   Camera, Upload, X, CheckCircle2, AlertTriangle, XCircle,
-  Sparkles, Leaf, Info, RefreshCw, Image as ImageIcon, Heart, Gift, Send
+  Sparkles, Leaf, Info, RefreshCw,
 } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'sonner';
 import { useTheme } from '../../contexts/ThemeContext';
+import { ScannedProductActions } from './ScannedProductActions';
+import { getFoodStatusLabel, normalizeScannedFood, verdictToSafetyStatus } from '../../utils/foodSafety';
 
 // Configuration des couleurs selon le verdict
 const VERDICT_CONFIG = {
@@ -56,7 +58,6 @@ export default function FoodScannerAI({ isOpen, onClose }) {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [submittingContribution, setSubmittingContribution] = useState(false);
   
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
@@ -173,12 +174,21 @@ export default function FoodScannerAI({ isOpen, onClose }) {
     try {
       const base64 = await imageToBase64(image);
       
-      const response = await api.post('/api/food/scan/image', {
-        image_base64: base64
+      const response = await api.scan.image({
+        image_base64: base64,
       });
-      
+
       if (response.data.success) {
-        setResult(response.data.result);
+        const raw = response.data.result || response.data.data;
+        setResult({
+          ...normalizeScannedFood({
+            ...raw,
+            food_name: raw?.food_name,
+            safe_for_pregnancy: raw?.safe_for_pregnancy || verdictToSafetyStatus(raw?.verdict),
+            image_preview: imagePreview,
+          }),
+          image_preview: imagePreview,
+        });
         setStep('result');
       } else {
         throw new Error(response.data.detail || 'Erreur d\'analyse');
@@ -212,73 +222,6 @@ export default function FoodScannerAI({ isOpen, onClose }) {
   const handleClose = () => {
     handleReset();
     onClose();
-  };
-  
-  // Envoyer l'aliment inconnu pour analyse (contribution)
-  const handleSubmitContribution = async () => {
-    if (!result || !image) return;
-    
-    setSubmittingContribution(true);
-    
-    try {
-      const proposedStatus = result.safe_for_pregnancy || (
-        result.verdict === 'autorise'
-          ? 'safe'
-          : result.verdict === 'deconseille' ? 'unsafe' : 'caution'
-      );
-      const response = await api.foodLibrary.addFood({
-        name: result.food_name || 'Aliment à identifier',
-        category: 'Analyse IA',
-        is_safe: proposedStatus === 'safe',
-        safety_level: proposedStatus,
-        notes: [
-          'Soumis via le scanner IA.',
-          result.explanation,
-          result.ingredients ? `Composition : ${result.ingredients}` : '',
-        ].filter(Boolean).join(' '),
-      });
-      toast.success(response.data?.message || 'Proposition envoyée !');
-      
-      // Notification pastel de félicitations
-      toast.custom((t) => (
-        <div 
-          className="flex items-center gap-4 p-4 rounded-2xl shadow-xl border"
-          style={{
-            background: 'linear-gradient(135deg, #FFF0F5 0%, #F8F4FF 50%, #FFF5F8 100%)',
-            borderColor: '#F9A8D4',
-            maxWidth: '340px'
-          }}
-        >
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center flex-shrink-0">
-            <Heart className="w-6 h-6 text-white" />
-          </div>
-          <div className="flex-1">
-            <p className="font-bold text-pink-600 text-sm">Merci pour ta contribution !</p>
-            <p className="text-xs text-purple-500 mt-1">
-              Tu aides toutes les mamans de la communauté. Ta jauge de badge progresse !
-            </p>
-          </div>
-          <button 
-            onClick={() => toast.dismiss(t)}
-            className="text-pink-400 hover:text-pink-600"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      ), { duration: 5000 });
-      
-      // Mettre à jour le résultat pour afficher le message de remerciement
-      setResult(prev => ({
-        ...prev,
-        contributionSubmitted: true
-      }));
-      
-    } catch (error) {
-      console.error('Erreur lors de l\'envoi:', error);
-      toast.error('Erreur lors de l\'envoi. Réessayez plus tard.');
-    } finally {
-      setSubmittingContribution(false);
-    }
   };
   
   // Cleanup on unmount
@@ -444,26 +387,36 @@ export default function FoodScannerAI({ isOpen, onClose }) {
           {/* Step: Result */}
           {step === 'result' && result && (
             <div className="space-y-4">
+              {result.image_preview && (
+                <div className="rounded-2xl overflow-hidden aspect-[4/3]">
+                  <img
+                    src={result.image_preview}
+                    alt={result.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
               {/* Food name & verdict */}
-              <div className={`text-center p-5 rounded-2xl border-2 ${VERDICT_CONFIG[result.verdict].borderColor} ${VERDICT_CONFIG[result.verdict].bgLight}`}>
+              <div className={`text-center p-5 rounded-2xl border-2 ${(VERDICT_CONFIG[result.verdict] || VERDICT_CONFIG.limite).borderColor} ${(VERDICT_CONFIG[result.verdict] || VERDICT_CONFIG.limite).bgLight}`}>
                 <p className={`text-2xl font-bold ${textColor} mb-2`} style={textShadow}>
-                  {result.food_name}
+                  {result.name}
                 </p>
-                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${VERDICT_CONFIG[result.verdict].bgColor} text-white font-bold`}>
+                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${(VERDICT_CONFIG[result.verdict] || VERDICT_CONFIG.limite).bgColor} text-white font-bold`}>
                   {(() => {
-                    const IconComponent = VERDICT_CONFIG[result.verdict].icon;
+                    const cfg = VERDICT_CONFIG[result.verdict] || VERDICT_CONFIG.limite;
+                    const IconComponent = cfg.icon;
                     return <IconComponent className="w-5 h-5" />;
                   })()}
-                  {VERDICT_CONFIG[result.verdict].label}
+                  {getFoodStatusLabel(result.safe_for_pregnancy)}
                 </div>
               </div>
               
               {/* Explanation */}
               <div className={`p-4 ${isDarkMode ? 'bg-slate-700' : 'bg-slate-50'} rounded-2xl`}>
                 <div className="flex items-start gap-3">
-                  <Info className={`w-5 h-5 ${VERDICT_CONFIG[result.verdict].textColor} flex-shrink-0 mt-0.5`} />
+                  <Info className={`w-5 h-5 ${(VERDICT_CONFIG[result.verdict] || VERDICT_CONFIG.limite).textColor} flex-shrink-0 mt-0.5`} />
                   <p className={`text-sm ${textColor}`} style={textShadow}>
-                    {result.explanation}
+                    {result.reason || result.explanation}
                   </p>
                 </div>
               </div>
@@ -495,67 +448,7 @@ export default function FoodScannerAI({ isOpen, onClose }) {
                 </div>
               )}
               
-              {/* Bouton contribution pour aliments inconnus */}
-              {(result.can_contribute || result.is_unknown) && !result.contributionSubmitted && (
-                <div 
-                  className="p-4 rounded-2xl border-2 border-dashed border-pink-300"
-                  style={{
-                    background: 'linear-gradient(135deg, #FFF0F5 0%, #F8F4FF 50%, #FFF5F8 100%)'
-                  }}
-                >
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center flex-shrink-0">
-                      <Gift className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-pink-600 text-sm">Tu peux nous aider !</p>
-                      <p className="text-xs text-purple-500 mt-1">
-                        Propose cet aliment à la communauté. Après validation, il comptera comme une contribution pour tes badges.
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={handleSubmitContribution}
-                    disabled={submittingContribution}
-                    className="w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full hover:from-pink-600 hover:to-purple-600 transition-all"
-                    data-testid="submit-contribution-btn"
-                  >
-                    {submittingContribution ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        Envoi en cours...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 mr-2" />
-                        Proposer cet aliment à la communauté
-                      </>
-                    )}
-                  </Button>
-                </div>
-              )}
-
-              {/* Message de remerciement après contribution */}
-              {result.contributionSubmitted && (
-                <div 
-                  className="p-4 rounded-2xl border-2 border-green-300"
-                  style={{
-                    background: 'linear-gradient(135deg, #F0FFF4 0%, #E0FFE6 100%)'
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-emerald-400 flex items-center justify-center flex-shrink-0">
-                      <Heart className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-green-600 text-sm">Merci pour ta contribution !</p>
-                      <p className="text-xs text-emerald-500 mt-1">
-                        Proposition envoyée ! Elle sera vérifiée avant d'être ajoutée à ta progression.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
+              <ScannedProductActions food={result} />
 
               {/* Action buttons */}
               <div className="flex gap-3 pt-2">

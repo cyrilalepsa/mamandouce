@@ -4,13 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { Camera, Search, ShieldCheck, ShieldAlert, ShieldX, AlertTriangle, Heart, X, Keyboard, Plus, Library, Crown, Lock } from 'lucide-react';
+import { Camera, Search, ShieldCheck, ShieldAlert, ShieldX, AlertTriangle, Heart, X, Keyboard, Plus, Library, Crown, Lock, Sparkles } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import api from '../utils/api';
 import { toast } from 'sonner';
 import { Html5Qrcode } from 'html5-qrcode';
 import PageHeader from '../components/PageHeader';
 import { useSubscription } from '../components/SubscriptionGate';
+import FoodScannerAI from '../components/food/FoodScannerAI';
+import { ScannedProductActions } from '../components/food/ScannedProductActions';
+import { getFoodStatusLabel, getFoodStatusStyle, normalizeScannedFood } from '../utils/foodSafety';
 
 function FoodScanner() {
   const navigate = useNavigate();
@@ -164,18 +167,17 @@ function FoodScanner() {
         return;
       }
 
-      setResult(data);
+      const normalized = normalizeScannedFood(data);
+      setResult(normalized);
       setSearchResults([]);
       setNotFound(false);
-
-      if (data.is_unknown || data.can_contribute || data.safe_for_pregnancy === 'unknown') {
-        setBarcodeNotFound(true);
-        setNewFoodData((prev) => ({
-          ...prev,
-          name: data.name || prev.name,
-          barcode: code,
-        }));
-      } else {
+      setBarcodeNotFound(false);
+      setNewFoodData((prev) => ({
+        ...prev,
+        name: normalized?.name || prev.name,
+        barcode: code,
+      }));
+      if (!normalized?.can_contribute && !normalized?.is_unknown) {
         toast.success('Produit trouvé !');
       }
     } catch (error) {
@@ -265,11 +267,12 @@ function FoodScanner() {
     isProcessingRef.current = true;
     try {
       const response = await api.scan.search(searchQuery);
-      setSearchResults(response.data);
+      const items = (response.data || []).map(normalizeScannedFood);
+      setSearchResults(items);
       setResult(null);
-      if (response.data.length === 0) {
-        setNotFound(true);
-        setNewFoodData(prev => ({ ...prev, name: searchQuery }));
+      setNotFound(items.length === 0);
+      if (items.length === 0) {
+        setNewFoodData((prev) => ({ ...prev, name: searchQuery }));
       }
     } catch (error) {
       if (error.response?.status === 403) {
@@ -314,28 +317,6 @@ function FoodScanner() {
     }
   };
 
-  const proposeAnalyzedFood = async (food) => {
-    if (!food?.name || proposingFood) return;
-    setProposingFood(true);
-    try {
-      const safetyLevel = food.safe_for_pregnancy || 'caution';
-      const response = await api.foodLibrary.addFood({
-        name: food.name,
-        barcode: food.barcode || null,
-        category: food.category || 'Analyse dynamique',
-        is_safe: safetyLevel === 'safe',
-        safety_level: safetyLevel,
-        notes: food.reason || 'Analyse dynamique soumise à la communauté.',
-      });
-      setSubmittedFoods(prev => new Set([...prev, food.name]));
-      toast.success(response.data?.message || 'Proposition envoyée !');
-    } catch (error) {
-      toast.error(error.response?.data?.detail || 'Erreur lors de la proposition');
-    } finally {
-      setProposingFood(false);
-    }
-  };
-
   const getSafetyIcon = (status) => {
     switch (status) {
       case 'safe':
@@ -352,27 +333,25 @@ function FoodScanner() {
   };
 
   const getSafetyText = (status) => {
-    switch (status) {
-      case 'safe':
-        return { text: t('scanner.safe'), color: 'text-green-600 bg-green-50' };
-      case 'caution':
-        return { text: t('scanner.caution'), color: 'text-yellow-600 bg-yellow-50' };
-      case 'avoid':
-        return { text: t('scanner.avoid'), color: 'text-orange-600 bg-orange-50' };
-      case 'unsafe':
-        return { text: t('scanner.unsafe'), color: 'text-red-600 bg-red-50' };
-      default:
-        return { text: t('scanner.unknown'), color: 'text-gray-600 bg-gray-50' };
-    }
+    const badge = getFoodStatusStyle(status);
+    const colorMap = {
+      safe: 'text-emerald-700 bg-emerald-50',
+      caution: 'text-amber-700 bg-amber-50',
+      avoid: 'text-orange-700 bg-orange-50',
+      unsafe: 'text-red-700 bg-red-50',
+    };
+    return {
+      text: badge.label || getFoodStatusLabel(status),
+      color: colorMap[badge.status] || 'text-amber-700 bg-amber-50',
+    };
   };
 
   const [showAddFoodModal, setShowAddFoodModal] = useState(false);
+  const [showAiScanner, setShowAiScanner] = useState(false);
   const [newFoodData, setNewFoodData] = useState({ name: '', barcode: '', category: '', notes: '' });
   const [addingFood, setAddingFood] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [barcodeNotFound, setBarcodeNotFound] = useState(false);
-  const [proposingFood, setProposingFood] = useState(false);
-  const [submittedFoods, setSubmittedFoods] = useState(new Set());
 
   return (
     <div className="min-h-screen gradient-bg p-6">
@@ -414,12 +393,12 @@ function FoodScanner() {
         )}
 
         {!detailOnly && (
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           <Button
             disabled={isProcessingRef.current}
             onClick={() => { setActiveTab('camera'); if (!scanning) startScanner(); }}
             data-testid="camera-tab"
-            className={`flex-1 rounded-full py-3 font-semibold ${activeTab === 'camera' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
+            className={`rounded-full py-3 font-semibold ${activeTab === 'camera' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
           >
             <Camera className="w-4 h-4 mr-2" />
             {t('scanner.camera')}
@@ -428,7 +407,7 @@ function FoodScanner() {
             disabled={isProcessingRef.current}
             onClick={() => { stopScanner(); setActiveTab('manual'); }}
             data-testid="manual-tab"
-            className={`flex-1 rounded-full py-3 font-semibold ${activeTab === 'manual' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
+            className={`rounded-full py-3 font-semibold ${activeTab === 'manual' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
           >
             <Keyboard className="w-4 h-4 mr-2" />
             {t('scanner.manual')}
@@ -437,10 +416,19 @@ function FoodScanner() {
             disabled={isProcessingRef.current}
             onClick={() => { stopScanner(); setActiveTab('search'); }}
             data-testid="search-tab"
-            className={`flex-1 rounded-full py-3 font-semibold ${activeTab === 'search' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
+            className={`rounded-full py-3 font-semibold ${activeTab === 'search' ? 'bg-sky-500 text-white' : 'bg-white text-slate-600'}`}
           >
             <Search className="w-4 h-4 mr-2" />
             {t('scanner.search')}
+          </Button>
+          <Button
+            disabled={isProcessingRef.current}
+            onClick={() => { stopScanner(); setShowAiScanner(true); }}
+            data-testid="ai-scanner-tab"
+            className="rounded-full py-3 font-semibold bg-gradient-to-r from-emerald-500 to-teal-500 text-white"
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            Scanner IA
           </Button>
         </div>
         )}
@@ -567,16 +555,11 @@ function FoodScanner() {
                 {result.reason && (
                   <p className="mt-3 text-sm text-slate-600 bg-slate-50 p-3 rounded-xl">{result.reason}</p>
                 )}
-                {(result.can_contribute || result.is_unknown) && !submittedFoods.has(result.name) && (
-                  <Button
-                    onClick={() => proposeAnalyzedFood(result)}
-                    disabled={proposingFood}
-                    className="mt-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full"
-                    data-testid="propose-scanned-food"
-                  >
-                    Proposer cet aliment à la communauté
-                  </Button>
-                )}
+                <ScannedProductActions
+                  food={result}
+                  onPersonalSaved={() => loadFavorites()}
+                  onContributionSubmitted={() => loadFavorites()}
+                />
               </div>
             </div>
           </Card>
@@ -614,16 +597,11 @@ function FoodScanner() {
                     </button>
                   </div>
                 </div>
-                {(item.can_contribute || item.is_unknown) && !submittedFoods.has(item.name) && (
-                  <Button
-                    onClick={() => proposeAnalyzedFood(item)}
-                    disabled={proposingFood}
-                    className="mt-3 w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full"
-                    data-testid={`propose-search-food-${index}`}
-                  >
-                    Proposer cet aliment à la communauté
-                  </Button>
-                )}
+                <ScannedProductActions
+                  food={item}
+                  onPersonalSaved={() => loadFavorites()}
+                  onContributionSubmitted={() => loadFavorites()}
+                />
               </Card>
             ))}
           </div>
@@ -654,7 +632,7 @@ function FoodScanner() {
           </Card>
         )}
 
-        {barcodeNotFound && (
+        {barcodeNotFound && !result && (
           <Card className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 border-2 border-amber-200" data-testid="barcode-not-found-card">
             <div className="text-center">
               <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
@@ -782,6 +760,11 @@ function FoodScanner() {
             </form>
           </DialogContent>
         </Dialog>
+
+        <FoodScannerAI
+          isOpen={showAiScanner}
+          onClose={() => setShowAiScanner(false)}
+        />
       </div>
     </div>
   );

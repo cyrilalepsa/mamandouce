@@ -91,6 +91,17 @@ class FoodTextAnalysisRequest(BaseModel):
     name: str
     ingredients: Optional[str] = None
 
+
+class FoodScanSaveRequest(BaseModel):
+    """Sauvegarde personnelle ou contribution communautaire après scan."""
+    name: str
+    safety_level: str = "caution"
+    category: str = "Analyse dynamique"
+    barcode: Optional[str] = None
+    notes: Optional[str] = None
+    image_url: Optional[str] = None
+    contribute_to_community: bool = False
+
 # ==================== SCAN & SEARCH ====================
 
 @router.post("/scan/barcode")
@@ -129,14 +140,15 @@ async def scan_barcode(barcode: str, current_user: User = Depends(get_current_us
                     data = response.json()
                     if data.get("status") == 1:
                         product = data.get("product", {})
+                        off_name = str(product.get("product_name") or "").strip()
                         product_info = {
                             "barcode": barcode,
-                            "name": product.get("product_name", "Produit inconnu"),
+                            "name": off_name or f"Produit scanné ({barcode})",
                             "brand": product.get("brands", ""),
                             "image_url": product.get("image_url", ""),
                             "categories": product.get("categories", ""),
                             "ingredients": product.get("ingredients_text_fr", ""),
-                            "safe_for_pregnancy": "unknown"
+                            "safe_for_pregnancy": "unknown",
                         }
         
         if not product_info or normalize_food_status(
@@ -270,6 +282,118 @@ async def analyze_food_text(
         request.name, request.ingredients
     )
     return _food_scan_payload(result)
+
+
+@router.post("/scan/save")
+async def save_scanned_food(
+    request: FoodScanSaveRequest,
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Option A : bibliothèque personnelle (favoris).
+    Option B : proposition communautaire + entrée gamification (contributions).
+    """
+    name = str(request.name or "").strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Le nom de l'aliment est requis")
+
+    safety = normalize_food_status(request.safety_level)
+    if safety not in FOOD_SAFETY_STATUSES:
+        safety = "caution"
+
+    category = str(request.category or "Analyse dynamique").strip()
+    notes = str(request.notes or "").strip()
+
+    # --- Option A : favoris (bibliothèque personnelle) ---
+    existing_fav = await db.favorites.find_one({
+        "user_id": current_user.id,
+        "food_name": name,
+    })
+    if not existing_fav:
+        favorite = Favorite(
+            user_id=current_user.id,
+            food_name=name,
+            safety_level=safety,
+            notes=notes,
+            category=category,
+        )
+        fav_dict = favorite.model_dump()
+        fav_dict["created_at"] = fav_dict["created_at"].isoformat()
+        if request.barcode:
+            fav_dict["barcode"] = request.barcode
+        if request.image_url:
+            fav_dict["image_url"] = request.image_url
+        await db.favorites.insert_one(fav_dict)
+
+    response = {
+        "success": True,
+        "personal_saved": True,
+        "message": f"'{name}' ajouté à votre bibliothèque personnelle.",
+        "contribution_submitted": False,
+    }
+
+    if not request.contribute_to_community:
+        return response
+
+    # --- Option B : contribution communautaire + gamification ---
+    normalized_name = name.lower()
+    food_db = await get_food_safety_database()
+    for value in food_db.values():
+        if normalized_name == str(value.get("name") or "").lower():
+            raise HTTPException(
+                status_code=400,
+                detail=f"Cet aliment existe déjà dans la bibliothèque : {value['name']}",
+            )
+
+    duplicate = await db.user_added_foods.find_one({
+        "name": {"$regex": f"^{normalized_name}$", "$options": "i"},
+        "user_id": current_user.id,
+    })
+    if not duplicate:
+        user_food = UserAddedFood(
+            user_id=current_user.id,
+            name=name,
+            barcode=request.barcode,
+            status="pending",
+            safety_level=safety,
+            is_safe=safety == "safe",
+            category=category,
+            notes=notes or "Soumis via le scanner alimentaire.",
+        )
+        food_dict = user_food.model_dump()
+        food_dict["created_at"] = food_dict["created_at"].isoformat()
+        await db.user_added_foods.insert_one(food_dict)
+
+    contribution_id = str(uuid.uuid4())
+    contribution_doc = {
+        "id": contribution_id,
+        "user_id": current_user.id,
+        "user_email": current_user.email,
+        "contribution_type": "food_scan",
+        "title": name,
+        "description": notes or f"Proposition alimentaire : {name}",
+        "data": {
+            "name": name,
+            "barcode": request.barcode,
+            "safety_level": safety,
+            "category": category,
+            "image_url": request.image_url,
+        },
+        "status": "pending",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.contributions.insert_one(contribution_doc)
+
+    response.update({
+        "contribution_submitted": True,
+        "contribution_id": contribution_id,
+        "message": (
+            f"'{name}' est dans votre bibliothèque et votre proposition "
+            "a été envoyée pour validation (+ progression badges)."
+        ),
+        "potential_contribution_credit": 1,
+    })
+    return response
 
 @router.get("/foods/safe")
 async def get_safe_foods(current_user: User = Depends(get_current_user)):
