@@ -59,9 +59,9 @@
 }
 
 /* --- Surface carte unifiée (tous niveaux hiérarchiques) --- */
-.card-surface-gradient,
-.card-soft-clay.card-surface-gradient,
-.soft-clay-premium.card-surface-gradient,
+.card-surface-gradient:not(.badge-fete-du-jour):not(.badge-semaine-x):not(.glass-fete-du-jour):not(.glass-sa-week),
+.card-soft-clay.card-surface-gradient:not(.badge-fete-du-jour):not(.badge-semaine-x),
+.soft-clay-premium.card-surface-gradient:not(.badge-fete-du-jour):not(.badge-semaine-x),
 .section-card.card-surface-gradient {
   background: var(--card-surface-radial) !important;
   background-color: transparent !important;
