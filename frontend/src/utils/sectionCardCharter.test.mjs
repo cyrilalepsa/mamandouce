@@ -26,7 +26,8 @@ test('section card helpers expose interactive gradient and reading border styles
   assert.match(tokens, /sectionInteractiveCardClasses/);
   assert.match(tokens, /sectionReadingCardClasses/);
   assert.match(tokens, /border-yellow-400/);
-  assert.match(tokens, /bg-gradient-to-br from-white via-yellow-50/);
+  assert.match(tokens, /CARD_SURFACE_CLASS/);
+  assert.match(tokens, /card-surface-gradient/);
   assert.match(tokens, /text-slate-800/);
 });
 
@@ -58,6 +59,17 @@ test('postpartum hub cards inherit parent section accent from central config', (
   assert.match(read('src/pages/PostpartumSoinsPage.jsx'), /PostpartumCategoryGrid/);
   assert.match(read('src/pages/PostpartumSecuritePage.jsx'), /PostpartumCategoryGrid/);
   assert.match(read('src/pages/PostpartumPage.jsx'), /mainCategories\.map/);
+});
+
+test('home fete du jour and semaine SA widgets keep original badge styling', () => {
+  const exclusions = read('src/styles/glossy/_exclusions.css');
+  assert.match(exclusions, /badge-fete-du-jour/);
+  assert.match(exclusions, /glass-sa-week/);
+  assert.match(exclusions, /name-of-the-day-card/);
+  assert.match(exclusions, /pregnancy-progress-card/);
+
+  assert.match(read('src/components/NameOfTheDay.jsx'), /badge-fete-du-jour/);
+  assert.match(read('src/components/cycle/PregnancyToggle.jsx'), /badge-semaine-x/);
 });
 
 test('derived outils and preconception pages use section reading cards', () => {

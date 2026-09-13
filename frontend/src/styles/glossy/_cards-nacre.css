@@ -14,9 +14,9 @@
 [data-testid*="card"]:not(.section-card):not(.badge-semaine-x):not(.badge-fete-du-jour):not(.nacre-bombe):not(.card-glass-interactive):not(.card-flat):not(.soft-clay-premium):not(.card-soft-clay):not(.soft-clay-from-accent):not(.fixed),
 .Card:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe):not(.card-glass-interactive):not(.card-flat):not(.soft-clay-premium):not(.card-soft-clay):not(.fixed),
 [class*="Card"]:not(.badge-semaine-x):not(.badge-fete-du-jour):not(.fertility-calendar):not(.nacre-bombe):not(.card-glass-interactive):not(.card-flat):not(.soft-clay-premium):not(.card-soft-clay):not(.fixed) {
-  background: var(--clay-surface-white, #FFFFFF) !important;
-  background-image: none !important;
-  box-shadow: var(--clay-shadow-full) !important;
+  background: var(--card-surface-radial, radial-gradient(ellipse 140% 140% at 0% 0%, #ffffff 0%, #e2e8f0 100%)) !important;
+  background-color: transparent !important;
+  box-shadow: var(--card-surface-shadow, var(--clay-shadow-full)) !important;
   border-radius: 20px !important;
   border: 1px solid rgba(255, 255, 255, 0.85) !important;
   position: relative;

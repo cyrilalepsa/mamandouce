@@ -239,12 +239,12 @@ export function DraggableItem({
           ? `translate(${dragOffset.x}px, ${dragOffset.y}px) scale(1.05)` 
           : undefined,
         transformOrigin: 'center center',
-        // ===== STYLES "BOMBÉ" GARANTIS - toujours coloré =====
-        background: itemStyle?.gradient || 'linear-gradient(145deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%)',
-        boxShadow: isDraggingState 
-          ? '0 20px 40px rgba(0,0,0,0.25), ' + (itemStyle?.shadow || '0 8px 25px rgba(252, 211, 77, 0.35)')
-          : (itemStyle?.shadow || '0 8px 25px rgba(252, 211, 77, 0.35), inset 0 -4px 12px rgba(0,0,0,0.08)'),
-        border: `1px solid ${itemStyle?.border || 'rgba(251, 191, 36, 0.3)'}`,
+        // Surface carte unifiée — icône emoji conserve sa couleur native
+        background: 'var(--card-surface-radial)',
+        boxShadow: isDraggingState
+          ? '0 24px 48px rgba(15,23,42,0.28), var(--card-surface-shadow)'
+          : 'var(--card-surface-shadow)',
+        border: 'var(--card-surface-border)',
         // Taille de la carte
         width: '100%',
         minHeight: '90px',

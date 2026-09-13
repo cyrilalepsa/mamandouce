@@ -76,3 +76,94 @@ div.admin-drawer[data-testid="drawer-tools-wrap"] {
 div.admin-drawer[data-testid="drawer-neriacorp-wrap"] {
   background: linear-gradient(135deg, #FEF3C7, #FCD34D) !important;
 }
+
+/* ============================================
+   ACCUEIL — Fête du jour & Semaine SA (style d'origine préservé)
+   Exclues du style carte unifié (card-surface-gradient)
+   ============================================ */
+
+.badge-fete-du-jour,
+.glass-fete-du-jour,
+.card-glass-interactive.glass-fete-du-jour,
+[data-testid="name-of-the-day-card"] {
+  background: linear-gradient(135deg,
+    rgba(255, 251, 235, 0.99) 0%,
+    rgba(254, 249, 195, 0.95) 20%,
+    rgba(253, 230, 138, 0.88) 50%,
+    rgba(252, 211, 77, 0.8) 80%,
+    rgba(251, 191, 36, 0.7) 100%) !important;
+  background-color: transparent !important;
+  box-shadow:
+    -6px -6px 16px rgba(255, 255, 255, 1),
+    6px 6px 20px rgba(209, 195, 150, 0.5),
+    0 10px 28px -6px rgba(245, 158, 11, 0.3),
+    inset 0 2px 6px rgba(255, 255, 255, 0.98),
+    inset 0 -3px 6px rgba(245, 158, 11, 0.12) !important;
+  border: 2px solid rgba(253, 224, 71, 0.5) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.badge-fete-du-jour::before,
+.glass-fete-du-jour::before,
+.card-glass-interactive.glass-fete-du-jour::before,
+[data-testid="name-of-the-day-card"]::before {
+  display: block !important;
+  content: '' !important;
+  position: absolute;
+  top: 0;
+  left: 8%;
+  right: 8%;
+  height: 45%;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 100%);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.badge-semaine-x,
+.glass-sa-week,
+.card-glass-interactive.glass-sa-week,
+[data-testid="pregnancy-progress-card"],
+[data-testid="cycle-summary-card"] {
+  background: linear-gradient(135deg,
+    rgba(255, 241, 246, 0.99) 0%,
+    rgba(252, 231, 243, 0.95) 20%,
+    rgba(251, 207, 232, 0.88) 50%,
+    rgba(249, 168, 212, 0.8) 80%,
+    rgba(244, 114, 182, 0.65) 100%) !important;
+  background-color: transparent !important;
+  box-shadow:
+    -6px -6px 16px rgba(255, 255, 255, 1),
+    6px 6px 20px rgba(209, 195, 215, 0.5),
+    0 10px 28px -6px rgba(236, 72, 153, 0.3),
+    inset 0 2px 6px rgba(255, 255, 255, 0.98),
+    inset 0 -3px 6px rgba(236, 72, 153, 0.12) !important;
+  border: 2px solid rgba(251, 207, 232, 0.5) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.badge-semaine-x::before,
+.glass-sa-week::before,
+.card-glass-interactive.glass-sa-week::before,
+[data-testid="pregnancy-progress-card"]::before,
+[data-testid="cycle-summary-card"]::before {
+  display: block !important;
+  content: '' !important;
+  position: absolute;
+  top: 0;
+  left: 8%;
+  right: 8%;
+  height: 45%;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 100%);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+}
