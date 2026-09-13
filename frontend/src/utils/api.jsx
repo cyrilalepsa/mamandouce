@@ -376,13 +376,6 @@ export const api = {
     claimFreePostpartum: () => axios.post(`${API()}/contributions/claim-free-postpartum`, {}, getAuthHeaders()),
   },
   
-  chatbot: {
-    sendMessage: (message, sessionId = null) => axios.post(`${API()}/chatbot/message`, { message, session_id: sessionId }, getAuthHeaders()),
-    getHistory: (sessionId = null) => axios.get(`${API()}/chatbot/history${sessionId ? `?session_id=${sessionId}` : ''}`, getAuthHeaders()),
-    deleteSession: (sessionId) => axios.delete(`${API()}/chatbot/session/${sessionId}`, getAuthHeaders()),
-    getSuggestions: () => axios.get(`${API()}/chatbot/suggestions`),
-  },
-  
   babyNamesFavorites: {
     get: () => axios.get(`${API()}/babynames-favorites`, getAuthHeaders()),
     sync: (favorites) => axios.post(`${API()}/babynames-favorites`, { favorites }, getAuthHeaders()),

@@ -50,7 +50,6 @@ import PostpartumDifficultesPage from './pages/PostpartumDifficultesPage';
 import PostpartumPrecautionsPage from './pages/PostpartumPrecautionsPage';
 import SharedRecipesPage from './pages/SharedRecipesPage';
 import GuidePage from './pages/GuidePage';
-import ChatbotPage from './pages/ChatbotPage';
 import TrackingPage from './pages/TrackingPage';
 import PregnancyAfter35Page from './pages/PregnancyAfter35Page';
 import BabyNamesPage from './pages/BabyNamesPage';
@@ -75,7 +74,6 @@ import BabySleepPage from './pages/outils/BabySleepPage';
 import PediatricianNotesPage from './pages/outils/PediatricianNotesPage';
 import EmergencyInfoPage from './pages/outils/EmergencyInfoPage';
 import CockpitPage from './pages/CockpitPage';
-import ChatBubble from './components/ChatBubble';
 import ScannerFab from './components/ScannerFab';
 import { ScannerOverlayProvider } from './contexts/ScannerOverlayContext';
 import { EmotionalIntelligenceProvider } from './components/EmotionalIntelligence';
@@ -266,7 +264,6 @@ useEffect(() => {
                 <Route path="/postpartum/securite/precautions" element={<ProtectedRoute><PostpartumPrecautionsPage /></ProtectedRoute>} />
                 <Route path="/recipes/shared/:shareCode" element={<SharedRecipesPage />} />
                 <Route path="/guide" element={<ProtectedRoute><GuidePage /></ProtectedRoute>} />
-                <Route path="/chatbot" element={<ProtectedRoute><ChatbotPage /></ProtectedRoute>} />
                 <Route path="/tracking" element={<ProtectedRoute><TrackingPage /></ProtectedRoute>} />
                 <Route path="/pregnancy-after-35" element={<ProtectedRoute><PregnancyAfter35Page /></ProtectedRoute>} />
                 <Route path="/baby-names" element={<ProtectedRoute><BabyNamesPage /></ProtectedRoute>} />
@@ -296,7 +293,6 @@ useEffect(() => {
               </Routes>
               <Toaster />
               <ScannerFab />
-              <ChatBubble />
               <PWAInstallBanner />
               <OfflineSyncIndicator />
               <EmotionalIntelligenceProvider />
