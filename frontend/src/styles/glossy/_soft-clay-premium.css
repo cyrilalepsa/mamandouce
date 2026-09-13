@@ -58,6 +58,22 @@
   --clay-surface-white: #FFFFFF;
 }
 
+/* --- Surface carte unifiée (tous niveaux hiérarchiques) --- */
+.card-surface-gradient,
+.card-soft-clay.card-surface-gradient,
+.soft-clay-premium.card-surface-gradient,
+.section-card.card-surface-gradient {
+  background: var(--card-surface-radial) !important;
+  background-color: transparent !important;
+  border: var(--card-surface-border) !important;
+  box-shadow: var(--card-surface-shadow) !important;
+}
+
+.card-surface-gradient:hover:not(:disabled),
+.section-card.card-surface-gradient:hover:not(:disabled) {
+  box-shadow: var(--card-surface-shadow-hover) !important;
+}
+
 /* --- Surface glass de base --- */
 .card-soft-clay,
 .soft-clay-premium,
@@ -110,112 +126,40 @@
   box-shadow: var(--clay-icon-shadow-full);
 }
 
-/* Teintes section (journey hubs) */
-.soft-clay-section-preconception {
-  background-color: var(--accent-yellow-glass) !important;
-  background-image: none !important;
-}
-
-.soft-clay-section-pregnancy {
-  background-color: var(--accent-blue-glass) !important;
-  background-image: none !important;
-}
-
-.soft-clay-section-baby-preparation {
-  background-color: var(--accent-peach-glass) !important;
-  background-image: none !important;
-}
-
-.soft-clay-section-postpartum {
-  background-color: var(--accent-green-glass) !important;
-  background-image: none !important;
-}
-
-.soft-clay-section-services {
-  background-color: var(--accent-violet-glass) !important;
-  background-image: none !important;
-}
-
+/* Teintes section (journey hubs) — surface unifiée, icônes colorées conservées */
+.soft-clay-section-preconception,
+.soft-clay-section-pregnancy,
+.soft-clay-section-baby-preparation,
+.soft-clay-section-postpartum,
+.soft-clay-section-services,
 .soft-clay-tint-violet {
-  background-color: var(--accent-violet-glass) !important;
-  background-image: none !important;
-  border-color: var(--accent-violet-border) !important;
+  background: var(--card-surface-radial) !important;
+  background-color: transparent !important;
+  border: var(--card-surface-border) !important;
+  box-shadow: var(--card-surface-shadow) !important;
 }
 
-/* Carte teintée selon accent icône */
-.soft-clay-from-accent[data-accent='yellow'],
+/* Cartes teintées legacy — surface unifiée (couleur réservée aux bulles d'icônes) */
+.soft-clay-from-accent[data-accent],
 .soft-clay-from-accent-yellow,
-.soft-clay-tier-yellow {
-  background-color: var(--accent-yellow-glass) !important;
-  background-image: none !important;
-  border-color: var(--accent-yellow-border) !important;
-}
-
-.soft-clay-from-accent[data-accent='blue'],
 .soft-clay-from-accent-blue,
-.soft-clay-tier-blue {
-  background-color: var(--accent-blue-glass) !important;
-  background-image: none !important;
-  border-color: var(--accent-blue-border) !important;
-}
-
-.soft-clay-from-accent[data-accent='sky'],
-.soft-clay-from-accent-sky {
-  background-color: var(--accent-sky-glass) !important;
-  background-image: none !important;
-  border-color: var(--accent-sky-border) !important;
-}
-
-.soft-clay-from-accent[data-accent='red'],
+.soft-clay-from-accent-sky,
 .soft-clay-from-accent-red,
-.soft-clay-tier-red {
-  background-color: var(--accent-red-glass) !important;
-  background-image: none !important;
-  border-color: var(--accent-red-border) !important;
-}
-
-.soft-clay-from-accent[data-accent='peach'],
-.soft-clay-from-accent-peach {
-  background-color: var(--accent-peach-glass) !important;
-  background-image: none !important;
-  border-color: var(--accent-peach-border) !important;
-}
-
-.soft-clay-from-accent[data-accent='pink'],
-.soft-clay-from-accent-pink {
-  background-color: var(--accent-pink-glass) !important;
-  background-image: none !important;
-  border-color: var(--accent-pink-border) !important;
-}
-
-.soft-clay-from-accent[data-accent='magenta'],
-.soft-clay-from-accent-magenta {
-  background-color: var(--accent-magenta-glass) !important;
-  background-image: none !important;
-  border-color: var(--accent-magenta-border) !important;
-}
-
-.soft-clay-from-accent[data-accent='green'],
+.soft-clay-from-accent-peach,
+.soft-clay-from-accent-pink,
+.soft-clay-from-accent-magenta,
 .soft-clay-from-accent-green,
-.soft-clay-tier-green {
-  background-color: var(--accent-green-glass) !important;
-  background-image: none !important;
-  border-color: var(--accent-green-border) !important;
-}
-
-.soft-clay-from-accent[data-accent='violet'],
 .soft-clay-from-accent-violet,
+.soft-clay-from-accent-slate,
+.soft-clay-tier-yellow,
+.soft-clay-tier-blue,
+.soft-clay-tier-red,
+.soft-clay-tier-green,
 .soft-clay-tier-violet {
-  background-color: var(--accent-violet-glass) !important;
-  background-image: none !important;
-  border-color: var(--accent-violet-border) !important;
-}
-
-.soft-clay-from-accent[data-accent='slate'],
-.soft-clay-from-accent-slate {
-  background-color: var(--accent-slate-glass) !important;
-  background-image: none !important;
-  border-color: var(--accent-slate-border) !important;
+  background: var(--card-surface-radial) !important;
+  background-color: transparent !important;
+  border: var(--card-surface-border) !important;
+  box-shadow: var(--card-surface-shadow) !important;
 }
 
 /* Bulles d'icônes — teinte vive */
@@ -287,42 +231,19 @@
   border: var(--soft-clay-glass-border) !important;
 }
 
-/* Creux interne teinté selon accent (volume 3D sans irisé) */
-.soft-clay-from-accent[data-accent='yellow'],
-.soft-clay-from-accent-yellow {
-  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(234, 179, 8, 0.12) !important;
-}
-.soft-clay-from-accent[data-accent='blue'],
-.soft-clay-from-accent-blue {
-  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(59, 130, 246, 0.12) !important;
-}
-.soft-clay-from-accent[data-accent='sky'],
-.soft-clay-from-accent-sky {
-  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(14, 165, 233, 0.12) !important;
-}
-.soft-clay-from-accent[data-accent='red'],
-.soft-clay-from-accent-red {
-  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(239, 68, 68, 0.12) !important;
-}
-.soft-clay-from-accent[data-accent='peach'],
-.soft-clay-from-accent-peach {
-  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(239, 68, 68, 0.12) !important;
-}
-.soft-clay-from-accent[data-accent='pink'],
-.soft-clay-from-accent-pink {
-  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(236, 72, 153, 0.12) !important;
-}
-.soft-clay-from-accent[data-accent='green'],
-.soft-clay-from-accent-green {
-  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(34, 197, 94, 0.12) !important;
-}
-.soft-clay-from-accent[data-accent='violet'],
-.soft-clay-from-accent-violet {
-  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(124, 58, 237, 0.12) !important;
-}
-.soft-clay-from-accent[data-accent='slate'],
+/* Ombre carte unifiée — sans teinte accent sur la surface */
+.soft-clay-from-accent[data-accent],
+.soft-clay-from-accent-yellow,
+.soft-clay-from-accent-blue,
+.soft-clay-from-accent-sky,
+.soft-clay-from-accent-red,
+.soft-clay-from-accent-peach,
+.soft-clay-from-accent-pink,
+.soft-clay-from-accent-magenta,
+.soft-clay-from-accent-green,
+.soft-clay-from-accent-violet,
 .soft-clay-from-accent-slate {
-  box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(100, 116, 139, 0.12) !important;
+  box-shadow: var(--card-surface-shadow) !important;
 }
 
 .card-glass-modal-violet {
@@ -333,25 +254,17 @@
   box-shadow: var(--clay-shadow-external), var(--clay-shadow-highlight), inset 0 -4px 6px rgba(236, 72, 153, 0.12) !important;
 }
 
-/* Sous-cartes / champs internes — blanc crème opaque */
+/* Sous-cartes / champs internes — même surface unifiée (niveau 4) */
 .card-inner-cream,
-.soft-clay-inner-cream {
-  background-color: var(--soft-clay-cream-inner) !important;
-  background-image: none !important;
-  opacity: 1 !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  border: 1px solid rgba(255, 255, 255, 0.9) !important;
-  box-shadow:
-    0 4px 10px -4px rgba(0, 0, 0, 0.08),
-    inset 0 3px 5px rgba(255, 255, 255, 0.75),
-    inset 0 1px 2px rgba(255, 255, 255, 0.95),
-    inset 0 -3px 5px rgba(0, 0, 0, 0.06) !important;
-}
-
+.soft-clay-inner-cream,
 .card-inner-cream.soft-clay-from-accent,
 .card-inner-cream[data-accent],
 .soft-clay-inner-cream.soft-clay-from-accent {
-  background-color: var(--soft-clay-cream-inner) !important;
-  border-color: rgba(255, 255, 255, 0.9) !important;
+  background: var(--card-surface-radial) !important;
+  background-color: transparent !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: var(--card-surface-border) !important;
+  box-shadow: var(--card-surface-shadow) !important;
 }

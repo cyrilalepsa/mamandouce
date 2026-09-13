@@ -26,7 +26,8 @@ test('section card helpers expose interactive gradient and reading border styles
   assert.match(tokens, /sectionInteractiveCardClasses/);
   assert.match(tokens, /sectionReadingCardClasses/);
   assert.match(tokens, /border-yellow-400/);
-  assert.match(tokens, /bg-gradient-to-br from-white via-yellow-50/);
+  assert.match(tokens, /CARD_SURFACE_CLASS/);
+  assert.match(tokens, /card-surface-gradient/);
   assert.match(tokens, /text-slate-800/);
 });
 

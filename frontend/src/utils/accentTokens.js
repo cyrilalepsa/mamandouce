@@ -27,9 +27,12 @@ export const SECTION_ACCENT = Object.fromEntries(
   Object.entries(SECTION_COLOR_REGISTRY).map(([id, cfg]) => [id, cfg.accent])
 );
 
+/** Surface carte unifiée — dégradé radial blanc → ardoise clair */
+export const CARD_SURFACE_CLASS = 'card-surface-gradient';
+
 /** Relief et rebond tactile — cartes interactives */
 export const CARD_INTERACTIVE_SHADOW =
-  'shadow-lg shadow-slate-900/10 shadow-[0_8px_25px_-5px_rgba(0,0,0,0.08)]';
+  'shadow-[0_18px_36px_-10px_rgba(15,23,42,0.22),0_8px_16px_-6px_rgba(15,23,42,0.12)]';
 export const CARD_INTERACTIVE_MOTION =
   'transition-all duration-200 hover:-translate-y-1 hover:shadow-xl active:scale-95 active:translate-y-0.5';
 
@@ -60,19 +63,13 @@ SECTION_BORDER_CLASS.sky = 'border-sky-400';
 SECTION_BORDER_CLASS.pink = 'border-pink-400';
 SECTION_BORDER_CLASS.magenta = 'border-pink-400';
 
-/** Fond gradient interactif — blanc → ardoise clair teinté section */
+/** Fond interactif unifié — dégradé radial blanc → ardoise clair (icônes inchangées) */
 export const SECTION_INTERACTIVE_BG = Object.fromEntries(
-  Object.values(SECTION_COLOR_REGISTRY).map((cfg) => [cfg.accent, cfg.interactiveBg])
+  Object.values(SECTION_COLOR_REGISTRY).map((cfg) => [cfg.accent, CARD_SURFACE_CLASS])
 );
-SECTION_INTERACTIVE_BG.yellow = 'bg-gradient-to-br from-white via-yellow-50/55 to-slate-100';
-SECTION_INTERACTIVE_BG.blue = 'bg-gradient-to-br from-white via-blue-50/55 to-slate-100';
-SECTION_INTERACTIVE_BG.red = 'bg-gradient-to-br from-white via-red-50/55 to-slate-100';
-SECTION_INTERACTIVE_BG.green = 'bg-gradient-to-br from-white via-green-50/55 to-slate-100';
-SECTION_INTERACTIVE_BG.violet = 'bg-gradient-to-br from-white via-violet-50/55 to-slate-100';
-SECTION_INTERACTIVE_BG.slate = 'bg-gradient-to-br from-white via-slate-100/90 to-slate-200/70';
-SECTION_INTERACTIVE_BG.sky = 'bg-gradient-to-br from-white via-sky-50/55 to-slate-100';
-SECTION_INTERACTIVE_BG.pink = 'bg-gradient-to-br from-white via-pink-50/55 to-slate-100';
-SECTION_INTERACTIVE_BG.magenta = 'bg-gradient-to-br from-white via-pink-50/60 to-slate-100';
+Object.keys(SECTION_INTERACTIVE_BG).forEach((accent) => {
+  SECTION_INTERACTIVE_BG[accent] = CARD_SURFACE_CLASS;
+});
 
 export function resolveSectionAccent(sectionIdOrAccent) {
   if (sectionIdOrAccent && SECTION_ACCENT[sectionIdOrAccent]) {
@@ -103,7 +100,7 @@ export function sectionReadingCardClasses(sectionIdOrAccent, { rounded = 'rounde
   const accent = resolveSectionAccent(sectionIdOrAccent);
   const border = SECTION_BORDER_CLASS[accent] || SECTION_BORDER_CLASS.slate;
   return [
-    'bg-white',
+    CARD_SURFACE_CLASS,
     'border-2',
     border,
     'text-slate-800',
@@ -131,10 +128,8 @@ export function sectionAccentTextClass(sectionIdOrAccent) {
 }
 
 export function softClayCardClasses(accent, { pill = false } = {}) {
-  const name = normalizeAccent(accent);
   return [
-    'soft-clay-from-accent',
-    `soft-clay-from-accent-${name}`,
+    CARD_SURFACE_CLASS,
     pill ? 'soft-clay-pill' : '',
   ]
     .filter(Boolean)
@@ -161,13 +156,11 @@ const LEVEL_RADIUS = {
  * @param {{ pill?: boolean, level?: 1|2|3|4 }} options
  */
 export function cardSoftClayClasses(accent, { pill = false, level = 2 } = {}) {
-  const name = normalizeAccent(accent);
   const radius = pill ? '' : LEVEL_RADIUS[level] || LEVEL_RADIUS[2];
   return [
     'card-soft-clay',
     'soft-clay-premium',
-    'soft-clay-from-accent',
-    `soft-clay-from-accent-${name}`,
+    CARD_SURFACE_CLASS,
     'soft-clay-text-flat',
     radius,
     pill ? 'soft-clay-pill' : '',
@@ -181,8 +174,7 @@ export function cardSoftClayClasses(accent, { pill = false, level = 2 } = {}) {
 export function cardInnerCreamClasses(className = '', { level = 4, pill = false } = {}) {
   const radius = pill ? '' : LEVEL_RADIUS[level] || LEVEL_RADIUS[4];
   return [
-    'card-inner-cream',
-    'soft-clay-inner-cream',
+    CARD_SURFACE_CLASS,
     'soft-clay-text-flat',
     radius,
     pill ? 'soft-clay-pill' : '',
