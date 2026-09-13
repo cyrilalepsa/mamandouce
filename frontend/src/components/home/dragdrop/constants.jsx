@@ -24,7 +24,6 @@ export const ITEM_ICONS = {
   'parental-leave': '⚖️',
   'birth-list': '📝',
   'maternity-bag': '🧳',
-  'chatbot': '🤖',
   'baby-weight': '⚖️',
   'kick-counter': '👣',
   // Post-partum items
@@ -90,7 +89,6 @@ export const ITEM_NAMES = {
   'parental-leave': 'Congés',
   'birth-list': 'Naissance',
   'maternity-bag': 'Valise',
-  'chatbot': 'Assistant',
   'baby-weight': 'Poids bébé',
   'kick-counter': 'Coups de pied',
   // Post-partum items
@@ -198,7 +196,6 @@ export const ITEM_TRANSLATION_KEYS = {
   'first-aid': 'postpartum.securite.firstAid',
   
   // === SERVICES ===
-  'chatbot': 'services.chatbot',
   'caf': 'services.caf',
   'ameli': 'services.ameli',
   'maps': 'services.maps',
@@ -468,11 +465,6 @@ export const ITEM_STYLES = {
   },
   
   // === ITEMS SERVICES ===
-  'chatbot': { 
-    gradient: 'linear-gradient(145deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%)',
-    shadow: '0 8px 25px rgba(125, 211, 252, 0.35), inset 0 -4px 12px rgba(0,0,0,0.08)',
-    border: 'rgba(56, 189, 248, 0.3)'
-  },
   'caf': { 
     gradient: 'linear-gradient(145deg, #dbeafe 0%, #bfdbfe 50%, #93c5fd 100%)',
     shadow: '0 8px 25px rgba(147, 197, 253, 0.35), inset 0 -4px 12px rgba(0,0,0,0.08)',
@@ -553,7 +545,6 @@ export const ITEM_ROUTES = {
   'parental-leave': '/parental-leave',
   'birth-list': '/birth-list',
   'maternity-bag': '/maternity-bag',
-  'chatbot': '/chatbot',
   'baby-sleep': '/outils/bonne-nuit-bebe',
   'pediatrician-notes': '/outils/cher-pediatre',
   'emergency-birth': '/outils/fiche-urgence',

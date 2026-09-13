@@ -87,7 +87,6 @@ from routes.tips import router as tips_router
 from routes.postpartum import router as postpartum_router
 from routes.referral import router as referral_router
 from routes.preferences import router as preferences_router
-from routes.chatbot import router as chatbot_router
 from routes.favorites import router as favorites_router
 from routes.name_stats import router as name_stats_router
 from routes.translation import router as translation_router
@@ -116,7 +115,6 @@ api_router.include_router(tips_router)
 api_router.include_router(postpartum_router)
 api_router.include_router(referral_router)
 api_router.include_router(preferences_router)
-api_router.include_router(chatbot_router)
 api_router.include_router(favorites_router)
 api_router.include_router(name_stats_router)
 api_router.include_router(translation_router)
