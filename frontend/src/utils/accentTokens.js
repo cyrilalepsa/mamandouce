@@ -27,7 +27,7 @@ export const SECTION_ACCENT = Object.fromEntries(
   Object.entries(SECTION_COLOR_REGISTRY).map(([id, cfg]) => [id, cfg.accent])
 );
 
-/** Surface carte unifiée — linear 135° (blanc → ardoise) */
+/** Surface carte unifiée — linear 155° (blanc → ardoise) */
 export const CARD_SURFACE_CLASS = 'card-surface-gradient';
 
 /** Relief et rebond tactile — cartes interactives */
