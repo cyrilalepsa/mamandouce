@@ -37,15 +37,6 @@
   --md-accent-secondary: #f0b4c8;
   --md-accent-glow: rgba(232, 164, 184, 0.15);
 
-<<<<<<< HEAD
-  /* Surface carte unifiée — radial 135° : blanc dominant, vert pastel, ardoise bas-droite */
-  --card-surface-radial: radial-gradient(
-    circle at 90% 90%,
-    rgba(71, 85, 105, 0.25) 0%,
-    rgba(167, 243, 208, 0.2) 25%,
-    rgba(255, 255, 255, 0.95) 60%,
-    #ffffff 100%
-=======
   /* Surface carte unifiée — linear 135° : blanc → ardoise sur la base */
   --card-surface-radial: linear-gradient(
     135deg,
@@ -53,7 +44,6 @@
     rgba(255, 255, 255, 0.95) 45%,
     rgba(226, 232, 240, 0.85) 72%,
     rgba(71, 85, 105, 0.28) 100%
->>>>>>> c918b69 (Card surface gradient: white to slate only (no green))
   );
   --card-surface-border: 1px solid rgba(255, 255, 255, 0.85);
 
