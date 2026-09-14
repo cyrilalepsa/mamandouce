@@ -31,7 +31,7 @@ test('CycleTrackingPage back button targets journey steps explicitly', () => {
   assert.doesNotMatch(src, /onClick=\{\(\) => navigate\('\/'\)\}/);
 });
 
-test('Home uses centered PageDots pill and fixed corner scanner bubble', () => {
+test('Home uses centered PageDots pill without duplicate dock scanner', () => {
   const app = read('src/App.jsx');
   assert.doesNotMatch(app, /BottomNav/);
 
@@ -41,25 +41,18 @@ test('Home uses centered PageDots pill and fixed corner scanner bubble', () => {
 
   const home = read('src/components/home/CustomizableHome.jsx');
   assert.match(home, /<PageDots/);
-  assert.match(home, /ScannerDockButton/);
-  assert.match(home, /openScanner/);
-
-  const dock = read('src/components/ScannerDockButton.jsx');
-  assert.match(dock, /bottom: BUBBLE_BOTTOM/);
-  assert.match(dock, /right: BUBBLE_SIDE/);
-  assert.match(dock, /width: BUBBLE_SIZE/);
-  assert.match(dock, /text-slate-600/);
-  assert.doesNotMatch(dock, /border-pink/);
+  assert.doesNotMatch(home, /ScannerDockButton/);
 });
 
-test('ScannerFab floats on non-home pages only', () => {
+test('ScannerFab is visible on home only and anchored bottom-right', () => {
   const app = read('src/App.jsx');
   assert.match(app, /<ScannerFab \/>/);
 
   const fab = read('src/components/ScannerFab.jsx');
-  assert.match(fab, /location\.pathname === '\/'/);
+  assert.match(fab, /location\.pathname !== '\/'/);
   assert.match(fab, /data-testid="scanner-fab"/);
-  assert.match(fab, /bottom-20 right-4/);
+  assert.match(fab, /max\(16px, env\(safe-area-inset-bottom/);
+  assert.match(fab, /max\(16px, env\(safe-area-inset-right/);
   assert.match(fab, /openScanner/);
   assert.doesNotMatch(fab, /navigate\('\/scanner'\)/);
 });

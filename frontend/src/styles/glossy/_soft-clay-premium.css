@@ -74,6 +74,14 @@
   box-shadow: var(--card-surface-shadow-hover) !important;
 }
 
+.bg-card.card-surface-gradient,
+.bg-card.card-soft-clay.card-surface-gradient,
+.card-flat.bg-card.card-surface-gradient {
+  background: var(--card-surface-radial) !important;
+  background-color: transparent !important;
+  background-image: var(--card-surface-radial) !important;
+}
+
 /* --- Surface glass de base --- */
 .card-soft-clay,
 .soft-clay-premium,

@@ -61,6 +61,12 @@ test('postpartum hub cards inherit parent section accent from central config', (
   assert.match(read('src/pages/PostpartumPage.jsx'), /mainCategories\.map/);
 });
 
+test('card-flat does not mask unified card-surface radial gradient', () => {
+  const glass = read('src/styles/glossy/_glass-cards.css');
+  assert.match(glass, /card-flat\.card-surface-gradient/);
+  assert.match(glass, /var\(--card-surface-radial\)/);
+});
+
 test('home fete du jour and semaine SA widgets keep original badge styling', () => {
   const exclusions = read('src/styles/glossy/_exclusions.css');
   assert.match(exclusions, /badge-fete-du-jour/);
