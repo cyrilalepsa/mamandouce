@@ -1,11 +1,12 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { createPortal } from 'react-dom';
+import { useLocation } from 'react-router-dom';
 import { Camera } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { shouldHideAppShell } from '../utils/appShellVisibility';
 import { useScannerOverlay } from '../contexts/ScannerOverlayContext';
 
 /**
- * FAB persistant hors accueil — ouvre le viseur caméra en overlay plein écran.
+ * FAB caméra — visible uniquement sur la page d'accueil (Dashboard).
  */
 export function ScannerFab() {
   const location = useLocation();
@@ -14,16 +15,18 @@ export function ScannerFab() {
 
   if (loading || !isAuthenticated) return null;
   if (shouldHideAppShell(location.pathname)) return null;
-  if (location.pathname === '/') return null;
+  if (location.pathname !== '/') return null;
 
-  return (
+  return createPortal(
     <button
       type="button"
       onClick={openScanner}
       data-testid="scanner-fab"
       aria-label="Scanner alimentaire"
-      className="fixed bottom-20 right-4 z-50 w-11 h-11 rounded-full flex items-center justify-center border-2 border-pink-500 text-pink-500 shadow-lg drop-shadow-md backdrop-blur-md bg-gradient-to-br from-slate-100/90 via-slate-700/85 to-slate-900/90 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl active:scale-95 active:translate-y-0.5"
+      className="fixed z-[9999] w-11 h-11 rounded-full flex items-center justify-center border-2 border-pink-500 text-pink-500 shadow-lg drop-shadow-md backdrop-blur-md bg-gradient-to-br from-slate-100/90 via-slate-700/85 to-slate-900/90 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl active:scale-95 active:translate-y-0.5"
       style={{
+        bottom: 'max(16px, env(safe-area-inset-bottom, 0px))',
+        right: 'max(16px, env(safe-area-inset-right, 0px))',
         boxShadow:
           '0 4px 14px -2px rgba(15,23,42,0.45), inset -2px -2px 6px rgba(0,0,0,0.25), inset 2px 2px 6px rgba(255,255,255,0.35)',
       }}
@@ -35,7 +38,8 @@ export function ScannerFab() {
         }}
       />
       <Camera className="w-5 h-5 relative z-[1] drop-shadow-sm" strokeWidth={2.25} />
-    </button>
+    </button>,
+    document.body
   );
 }
 

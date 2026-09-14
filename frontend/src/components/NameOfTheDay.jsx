@@ -56,7 +56,7 @@ export default function NameOfTheDay({ compact = false, fullWidth = false }) {
       >
         {name}
       </span>
-      <span className="relative z-10 text-[10px] text-[#2C2C2C] font-medium bg-white/55 px-2.5 py-0.5 rounded-full shadow-sm capitalize">
+      <span className="relative z-10 text-[10px] text-[#2C2C2C] font-medium bg-transparent px-2.5 py-0.5 rounded-full shadow-none capitalize">
         {dateLabel}
       </span>
     </button>

@@ -20,7 +20,7 @@ export function CollapsibleCard({
   return (
     <Card
       variant="flat"
-      className={`${cardSoftClayClasses(name)} overflow-hidden border-0 shadow-none ${className}`}
+      className={`${cardSoftClayClasses(name)} overflow-hidden border-0 ${className}`}
       data-accent={name}
     >
       <button

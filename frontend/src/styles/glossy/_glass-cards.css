@@ -148,6 +148,17 @@ button.card-glass-interactive,
   -webkit-text-fill-color: var(--glass-text);
 }
 
+/* Ne pas masquer le dégradé ardoise unifié derrière bg-card opaque */
+.card-flat.card-surface-gradient,
+.card-flat.card-soft-clay.card-surface-gradient,
+.card-flat.bg-card.card-surface-gradient {
+  background: var(--card-surface-radial) !important;
+  background-color: transparent !important;
+  background-image: var(--card-surface-radial) !important;
+  box-shadow: var(--card-surface-shadow) !important;
+  border: var(--card-surface-border) !important;
+}
+
 .card-flat::before,
 .card-flat::after {
   display: none !important;

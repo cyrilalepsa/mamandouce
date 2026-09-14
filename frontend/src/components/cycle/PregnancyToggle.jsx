@@ -251,7 +251,7 @@ export function PregnancyToggle({
                 <span className="relative z-10 text-lg font-bold text-pink-600 my-0.5">
                   Semaine {pregnancyInfo.week}
                 </span>
-                <span className="relative z-10 text-[10px] text-[#2C2C2C] font-medium bg-white/55 px-2.5 py-0.5 rounded-full shadow-sm">
+                <span className="relative z-10 text-[10px] text-[#2C2C2C] font-medium bg-transparent px-2.5 py-0.5 rounded-full shadow-none">
                   Trimestre {pregnancyInfo.trimester} • SA
                 </span>
               </>
@@ -263,7 +263,7 @@ export function PregnancyToggle({
                 <span className="relative z-10 text-sm font-bold text-purple-700 my-0.5 leading-tight">
                   {cycleSummary.label}
                 </span>
-                <span className="relative z-10 text-[10px] text-[#2C2C2C] font-medium bg-white/55 px-2.5 py-0.5 rounded-full shadow-sm">
+                <span className="relative z-10 text-[10px] text-[#2C2C2C] font-medium bg-transparent px-2.5 py-0.5 rounded-full shadow-none">
                   {cycleSummary.dayOfCycle ? `Jour ${cycleSummary.dayOfCycle} du cycle` : 'Suivi de cycles'}
                 </span>
               </>
