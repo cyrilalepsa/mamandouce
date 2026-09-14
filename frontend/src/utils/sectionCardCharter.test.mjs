@@ -67,6 +67,15 @@ test('card-flat does not mask unified card-surface radial gradient', () => {
   assert.match(glass, /var\(--card-surface-radial\)/);
 });
 
+test('journey section cards are excluded from glass white catch-all', () => {
+  const glass = read('src/styles/glossy/_glass-cards.css');
+  assert.match(glass, /:not\(\.section-card\):not\(\.card-surface-gradient\)/);
+  assert.match(glass, /\[data-testid\*='section-card'\]\.card-surface-gradient/);
+  const vars = read('src/styles/glossy/_variables.css');
+  assert.match(vars, /circle at 90% 90%/);
+  assert.match(vars, /rgba\(167, 243, 208/);
+});
+
 test('home fete du jour and semaine SA widgets keep original badge styling', () => {
   const exclusions = read('src/styles/glossy/_exclusions.css');
   assert.match(exclusions, /badge-fete-du-jour/);

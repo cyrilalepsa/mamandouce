@@ -419,7 +419,7 @@ function SectionCard({ sectionId, onClick, onLongPress, isSelected, isPinned, on
         </div>
       </div>
 
-      {/* Contenu déroulé (mosaïque blanche) */}
+      {/* Contenu déroulé (tuiles avec dégradé radial) */}
       {isPinned && (
         <div className="mt-2 mx-0.5 animate-in slide-in-from-top-2 duration-200">
           <div className="grid grid-cols-3 gap-1.5">

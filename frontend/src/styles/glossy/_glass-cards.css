@@ -16,7 +16,7 @@
 .nacre-bombe:not(.fixed):not(.card-flat):not(.card-soft-clay):not(.soft-clay-from-accent),
 [data-testid*="category-"]:not(.fixed):not(.card-flat):not(.card-soft-clay):not(.soft-clay-from-accent),
 [data-testid*="video-"]:not(.fixed):not(.card-flat):not(.card-soft-clay):not(.soft-clay-from-accent),
-[class*="cursor-pointer"][class*="rounded-"][class*="shadow"]:not(.admin-drawer):not(.fertility-calendar):not(.fixed):not(.card-flat):not(.card-soft-clay):not(.soft-clay-from-accent):not(.soft-clay-premium),
+[class*="cursor-pointer"][class*="rounded-"][class*="shadow"]:not(.admin-drawer):not(.fertility-calendar):not(.fixed):not(.card-flat):not(.card-soft-clay):not(.soft-clay-from-accent):not(.soft-clay-premium):not(.section-card):not(.card-surface-gradient),
 button.card-glass-interactive,
 .PastelMosaicCard-glass,
 .PastelPillCard-glass {
@@ -37,7 +37,7 @@ button.card-glass-interactive,
 
 .card-glass-interactive:hover,
 .nacre-bombe:not(.fixed):not(.card-flat):hover,
-[class*="cursor-pointer"][class*="rounded-"][class*="shadow"]:not(.admin-drawer):not(.fertility-calendar):not(.fixed):not(.card-flat):hover {
+[class*="cursor-pointer"][class*="rounded-"][class*="shadow"]:not(.admin-drawer):not(.fertility-calendar):not(.fixed):not(.card-flat):not(.section-card):not(.card-surface-gradient):hover {
   box-shadow: var(--glass-shadow-hover) !important;
   transform: translateY(-1px);
 }
@@ -234,4 +234,13 @@ button.card-glass-interactive,
 .card-glass-modal-pink {
   background-color: var(--accent-pink-glass, #F9A8D4) !important;
   border-color: var(--accent-pink-border, #EC4899) !important;
+}
+
+/* Journey / section tiles — ne pas écraser le dégradé radial unifié */
+.section-card.card-surface-gradient,
+.card-surface-gradient.section-card,
+[data-testid*='section-card'].card-surface-gradient {
+  background: var(--card-surface-radial) !important;
+  background-image: var(--card-surface-radial) !important;
+  background-color: transparent !important;
 }
