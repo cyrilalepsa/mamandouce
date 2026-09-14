@@ -31,9 +31,10 @@ test('CycleTrackingPage back button targets journey steps explicitly', () => {
   assert.doesNotMatch(src, /onClick=\{\(\) => navigate\('\/'\)\}/);
 });
 
-test('Home uses centered PageDots pill without duplicate dock scanner', () => {
+test('Home uses centered PageDots and dock scanner mirrored with info bubble', () => {
   const app = read('src/App.jsx');
   assert.doesNotMatch(app, /BottomNav/);
+  assert.doesNotMatch(app, /<ScannerFab \/>/);
 
   const pagination = read('src/components/home/HomePagination.jsx');
   assert.doesNotMatch(pagination, /ScannerDockButton/);
@@ -41,20 +42,26 @@ test('Home uses centered PageDots pill without duplicate dock scanner', () => {
 
   const home = read('src/components/home/CustomizableHome.jsx');
   assert.match(home, /<PageDots/);
-  assert.doesNotMatch(home, /ScannerDockButton/);
+  assert.match(home, /ScannerDockButton/);
+  assert.match(home, /openScanner/);
+
+  const info = read('src/components/home/TutorialPopup.jsx');
+  assert.match(info, /bottom: '0\.5rem'/);
+  assert.match(info, /left: '0\.75rem'/);
+
+  const dock = read('src/components/ScannerDockButton.jsx');
+  assert.match(dock, /bottom: BUBBLE_BOTTOM/);
+  assert.match(dock, /right: BUBBLE_SIDE/);
+  assert.match(dock, /BUBBLE_SIZE = 38/);
+  assert.match(dock, /home-dock-scanner/);
 });
 
-test('ScannerFab is visible on home only and anchored bottom-right', () => {
+test('Journey steps page does not mount global scanner FAB', () => {
   const app = read('src/App.jsx');
-  assert.match(app, /<ScannerFab \/>/);
-
-  const fab = read('src/components/ScannerFab.jsx');
-  assert.match(fab, /location\.pathname !== '\/'/);
-  assert.match(fab, /data-testid="scanner-fab"/);
-  assert.match(fab, /max\(16px, env\(safe-area-inset-bottom/);
-  assert.match(fab, /max\(16px, env\(safe-area-inset-right/);
-  assert.match(fab, /openScanner/);
-  assert.doesNotMatch(fab, /navigate\('\/scanner'\)/);
+  assert.doesNotMatch(app, /ScannerFab/);
+  const journey = read('src/pages/JourneyStepsPage.jsx');
+  assert.doesNotMatch(journey, /ScannerDockButton/);
+  assert.doesNotMatch(journey, /scanner-fab/);
 });
 
 test('Scanner overlay opens camera directly and redirects to product detail', () => {
