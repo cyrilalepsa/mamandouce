@@ -72,8 +72,15 @@ test('journey section cards are excluded from glass white catch-all', () => {
   assert.match(glass, /:not\(\.section-card\):not\(\.card-surface-gradient\)/);
   assert.match(glass, /\[data-testid\*='section-card'\]\.card-surface-gradient/);
   const vars = read('src/styles/glossy/_variables.css');
+<<<<<<< HEAD
   assert.match(vars, /circle at 90% 90%/);
   assert.match(vars, /rgba\(167, 243, 208/);
+=======
+  assert.match(vars, /linear-gradient\(\s*135deg/);
+  assert.match(vars, /rgba\(226, 232, 240, 0\.85\) 72%/);
+  assert.match(vars, /rgba\(71, 85, 105, 0\.28\) 100%/);
+  assert.doesNotMatch(vars, /167, 243, 208/);
+>>>>>>> c918b69 (Card surface gradient: white to slate only (no green))
 });
 
 test('home fete du jour and semaine SA widgets keep original badge styling', () => {
