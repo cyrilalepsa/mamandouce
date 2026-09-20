@@ -51,6 +51,9 @@ test("admin manager renders period upload controls in cockpit", () => {
   );
   assert.match(source, /Gestion des Visuels Fœtus \(Jours\/Mois\)/);
   assert.match(source, /uploadFetusVisualPeriod/);
+  assert.match(source, /overflow-x-auto/);
+  assert.match(source, /snap-x/);
+  assert.match(source, /Toucher pour choisir une photo/);
   assert.match(source, /fetus-period-tab-\$\{kind\}/);
   const mime = readFileSync(join(root, "src/utils/fetusUploadMime.js"), "utf8");
   assert.match(mime, /image\/heic/);

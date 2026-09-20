@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image as ImageIcon, RefreshCw, Trash2, Upload } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'sonner';
@@ -23,34 +23,109 @@ function emptyVisuals(kind) {
   }));
 }
 
-function DropZone({ active, onFile, children, testId }) {
-  const [dragging, setDragging] = useState(false);
+function FetusVisualCard({
+  period,
+  periodKind,
+  periodLabel,
+  visual,
+  testSuffix,
+  uploading,
+  disabled,
+  onUpload,
+  onRemove,
+}) {
+  const inputRef = useRef(null);
 
-  const handleDrop = useCallback(
-    (event) => {
-      event.preventDefault();
-      setDragging(false);
-      const file = event.dataTransfer?.files?.[0];
-      if (file) onFile(file);
-    },
-    [onFile],
-  );
+  const openNativePicker = useCallback(() => {
+    if (disabled || uploading) return;
+    inputRef.current?.click();
+  }, [disabled, uploading]);
+
+  const handleFile = (file) => {
+    if (file) onUpload(period, file);
+  };
 
   return (
-    <div
-      data-testid={testId}
-      onDragOver={(event) => {
-        event.preventDefault();
-        setDragging(true);
-      }}
-      onDragLeave={() => setDragging(false)}
-      onDrop={handleDrop}
-      className={`rounded-xl border-2 border-dashed transition-colors ${
-        dragging ? 'border-pink-400 bg-pink-50' : 'border-slate-200 bg-slate-50/80'
-      } ${active ? '' : 'opacity-60 pointer-events-none'}`}
+    <article
+      className="flex w-full min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-3 shadow-sm touch-manipulation"
+      data-testid={`fetus-visual-${testSuffix}`}
     >
-      {children}
-    </div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept={FETUS_UPLOAD_ACCEPT}
+        className="sr-only"
+        disabled={disabled}
+        onChange={(event) => {
+          handleFile(event.target.files?.[0]);
+          event.target.value = '';
+        }}
+        data-testid={`upload-fetus-${testSuffix}`}
+      />
+
+      <button
+        type="button"
+        onClick={openNativePicker}
+        disabled={disabled}
+        className="w-full min-w-0 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/80 p-2 text-left transition-colors active:border-pink-400 active:bg-pink-50 disabled:opacity-60"
+        data-testid={`fetus-drop-${testSuffix}`}
+        aria-label={`Choisir une image pour ${periodLabel} ${period}`}
+      >
+        <div
+          className="flex min-h-[140px] max-h-[min(60vw,280px)] w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-pink-50 to-violet-100 sm:min-h-[160px] sm:max-h-none sm:aspect-square"
+        >
+          {visual.image_url ? (
+            <img
+              src={visual.image_url}
+              alt={`Fœtus ${periodLabel} ${period}`}
+              className="max-h-full max-w-full object-contain"
+            />
+          ) : (
+            <div className="px-3 text-center text-slate-400">
+              <span className="text-4xl" aria-hidden="true">👶</span>
+              <p className="mt-2 text-xs leading-snug">
+                Toucher pour choisir une photo
+              </p>
+              <p className="mt-1 hidden text-[10px] sm:block">
+                ou glisser-déposer sur ordinateur
+              </p>
+            </div>
+          )}
+        </div>
+      </button>
+
+      <p className="mt-2 text-center text-sm font-bold text-slate-700">
+        {periodLabel} {period}
+      </p>
+
+      <div className="mt-2 flex w-full flex-col gap-2 sm:flex-row">
+        <button
+          type="button"
+          onClick={openNativePicker}
+          disabled={disabled}
+          className="flex min-h-[44px] w-full flex-1 items-center justify-center gap-2 rounded-xl bg-pink-500 px-3 text-sm font-bold text-white active:bg-pink-600 disabled:opacity-60"
+        >
+          {uploading ? (
+            <RefreshCw className="h-4 w-4 animate-spin" />
+          ) : (
+            <Upload className="h-4 w-4" />
+          )}
+          {uploading ? 'Envoi…' : 'Choisir une photo'}
+        </button>
+        {visual.image_url && (
+          <button
+            type="button"
+            onClick={() => onRemove(period)}
+            className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-rose-200 px-3 text-sm font-semibold text-rose-500 active:bg-rose-50 sm:w-auto sm:min-w-[44px] sm:px-2"
+            aria-label={`Supprimer le visuel ${period}`}
+            data-testid={`delete-fetus-${testSuffix}`}
+          >
+            <Trash2 className="h-4 w-4" />
+            <span className="sm:hidden">Supprimer</span>
+          </button>
+        )}
+      </div>
+    </article>
   );
 }
 
@@ -63,6 +138,7 @@ export default function FetusVisualsTab() {
   const [selectedDay, setSelectedDay] = useState(1);
 
   const periodMeta = PERIOD_CONFIG[periodKind];
+  const uploadDisabled = uploadingPeriod !== null;
 
   const loadVisuals = async (kind = periodKind) => {
     setLoading(true);
@@ -137,39 +213,48 @@ export default function FetusVisualsTab() {
 
   if (loading) {
     return (
-      <div className="p-8 flex items-center justify-center gap-2 text-slate-500">
-        <RefreshCw className="w-5 h-5 animate-spin" />
+      <div className="flex items-center justify-center gap-2 p-8 text-slate-500">
+        <RefreshCw className="h-5 w-5 animate-spin" />
         Chargement des visuels fœtus…
       </div>
     );
   }
 
   return (
-    <div className="space-y-4" data-testid="fetus-visuals-manager">
-      <div className="rounded-2xl bg-gradient-to-r from-pink-50 to-violet-50 border border-pink-100 p-4">
-        <div className="flex items-center gap-3">
-          <ImageIcon className="w-6 h-6 text-pink-500" />
-          <div>
+    <div className="w-full min-w-0 space-y-4 overflow-x-hidden" data-testid="fetus-visuals-manager">
+      <div className="rounded-2xl border border-pink-100 bg-gradient-to-r from-pink-50 to-violet-50 p-4">
+        <div className="flex min-w-0 items-start gap-3">
+          <ImageIcon className="h-6 w-6 shrink-0 text-pink-500" />
+          <div className="min-w-0">
             <h3 className="font-bold text-slate-700">
               Gestion des Visuels Fœtus (Jours/Mois)
             </h3>
-            <p className="text-xs text-slate-500">
-              Upload Cloudinary dans <code>{folder}</code> — JPEG, PNG, WEBP, HEIC/HEIF (conversion auto).
+            <p className="text-xs leading-relaxed text-slate-500 break-words">
+              Upload Cloudinary dans{' '}
+              <code className="break-all text-[11px]">{folder}</code>
+              {' '}— JPEG, PNG, WEBP, HEIC/HEIF (conversion auto).
             </p>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2" data-testid="fetus-period-kind-tabs">
+      <div
+        className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:thin]"
+        data-testid="fetus-period-kind-tabs"
+        role="tablist"
+        aria-label="Type de période"
+      >
         {Object.entries(PERIOD_CONFIG).map(([kind, cfg]) => (
           <button
             key={kind}
             type="button"
+            role="tab"
+            aria-selected={periodKind === kind}
             onClick={() => setPeriodKind(kind)}
-            className={`rounded-full px-4 py-2 text-xs font-bold transition-colors ${
+            className={`shrink-0 snap-start rounded-full px-5 py-2.5 text-sm font-bold transition-colors min-h-[44px] ${
               periodKind === kind
                 ? 'bg-pink-500 text-white shadow-md'
-                : 'bg-white border border-slate-200 text-slate-600'
+                : 'border border-slate-200 bg-white text-slate-600'
             }`}
             data-testid={`fetus-period-tab-${kind}`}
           >
@@ -189,17 +274,17 @@ export default function FetusVisualsTab() {
             max={280}
             value={selectedDay}
             onChange={(event) => setSelectedDay(Number(event.target.value) || 1)}
-            className="rounded-xl border border-slate-200 px-3 py-2 w-full max-w-xs"
+            className="min-h-[44px] w-full max-w-xs rounded-xl border border-slate-200 px-3 py-2 text-base"
             data-testid="fetus-day-selector"
           />
         </label>
       )}
 
       <div
-        className={`grid gap-3 ${
+        className={`grid w-full min-w-0 gap-3 ${
           periodKind === 'day'
             ? 'grid-cols-1'
-            : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
+            : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
         }`}
       >
         {(periodKind === 'day' ? gridVisuals : visuals).map((visual) => {
@@ -207,67 +292,18 @@ export default function FetusVisualsTab() {
           const testSuffix =
             periodKind === 'week' ? `week-${period}` : `${periodKind}-${period}`;
           return (
-            <div
+            <FetusVisualCard
               key={`${periodKind}-${period}`}
-              className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm"
-              data-testid={`fetus-visual-${testSuffix}`}
-            >
-              <DropZone
-                active={uploadingPeriod === null}
-                testId={`fetus-drop-${testSuffix}`}
-                onFile={(file) => uploadVisual(period, file)}
-              >
-                <div className="aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-pink-50 to-violet-100 flex items-center justify-center p-2">
-                  {visual.image_url ? (
-                    <img
-                      src={visual.image_url}
-                      alt={`Fœtus ${periodMeta.label} ${period}`}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : (
-                    <div className="text-center text-slate-400">
-                      <span className="text-4xl" aria-hidden="true">👶</span>
-                      <p className="text-[10px] mt-1">Glisser-déposer ou choisir un fichier</p>
-                    </div>
-                  )}
-                </div>
-              </DropZone>
-              <p className="font-bold text-slate-700 text-center mt-2">
-                {periodMeta.label} {period}
-              </p>
-              <div className="flex gap-2 mt-2">
-                <label className="flex-1 cursor-pointer rounded-xl bg-pink-500 text-white text-xs font-bold py-2 px-2 flex items-center justify-center gap-1 hover:bg-pink-600">
-                  {uploadingPeriod === period ? (
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    <Upload className="w-3.5 h-3.5" />
-                  )}
-                  Upload
-                  <input
-                    type="file"
-                    accept={FETUS_UPLOAD_ACCEPT}
-                    className="hidden"
-                    disabled={uploadingPeriod !== null}
-                    onChange={(event) => {
-                      uploadVisual(period, event.target.files?.[0]);
-                      event.target.value = '';
-                    }}
-                    data-testid={`upload-fetus-${testSuffix}`}
-                  />
-                </label>
-                {visual.image_url && (
-                  <button
-                    type="button"
-                    onClick={() => removeVisual(period)}
-                    className="rounded-xl border border-rose-200 text-rose-500 p-2 hover:bg-rose-50"
-                    aria-label={`Supprimer le visuel ${period}`}
-                    data-testid={`delete-fetus-${testSuffix}`}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-            </div>
+              period={period}
+              periodKind={periodKind}
+              periodLabel={periodMeta.label}
+              visual={visual}
+              testSuffix={testSuffix}
+              uploading={uploadingPeriod === period}
+              disabled={uploadDisabled}
+              onUpload={uploadVisual}
+              onRemove={removeVisual}
+            />
           );
         })}
       </div>

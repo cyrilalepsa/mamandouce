@@ -1,5 +1,5 @@
 import { Navigate, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ImageIcon, Lightbulb } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { isSuperAdmin } from '../utils/superadmin';
 import { WhatsNewAdminSection } from '../components/admin/WhatsNewAdminSection';
@@ -27,10 +27,17 @@ function CockpitPage() {
     return <Navigate to="/" replace />;
   }
 
+  const scrollToSection = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
-    <div className="min-h-screen gradient-bg p-4 sm:p-6 pb-24" data-testid="cockpit-page">
-      <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-        <div className="flex items-center gap-3 mb-2">
+    <div
+      className="min-h-screen w-full overflow-x-hidden gradient-bg p-4 sm:p-6 pb-28"
+      data-testid="cockpit-page"
+    >
+      <div className="mx-auto flex w-full min-w-0 max-w-2xl flex-col gap-6 animate-fade-in">
+        <div className="mb-2 flex min-w-0 items-center gap-3">
           <button
             type="button"
             onClick={() => navigate(-1)}
@@ -39,20 +46,52 @@ function CockpitPage() {
           >
             <ArrowLeft className="w-5 h-5 text-slate-600" />
           </button>
-          <div>
+          <div className="min-w-0">
             <h1 className="text-2xl font-bold text-slate-700">Cockpit</h1>
             <p className="text-sm text-slate-500">Administration MamanDouce</p>
           </div>
         </div>
 
-        <WhatsNewAdminSection />
+        <nav
+          className="grid w-full grid-cols-2 gap-2 sm:grid-cols-2"
+          aria-label="Modules du cockpit"
+          data-testid="cockpit-mobile-tiles"
+        >
+          <button
+            type="button"
+            onClick={() => scrollToSection('cockpit-fetus-visuals')}
+            className="flex min-h-[72px] flex-col items-center justify-center gap-1 rounded-2xl border border-pink-200 bg-white/95 p-3 text-center shadow-sm active:bg-pink-50 touch-manipulation"
+            data-testid="cockpit-tile-fetus-visuals"
+          >
+            <ImageIcon className="h-6 w-6 text-pink-500" aria-hidden="true" />
+            <span className="text-xs font-bold leading-tight text-slate-700">
+              Visuels fœtus
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollToSection('cockpit-whats-new')}
+            className="flex min-h-[72px] flex-col items-center justify-center gap-1 rounded-2xl border border-amber-200 bg-white/95 p-3 text-center shadow-sm active:bg-amber-50 touch-manipulation"
+            data-testid="cockpit-tile-whats-new"
+          >
+            <Lightbulb className="h-6 w-6 text-amber-500" aria-hidden="true" />
+            <span className="text-xs font-bold leading-tight text-slate-700">
+              Nouveautés
+            </span>
+          </button>
+        </nav>
 
         <section
-          className="rounded-3xl bg-white/90 border border-slate-200 shadow-sm p-4 sm:p-5"
+          id="cockpit-fetus-visuals"
+          className="block w-full min-w-0 scroll-mt-4 rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-sm sm:p-5"
           data-testid="cockpit-fetus-visuals-section"
         >
           <FetusVisualsTab />
         </section>
+
+        <div id="cockpit-whats-new" className="w-full min-w-0 scroll-mt-4">
+          <WhatsNewAdminSection />
+        </div>
       </div>
     </div>
   );
