@@ -376,6 +376,26 @@ export const api = {
           : `${base}/${period}`;
       return axios.delete(path, getAuthHeaders());
     },
+    getContentConfigs: () => axios.get(`${API()}/admin/content-configs`, getAuthHeaders()),
+    upsertContentConfig: (key, value) => axios.put(
+      `${API()}/admin/content-configs`,
+      { key, value },
+      getAuthHeaders(),
+    ),
+    uploadContentConfigImage: (key, formData) => axios.post(
+      `${API()}/admin/content-configs/${encodeURIComponent(key)}/upload`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    ),
+    deleteContentConfig: (key) => axios.delete(
+      `${API()}/admin/content-configs/${encodeURIComponent(key)}`,
+      getAuthHeaders(),
+    ),
     // News Notifications
     sendNewsNotification: (data) => axios.post(`${API()}/admin/send-news-notification`, data, getAuthHeaders()),
     getNewsNotifications: () => axios.get(`${API()}/admin/news-notifications`, getAuthHeaders()),
