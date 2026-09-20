@@ -14,6 +14,13 @@
     "privacy": "https://mamandouce.neriacorp.com/privacy",
     "pricing": "https://mamandouce.neriacorp.com/pricing"
   },
+  "cockpit": {
+    "dashboard_path": "/cockpit",
+    "admin_alias_path": "/admin",
+    "content_visuals_embed_path": "/embed/cockpit/content-visuals",
+    "content_visuals_anchor": "cockpit-content-visuals",
+    "tenant_mobile_embed_path": "/embed/cockpit/tenant-dashboard"
+  },
   "portal": {
     "visible": true,
     "zone": "B2C",

@@ -157,6 +157,75 @@ async def neriacorp_app_identity():
     return get_portal_catalog_entry()
 
 
+@router.get("/neriacorp/cockpit/mamandouce")
+async def neriacorp_cockpit_mamandouce_layout():
+    """
+    Ordre d'affichage Cockpit MamanDouce pour le shell NeriaCorp (FIRST-PARTY).
+    Le module « Gestion des Contenus & Visuels » doit apparaître sous l'en-tête API,
+    avant les accordéons communauté / messagerie / finances.
+    """
+    entry = get_portal_catalog_entry()
+    cockpit = entry.get("cockpit") or {}
+    public_url = (entry.get("urls") or {}).get("app") or ""
+    tenant_body = cockpit.get("tenant_mobile_embed_url") or (
+        f"{public_url.rstrip('/')}/embed/cockpit/tenant-dashboard"
+    )
+    return {
+        "app_slug": "mamandouce",
+        "zone": "B2C",
+        "navigation_path": "cockpit > gestion des tenants > B2C > mamandouce > dashboard",
+        "title": "Dashboard MamanDouce",
+        "mobile": {
+            "shell": "neriacorp-cockpit-first-party",
+            "webview_body_url": tenant_body,
+            "note": "En-tête (API PASSWORD) natif cockpit ; WebView = module Contenus & Visuels puis accordéons.",
+        },
+        "sections": [
+            {
+                "id": "content_visuals",
+                "type": "embed",
+                "label": "Gestion des Contenus & Visuels",
+                "embed_url": cockpit.get("content_visuals_embed_url")
+                or f"{public_url.rstrip('/')}/embed/cockpit/content-visuals",
+                "dom_anchor": cockpit.get("content_visuals_section_id") or "cockpit-content-visuals",
+                "position": "after_header_before_accordions",
+            },
+            {
+                "id": "community",
+                "type": "accordion",
+                "label": "Gestion communauté",
+                "position": 1,
+            },
+            {
+                "id": "messaging",
+                "type": "accordion",
+                "label": "Messagerie & support",
+                "position": 2,
+            },
+            {
+                "id": "finances",
+                "type": "accordion",
+                "label": "Finances & Stripe",
+                "position": 3,
+            },
+            {
+                "id": "tools",
+                "type": "accordion",
+                "label": "Outils business & builds",
+                "position": 4,
+            },
+            {
+                "id": "intelligence",
+                "type": "accordion",
+                "label": "NeriaCorp Intelligence",
+                "position": 5,
+            },
+        ],
+        "cockpit": cockpit,
+        "recommended_webview_url": tenant_body,
+    }
+
+
 @router.get("/neriacorp/media")
 async def neriacorp_media():
     """Config CDN publique (aucun secret). Le front hydrate Cloudinary sans rebuild."""

@@ -46,6 +46,14 @@ def get_portal_catalog_entry() -> Dict[str, Any]:
             "health": f"{api_base}/api/health" if api_base else None,
             "catalog": f"{api_base}/api/neriacorp/catalog" if api_base else None,
         },
+        "cockpit": {
+            "dashboard_url": f"{public_url}/cockpit",
+            "admin_alias_url": f"{public_url}/admin",
+            "content_visuals_embed_url": f"{public_url}/embed/cockpit/content-visuals",
+            "content_visuals_section_id": "cockpit-content-visuals",
+            "tenant_mobile_embed_url": f"{public_url}/embed/cockpit/tenant-dashboard",
+            "tenant_mobile_query": "embed=tenant",
+        },
         "capabilities": [
             "pregnancy-tracking",
             "food-safety",

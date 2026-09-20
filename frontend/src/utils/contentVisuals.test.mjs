@@ -8,13 +8,19 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 test("cockpit exposes content visuals module at top", () => {
   const cockpit = readFileSync(join(root, "src/pages/CockpitPage.jsx"), "utf8");
+  assert.match(cockpit, /CockpitMamanDouceHeader/);
+  const header = readFileSync(
+    join(root, "src/components/admin/CockpitMamanDouceHeader.jsx"),
+    "utf8",
+  );
+  assert.match(header, /cockpit-api-password-btn/);
   assert.match(cockpit, /ContentVisualsModule/);
   assert.match(cockpit, /cockpit-content-visuals-section/);
-  assert.match(cockpit, /cockpit-tile-content-visuals/);
-  assert.match(cockpit, /Gestion des Contenus/);
+  assert.match(cockpit, /<ContentVisualsModule/);
+  const headerIdx = cockpit.indexOf("CockpitMamanDouceHeader");
   const moduleIdx = cockpit.indexOf("cockpit-content-visuals");
   const communityIdx = cockpit.indexOf("GESTION COMMUNAUTÉ");
-  assert.ok(moduleIdx > -1 && communityIdx > moduleIdx);
+  assert.ok(headerIdx > -1 && moduleIdx > headerIdx && communityIdx > moduleIdx);
   assert.doesNotMatch(cockpit, /fetus-visuals/);
   assert.doesNotMatch(cockpit, /FetusVisualsTab/);
 });
@@ -32,6 +38,17 @@ test("content visuals module defines three responsive tabs", () => {
   assert.match(source, /FetusVisualsTab/);
   assert.match(source, /AppBannersTab/);
   assert.match(source, /LegalContentTab/);
+});
+
+test("tenant mobile embed route loads cockpit body with content visuals first", () => {
+  const app = readFileSync(join(root, "src/App.jsx"), "utf8");
+  assert.match(app, /embed\/cockpit\/tenant-dashboard/);
+  assert.match(app, /CockpitPage tenantEmbed/);
+  const cockpit = readFileSync(join(root, "src/pages/CockpitPage.jsx"), "utf8");
+  assert.match(cockpit, /isTenantEmbed/);
+  assert.match(cockpit, /cockpit-tenant-embed/);
+  const manifest = readFileSync(join(root, "public/neriacorp-app.json"), "utf8");
+  assert.match(manifest, /tenant_mobile_embed_path/);
 });
 
 test("admin API exposes content-config endpoints", () => {
