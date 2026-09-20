@@ -60,6 +60,18 @@ Elle doit figurer dans la **zone B2C** du portail NeriaCorp — distincte des ap
 2. Filtrer / placer l’entrée où `zone === "B2C"`.
 3. Afficher carte produit avec `theme_color`, `icon`, `urls.app`.
 
+### Dashboard tenant mobile (Cockpit → Gestion des tenants → B2C → MamanDouce)
+
+Le shell **cockpit.neriacorp.com** affiche l’en-tête FIRST-PARTY (dont **API PASSWORD**). Le corps doit charger MamanDouce en WebView :
+
+| Usage | URL |
+|--------|-----|
+| Corps complet (module + accordéons, sans en-tête dupliqué) | `GET …/cockpit.tenant_mobile_embed_url` → `/embed/cockpit/tenant-dashboard` |
+| Layout & ordre des blocs | `GET {API}/api/neriacorp/cockpit/mamandouce` (`recommended_webview_url`) |
+| Module seul (legacy) | `/embed/cockpit/content-visuals` |
+
+Le module **Gestion des Contenus & Visuels** est en tête du WebView (`#cockpit-content-visuals`), avant « Gestion communauté ».
+
 ## Fichiers
 
 - `backend/integrations/neriacorp/catalog.py`

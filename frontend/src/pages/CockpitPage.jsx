@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -31,8 +31,10 @@ import NeriaCorpScannerTab from '../components/admin/NeriaCorpScannerTab';
 import ContentVisualsModule from '../components/admin/ContentVisualsModule';
 import { WhatsNewAdminSection } from '../components/admin/WhatsNewAdminSection';
 
-function CockpitPage() {
+function CockpitPage({ tenantEmbed = false }) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isTenantEmbed = tenantEmbed || searchParams.get('embed') === 'tenant';
   const { t } = useTranslation();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -374,26 +376,36 @@ function CockpitPage() {
 
   return (
     <div
-      className="min-h-screen w-full overflow-x-hidden gradient-bg p-4 pb-28"
-      data-testid="cockpit-page"
+      className={
+        isTenantEmbed
+          ? 'w-full min-w-0 overflow-x-hidden bg-transparent p-3 pb-6'
+          : 'min-h-screen w-full overflow-x-hidden gradient-bg p-4 pb-28'
+      }
+      data-testid={isTenantEmbed ? 'cockpit-tenant-embed' : 'cockpit-page'}
     >
       <div className="max-w-4xl mx-auto space-y-4 animate-fade-in">
-        <div className="flex items-start justify-between gap-3 pt-2 pb-1">
-          <div className="min-w-0 flex-1">
-            <CockpitMamanDouceHeader
-              onApiPasswordClick={() => {
-                toast.message('Secrets API via N2-Vault — ouvrez « Santé de l\'App » dans Outils business.');
-                toggleDrawer('tools');
-                setOpenSubs((prev) => ({ ...prev, guardian: true }));
-              }}
-            />
+        {!isTenantEmbed && (
+          <div className="flex items-start justify-between gap-3 pt-2 pb-1">
+            <div className="min-w-0 flex-1">
+              <CockpitMamanDouceHeader
+                onApiPasswordClick={() => {
+                  toast.message('Secrets API via N2-Vault — ouvrez « Santé de l\'App » dans Outils business.');
+                  toggleDrawer('tools');
+                  setOpenSubs((prev) => ({ ...prev, guardian: true }));
+                }}
+              />
+            </div>
+            <GuardianStatusIndicator onClick={() => toggleDrawer('tools')} />
           </div>
-          <GuardianStatusIndicator onClick={() => toggleDrawer('tools')} />
-        </div>
+        )}
 
         <section
           id="cockpit-content-visuals"
-          className="block w-full min-w-0 scroll-mt-4 rounded-3xl border border-slate-200 bg-white/95 p-4 shadow-sm sm:p-5"
+          className={
+            isTenantEmbed
+              ? 'block w-full min-w-0 scroll-mt-2 rounded-2xl border border-white/10 bg-slate-900/40 p-3 shadow-sm sm:p-4'
+              : 'block w-full min-w-0 scroll-mt-4 rounded-3xl border border-slate-200 bg-white/95 p-4 shadow-sm sm:p-5'
+          }
           data-testid="cockpit-content-visuals-section"
         >
           <ContentVisualsModule />

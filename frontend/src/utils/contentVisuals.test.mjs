@@ -40,6 +40,17 @@ test("content visuals module defines three responsive tabs", () => {
   assert.match(source, /LegalContentTab/);
 });
 
+test("tenant mobile embed route loads cockpit body with content visuals first", () => {
+  const app = readFileSync(join(root, "src/App.jsx"), "utf8");
+  assert.match(app, /embed\/cockpit\/tenant-dashboard/);
+  assert.match(app, /CockpitPage tenantEmbed/);
+  const cockpit = readFileSync(join(root, "src/pages/CockpitPage.jsx"), "utf8");
+  assert.match(cockpit, /isTenantEmbed/);
+  assert.match(cockpit, /cockpit-tenant-embed/);
+  const manifest = readFileSync(join(root, "public/neriacorp-app.json"), "utf8");
+  assert.match(manifest, /tenant_mobile_embed_path/);
+});
+
 test("admin API exposes content-config endpoints", () => {
   const api = readFileSync(join(root, "src/utils/api.jsx"), "utf8");
   assert.match(api, /getContentConfigs/);

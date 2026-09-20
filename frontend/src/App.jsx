@@ -294,6 +294,14 @@ useEffect(() => {
                     </ProtectedRoute>
                   }
                 />
+                <Route
+                  path="/embed/cockpit/tenant-dashboard"
+                  element={
+                    <ProtectedRoute requireSubscription={false}>
+                      <CockpitPage tenantEmbed />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route path="/baby-evolution" element={<ProtectedRoute><BabyEvolutionPage /></ProtectedRoute>} />
                 <Route path="/faq-baby" element={<ProtectedRoute><FaqBabyPage /></ProtectedRoute>} />
                 <Route path="/outils/bonne-nuit-bebe" element={<ProtectedRoute><BabySleepPage /></ProtectedRoute>} />

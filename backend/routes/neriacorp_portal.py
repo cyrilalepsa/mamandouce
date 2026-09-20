@@ -167,9 +167,19 @@ async def neriacorp_cockpit_mamandouce_layout():
     entry = get_portal_catalog_entry()
     cockpit = entry.get("cockpit") or {}
     public_url = (entry.get("urls") or {}).get("app") or ""
+    tenant_body = cockpit.get("tenant_mobile_embed_url") or (
+        f"{public_url.rstrip('/')}/embed/cockpit/tenant-dashboard"
+    )
     return {
         "app_slug": "mamandouce",
+        "zone": "B2C",
+        "navigation_path": "cockpit > gestion des tenants > B2C > mamandouce > dashboard",
         "title": "Dashboard MamanDouce",
+        "mobile": {
+            "shell": "neriacorp-cockpit-first-party",
+            "webview_body_url": tenant_body,
+            "note": "En-tête (API PASSWORD) natif cockpit ; WebView = module Contenus & Visuels puis accordéons.",
+        },
         "sections": [
             {
                 "id": "content_visuals",
@@ -212,6 +222,7 @@ async def neriacorp_cockpit_mamandouce_layout():
             },
         ],
         "cockpit": cockpit,
+        "recommended_webview_url": tenant_body,
     }
 
 
