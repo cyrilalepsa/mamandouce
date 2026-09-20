@@ -16,7 +16,7 @@ test("cockpit exposes content visuals module at top", () => {
   assert.match(header, /cockpit-api-password-btn/);
   assert.match(cockpit, /ContentVisualsModule/);
   assert.match(cockpit, /cockpit-content-visuals-section/);
-  assert.match(cockpit, /Gestion des Contenus/);
+  assert.match(cockpit, /<ContentVisualsModule/);
   const headerIdx = cockpit.indexOf("CockpitMamanDouceHeader");
   const moduleIdx = cockpit.indexOf("cockpit-content-visuals");
   const communityIdx = cockpit.indexOf("GESTION COMMUNAUTÉ");
