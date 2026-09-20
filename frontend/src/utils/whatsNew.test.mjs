@@ -49,9 +49,9 @@ test('Cockpit page exposes whats-new admin section', () => {
   const cockpit = read('src/pages/CockpitPage.jsx');
   assert.match(cockpit, /WhatsNewAdminSection/);
   assert.match(cockpit, /data-testid="cockpit-page"/);
-  assert.match(cockpit, /FetusVisualsTab/);
+  assert.match(cockpit, /ContentVisualsModule/);
   assert.match(cockpit, /cockpit-mobile-tiles/);
-  assert.match(cockpit, /cockpit-tile-fetus-visuals/);
+  assert.match(cockpit, /cockpit-tile-content-visuals/);
 
   const admin = read('src/components/admin/WhatsNewAdminSection.jsx');
   assert.match(admin, /upsertWhatsNew/);

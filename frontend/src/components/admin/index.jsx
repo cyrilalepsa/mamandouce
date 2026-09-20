@@ -15,3 +15,6 @@ export { CityMapWidget } from './CityMapWidget';
 export { EvolutionChart } from './EvolutionChart';
 export { default as NeriaCorpScannerTab } from './NeriaCorpScannerTab';
 export { default as FetusVisualsTab } from './FetusVisualsTab';
+export { default as ContentVisualsModule } from './ContentVisualsModule';
+export { default as AppBannersTab } from './AppBannersTab';
+export { default as LegalContentTab } from './LegalContentTab';

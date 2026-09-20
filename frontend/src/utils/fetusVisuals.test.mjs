@@ -60,8 +60,8 @@ test("admin manager renders period upload controls in cockpit", () => {
   assert.match(source, /mamandouce\/foetus/);
   assert.match(source, /upload-fetus-\$\{testSuffix\}/);
   const cockpit = readFileSync(join(root, "src/pages/CockpitPage.jsx"), "utf8");
-  assert.match(cockpit, /FetusVisualsTab/);
-  assert.match(cockpit, /cockpit-fetus-visuals-section/);
+  assert.match(cockpit, /ContentVisualsModule/);
+  assert.match(cockpit, /cockpit-content-visuals-section/);
   const tips = readFileSync(join(root, "src/pages/WeeklyTipsPage.jsx"), "utf8");
   assert.match(tips, /imageUrl=\{fetusImages\[String\(selectedWeek\)\]/);
 });

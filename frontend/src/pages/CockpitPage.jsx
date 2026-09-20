@@ -1,9 +1,9 @@
 import { Navigate, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ImageIcon, Lightbulb } from 'lucide-react';
+import { ArrowLeft, Layers, Lightbulb } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { isSuperAdmin } from '../utils/superadmin';
 import { WhatsNewAdminSection } from '../components/admin/WhatsNewAdminSection';
-import FetusVisualsTab from '../components/admin/FetusVisualsTab';
+import ContentVisualsModule from '../components/admin/ContentVisualsModule';
 
 function CockpitPage() {
   const navigate = useNavigate();
@@ -53,19 +53,19 @@ function CockpitPage() {
         </div>
 
         <nav
-          className="grid w-full grid-cols-2 gap-2 sm:grid-cols-2"
+          className="grid w-full grid-cols-2 gap-2"
           aria-label="Modules du cockpit"
           data-testid="cockpit-mobile-tiles"
         >
           <button
             type="button"
-            onClick={() => scrollToSection('cockpit-fetus-visuals')}
-            className="flex min-h-[72px] flex-col items-center justify-center gap-1 rounded-2xl border border-pink-200 bg-white/95 p-3 text-center shadow-sm active:bg-pink-50 touch-manipulation"
-            data-testid="cockpit-tile-fetus-visuals"
+            onClick={() => scrollToSection('cockpit-content-visuals')}
+            className="flex min-h-[72px] flex-col items-center justify-center gap-1 rounded-2xl border border-violet-200 bg-white/95 p-3 text-center shadow-sm active:bg-violet-50 touch-manipulation"
+            data-testid="cockpit-tile-content-visuals"
           >
-            <ImageIcon className="h-6 w-6 text-pink-500" aria-hidden="true" />
+            <Layers className="h-6 w-6 text-violet-600" aria-hidden="true" />
             <span className="text-xs font-bold leading-tight text-slate-700">
-              Visuels fœtus
+              Gestion des Contenus &amp; Visuels
             </span>
           </button>
           <button
@@ -82,11 +82,11 @@ function CockpitPage() {
         </nav>
 
         <section
-          id="cockpit-fetus-visuals"
+          id="cockpit-content-visuals"
           className="block w-full min-w-0 scroll-mt-4 rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-sm sm:p-5"
-          data-testid="cockpit-fetus-visuals-section"
+          data-testid="cockpit-content-visuals-section"
         >
-          <FetusVisualsTab />
+          <ContentVisualsModule />
         </section>
 
         <div id="cockpit-whats-new" className="w-full min-w-0 scroll-mt-4">

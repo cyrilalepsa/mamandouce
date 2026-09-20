@@ -129,7 +129,7 @@ function FetusVisualCard({
   );
 }
 
-export default function FetusVisualsTab() {
+export default function FetusVisualsTab({ embedded = false }) {
   const [periodKind, setPeriodKind] = useState('week');
   const [visuals, setVisuals] = useState(() => emptyVisuals('week'));
   const [folder, setFolder] = useState('mamandouce/foetus');
@@ -222,21 +222,28 @@ export default function FetusVisualsTab() {
 
   return (
     <div className="w-full min-w-0 space-y-4 overflow-x-hidden" data-testid="fetus-visuals-manager">
-      <div className="rounded-2xl border border-pink-100 bg-gradient-to-r from-pink-50 to-violet-50 p-4">
-        <div className="flex min-w-0 items-start gap-3">
-          <ImageIcon className="h-6 w-6 shrink-0 text-pink-500" />
-          <div className="min-w-0">
-            <h3 className="font-bold text-slate-700">
-              Gestion des Visuels Fœtus (Jours/Mois)
-            </h3>
-            <p className="text-xs leading-relaxed text-slate-500 break-words">
-              Upload Cloudinary dans{' '}
-              <code className="break-all text-[11px]">{folder}</code>
-              {' '}— JPEG, PNG, WEBP, HEIC/HEIF (conversion auto).
-            </p>
+      {!embedded && (
+        <div className="rounded-2xl border border-pink-100 bg-gradient-to-r from-pink-50 to-violet-50 p-4">
+          <div className="flex min-w-0 items-start gap-3">
+            <ImageIcon className="h-6 w-6 shrink-0 text-pink-500" />
+            <div className="min-w-0">
+              <h3 className="font-bold text-slate-700">
+                Gestion des Visuels Fœtus (Jours/Mois)
+              </h3>
+              <p className="text-xs leading-relaxed text-slate-500 break-words">
+                Upload Cloudinary dans{' '}
+                <code className="break-all text-[11px]">{folder}</code>
+                {' '}— JPEG, PNG, WEBP, HEIC/HEIF (conversion auto).
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
+      {embedded && (
+        <p className="text-xs text-slate-500 break-words">
+          Dossier Cloudinary : <code className="break-all text-[11px]">{folder}</code>
+        </p>
+      )}
 
       <div
         className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:thin]"
