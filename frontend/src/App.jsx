@@ -74,6 +74,7 @@ import BabySleepPage from './pages/outils/BabySleepPage';
 import PediatricianNotesPage from './pages/outils/PediatricianNotesPage';
 import EmergencyInfoPage from './pages/outils/EmergencyInfoPage';
 import CockpitPage from './pages/CockpitPage';
+import ContentVisualsEmbedPage from './pages/ContentVisualsEmbedPage';
 import { ScannerOverlayProvider } from './contexts/ScannerOverlayContext';
 import { EmotionalIntelligenceProvider } from './components/EmotionalIntelligence';
 // WhatsNewModal remplacé par NewsBubble dans HomePage
@@ -284,6 +285,15 @@ useEffect(() => {
                 <Route path="/tirelire" element={<ProtectedRoute><TireliirePage /></ProtectedRoute>} />
                 <Route path="/moderation" element={<ProtectedRoute><ModerationPage /></ProtectedRoute>} />
                 <Route path="/cockpit" element={<ProtectedRoute requireSubscription={false}><CockpitPage /></ProtectedRoute>} />
+                <Route path="/admin" element={<ProtectedRoute requireSubscription={false}><CockpitPage /></ProtectedRoute>} />
+                <Route
+                  path="/embed/cockpit/content-visuals"
+                  element={
+                    <ProtectedRoute requireSubscription={false}>
+                      <ContentVisualsEmbedPage />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route path="/baby-evolution" element={<ProtectedRoute><BabyEvolutionPage /></ProtectedRoute>} />
                 <Route path="/faq-baby" element={<ProtectedRoute><FaqBabyPage /></ProtectedRoute>} />
                 <Route path="/outils/bonne-nuit-bebe" element={<ProtectedRoute><BabySleepPage /></ProtectedRoute>} />

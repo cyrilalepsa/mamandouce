@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, HandCoins, Eye, Crown, Baby, ChevronDown, Bell, Smartphone, Shield, HandHeart, Calculator, CheckCircle, Brain, Lightbulb, Layers } from 'lucide-react';
+import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, HandCoins, Eye, Crown, Baby, ChevronDown, Bell, Smartphone, Shield, HandHeart, Calculator, CheckCircle, Brain, Lightbulb } from 'lucide-react';
 import api from '../utils/api';
-import PageHeader from '../components/PageHeader';
+import CockpitMamanDouceHeader from '../components/admin/CockpitMamanDouceHeader';
 import { toast } from 'sonner';
 import { isSuperAdmin, applySuperadminOverlay, ADMIN_EMAILS } from '../utils/superadmin';
 import {
@@ -378,33 +378,18 @@ function CockpitPage() {
       data-testid="cockpit-page"
     >
       <div className="max-w-4xl mx-auto space-y-4 animate-fade-in">
-        <div className="flex items-center justify-between pt-2 pb-1">
-          <div className="min-w-0">
-            <PageHeader title="Dashboard MamanDouce" />
-            <p className="text-xs text-slate-500 px-1 mt-1" data-testid="cockpit-api-password-hint">
-              Cockpit admin — API &amp; secrets via N2-Vault (aucun mot de passe affiché ici).
-            </p>
+        <div className="flex items-start justify-between gap-3 pt-2 pb-1">
+          <div className="min-w-0 flex-1">
+            <CockpitMamanDouceHeader
+              onApiPasswordClick={() => {
+                toast.message('Secrets API via N2-Vault — ouvrez « Santé de l\'App » dans Outils business.');
+                toggleDrawer('tools');
+                setOpenSubs((prev) => ({ ...prev, guardian: true }));
+              }}
+            />
           </div>
           <GuardianStatusIndicator onClick={() => toggleDrawer('tools')} />
         </div>
-
-        <nav
-          className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2"
-          aria-label="Raccourcis cockpit"
-          data-testid="cockpit-mobile-tiles"
-        >
-          <button
-            type="button"
-            onClick={() => document.getElementById('cockpit-content-visuals')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-            className="flex min-h-[72px] flex-col items-center justify-center gap-1 rounded-2xl border border-violet-200 bg-white/95 p-3 text-center shadow-sm active:bg-violet-50 touch-manipulation"
-            data-testid="cockpit-tile-content-visuals"
-          >
-            <Layers className="h-6 w-6 text-violet-600" aria-hidden="true" />
-            <span className="text-xs font-bold leading-tight text-slate-700">
-              Gestion des Contenus &amp; Visuels
-            </span>
-          </button>
-        </nav>
 
         <section
           id="cockpit-content-visuals"

@@ -82,7 +82,7 @@ test("superadmin emails unlock dashboard and premium", () => {
   const top = read("src/components/home/TopBar.jsx");
   assert.match(top, /logout-menu-item/);
   assert.doesNotMatch(top, /admin-dashboard-link/);
-  assert.doesNotMatch(read("src/App.jsx"), /path="\/admin"/);
+  assert.match(read("src/App.jsx"), /path="\/admin" element=.*CockpitPage/);
   const ctx = read("src/contexts/AuthContext.jsx");
   assert.match(ctx, /AUTH_LOGIN_PATH/);
   assert.match(ctx, /clearAuthStorage/);

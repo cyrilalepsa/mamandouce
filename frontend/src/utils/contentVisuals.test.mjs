@@ -8,13 +8,19 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 test("cockpit exposes content visuals module at top", () => {
   const cockpit = readFileSync(join(root, "src/pages/CockpitPage.jsx"), "utf8");
+  assert.match(cockpit, /CockpitMamanDouceHeader/);
+  const header = readFileSync(
+    join(root, "src/components/admin/CockpitMamanDouceHeader.jsx"),
+    "utf8",
+  );
+  assert.match(header, /cockpit-api-password-btn/);
   assert.match(cockpit, /ContentVisualsModule/);
   assert.match(cockpit, /cockpit-content-visuals-section/);
-  assert.match(cockpit, /cockpit-tile-content-visuals/);
   assert.match(cockpit, /Gestion des Contenus/);
+  const headerIdx = cockpit.indexOf("CockpitMamanDouceHeader");
   const moduleIdx = cockpit.indexOf("cockpit-content-visuals");
   const communityIdx = cockpit.indexOf("GESTION COMMUNAUTÉ");
-  assert.ok(moduleIdx > -1 && communityIdx > moduleIdx);
+  assert.ok(headerIdx > -1 && moduleIdx > headerIdx && communityIdx > moduleIdx);
   assert.doesNotMatch(cockpit, /fetus-visuals/);
   assert.doesNotMatch(cockpit, /FetusVisualsTab/);
 });
