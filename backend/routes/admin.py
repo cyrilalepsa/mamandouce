@@ -2,7 +2,7 @@
 Admin routes for MamanDouce
 Handles: Users management, Promo codes, Food validation, Messages
 """
-from fastapi import APIRouter, HTTPException, Depends, File, UploadFile
+from fastapi import APIRouter, HTTPException, Depends, File, UploadFile, Query
 from datetime import datetime, timezone, timedelta
 import logging
 import json
@@ -978,14 +978,41 @@ async def update_food_status(food_id: str, status: str, admin: User = Depends(ge
 
 # ==================== FETUS VISUALS ====================
 
-FETUS_VISUAL_MIMES = {"image/jpeg", "image/jpg", "image/png", "image/webp"}
+FETUS_VISUAL_MIMES = {
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/webp",
+    "image/heic",
+    "image/heif",
+    "image/heic-sequence",
+    "image/heif-sequence",
+}
+FETUS_PERIOD_KINDS = frozenset({"week", "month", "day"})
+FETUS_PERIOD_LIMITS = {"week": 40, "month": 9, "day": 280}
 MAX_FETUS_VISUAL_BYTES = 10 * 1024 * 1024
 
 
-def _fetus_visual_row(week: int, document: dict | None = None) -> dict:
+def _validate_fetus_period(kind: str, period: int) -> None:
+    if kind not in FETUS_PERIOD_KINDS:
+        raise HTTPException(status_code=422, detail="Période : week, month ou day")
+    upper = FETUS_PERIOD_LIMITS[kind]
+    if period < 1 or period > upper:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Valeur comprise entre 1 et {upper} pour {kind}",
+        )
+
+
+def _fetus_visual_row(
+    kind: str,
+    period: int,
+    document: dict | None = None,
+) -> dict:
     document = document or {}
-    return {
-        "week": week,
+    row = {
+        "kind": kind,
+        "period": period,
         "image_url": document.get("image_url"),
         "public_id": document.get("public_id"),
         "width": document.get("width"),
@@ -994,20 +1021,136 @@ def _fetus_visual_row(week: int, document: dict | None = None) -> dict:
         "updated_at": document.get("updated_at"),
         "updated_by": document.get("updated_by"),
     }
+    if kind == "week":
+        row["week"] = period
+    return row
+
+
+def _fetus_period_from_document(document: dict) -> tuple[str, int] | None:
+    kind = document.get("kind")
+    if kind in FETUS_PERIOD_KINDS:
+        period = document.get("period") or document.get("week")
+        if period is not None:
+            return str(kind), int(period)
+    week = document.get("week")
+    if week is not None and kind in (None, "week"):
+        return "week", int(week)
+    return None
+
+
+async def _load_fetus_visuals_by_period(kind: str) -> dict[int, dict]:
+    upper = FETUS_PERIOD_LIMITS[kind]
+    if kind == "week":
+        query = {
+            "$or": [
+                {"kind": "week"},
+                {"kind": {"$exists": False}},
+            ],
+            "week": {"$gte": 1, "$lte": upper},
+        }
+    else:
+        query = {"kind": kind, "period": {"$gte": 1, "$lte": upper}}
+    documents = await db.fetus_visuals.find(query, {"_id": 0}).to_list(upper + 20)
+    by_period: dict[int, dict] = {}
+    for document in documents:
+        parsed = _fetus_period_from_document(document)
+        if not parsed or parsed[0] != kind:
+            continue
+        period = parsed[1]
+        if 1 <= period <= upper:
+            by_period[period] = document
+    return by_period
+
+
+async def _read_fetus_upload(file: UploadFile) -> tuple[bytes, str, str]:
+    mime = (file.content_type or "").lower().split(";")[0].strip()
+    filename = file.filename or "fetus.jpg"
+    if mime not in FETUS_VISUAL_MIMES:
+        lowered_name = filename.lower()
+        if not (
+            lowered_name.endswith(".heic")
+            or lowered_name.endswith(".heif")
+            or lowered_name.endswith((".jpg", ".jpeg", ".png", ".webp"))
+        ):
+            raise HTTPException(
+                status_code=400,
+                detail="Format accepté : JPEG, PNG, WEBP, HEIC ou HEIF",
+            )
+    content = await file.read()
+    if not content:
+        raise HTTPException(status_code=400, detail="Image vide")
+    if len(content) > MAX_FETUS_VISUAL_BYTES:
+        raise HTTPException(status_code=413, detail="Image trop volumineuse (max 10 Mo)")
+    from services.fetus_image_normalize import normalize_fetus_image
+
+    try:
+        return normalize_fetus_image(content, mime, filename)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+async def _upload_fetus_period_visual(
+    kind: str,
+    period: int,
+    file: UploadFile,
+    admin: User,
+) -> dict:
+    _validate_fetus_period(kind, period)
+    content, mime, filename = await _read_fetus_upload(file)
+    from services.cloudinary_upload import upload_fetus_visual as cloudinary_upload
+
+    try:
+        uploaded = await asyncio.to_thread(
+            cloudinary_upload,
+            content,
+            filename=filename or f"{kind}-{period}.jpg",
+            content_type=mime,
+            kind=kind,
+            period=period,
+            week=period if kind == "week" else None,
+        )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    now = datetime.now(timezone.utc).isoformat()
+    document = {
+        "kind": kind,
+        "period": period,
+        **uploaded,
+        "updated_at": now,
+        "updated_by": admin.email,
+    }
+    if kind == "week":
+        document["week"] = period
+    filter_query = (
+        {"week": period}
+        if kind == "week"
+        else {"kind": kind, "period": period}
+    )
+    await db.fetus_visuals.update_one(
+        filter_query,
+        {"$set": document},
+        upsert=True,
+    )
+    return _fetus_visual_row(kind, period, document)
 
 
 @router.get("/admin/fetus-visuals")
-async def get_fetus_visuals(admin: User = Depends(get_admin_user)):
-    documents = await db.fetus_visuals.find(
-        {"week": {"$gte": 1, "$lte": 40}},
-        {"_id": 0},
-    ).to_list(40)
-    by_week = {int(document["week"]): document for document in documents}
+async def get_fetus_visuals(
+    kind: str = Query("week"),
+    admin: User = Depends(get_admin_user),
+):
+    kind = (kind or "week").strip().lower()
+    if kind not in FETUS_PERIOD_KINDS:
+        raise HTTPException(status_code=422, detail="Période : week, month ou day")
+    upper = FETUS_PERIOD_LIMITS[kind]
+    by_period = await _load_fetus_visuals_by_period(kind)
     return {
+        "kind": kind,
         "folder": "mamandouce/foetus",
         "visuals": [
-            _fetus_visual_row(week, by_week.get(week))
-            for week in range(1, 41)
+            _fetus_visual_row(kind, period, by_period.get(period))
+            for period in range(1, upper + 1)
         ],
     }
 
@@ -1018,46 +1161,25 @@ async def upload_fetus_visual(
     file: UploadFile = File(...),
     admin: User = Depends(get_admin_user),
 ):
-    if week < 1 or week > 40:
-        raise HTTPException(status_code=422, detail="Semaine comprise entre 1 et 40")
-    mime = (file.content_type or "").lower().split(";")[0]
-    if mime not in FETUS_VISUAL_MIMES:
-        raise HTTPException(
-            status_code=400,
-            detail="Format accepté : JPEG, PNG ou WebP",
-        )
-    content = await file.read()
-    if not content:
-        raise HTTPException(status_code=400, detail="Image vide")
-    if len(content) > MAX_FETUS_VISUAL_BYTES:
-        raise HTTPException(status_code=413, detail="Image trop volumineuse (max 10 Mo)")
+    return await _upload_fetus_period_visual("week", week, file, admin)
 
-    from services.cloudinary_upload import upload_fetus_visual as cloudinary_upload
 
-    try:
-        uploaded = await asyncio.to_thread(
-            cloudinary_upload,
-            content,
-            filename=file.filename or f"week-{week:02d}.jpg",
-            content_type=mime,
-            week=week,
-        )
-    except RuntimeError as exc:
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
+@router.post("/admin/fetus-visuals/month/{month}")
+async def upload_fetus_visual_month(
+    month: int,
+    file: UploadFile = File(...),
+    admin: User = Depends(get_admin_user),
+):
+    return await _upload_fetus_period_visual("month", month, file, admin)
 
-    now = datetime.now(timezone.utc).isoformat()
-    document = {
-        "week": week,
-        **uploaded,
-        "updated_at": now,
-        "updated_by": admin.email,
-    }
-    await db.fetus_visuals.update_one(
-        {"week": week},
-        {"$set": document},
-        upsert=True,
-    )
-    return _fetus_visual_row(week, document)
+
+@router.post("/admin/fetus-visuals/day/{day}")
+async def upload_fetus_visual_day(
+    day: int,
+    file: UploadFile = File(...),
+    admin: User = Depends(get_admin_user),
+):
+    return await _upload_fetus_period_visual("day", day, file, admin)
 
 
 @router.delete("/admin/fetus-visuals/{week}")
@@ -1065,10 +1187,29 @@ async def delete_fetus_visual(
     week: int,
     admin: User = Depends(get_admin_user),
 ):
-    if week < 1 or week > 40:
-        raise HTTPException(status_code=422, detail="Semaine comprise entre 1 et 40")
+    _validate_fetus_period("week", week)
     result = await db.fetus_visuals.delete_one({"week": week})
     return {"success": True, "deleted": bool(result.deleted_count), "week": week}
+
+
+@router.delete("/admin/fetus-visuals/month/{month}")
+async def delete_fetus_visual_month(
+    month: int,
+    admin: User = Depends(get_admin_user),
+):
+    _validate_fetus_period("month", month)
+    result = await db.fetus_visuals.delete_one({"kind": "month", "period": month})
+    return {"success": True, "deleted": bool(result.deleted_count), "month": month}
+
+
+@router.delete("/admin/fetus-visuals/day/{day}")
+async def delete_fetus_visual_day(
+    day: int,
+    admin: User = Depends(get_admin_user),
+):
+    _validate_fetus_period("day", day)
+    result = await db.fetus_visuals.delete_one({"kind": "day", "period": day})
+    return {"success": True, "deleted": bool(result.deleted_count), "day": day}
 
 
 # ==================== MESSAGES ====================
