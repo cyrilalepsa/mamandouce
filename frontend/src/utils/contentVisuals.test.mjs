@@ -13,8 +13,10 @@ test("cockpit exposes content visuals module at top", () => {
   assert.match(cockpit, /cockpit-tile-content-visuals/);
   assert.match(cockpit, /Gestion des Contenus/);
   const moduleIdx = cockpit.indexOf("cockpit-content-visuals");
-  const whatsNewIdx = cockpit.indexOf("cockpit-whats-new");
-  assert.ok(moduleIdx > -1 && whatsNewIdx > moduleIdx);
+  const communityIdx = cockpit.indexOf("GESTION COMMUNAUTÉ");
+  assert.ok(moduleIdx > -1 && communityIdx > moduleIdx);
+  assert.doesNotMatch(cockpit, /fetus-visuals/);
+  assert.doesNotMatch(cockpit, /FetusVisualsTab/);
 });
 
 test("content visuals module defines three responsive tabs", () => {
