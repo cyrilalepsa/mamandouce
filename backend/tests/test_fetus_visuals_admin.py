@@ -39,6 +39,8 @@ def test_fetus_visual_routes_are_registered():
     assert ("GET", "/api/admin/fetus-visuals") in routes
     assert ("POST", "/api/admin/fetus-visuals/{week}") in routes
     assert ("DELETE", "/api/admin/fetus-visuals/{week}") in routes
+    assert ("POST", "/api/admin/fetus-visuals/month/{month}") in routes
+    assert ("POST", "/api/admin/fetus-visuals/day/{day}") in routes
     assert ("GET", "/api/pregnancy/fetus-visuals") in routes
 
 
@@ -56,6 +58,8 @@ def test_admin_list_always_returns_all_40_weeks():
     assert result["folder"] == "mamandouce/foetus"
     assert len(result["visuals"]) == 40
     assert result["visuals"][0] == {
+        "kind": "week",
+        "period": 1,
         "week": 1,
         "image_url": None,
         "public_id": None,
@@ -118,6 +122,23 @@ def test_public_mapping_returns_only_saved_urls():
         result = asyncio.run(get_public_fetus_visuals())
 
     assert result["images"] == {"8": "https://cdn.example/week-08.webp"}
+
+
+def test_normalize_heic_to_jpeg():
+    from PIL import Image
+
+    from services.fetus_image_normalize import normalize_fetus_image
+
+    buffer = io.BytesIO()
+    Image.new("RGB", (4, 4), color=(200, 100, 50)).save(buffer, format="JPEG")
+    content, mime, name = normalize_fetus_image(
+        buffer.getvalue(),
+        "image/jpeg",
+        "sample.jpg",
+    )
+    assert mime == "image/jpeg"
+    assert content
+    assert name.endswith(".jpg")
 
 
 def test_cloudinary_upload_targets_required_folder_without_exposing_secret():

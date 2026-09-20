@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { isSuperAdmin } from '../utils/superadmin';
 import { WhatsNewAdminSection } from '../components/admin/WhatsNewAdminSection';
+import FetusVisualsTab from '../components/admin/FetusVisualsTab';
 
 function CockpitPage() {
   const navigate = useNavigate();
@@ -40,11 +41,18 @@ function CockpitPage() {
           </button>
           <div>
             <h1 className="text-2xl font-bold text-slate-700">Cockpit</h1>
-            <p className="text-sm text-slate-500">Gestion des nouveautés utilisateur</p>
+            <p className="text-sm text-slate-500">Administration MamanDouce</p>
           </div>
         </div>
 
         <WhatsNewAdminSection />
+
+        <section
+          className="rounded-3xl bg-white/90 border border-slate-200 shadow-sm p-4 sm:p-5"
+          data-testid="cockpit-fetus-visuals-section"
+        >
+          <FetusVisualsTab />
+        </section>
       </div>
     </div>
   );

@@ -335,7 +335,10 @@ export const api = {
     // Business Kit
     getBusinessKitInfo: () => axios.get(`${API()}/admin/business-kit/info`, getAuthHeaders()),
     sendBusinessKitEmail: () => axios.post(`${API()}/admin/business-kit/send-email`, {}, getAuthHeaders()),
-    getFetusVisuals: () => axios.get(`${API()}/admin/fetus-visuals`, getAuthHeaders()),
+    getFetusVisuals: (kind = 'week') => axios.get(
+      `${API()}/admin/fetus-visuals?kind=${encodeURIComponent(kind)}`,
+      getAuthHeaders(),
+    ),
     uploadFetusVisual: (week, formData) => axios.post(
       `${API()}/admin/fetus-visuals/${week}`,
       formData,
@@ -346,10 +349,33 @@ export const api = {
         },
       },
     ),
+    uploadFetusVisualPeriod: (kind, period, formData) => {
+      const base = `${API()}/admin/fetus-visuals`;
+      const path = kind === 'month'
+        ? `${base}/month/${period}`
+        : kind === 'day'
+          ? `${base}/day/${period}`
+          : `${base}/${period}`;
+      return axios.post(path, formData, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    },
     deleteFetusVisual: (week) => axios.delete(
       `${API()}/admin/fetus-visuals/${week}`,
       getAuthHeaders(),
     ),
+    deleteFetusVisualPeriod: (kind, period) => {
+      const base = `${API()}/admin/fetus-visuals`;
+      const path = kind === 'month'
+        ? `${base}/month/${period}`
+        : kind === 'day'
+          ? `${base}/day/${period}`
+          : `${base}/${period}`;
+      return axios.delete(path, getAuthHeaders());
+    },
     // News Notifications
     sendNewsNotification: (data) => axios.post(`${API()}/admin/send-news-notification`, data, getAuthHeaders()),
     getNewsNotifications: () => axios.get(`${API()}/admin/news-notifications`, getAuthHeaders()),

@@ -44,16 +44,21 @@ test("saved week URL overrides generated Cloudinary and local fallbacks", async 
   }
 });
 
-test("admin manager renders 40 week upload controls", () => {
+test("admin manager renders period upload controls in cockpit", () => {
   const source = readFileSync(
     join(root, "src/components/admin/FetusVisualsTab.jsx"),
     "utf8",
   );
-  assert.match(source, /Gestion des Visuels Fœtus \(40 Semaines\)/);
-  assert.match(source, /Array\.from\(\{ length: 40 \}/);
-  assert.match(source, /uploadFetusVisual/);
+  assert.match(source, /Gestion des Visuels Fœtus \(Jours\/Mois\)/);
+  assert.match(source, /uploadFetusVisualPeriod/);
+  assert.match(source, /fetus-period-tab-\$\{kind\}/);
+  const mime = readFileSync(join(root, "src/utils/fetusUploadMime.js"), "utf8");
+  assert.match(mime, /image\/heic/);
   assert.match(source, /mamandouce\/foetus/);
-  assert.match(source, /upload-fetus-week-/);
+  assert.match(source, /upload-fetus-\$\{testSuffix\}/);
+  const cockpit = readFileSync(join(root, "src/pages/CockpitPage.jsx"), "utf8");
+  assert.match(cockpit, /FetusVisualsTab/);
+  assert.match(cockpit, /cockpit-fetus-visuals-section/);
   const tips = readFileSync(join(root, "src/pages/WeeklyTipsPage.jsx"), "utf8");
   assert.match(tips, /imageUrl=\{fetusImages\[String\(selectedWeek\)\]/);
 });

@@ -17,12 +17,22 @@ def _signature(params: dict, api_secret: str) -> str:
     return hashlib.sha1(f"{to_sign}{api_secret}".encode("utf-8")).hexdigest()
 
 
+def _fetus_public_id(kind: str, period: int) -> str:
+    if kind == "month":
+        return f"month-{period:02d}"
+    if kind == "day":
+        return f"day-{period:03d}"
+    return f"week-{period:02d}"
+
+
 def upload_fetus_visual(
     content: bytes,
     *,
     filename: str,
     content_type: str,
-    week: int,
+    week: int | None = None,
+    kind: str = "week",
+    period: int | None = None,
 ) -> dict:
     config.load_settings()
     cloud = config.CLOUDINARY_CLOUD_NAME
@@ -35,8 +45,10 @@ def upload_fetus_visual(
     if not cloud or not api_key or not api_secret:
         raise RuntimeError("Cloudinary n'est pas configuré")
 
+    resolved_kind = (kind or "week").strip().lower()
+    resolved_period = int(period if period is not None else week)
     timestamp = int(time.time())
-    public_id = f"week-{week:02d}"
+    public_id = _fetus_public_id(resolved_kind, resolved_period)
     sign_params = {
         "folder": folder,
         "invalidate": "true",
