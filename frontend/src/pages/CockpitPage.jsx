@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, HandCoins, Eye, Crown, Baby, ChevronDown, Bell, Smartphone, Shield, HandHeart, Calculator, CheckCircle, Brain, Lightbulb } from 'lucide-react';
+import { AlertTriangle, Users, Gift, Apple, MessageSquare, LayoutDashboard, HandCoins, Eye, Crown, Baby, ChevronDown, Bell, Smartphone, Shield, HandHeart, Calculator, CheckCircle, Brain, Lightbulb, Layers } from 'lucide-react';
 import api from '../utils/api';
 import CockpitMamanDouceHeader from '../components/admin/CockpitMamanDouceHeader';
 import { toast } from 'sonner';
@@ -74,7 +74,7 @@ function CockpitPage({ tenantEmbed = false }) {
   const [showViewMenu, setShowViewMenu] = useState(false);
   
   // Tiroirs accordéon
-  const [openDrawers, setOpenDrawers] = useState({ community: true });
+  const [openDrawers, setOpenDrawers] = useState({ contentVisuals: true, community: false });
   // Sous-accordéons imbriqués
   const [openSubs, setOpenSubs] = useState({});
 
@@ -299,6 +299,7 @@ function CockpitPage({ tenantEmbed = false }) {
   };
 
   const drawerColors = {
+    contentVisuals: '#DDD6FE, #C4B5FD', // violet (contenus & visuels)
     community: '#E9D5FF, #D8B4FE',  // lilas
     messaging: '#FECDD3, #FDA4AF',   // rose
     finances:  '#A7F3D0, #6EE7B7',   // menthe
@@ -333,10 +334,14 @@ function CockpitPage({ tenantEmbed = false }) {
     );
   };
 
-  const DrawerTile = ({ id, icon: Icon, label, children, count }) => {
+  const DrawerTile = ({ id, icon: Icon, label, children, count, domId }) => {
     const colors = drawerColors[id] || drawerColors.community;
     return (
-      <div className="admin-drawer rounded-3xl" data-testid={`drawer-${id}-wrap`} style={{
+      <div
+        id={domId}
+        className="admin-drawer rounded-3xl"
+        data-testid={`drawer-${id}-wrap`}
+        style={{
         background: `linear-gradient(135deg, ${colors})`,
         border: '1px solid rgba(255,255,255,0.15)',
         boxShadow: openDrawers[id]
@@ -399,17 +404,17 @@ function CockpitPage({ tenantEmbed = false }) {
           </div>
         )}
 
-        <section
-          id="cockpit-content-visuals"
-          className={
-            isTenantEmbed
-              ? 'block w-full min-w-0 scroll-mt-2 rounded-2xl border border-white/10 bg-slate-900/40 p-3 shadow-sm sm:p-4'
-              : 'block w-full min-w-0 scroll-mt-4 rounded-3xl border border-slate-200 bg-white/95 p-4 shadow-sm sm:p-5'
-          }
-          data-testid="cockpit-content-visuals-section"
+        {/* 0. VIOLET FONCÉ — GESTION DES CONTENUS & VISUELS (1er bloc, avant communauté) */}
+        <DrawerTile
+          id="contentVisuals"
+          domId="cockpit-content-visuals"
+          icon={Layers}
+          label="GESTION DES CONTENUS & VISUELS"
         >
-          <ContentVisualsModule />
-        </section>
+          <div data-testid="cockpit-content-visuals-section">
+            <ContentVisualsModule />
+          </div>
+        </DrawerTile>
 
         {/* 1. VIOLET — GESTION COMMUNAUTÉ */}
         <DrawerTile id="community" icon={Users} label="GESTION COMMUNAUTÉ" count={userStats.total}>

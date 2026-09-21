@@ -183,8 +183,9 @@ async def neriacorp_cockpit_mamandouce_layout():
         "sections": [
             {
                 "id": "content_visuals",
-                "type": "embed",
+                "type": "accordion",
                 "label": "Gestion des Contenus & Visuels",
+                "position": 0,
                 "embed_url": cockpit.get("content_visuals_embed_url")
                 or f"{public_url.rstrip('/')}/embed/cockpit/content-visuals",
                 "dom_anchor": cockpit.get("content_visuals_section_id") or "cockpit-content-visuals",

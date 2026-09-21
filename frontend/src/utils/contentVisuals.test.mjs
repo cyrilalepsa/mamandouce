@@ -19,10 +19,19 @@ test("cockpit exposes content visuals module at top", () => {
   assert.match(cockpit, /<ContentVisualsModule/);
   const headerIdx = cockpit.indexOf("CockpitMamanDouceHeader");
   const moduleIdx = cockpit.indexOf("cockpit-content-visuals");
-  const communityIdx = cockpit.indexOf("GESTION COMMUNAUTÉ");
-  assert.ok(headerIdx > -1 && moduleIdx > headerIdx && communityIdx > moduleIdx);
-  assert.doesNotMatch(cockpit, /fetus-visuals/);
+  const communityLabelIdx = cockpit.indexOf("GESTION COMMUNAUTÉ");
+  assert.ok(headerIdx > -1 && moduleIdx > headerIdx && communityLabelIdx > moduleIdx);
   assert.doesNotMatch(cockpit, /FetusVisualsTab/);
+  assert.doesNotMatch(cockpit, /sub-fetus|id="fetus-visuals"|Visuels fœtus/);
+  const drawerCount = [...cockpit.matchAll(/<DrawerTile/g)].length;
+  assert.equal(drawerCount, 6, "six accordéons racine dont Contenus & Visuels");
+  assert.match(cockpit, /id="contentVisuals"/);
+  assert.match(cockpit, /GESTION DES CONTENUS & VISUELS/);
+  const contentIdx = cockpit.indexOf('id="contentVisuals"');
+  const communityIdx = cockpit.indexOf('id="community"');
+  assert.ok(contentIdx > -1 && communityIdx > contentIdx);
+  const toolsBlock = cockpit.slice(cockpit.indexOf('id="tools"'));
+  assert.doesNotMatch(toolsBlock, /fetus-visuals|Visuels fœtus|FetusVisualsTab/);
 });
 
 test("content visuals module defines three responsive tabs", () => {
